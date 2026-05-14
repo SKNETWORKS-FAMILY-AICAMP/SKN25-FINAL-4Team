@@ -1,0 +1,19 @@
+data_path: data/raw/korea
+target_col: value
+time_col: timestamp
+freq: 1H
+encoding: utf-8
+
+anomaly_threshold: 2.0
+normal_range_min: 0
+normal_range_max: 999999
+
+forecast_horizon: 24
+feature_cols:
+  - value
+  - Ta
+
+report_title: "한국 지역난방 에너지 분석 리포트"
+unit: Gcal
+timezone: Asia/Seoul
+rag_doc_filter: korea

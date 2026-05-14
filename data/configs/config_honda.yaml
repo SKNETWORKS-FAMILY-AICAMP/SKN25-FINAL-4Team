@@ -1,0 +1,21 @@
+data_path: data/raw/honda
+target_col: P
+time_col: ts
+freq: 1H
+encoding: utf-8
+
+anomaly_threshold: 2.0
+normal_range_min: 0
+normal_range_max: 999999
+
+forecast_horizon: 24
+feature_cols:
+  - P
+  - PF
+  - Ta
+  - Igm
+
+report_title: "Honda R&D Europe 에너지 분석 리포트"
+unit: kW
+timezone: Europe/Berlin
+rag_doc_filter: germany

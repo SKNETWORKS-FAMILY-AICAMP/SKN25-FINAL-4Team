@@ -1,0 +1,34 @@
+# DB
+sqlalchemy>=2.0
+psycopg2-binary
+pgvector
+
+# 전처리
+pandas>=2.0
+numpy
+statsmodels
+
+# 이상탐지
+scikit-learn
+torch
+
+# 예측
+prophet
+xgboost
+
+# 에이전트/RAG
+langchain
+langgraph
+langchain-community
+
+# 실험 추적
+mlflow
+
+# API
+fastapi
+uvicorn[standard]
+python-multipart
+
+# 기타
+python-dotenv
+pyyaml
