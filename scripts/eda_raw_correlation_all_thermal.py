@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 
 import matplotlib
-import numpy as np
 import pandas as pd
 from sqlalchemy import text
 
@@ -17,73 +16,31 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from scripts.fetch_h1z16_with_weather import (
-    END_TS,
-    START_TS,
-    WEATHER_METER_URN,
-    build_engine,
+from config.meter_metadata import get_metadata, get_meters_by_type
+from scripts.eda_raw_correlation_representative_electric import (
+    MIN_PERIOD_ROWS,
+    SEASON_ORDER,
+    add_period_columns,
+    build_corr_matrix,
+    build_long_rows,
+    build_pivot_sql,
+    fetch_weather_df,
+    get_measurements,
+    save_heatmap,
+    select_usable_columns,
 )
+from scripts.fetch_h1z16_with_weather import END_TS, START_TS, build_engine
 
 
 OUTPUT_ROOT = PROJECT_ROOT / "outputs" / "raw_eda"
-SIX_YEAR_DIR = OUTPUT_ROOT / "electric_6year"
-YEARLY_DIR = OUTPUT_ROOT / "electric_yearly"
-SEASONAL_DIR = OUTPUT_ROOT / "electric_seasonal"
+SIX_YEAR_DIR = OUTPUT_ROOT / "thermal_6year"
+YEARLY_DIR = OUTPUT_ROOT / "thermal_yearly"
+SEASONAL_DIR = OUTPUT_ROOT / "thermal_seasonal"
 
-MIN_PERIOD_ROWS = 24
-MAX_HEATMAP_COLUMNS = 20
-SAVE_FULL_HEATMAP = True
-SEASON_ORDER = ["Winter", "Spring", "Summer", "Autumn"]
-REPRESENTATIVE_METERS = [
-    "H1.Z10",
-    "H1.Z16",
-    "H1.Z13",
-    "H2.Z64",
-    "H4.Z50",
-    "H2.Z68",
-    "V.Z84",
-    "H1.Z20",
-    "H2.T.Z33",
-    "H2.Z35",
-    "H2.ZE64",
-]
+THERMAL_METERS = get_meters_by_type("thermal")
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(message)s")
 logger = logging.getLogger(__name__)
-
-
-MEASUREMENT_SQL = text(
-    """
-SELECT DISTINCT measurement
-FROM ems.cr_measurement_1h
-WHERE meter_urn = :meter_urn
-ORDER BY measurement
-"""
-)
-
-
-def get_measurements(engine, meter_urn: str) -> list[str]:
-    with engine.connect() as conn:
-        rows = conn.execute(MEASUREMENT_SQL, {"meter_urn": meter_urn}).fetchall()
-    return [str(row[0]) for row in rows]
-
-
-def build_pivot_sql(measurements: list[str]) -> str:
-    pivot_lines = [
-        f"""MAX(CASE WHEN measurement = '{measurement}' THEN value END) AS "{measurement}" """
-        for measurement in measurements
-    ]
-    return f"""
-SELECT
-    ts,
-    meter_urn,
-    {",\n    ".join(pivot_lines)}
-FROM ems.cr_measurement_1h
-WHERE meter_urn = :meter_urn
-  AND ts BETWEEN :start_ts AND :end_ts
-GROUP BY ts, meter_urn
-ORDER BY ts
-"""
 
 
 def fetch_meter_raw_df(engine, meter_urn: str) -> tuple[pd.DataFrame, list[str]]:
@@ -107,117 +64,6 @@ def fetch_meter_raw_df(engine, meter_urn: str) -> tuple[pd.DataFrame, list[str]]
     return df, measurements
 
 
-def fetch_weather_df(engine) -> tuple[pd.DataFrame, list[str]]:
-    weather_measurements = get_measurements(engine, WEATHER_METER_URN)
-    if not weather_measurements:
-        raise ValueError("Weather station has no measurements")
-
-    pivot_lines = [
-        f"""MAX(CASE WHEN measurement = '{measurement}' THEN value END) AS "{measurement}" """
-        for measurement in weather_measurements
-    ]
-    pivot_sql = text(
-        f"""
-SELECT
-    ts,
-    {",\n    ".join(pivot_lines)}
-FROM ems.cr_measurement_1h
-WHERE meter_urn = :meter_urn
-  AND ts BETWEEN :start_ts AND :end_ts
-GROUP BY ts
-ORDER BY ts
-"""
-    )
-    df = pd.read_sql(
-        pivot_sql,
-        con=engine,
-        params={
-            "meter_urn": WEATHER_METER_URN,
-            "start_ts": START_TS,
-            "end_ts": END_TS,
-        },
-        parse_dates=["ts"],
-    )
-    for column in weather_measurements:
-        df[column] = pd.to_numeric(df[column], errors="coerce")
-    return df, weather_measurements
-
-
-def add_period_columns(df: pd.DataFrame) -> pd.DataFrame:
-    enriched = df.copy()
-    enriched["year"] = enriched["ts"].dt.year.astype(int)
-    season_map = {
-        12: "Winter",
-        1: "Winter",
-        2: "Winter",
-        3: "Spring",
-        4: "Spring",
-        5: "Spring",
-        6: "Summer",
-        7: "Summer",
-        8: "Summer",
-        9: "Autumn",
-        10: "Autumn",
-        11: "Autumn",
-    }
-    enriched["season"] = enriched["ts"].dt.month.map(season_map)
-    return enriched
-
-
-def select_usable_columns(df: pd.DataFrame, candidate_columns: list[str]) -> list[str]:
-    usable = []
-    for column in candidate_columns:
-        if column not in df.columns:
-            continue
-        non_null_count = int(df[column].notna().sum())
-        unique_count = int(df[column].nunique(dropna=True))
-        if non_null_count >= 2 and unique_count >= 2:
-            usable.append(column)
-    return usable
-
-
-def build_corr_matrix(df: pd.DataFrame, usable_columns: list[str]) -> pd.DataFrame:
-    if len(usable_columns) < 2:
-        raise ValueError("usable columns 부족")
-    corr_df = df[usable_columns].corr()
-    if corr_df.empty or corr_df.shape[0] < 2:
-        raise ValueError("correlation matrix 생성 실패")
-    return corr_df
-
-
-def build_long_rows(
-    meter_urn: str,
-    period_type: str,
-    period_label: str,
-    corr_df: pd.DataFrame,
-) -> list[dict[str, object]]:
-    rows: list[dict[str, object]] = []
-    rank = 1
-    for idx, column_a in enumerate(corr_df.columns):
-        for column_b in corr_df.columns[idx + 1 :]:
-            corr_value = corr_df.loc[column_a, column_b]
-            if pd.isna(corr_value):
-                continue
-            corr_float = float(corr_value)
-            rows.append(
-                {
-                    "meter_urn": meter_urn,
-                    "period_type": period_type,
-                    "period_label": period_label,
-                    "column_a": str(column_a),
-                    "column_b": str(column_b),
-                    "corr": round(corr_float, 6),
-                    "abs_corr": round(abs(corr_float), 6),
-                    "rank": rank,
-                }
-            )
-            rank += 1
-    rows.sort(key=lambda row: row["abs_corr"], reverse=True)
-    for new_rank, row in enumerate(rows, start=1):
-        row["rank"] = new_rank
-    return rows
-
-
 def summarize_period(
     meter_urn: str,
     df: pd.DataFrame,
@@ -229,6 +75,7 @@ def summarize_period(
     long_rows: list[dict[str, object]],
     error: str | None = None,
 ) -> dict[str, object]:
+    metadata = get_metadata(meter_urn) or {}
     top_pair = ""
     top_corr = None
     top_abs_corr = None
@@ -244,6 +91,9 @@ def summarize_period(
     )
     return {
         "meter_urn": meter_urn,
+        "thermal_mode": metadata.get("thermal_mode"),
+        "group_name": metadata.get("group_name"),
+        "description": metadata.get("description"),
         "period_type": period_type,
         "period_label": period_label,
         "row_count": int(len(df)),
@@ -261,63 +111,6 @@ def summarize_period(
         "top_abs_corr": top_abs_corr,
         "error": error,
     }
-
-
-def pick_heatmap_columns(corr_df: pd.DataFrame) -> list[str]:
-    if corr_df.shape[0] <= MAX_HEATMAP_COLUMNS:
-        return list(corr_df.columns)
-
-    score_map = {}
-    for column in corr_df.columns:
-        max_abs_corr = corr_df[column].drop(labels=[column], errors="ignore").abs().max()
-        score_map[str(column)] = float(max_abs_corr) if pd.notna(max_abs_corr) else -1.0
-
-    return sorted(score_map, key=lambda column: score_map[column], reverse=True)[:MAX_HEATMAP_COLUMNS]
-
-
-def save_heatmap(corr_df: pd.DataFrame, meter_urn: str, title: str, output_path: Path) -> None:
-    plot_columns = pick_heatmap_columns(corr_df)
-    plot_df = corr_df.loc[plot_columns, plot_columns]
-
-    fig_width = max(8, plot_df.shape[1] * 0.65)
-    fig_height = max(7, plot_df.shape[0] * 0.6)
-    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
-    image = ax.imshow(plot_df.values, cmap="coolwarm", vmin=-1, vmax=1, aspect="auto")
-    ax.set_xticks(range(plot_df.shape[1]))
-    ax.set_yticks(range(plot_df.shape[0]))
-    ax.set_xticklabels(plot_df.columns, rotation=90)
-    ax.set_yticklabels(plot_df.index)
-    ax.set_title(title)
-
-    for row_idx in range(plot_df.shape[0]):
-        for col_idx in range(plot_df.shape[1]):
-            value = plot_df.iat[row_idx, col_idx]
-            if pd.isna(value):
-                continue
-            text_color = "white" if abs(float(value)) >= 0.6 else "black"
-            ax.text(col_idx, row_idx, f"{float(value):.2f}", ha="center", va="center", color=text_color, fontsize=7)
-
-    fig.colorbar(image, ax=ax, fraction=0.046, pad=0.04)
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=150)
-    plt.close(fig)
-
-
-def save_full_heatmap(corr_df: pd.DataFrame, meter_urn: str, title: str, output_path: Path) -> None:
-    fig_width = max(10, corr_df.shape[1] * 0.65)
-    fig_height = max(8, corr_df.shape[0] * 0.6)
-    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
-    image = ax.imshow(corr_df.values, cmap="coolwarm", vmin=-1, vmax=1, aspect="auto")
-    ax.set_xticks(range(corr_df.shape[1]))
-    ax.set_yticks(range(corr_df.shape[0]))
-    ax.set_xticklabels(corr_df.columns, rotation=90)
-    ax.set_yticklabels(corr_df.index)
-    ax.set_title(title)
-
-    fig.colorbar(image, ax=ax, fraction=0.046, pad=0.04)
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=150)
-    plt.close(fig)
 
 
 def process_period(
@@ -360,13 +153,6 @@ def process_period(
         long_rows=long_rows,
     )
     save_heatmap(corr_df, meter_urn, title, output_dir / f"{meter_urn}_{period_label}_corr.png")
-    if SAVE_FULL_HEATMAP:
-        save_full_heatmap(
-            corr_df,
-            meter_urn,
-            f"{title} (Full)",
-            output_dir / f"{meter_urn}_{period_label}_corr_full.png",
-        )
     return summary, long_rows
 
 
@@ -405,14 +191,12 @@ def process_6year(
         period_label="all",
         long_rows=long_rows,
     )
-    save_heatmap(corr_df, meter_urn, f"{meter_urn} 6-Year Raw Correlation Matrix", SIX_YEAR_DIR / f"{meter_urn}_corr.png")
-    if SAVE_FULL_HEATMAP:
-        save_full_heatmap(
-            corr_df,
-            meter_urn,
-            f"{meter_urn} 6-Year Raw Correlation Matrix (Full)",
-            SIX_YEAR_DIR / f"{meter_urn}_corr_full.png",
-        )
+    save_heatmap(
+        corr_df,
+        meter_urn,
+        f"{meter_urn} 6-Year Raw Thermal Correlation Matrix",
+        SIX_YEAR_DIR / f"{meter_urn}_corr.png",
+    )
     return summary, long_rows
 
 
@@ -436,7 +220,7 @@ def process_yearly(
             measurements=measurements,
             weather_columns=weather_columns,
             output_dir=YEARLY_DIR,
-            title=f"{meter_urn} {year} Raw Correlation Matrix",
+            title=f"{meter_urn} {year} Raw Thermal Correlation Matrix",
         )
         summary_rows.append(summary)
         long_rows.extend(period_long_rows)
@@ -463,7 +247,7 @@ def process_seasonal(
             measurements=measurements,
             weather_columns=weather_columns,
             output_dir=SEASONAL_DIR,
-            title=f"{meter_urn} {season} Raw Correlation Matrix",
+            title=f"{meter_urn} {season} Raw Thermal Correlation Matrix",
         )
         summary_rows.append(summary)
         long_rows.extend(period_long_rows)
@@ -491,9 +275,9 @@ def main() -> None:
     all_seasonal_summary: list[dict[str, object]] = []
     all_seasonal_long: list[dict[str, object]] = []
 
-    logger.info("대표 전기 계량기 %s개 raw correlation matrix 생성 시작", len(REPRESENTATIVE_METERS))
+    logger.info("열 계량기 %s개 raw correlation matrix 생성 시작", len(THERMAL_METERS))
 
-    for meter_urn in REPRESENTATIVE_METERS:
+    for meter_urn in THERMAL_METERS:
         logger.info("%s 처리 시작", meter_urn)
         try:
             raw_df, measurements = fetch_meter_raw_df(engine, meter_urn)

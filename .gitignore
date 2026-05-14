@@ -1,0 +1,54 @@
+.env
+AGENTS.md
+WORKlog.md
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data files (raw & processed)
+data/raw/
+data/processed/
+
+# Model artifacts
+*.h5
+*.pkl
+*.pt
+*.pth
+*.onnx
+*.joblib
+
+# MLflow
+mlflow/
+
+# Generated outputs
+outputs/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Node (frontend)
+node_modules/
+.next/

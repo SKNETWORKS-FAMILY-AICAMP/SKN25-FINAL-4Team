@@ -376,6 +376,152 @@
 - `IF`는 다변량 이상 시점 탐지에는 유리하지만, 무엇이 이상인지 설명은 후처리 규칙/편차 분석/기여도 해석이 필요
 - 예측 LSTM에서 타 계량기 `P` feature 추가 기준은 `GROUPING_STRATEGY_DRAFT.md` 하단에 정리
 
+## Raw Correlation EDA 업데이트
+
+### 분석 방향 정리
+
+- raw correlation 목적은 `target(P/Tdiff) 중심 feature screening`보다
+  `전체 feature 구조 파악(EDA)`에 두는 것이 적절하다고 정리했다.
+- 따라서 상관분석은
+  - `P vs other columns`만 보는 구조가 아니라
+  - `전체 usable column pairwise correlation matrix`
+  기준으로 다시 구성했다.
+- 해석 순서는
+  - `6년 전체`
+  - `연도별`
+  - 필요 시 `계절별`
+  로 두고,
+  현재는 전기/열 모두 `6년 + 연도별 + 계절별` 산출물을 생성할 수 있게 정리했다.
+
+### 전기 대표 계량기 11개
+
+- 전기 raw correlation은 대표 계량기 `11개` 기준으로 우선 정리했다.
+- 현재 대표 계량기:
+  - `H1.Z10`
+  - `H1.Z16`
+  - `H1.Z13`
+  - `H2.Z64`
+  - `H4.Z50`
+  - `H2.Z68`
+  - `V.Z84`
+  - `H1.Z20`
+  - `H2.T.Z33`
+  - `H2.Z35`
+  - `H2.ZE64`
+- 그룹 취지는 `건물별`이 아니라 `기능/설비 역할별` 대표성 확보이다.
+- 즉 현재 11개 그룹은:
+  - `test`
+  - `cooling_central`
+  - `hvac`
+  - `server`
+  - `office/general`
+  - `ventilation`
+  - `pv`
+  - `chp`
+  - `distribution`
+  - `transformer`
+  - `redundant representative`
+  를 반영한 구조다.
+- 이 분류만으로는 `건물별 패턴`을 직접 보기는 어렵고,
+  주 목적은 `기능별 패턴 / feature 구조 파악`이다.
+
+### 전기 raw correlation 산출물
+
+- 스크립트:
+  - `scripts/eda_raw_correlation_representative_electric.py`
+- 저장 경로:
+  - `outputs/raw_eda/electric_6year/`
+  - `outputs/raw_eda/electric_yearly/`
+  - `outputs/raw_eda/electric_seasonal/`
+- 각 폴더 산출물:
+  - `summary.csv`
+  - `long.csv`
+  - `*_corr.png`
+  - `*_corr_full.png`
+- `long.csv`는 전체 pairwise 구조로 저장한다.
+  - 컬럼:
+    - `meter_urn`
+    - `period_type`
+    - `period_label`
+    - `column_a`
+    - `column_b`
+    - `corr`
+    - `abs_corr`
+    - `rank`
+- `corr.png`는 가독성을 위한 축약 heatmap,
+  `corr_full.png`는 usable column 전체를 그린 full heatmap이다.
+
+### 열 계량기 9개 raw correlation
+
+- 열 계량기는 개수가 `9개`라 대표 압축 없이 전체를 직접 본다.
+- 다만 메타데이터상 `thermal_mode`로
+  - `cooling`
+  - `heating`
+  구분은 summary에 함께 남긴다.
+- 스크립트:
+  - `scripts/eda_raw_correlation_all_thermal.py`
+- 저장 경로:
+  - `outputs/raw_eda/thermal_6year/`
+  - `outputs/raw_eda/thermal_yearly/`
+  - `outputs/raw_eda/thermal_seasonal/`
+- 열 계량기는 weather join 후에도 usable column 수가 대체로 `20 미만`이라
+  `corr_full.png`는 중복 의미가 커서 제거했다.
+- 따라서 thermal 폴더에는:
+  - `summary.csv`
+  - `long.csv`
+  - `*_corr.png`
+  만 유지한다.
+
+### Plotly 기반 full heatmap
+
+- full correlation matrix는 static PNG보다 Plotly interactive heatmap이
+  더 읽기 쉽다는 점을 확인했다.
+- notebook:
+  - `notebooks/09_representative_electric_full_correlation.ipynb`
+- 현재 notebook 예시는 `H1.Z16` 기준으로 저장해 두었다.
+  - `6year`
+  - `2023`
+  - `Summer`
+- Plotly heatmap에는 셀 내부 상관계수 값 표시를 추가했다.
+- notebook 실행 시 HTML도 함께 저장되도록 구성했다.
+  - 예시 파일:
+    - `outputs/raw_eda/H1.Z16_6year_full_corr.html`
+    - `outputs/raw_eda/H1.Z16_2023_full_corr.html`
+    - `outputs/raw_eda/H1.Z16_Summer_full_corr.html`
+
+### Plotly batch export
+
+- 전기 대표 11개 + 열 계량기 9개를 period별로 Plotly full heatmap HTML로 일괄 export하는 notebook을 추가했다.
+- notebook:
+  - `notebooks/10_plotly_full_correlation_batch.ipynb`
+- 저장 경로:
+  - `outputs/electric_plotly_6year/`
+  - `outputs/electric_plotly_yearly/`
+  - `outputs/electric_plotly_seasonal/`
+  - `outputs/thermal_plotly_6year/`
+  - `outputs/thermal_plotly_yearly/`
+  - `outputs/thermal_plotly_seasonal/`
+- 생성 수:
+  - 전기 `6year`: `11개`
+  - 전기 `yearly`: `61개`
+  - 전기 `seasonal`: `44개`
+  - 열 `6year`: `9개`
+  - 열 `yearly`: `54개`
+  - 열 `seasonal`: `36개`
+
+### 해석 메모
+
+- `full heatmap`이더라도 Plotly에서는
+  - 화면 확장
+  - hover
+  - 확대/축소
+  - 셀 내부 수치 표시
+  때문에 오히려 PNG 축약본보다 구조가 더 잘 읽히는 경우가 있었다.
+- 따라서 현재 판단은:
+  - `배치 산출물/문서 첨부`: `matplotlib` PNG
+  - `구조 파악 / 탐색`: `Plotly` full heatmap
+  조합이 가장 적절하다.
+
 ## 해결된 부분
 
 - `.env`의 `DB_NAME` 문제 수정
