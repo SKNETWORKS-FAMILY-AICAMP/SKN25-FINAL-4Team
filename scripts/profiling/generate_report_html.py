@@ -6,7 +6,7 @@ from pathlib import Path
 PROJECT = Path(__file__).resolve().parents[2]
 MD_PATH = PROJECT / "docs" / "분석_기획" / "EMS_데이터_분석_발표자료.md"
 CSS_PATH = PROJECT / "docs" / "분석_기획" / "report_style.css"
-OUT_PATH = PROJECT / "docs" / "분석_기획" / "EMS_데이터_분석_발표자료.html"
+OUT_PATH = PROJECT / "docs" / "분석_기획" / "EMS_데이터_분석_보고서.html"
 
 
 def embed_image(match):
@@ -20,7 +20,7 @@ def embed_image(match):
         img_path = Path(src)
     if img_path.exists():
         data = base64.b64encode(img_path.read_bytes()).decode()
-        return f'<figure><img src="data:image/png;base64,{data}" alt="{alt}"><figcaption>{alt}</figcaption></figure>'
+        return f'<figure><img src="data:image/png;base64,{data}" alt="{alt}" style="cursor: zoom-in;" onclick="openModal(this.src, this.alt)"><figcaption>{alt}</figcaption></figure>'
     return f'<p>[이미지 없음: {src}]</p>'
 
 
@@ -198,7 +198,57 @@ def build_html(body: str, css: str) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EMS 데이터 분석 보고서</title>
 <style>
-{css}
+{{css}}
+
+/* Image Modal */
+.modal {{
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.85);
+}}
+.modal-content {{
+  margin: auto;
+  display: block;
+  max-width: 95%;
+  max-height: 90%;
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}}
+.modal-close {{
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}}
+.modal-caption {{
+  margin: auto;
+  display: block;
+  width: 100%;
+  text-align: center;
+  color: #ccc;
+  padding: 10px 0;
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px;
+}}
+@media print {{
+  .modal {{ display: none !important; }}
+  figure img {{ cursor: default !important; }}
+}}
 </style>
 </head>
 <body>
@@ -214,6 +264,29 @@ def build_html(body: str, css: str) -> str:
 </div>
 
 {body}
+
+<!-- The Modal -->
+<div id="imageModal" class="modal" onclick="closeModal()">
+  <span class="modal-close">&times;</span>
+  <img class="modal-content" id="img01">
+  <div id="caption" class="modal-caption"></div>
+</div>
+
+<script>
+function openModal(src, alt) {{
+  document.getElementById("imageModal").style.display = "block";
+  document.getElementById("img01").src = src;
+  document.getElementById("caption").innerHTML = alt;
+}}
+function closeModal() {{
+  document.getElementById("imageModal").style.display = "none";
+}}
+document.addEventListener('keydown', function(event) {{
+  if (event.key === "Escape") {{
+    closeModal();
+  }}
+}});
+</script>
 
 </body>
 </html>"""
