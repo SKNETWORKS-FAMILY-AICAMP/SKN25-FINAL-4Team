@@ -124,8 +124,8 @@ for group, meters in METER_GROUPS.items():
 
 
 def get_output_dir() -> Path:
-    """산출물 디렉터리 반환."""
-    out = Path("outputs/profiling")
+    """프로파일링 테이블 산출물 디렉터리 반환."""
+    out = Path("outputs/tables/profiling")
     out.mkdir(parents=True, exist_ok=True)
     return out
 

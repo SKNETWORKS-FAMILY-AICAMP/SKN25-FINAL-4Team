@@ -1,184 +1,154 @@
-# 🏢 스마트 건물 에너지 관리 시스템 (EMS)
+# SKN25 FINAL 4Team EMS 프로젝트
 
-> Honda R&D Europe 시설의 6년간 에너지 데이터를 분석하여, AI 기반 에너지 관리 플랫폼을 구축하기 위한 프로젝트
+EMS는 Honda R&D Europe의 다년 에너지 계량 데이터를 기반으로 건물 에너지 사용, 설비 운전, 이상 패턴, 예측 가능성을 분석하는 프로젝트입니다. 저장소는 PostgreSQL/TimescaleDB `ems` schema를 기준 원천으로 사용하는 DB 중심 구조를 따릅니다.
 
-[![Dataset](https://img.shields.io/badge/Dataset-Scientific%20Data%202025-blue)](https://doi.org/10.1038/s41597-024-04263-x)
-[![DB](https://img.shields.io/badge/DB-TimescaleDB-orange)](https://www.timescale.com/)
-[![Python](https://img.shields.io/badge/Python-3.11+-green)](https://www.python.org/)
+## 1. 프로젝트 범위
 
----
+- 81개 계량기와 기상 데이터를 기준으로 전기, 열, 냉방, 기상 측정값을 분석합니다.
+- 원천 데이터와 대용량 로컬 데이터는 저장소에 포함하지 않습니다.
+- 분석 입력, 계량기 metadata, feature 기준, ontology schema는 `docs/specs/`의 active 문서를 기준으로 합니다.
+- 실험 노트북, 분석 스크립트, 재생성 가능한 산출물은 목적별 폴더에 분리합니다.
 
-## 📋 프로젝트 개요
+## 2. 저장소 구조
 
-독일 Offenbach에 위치한 Honda R&D Europe 시설의 **81개 계량기 × 6년(2018~2024)** 에너지 데이터를 기반으로:
-
-1. **데이터 프로파일링** — 전수 품질 진단 및 결측/이상 패턴 파악
-2. **에너지 흐름 시각화** — 전기/난방/냉방/기상 데이터의 거시적 패턴 검증
-3. **AI 에이전트 플랫폼** — Text-to-SQL 대화형 분석, 이상 탐지, 자동 리포팅 (예정)
-
-### 기준 논문
-
-> Gruner et al., *"Six years of multi-modal energy monitoring data from a commercial building in Germany"*  
-> Scientific Data, 2025 — [DOI](https://doi.org/10.1038/s41597-024-04263-x)
-
----
-
-## 🔍 핵심 발견 (Key Findings)
-
-| 항목 | 내용 |
-|------|------|
-| **데이터 완결성** | 에너지 미터 결측률 **0.03%** — 보정 파이프라인이 Gap을 과거 데이터 복사로 채움 |
-| **기상 데이터 결측** | 기상 관측소만 **2.35% 결측** (2018년 7.11%로 집중) |
-| **설비 Regime 변화** | 6년간 **6회 주요 변경** (PV 설치/증설, CHP 로직, COVID, 계량기 교체, 난방 현대화) |
-| **냉각-기온 상관** | 외기온 10°C 이상부터 냉각 전력 비선형 증가 — 예측 모델 핵심 피처 |
-| **자체 발전 증가** | PV Phase2(2020-06) 이후 Grid 의존도 감소 추세 |
-
----
-
-## 📊 에너지 흐름 시각화
-
-6년간의 건물 에너지 흐름을 6개 차트로 시각화했습니다.
-
-<table>
-<tr>
-<td><b>전기 소비/생산 6년 추이</b><br><img src="outputs/figures/energy_flow/01_electricity_overview.png" width="400"></td>
-<td><b>난방/냉방 계절 패턴</b><br><img src="outputs/figures/energy_flow/02_heating_cooling.png" width="400"></td>
-</tr>
-<tr>
-<td><b>기상 데이터 (기온+일사량)</b><br><img src="outputs/figures/energy_flow/03_weather.png" width="400"></td>
-<td><b>월별 전기 에너지 수지</b><br><img src="outputs/figures/energy_flow/04_monthly_energy_balance.png" width="400"></td>
-</tr>
-<tr>
-<td><b>대표 주간 상세 (2021-03)</b><br><img src="outputs/figures/energy_flow/05_representative_week.png" width="400"></td>
-<td><b>냉각 전력 vs 외기온 상관</b><br><img src="outputs/figures/energy_flow/06_cooling_vs_temperature.png" width="400"></td>
-</tr>
-</table>
-
-> 📄 상세 해석: [`docs/분석_기획/05_에너지_흐름_시각화.md`](docs/분석_기획/05_에너지_흐름_시각화.md)
-
----
-
-## 📁 프로젝트 구조
-
-```
-EMS/
+```text
+SKN25-FINAL-4Team/
 ├── docs/
-│   ├── 분석_기획/                          # 분석 및 기획 문서
-│   │   ├── 00_진행현황.md                  #   전체 현황 요약 (인덱스)
-│   │   ├── 01_데이터_분석_전략.md           #   분석 3대 원칙 & Regime 분할
-│   │   ├── 02_기획서_갭분석.md              #   기획서 vs 현재 자산 갭 분석
-│   │   ├── 03_프로파일링_결과.md            #   81개 미터 품질 진단 리포트
-│   │   ├── 04_뷰생성_및_보완_결과.md        #   Reduced View & DWD 보완
-│   │   └── 05_에너지_흐름_시각화.md         #   6개 차트 해석 리포트
-│   ├── paper.pdf                           # 기준 논문 원본
-│   └── 스마트 건물 에너지...기획서.md       # AI 플랫폼 기획서
-│
+│   ├── specs/                 # 프로젝트 핵심 명세
+│   ├── ontology/              # ontology artifact와 역량질문
+│   ├── reference/             # 도메인 학습·참조 문서
+│   ├── analysis/              # 분석 기획·발표·해석 문서
+│   └── papers/                # 기준 논문과 추출 문서
+├── notebooks/
+│   ├── overview/              # 전체 품질·coverage·집계 탐색
+│   ├── H1.Z16/                # H1.Z16 계량기 EDA/이상탐지
+│   └── stl_eda/               # STL·상관·이상치 탐색 노트북
 ├── scripts/
-│   ├── profiling/
-│   │   ├── meter_profiling.py              # 81개 미터 전수 프로파일링
-│   │   └── visualize_energy_flow.py        # 에너지 흐름 시각화 (6개 차트)
-│   └── ingest/
-│       ├── sql/reduced_view.sql            # Reduced 합산 뷰 DDL
-│       └── dwd_weather_ingest.py           # DWD 기상 데이터 보완
-│
+│   ├── ontology/              # ontology 생성·검증·조회
+│   ├── profiling/             # 미터 프로파일링과 에너지 흐름 시각화
+│   ├── features/              # baseline feature 생성
+│   ├── anomaly/               # 이상 탐지 실행 스크립트
+│   ├── forecast/              # 예측 baseline 실행 스크립트
+│   └── ingest/                # 보조 적재·뷰 SQL. DB write는 승인 후 실행
+├── src/ems/                   # 재사용 가능한 EMS Python 모듈
 ├── outputs/
-│   ├── figures/energy_flow/                # 시각화 차트 PNG (6개)
-│   └── profiling/                          # 프로파일링 CSV (6개)
-│
-└── README.md
+│   ├── figures/               # 공유 가능한 그림 산출물
+│   └── tables/                # 공유 가능한 표 산출물
+├── docker/                    # 로컬 컨테이너 이미지 정의
+├── docker-compose.yml         # 로컬 EMS 컨테이너 compose
+├── pyproject.toml
+└── requirements.txt
 ```
 
----
+## 3. 주요 문서
 
-## 🗄️ 데이터 아키텍처
+| 구분 | 경로 | 내용 |
+|---|---|---|
+| 프로젝트 개요 | `docs/specs/프로젝트_개요.md` | 목적, 기준 데이터, 분석 범위 |
+| 데이터 계약 | `docs/specs/데이터_계약.md` | 분석 입력 grain, timestamp, 품질 규칙 |
+| DB 구조 | `docs/specs/데이터베이스_구조.md` | `ems` schema relation, column, index 기준 |
+| 계량기 metadata | `docs/specs/계량기_메타데이터.md` | 계량기 분류, 설비 그룹, redundancy, 부호 규약 |
+| Feature 기준 | `docs/specs/피처_명세.md` | feature 입력, naming, 누수 방지 기준 |
+| Ontology 기준 | `docs/specs/온톨로지_스키마.md` | ontology class/property/artifact coverage |
+| 도메인 개념 | `docs/reference/도메인_개념.md` | 전기·열 계량기 기본 개념 |
+| 분석 기획 | `docs/analysis/분석_기획/` | 팀 분석 진행 문서와 발표자료 |
+| 기준 논문 | `docs/papers/` | 논문 원문, 번역, 전문, 요약 |
 
-```
-┌─────────────────────────────────────────────────┐
-│              TimescaleDB (PostgreSQL)            │
-├─────────────────────────────────────────────────┤
-│  Registry Layer                                  │
-│    full_meter (81개 미터 메타데이터)              │
-│                                                  │
-│  CR Mart Layer                                   │
-│    cr_measurement_15min (15분 해상도)             │
-│    cr_measurement_1h    (1시간 해상도)            │
-│                                                  │
-│  Reduced Layer (신규 생성)                        │
-│    reduced_measurement_15min  ← 범주별 합산 뷰   │
-│    reduced_measurement_1h     ← 범주별 합산 뷰   │
-│      ├── electricity (total/pv/chp/...)          │
-│      ├── heating (total/gas_boiler/chp/...)      │
-│      ├── cooling (total/chiller/...)             │
-│      └── weather (Ta/Igm/...)                    │
-└─────────────────────────────────────────────────┘
-```
+## 4. 주요 산출물
 
----
+| 구분 | 경로 |
+|---|---|
+| 에너지 흐름 그림 | `outputs/figures/energy_flow/` |
+| 프로파일링 테이블 | `outputs/tables/profiling/` |
+| H1.Z16 노트북 | `notebooks/H1.Z16/` |
+| 전체 탐색 노트북 | `notebooks/overview/` |
+| STL EDA 노트북 | `notebooks/stl_eda/` |
 
-## 🚀 실행 방법
+## 5. 실행 환경
 
-### 사전 요구사항
+- Python 기준 버전은 3.12입니다.
+- 공통 의존성은 루트 `requirements.txt`를 기준으로 설치합니다.
+- RunPod CUDA image의 `torch==2.8.*` 계열은 이미지에서 관리합니다. `requirements.txt`에는 `torch`, `torchvision`, `torchaudio`를 넣지 않습니다.
+- `.env`, DB password, token, SSH key 등 credential은 저장소에 커밋하지 않습니다.
 
-- Python 3.11+
-- Docker (TimescaleDB 컨테이너)
-- [uv](https://github.com/astral-sh/uv) 패키지 매니저
-
-### 프로파일링 실행
+예시:
 
 ```bash
-# 81개 미터 전수 프로파일링
-uv run --with pandas --with "psycopg[binary]" --with python-dotenv \
-  python scripts/profiling/meter_profiling.py
-
-# 에너지 흐름 시각화 (6개 차트 생성)
-uv run --with pandas --with "psycopg[binary]" --with python-dotenv --with matplotlib \
-  python scripts/profiling/visualize_energy_flow.py
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -U pip
+python -m pip install -r requirements.txt
 ```
 
-### Reduced View 생성 (DB)
+## 6. 대표 실행 명령
+
+프로파일링:
 
 ```bash
-# TimescaleDB에 합산 뷰 생성
-psql -h localhost -U ems -d ems -f scripts/ingest/sql/reduced_view.sql
+python scripts/profiling/meter_profiling.py
 ```
 
-### 환경 변수 (.env)
+에너지 흐름 시각화:
 
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=ems
-DB_USER=ems
-DB_PASSWORD=<your_password>
+```bash
+python scripts/profiling/visualize_energy_flow.py
 ```
 
----
+Ontology artifact 생성과 검증:
 
-## 📈 진행 현황
+```bash
+python scripts/ontology/generate_ontology.py
+python scripts/ontology/validate_ontology.py
+python scripts/ontology/query_ontology.py
+```
 
-| Phase | 작업 | 상태 |
-|-------|------|------|
-| **Phase 0** | 데이터 프로파일링 (81개 미터 전수) | ✅ 완료 |
-| **Phase 1** | Reduced 합산 뷰 생성 | ✅ 완료 |
-| **Phase 1** | 에너지 흐름 시각화 검증 (6개 차트) | ✅ 완료 |
-| **Phase 1** | DWD 기상 데이터 보완 스크립트 | ✅ 완료 |
-| **Phase 2** | Text-to-SQL 에이전트 개발 | 🔜 예정 |
-| **Phase 3** | 역률/비용 최적화 | 🔜 예정 |
-| **Phase 4** | 이상 탐지 모델링 | 🔜 예정 |
-| **Phase 5** | 자동 리포팅 | 🔜 예정 |
+Baseline feature 생성:
 
-> 📄 상세: [`docs/분석_기획/00_진행현황.md`](docs/분석_기획/00_진행현황.md)
+```bash
+python scripts/features/build_baseline_features.py
+```
 
----
+이상 탐지 baseline 실행:
 
-## 👥 Team
+```bash
+python scripts/anomaly/run_anomaly_detection.py
+```
 
-**SKN25-FINAL-4Team**
+예측 baseline 실행:
 
----
+```bash
+python scripts/forecast/run_forecast_baseline.py
+```
 
-## 📚 참고 자료
+## 7. DB write 주의사항
 
-- [Honda R&D Energy Dataset (Scientific Data, 2025)](https://doi.org/10.1038/s41597-024-04263-x)
-- [TimescaleDB Documentation](https://docs.timescale.com/)
-- [DWD Climate Data Center](https://opendata.dwd.de/climate_environment/CDC/)
+`scripts/ingest/` 아래의 SQL 또는 적재 스크립트는 DB 객체 생성, view 생성, 외부 데이터 적재를 포함할 수 있습니다. 다음 작업은 반드시 사전 승인 후 실행합니다.
+
+- schema, table, view, index 생성 또는 변경
+- 대용량 적재 또는 삭제
+- 외부 원천 데이터 다운로드와 DB 반영
+- 운영 DB credential 사용
+
+## 8. Git 관리 기준
+
+저장소에는 다음 항목을 포함하지 않습니다.
+
+```text
+.env
+.env.*
+.venv/
+data/
+HERMES.md
+.github/
+__pycache__/
+*.pyc
+.pytest_cache/
+.obsidian/
+_archive/
+tests/
+.cache/
+tmp/
+*.log
+```
+
+공유 대상 문서와 산출물은 목적별 폴더에 둡니다. 사람이 읽는 Markdown 문서는 한글 파일명을 우선하며, RDF/OWL/TTL 등 도구용 artifact 파일명은 기존 영문명을 유지합니다.

@@ -363,7 +363,7 @@ Grid In (V.Z81 + V.Z82) + CHP (H1.Z20) + PV ≈ 전체 소비
 
 | # | 작업 | 산출물 |
 |---|------|--------|
-| ✅ | 81개 미터 전수 프로파일링 | `outputs/profiling/*.csv` (6개) |
+| ✅ | 81개 미터 전수 프로파일링 | `outputs/tables/profiling/*.csv` (6개) |
 | ✅ | Reduced 합산 뷰 생성 (DB) | `scripts/ingest/sql/reduced_view.sql` |
 | ✅ | 에너지 흐름 시각화 (6개 차트) | `outputs/figures/energy_flow/*.png` |
 | ✅ | DWD 기상 보완 스크립트 | `scripts/ingest/dwd_weather_ingest.py` |
@@ -385,15 +385,15 @@ Grid In (V.Z81 + V.Z82) + CHP (H1.Z20) + PV ≈ 전체 소비
 
 | 분류 | 파일 | 설명 |
 |------|------|------|
-| **문서** | `docs/분석_기획/00_진행현황.md` | 전체 현황 인덱스 |
-| | `docs/분석_기획/01_데이터_분석_전략.md` | 분석 3대 원칙 상세 |
-| | `docs/분석_기획/02_기획서_갭분석.md` | 기획서 vs 현재 자산 갭 |
-| | `docs/분석_기획/03_프로파일링_결과.md` | 81개 미터 품질 리포트 |
-| | `docs/분석_기획/04_뷰생성_및_보완_결과.md` | Reduced View 결과 |
-| | `docs/분석_기획/05_에너지_흐름_시각화.md` | 차트 해석 상세 |
+| **문서** | `docs/analysis/분석_기획/00_진행현황.md` | 전체 현황 인덱스 |
+| | `docs/analysis/분석_기획/01_데이터_분석_전략.md` | 분석 3대 원칙 상세 |
+| | `docs/analysis/분석_기획/02_기획서_갭분석.md` | 기획서 vs 현재 자산 갭 |
+| | `docs/analysis/분석_기획/03_프로파일링_결과.md` | 81개 미터 품질 리포트 |
+| | `docs/analysis/분석_기획/04_뷰생성_및_보완_결과.md` | Reduced View 결과 |
+| | `docs/analysis/분석_기획/05_에너지_흐름_시각화.md` | 차트 해석 상세 |
 | **코드** | `scripts/profiling/meter_profiling.py` | 프로파일링 스크립트 |
 | | `scripts/profiling/visualize_energy_flow.py` | 시각화 스크립트 |
 | | `scripts/ingest/sql/reduced_view.sql` | DB 뷰 DDL |
 | | `scripts/ingest/dwd_weather_ingest.py` | DWD 보완 스크립트 |
-| **데이터** | `outputs/profiling/01~06_*.csv` | 프로파일링 CSV 6개 |
+| **데이터** | `outputs/tables/profiling/01~06_*.csv` | 프로파일링 CSV 6개 |
 | **차트** | `outputs/figures/energy_flow/01~06_*.png` | 시각화 PNG 6개 |
