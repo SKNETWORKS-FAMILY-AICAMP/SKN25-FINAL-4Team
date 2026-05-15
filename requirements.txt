@@ -1,0 +1,43 @@
+# EMS 로컬 컨테이너와 RunPod 사용자 영역 공통 의존성.
+# RunPod CUDA 이미지는 torch==2.8.* 및 대응 CUDA wheel을 이미 제공한다고 가정한다.
+# 사전 구성된 CUDA 스택을 덮어쓰지 않도록 torch/torchvision/torchaudio는 여기서 설치하지 않는다.
+# MLflow 3.12.x는 현재 pandas<3, pyarrow<24 제약이 있다.
+
+pandas>=2.3,<3.0
+pyarrow>=23.0,<24.0
+numpy>=2.0
+scikit-learn>=1.7,<2
+
+dask[dataframe]>=2024.1
+psycopg[binary]
+psycopg2-binary
+python-dotenv
+
+rdflib>=7.0
+matplotlib>=3.8
+koreanize-matplotlib>=0.1.1
+seaborn>=0.13
+setuptools>=69.0
+
+mlflow>=3.12,<4
+langchain>=1.3,<2
+langchain-core>=1.4,<2
+langchain-community>=0.4,<0.5
+langchain-openai>=1.2,<2
+langchain-anthropic>=1.4,<2
+langchain-google-genai>=4.2,<5
+langgraph>=1.2,<2
+langsmith>=0.8,<0.9
+openai>=2.36,<3
+anthropic>=0.101,<1
+tiktoken
+
+transformers>=4.55,<5
+accelerate>=1.10,<2
+safetensors>=0.5,<0.7
+
+datasets>=4.0,<5
+jupyterlab
+ipykernel
+nbformat>=5.10
+nbclient>=0.10
