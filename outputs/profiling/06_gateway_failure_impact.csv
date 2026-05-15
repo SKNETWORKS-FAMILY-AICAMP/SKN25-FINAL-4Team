@@ -1,0 +1,279 @@
+meter_urn,total_rows,null_rows,null_pct,failure_name,failure_start,failure_end
+H1.K11,3696,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.K12,3696,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.K14,3696,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.K15,3696,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.K16,3696,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.W11,3696,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.W12,3696,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z10,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z11,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z12,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z13,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z14,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z15,11088,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z16,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z17,11088,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z18,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z19,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z20,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z21,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z22,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z23,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z24,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z25,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z26,11088,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z27,11088,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z28,11088,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.Z29,11088,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.K21,3696,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.T.Z30,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.T.Z31,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.T.Z32,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.T.Z33,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.T.Z34,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.Z35,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.Z36,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.Z61,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.Z62,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.Z63,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.Z64,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.Z65,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.Z66,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.Z67,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.Z68,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.Z69,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H2.Z70,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H3.Z40,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H3.Z41,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H3.Z42,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H3.Z43,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H3.Z44,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H3.Z45,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H3.Z46,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H3.Z47,1056,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H3.Z48,1056,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H3.Z49,1056,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H3.Z71,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H4.Z50,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H4.Z51,11616,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+V.K21,3696,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+V.Z81,11088,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+V.Z82,11088,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+V.Z84,8448,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+WeatherStation.Weather,5280,0,0.00,Workshop gateway failure #1,2020-02-13,2020-03-06
+H1.K11,4704,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.K12,4704,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.K14,4704,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.K15,4704,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.K16,4704,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.W11,4704,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.W12,4704,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z10,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z11,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z12,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z13,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z14,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z15,14112,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z16,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z17,14112,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z18,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z19,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z20,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z21,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z22,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z23,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z24,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z25,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z26,14112,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z27,14112,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z28,14112,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z29,14112,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H1.Z310,14112,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.K21,4704,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.T.Z30,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.T.Z31,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.T.Z32,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.T.Z33,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.T.Z34,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z311,14112,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z35,11184,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z351,792,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z36,11184,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z361,792,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z61,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z62,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z63,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z64,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z65,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z66,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z67,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z68,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z69,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H2.Z70,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H3.Z312,14112,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H3.Z40,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H3.Z41,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H3.Z42,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H3.Z43,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H3.Z44,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H3.Z45,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H3.Z46,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H3.Z47,14112,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H3.Z48,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H3.Z49,14112,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H3.Z71,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H4.Z50,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+H4.Z51,14784,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+V.K21,4704,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+V.Z81,14112,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+V.Z82,14112,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+V.Z84,10752,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+WeatherStation.Weather,6720,0,0.00,Emission lab gateway failure,2020-08-20,2020-09-17
+WeatherStation.Weather,6000,610,10.17,Distribution gateway failure,2021-11-15,2021-12-10
+H1.K12,4200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.K14,4200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.K15,4200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.K16,4200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.W11,4200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.W12,4200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z10,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z11,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z12,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z13,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z14,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z15,12600,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z16,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z17,12000,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z18,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z19,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z20,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z21,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z22,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z23,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z24,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z25,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z26,12600,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z27,12600,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z28,12600,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z29,12600,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.Z310,12600,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.K21,4200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.T.Z30,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.T.Z31,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.T.Z32,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.T.Z33,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.T.Z34,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z311,12600,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z35,1200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z351,12600,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z36,1200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z361,12600,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z61,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z62,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z63,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z64,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z65,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z66,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z67,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z68,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z69,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H2.Z70,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H3.Z312,12600,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H3.Z40,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H3.Z41,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H3.Z42,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H3.Z43,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H3.Z44,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H3.Z45,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H3.Z46,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H3.Z47,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H3.Z48,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H1.K11,4200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H3.Z71,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H4.Z50,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H4.Z51,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+V.K21,4200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+V.Z81,12600,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+V.Z82,12600,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+V.Z84,9600,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+H3.Z49,13200,0,0.00,Distribution gateway failure,2021-11-15,2021-12-10
+WeatherStation.Weather,16560,330,1.99,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z17,33120,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.Z42,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.Z43,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z311,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z28,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z26,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.Z46,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z27,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z13,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H4.ZE50,33120,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.Z44,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z12,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.Z49,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.K15,11592,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z20,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.ZE67,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z64,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.T.Z33,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.T.Z32,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+V.K21,11592,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.T.Z34,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z18,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+V.Z82,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z310,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.ZE40,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+V.Z84,26496,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.Z40,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.Z41,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.K16,11592,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z66,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z21,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.Z47,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z35,3312,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z14,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z24,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.ZE41,33120,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.Z45,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.Z312,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.ZE66,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z361,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.K21,11592,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z67,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.ZE65,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.Z48,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z15,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.K11,11592,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z16,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z61,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.K12,11592,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z22,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.ZE43,33120,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.Z71,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.K14,11592,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z63,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H4.Z50,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.ZE64,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z19,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z69,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H4.Z51,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z25,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z351,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.W12,11592,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z23,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.W11,11592,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z11,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z36,3312,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H3.ZE44,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z29,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z65,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z68,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.ZE74,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z62,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H4.ZE51,33120,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.Z70,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.T.Z31,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H2.T.Z30,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+H1.Z10,36432,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
+V.Z81,34776,0,0.00,Workshop gateway failure #2,2022-05-06,2022-07-14
