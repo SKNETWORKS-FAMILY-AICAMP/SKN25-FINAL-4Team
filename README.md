@@ -69,14 +69,17 @@ EMS/
 │   │   ├── 02_기획서_갭분석.md              #   기획서 vs 현재 자산 갭 분석
 │   │   ├── 03_프로파일링_결과.md            #   81개 미터 품질 진단 리포트
 │   │   ├── 04_뷰생성_및_보완_결과.md        #   Reduced View & DWD 보완
-│   │   └── 05_에너지_흐름_시각화.md         #   6개 차트 해석 리포트
+│   │   ├── 05_에너지_흐름_시각화.md         #   6개 차트 해석 리포트
+│   │   ├── EMS_데이터_분석_보고서.html      #   종합 분석 보고서 (최종 발표용)
+│   │   └── report_style.css                #   보고서용 CSS 스타일
 │   ├── paper.pdf                           # 기준 논문 원본
 │   └── 스마트 건물 에너지...기획서.md       # AI 플랫폼 기획서
 │
 ├── scripts/
 │   ├── profiling/
 │   │   ├── meter_profiling.py              # 81개 미터 전수 프로파일링
-│   │   └── visualize_energy_flow.py        # 에너지 흐름 시각화 (6개 차트)
+│   │   ├── visualize_energy_flow.py        # 에너지 흐름 시각화 (6개 차트)
+│   │   └── generate_report_html.py         # 마크다운 → HTML 변환 스크립트
 │   └── ingest/
 │       ├── sql/reduced_view.sql            # Reduced 합산 뷰 DDL
 │       └── dwd_weather_ingest.py           # DWD 기상 데이터 보완
