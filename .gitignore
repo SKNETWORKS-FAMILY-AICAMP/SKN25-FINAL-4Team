@@ -1,0 +1,52 @@
+# macOS
+.DS_Store
+**/.DS_Store
+.AppleDouble
+.LSOverride
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# uv (Package Manager)
+.uv_cache
+.uv_python
+
+# VS Code / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary / Scratch files
+tmp_*.txt
+eda_summary.txt
+CLAUDE.md
