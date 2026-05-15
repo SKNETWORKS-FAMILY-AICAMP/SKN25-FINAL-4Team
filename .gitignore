@@ -50,3 +50,4 @@ share/python-wheels/
 tmp_*.txt
 eda_summary.txt
 CLAUDE.md
+claude.md
