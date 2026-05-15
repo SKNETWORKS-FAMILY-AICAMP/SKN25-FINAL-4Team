@@ -1,0 +1,43 @@
+# Python runtime/cache
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+uv.lock
+tests/
+
+# Jupyter local cache
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+docker/*.env
+
+# Hermes local plans/session helpers
+.hermes/
+HERMES.md
+.github/
+
+# External source data and local cache
+data/
+.cache/
+tmp/
+*.log
+
+# Local preserved history; not shared through Git
+**/_archive/
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+.obsidian/
+
+# Retired local container variants
+compose.dev.yml
+docker/Dockerfile.dev
+docker/local.env.example

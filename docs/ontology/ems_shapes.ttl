@@ -1,0 +1,128 @@
+@prefix ems: <https://nousresearch.local/ems/ontology#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ems:MeterShape a sh:NodeShape ;
+    sh:targetClass ems:Meter ;
+    sh:property [
+        sh:path ems:belongsToGroup ;
+        sh:class ems:EquipmentGroup ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:locatedInBuilding ;
+        sh:class ems:Building ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:hasRole ;
+        sh:class ems:MeterRole ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:meterUrn ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:meterDomain ;
+        sh:datatype xsd:string ;
+        sh:in ( "electricity" "thermal" "weather" ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:meterRoleCode ;
+        sh:datatype xsd:string ;
+        sh:in ( "consumption" "production" "thermal_flow" "weather" ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:signConvention ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:anomalyPriority ;
+        sh:datatype xsd:integer ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:noteFile ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+ems:EquipmentGroupShape a sh:NodeShape ;
+    sh:targetClass ems:EquipmentGroup ;
+    sh:property [
+        sh:path ems:equipmentGroupCode ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:meterCount ;
+        sh:datatype xsd:integer ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:anomalyPriority ;
+        sh:datatype xsd:integer ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:noteFile ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+ems:RedundancyPairShape a sh:NodeShape ;
+    sh:targetClass ems:RedundancyPair ;
+    sh:message "primary and redundant meters must be different"@en ;
+    sh:property [
+        sh:path ems:hasPrimaryMeter ;
+        sh:class ems:Meter ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:hasRedundantMeter ;
+        sh:class ems:Meter ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:hasGroup ;
+        sh:class ems:EquipmentGroup ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:equipmentName ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:sparql [
+        sh:message "primary and redundant meters must be different"@en ;
+        sh:select """
+            PREFIX ems: <https://nousresearch.local/ems/ontology#>
+            SELECT $this
+            WHERE {
+                $this ems:hasPrimaryMeter ?meter ;
+                      ems:hasRedundantMeter ?meter .
+            }
+        """ ;
+    ] .
