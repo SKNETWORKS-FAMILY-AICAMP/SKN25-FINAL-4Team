@@ -1,0 +1,63 @@
+# ── EMS Agent 무관 디렉터리 (공유 불필요) ────────────────────────────
+CLAUDE.md
+/data/
+/lib/
+/team/
+/docs/
+/notebook/
+/outputs/
+honda_energy_eda.ipynb
+
+# ── 환경변수 / 시크릿 (절대 커밋 금지) ──────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── Python ───────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# ── 가상환경 ──────────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── 모델 / 데이터 (용량 크거나 재현 가능) ────────────────────────────
+src/models/anomaly/saved/
+src/models/forecasting/saved/
+mlruns/
+mlruns.db
+*.pkl
+*.joblib
+*.pt
+*.pth
+*.h5
+*.onnx
+
+# ── 생성 보고서 ───────────────────────────────────────────────────────
+docs/reports/*.pdf
+
+# ── 노트북 출력 (선택적 — 결과물이 필요하면 주석 처리) ─────────────
+*.ipynb_checkpoints/
+
+# ── Node.js / 프론트엔드 ─────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ── OS / 에디터 ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
