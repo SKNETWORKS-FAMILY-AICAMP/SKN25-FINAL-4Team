@@ -1,0 +1,455 @@
+
+--- Page 1 ---
+1Scientific  Data  |          (2025) 12:864  | https://doi.org/10.1038/s41597-025-05186-3
+www.nature.com/scientificdata
+a Real-World Energy Management 
+Dataset from a Smart Company 
+Building for Optimization and 
+Machine Learning
+Jens Engel  1,2 ✉, Andrea Castellani1, Patricia Wollstadt1, Felix Lanfermann  1, 
+thomas Schmitt  1, Sebastian Schmitt1, Lydia Fischer1, Steffen Limmer1, David Luttropp1, 
+Florian Jomrich3, René Unger4 & Tobias Rodemann1
+We present a large real-world dataset obtained from monitoring a smart company facility over the 
+course of six years, from 2018 to 2023. The dataset includes energy consumption data from various 
+facility areas and components, energy production data from a photovoltaic system and a combined 
+heat and power plant, operational data from heating and cooling systems, and weather data from an 
+on-site weather station. The measurement sensors installed throughout the facility are organized in a 
+hierarchical metering structure with multiple sub-metering levels, which is reflected in the dataset. The 
+dataset contains measurement data from 72 energy meters, 9 heat meters and a weather station. Both 
+raw and processed data at different processing levels, including labeled issues, is available. In this paper, 
+we describe the data acquisition and post-processing employed to create the dataset. The dataset 
+enables the application of a wide range of methods in the domain of energy management, including 
+optimization, modeling, and machine learning to optimize building operations and reduce costs and 
+carbon emissions.
+Background & Summary
+Buildings make up a large share of the global energy consumption, representing approx. 40% of primary energy 
+consumption in the EU and US1. As the transition towards renewable energy production is ongoing, this sector 
+will thus have a large leverage on shaping this transition. This transition is driven by the adoption of new tech-
+nologies, such as the installation of new sensors and control components, the use of energy management systems 
+(EMSs) or the deployment of energy forecasting. The realization of all these aspects requires informed decision 
+making
+2,3. Therefore, detailed data on energy consumption of a large variety of buildings is needed4–7. However, 
+such data is only sparsely available5,7. One reason for this is that collecting large amounts of data is a complex and 
+expensive task, as it requires setting up substantial physical (installation of meters) as well as IT infrastructure 
+(data collection and processing). Another reason is that even when data is being collected, it is often not made 
+publicly available. Especially rare is high quality data, as data collection is an error-prone process, and correction 
+of issues requires active monitoring and problem resolution.
+In this paper, we present a comprehensive, curated dataset containing six years of energy usage data of a 
+medium-sized industrial facility located in Offenbach am Main, Germany. The data was recorded from January 
+1, 2018 to December 31, 2023, thus including normal operation as well as reduced office occupation during the 
+COVID-19 pandemic. The facility consists of offices, workshops, server rooms, and a vehicle emissions lab. It 
+further harbors a 749 kW
+p photovoltaic (PV) system as well as a gas-fired combined heat and power plant (CHP) 
+with 199 kWel. The building’s heating, ventilation, and air conditioning (HV AC) system is supplied with heat 
+1Honda Research Institute Europe GmbH, Carl-Legien-Str. 30, 63073, Offenbach am Main, Germany. 2control 
+Methods and Intelligent Systems Laboratory, Technical University of Darmstadt, Landgraf-Georg-Strasse 4, 64283, 
+Darmstadt, Germany. 3Honda R&D Europe (Deutschland) GmbH, Carl-Legien-Str. 30, 63073, Offenbach am Main, 
+Germany. 4EA Systems Dresden GmbH, Würzburger Str. 14, 01187, Dresden, Germany. ✉e-mail: jens.engel@
+honda-ri.de
+DATA De ScRIPT oR
+oPeN
+
+--- Page 2 ---
+2Scientific  Data  |          (2025) 12:864  | https://doi.org/10.1038/s41597-025-05186-3
+www.nature.com/scientificdatawww.nature.com/scientificdata/
+from the CHP and gas-fired heating boilers, while cooling power is mainly provided by a central cooling system 
+consisting of three water chillers. The dataset contains hierarchical and structured measurement data of 
+•	 all electrical components,
+•	 the central heating and cooling systems,
+•	 a roof-mounted weather station.
+Unique features of the presented dataset include 
+•	 6 years of structured, hierarchical meter data of electrical and thermal systems,
+•	 labeling of manually specified and automatically detected issues found in the meter data,
+•	 a thorough correction and labeling of all detected issues,
+•	 raw and corrected data at different processing steps,
+•	 detailed electrical meter data containing energy, power, voltage, current, power factor, and frequency meas-
+urements at 1 min, 15m in and 1 h resolution,
+•	 an aggregated version of the main dataset for easy evaluation, containing the main electrical and thermal 
+consumption meters and weather data.
+The presented dataset is relevant for a range of applications and has been used prior to publication in various 
+use cases, namely
+•	 development and evaluation of EMSs8– 11,
+•	 energy system optimization12– 16,
+•	 data-driven modeling and control17– 19,
+•	 anomaly detection20,21,
+•	 load prediction and disaggregation22.
+In addition, the data has been used for monitoring purposes at the facility in the past years. Further applica-
+tions, e.g., network inference23–25, are conceivable.
+Methods
+In this section, we first describe the building with its facilities and components. Then we describe how measure-
+ment data was collected, cleaned, and processed.
+Description of the building and components. The facility at which the data has been collected is the 
+Honda R&D Europe facility, located in Offenbach am Main, Germany. Construction of the building began in 1990 
+and was completed in 1992. The facility is connected to the power grid through four 20 kV to 230 V two-winding 
+transformers, which are operated pairwise in parallel, as illustrated in Fig. 1. The HV AC is supplied with heat by 
+two natural gas boilers with a total heating power of approximately 1500 kW and a gas-fired CHP . The CHP is a 
+natural gas powered Viessmann Vitobloc 200 with 199 kW
+el and a power-to-heat ratio of 0.677. The CHP is used 
+if the heat demand is above a certain threshold and the return temperatures are low enough for safe operation.
+Both the CHP’s electrical and thermal production are metered. The central heating power is measured using 
+two meters: a central meter, measuring the total heating power production from both the boiler and the CHP , 
+and one meter for the heat production of the CHP , as illustrated in Fig. 2. Central cooling is provided by three 
+water chiller cooling machines, CM1, CM2, and CM3, with a combined total cooling power of approx. 1550 kW . 
+The electrical consumption of these cooling machines is measured with one (CM1) and two (CM2 and CM3) 
+electricity meters per cooling machine, respectively, while the thermal cooling power is metered with various 
+meters throughout the building. The electrical power of the recooler fans is measured separately as part of the 
+overall ventilation system. The schematic of the central heating and cooling meters is shown in Fig. 2. The cool
+-
+ing power is metered using various submeters, including a high-level meter, which measures the total cooling 
+power production, and submeters in the subdivisons of the HV AC system.
+Apart from to the central cooling system illustrated in Fig. 2, additional local cooling machines are installed 
+in the design studio of the building, as well as for the servers in the workshop areas. However, only their electrical 
+consumption is metered, as shown in Fig. 1 (meters H3.Z45, H2.Z(E)66 and H2.Z(E)67). Furthermore, 
+local split air conditioners are installed throughout parts of the facility, which have neither thermal nor individ
+-
+ual electrical metering. Electrical consumption of the ventilation system is metered using seven separate meters 
+as illustrated in Fig. 1. For more details on the thermal aspects of the building and zones, the reader is referred 
+to Schmitt, T. 2022
+26, which provides a simplified linear thermal and electrical model description of the facility.
+The building further has a PV system, consisting of six groups of modules, totaling in a peak production 
+capability of 749 kWp. The parameters of these six groups are shown in Table 1 and their placement on the facility 
+is illustrated in Fig. 3. The PV system was installed in two phases: Groups 1 and 2 were installed in June 2019, 
+while groups 4–6 followed in June 2020. The PV system is metered using four meters according to the physical 
+distribution of the panels across the roofs, and hence not by orientation of the panels, as listed illustrated in 
+Fig. 1. Groups 1 and 2 are metered by V.Z84/V.ZE84. Groups 3 and 4 are metered by three separate meters: 
+18.8% of the panels, which are located on the far west of the facility’s roof are metered by H1.Z310, the 57.8% 
+mounted on the central roofs by H2.Z311. The remaining 23.4% of the panels on the eastern part of the build
+-
+ing are metered together with groups 5 and 6 by H3.Z312.
+--- Page 3 ---
+3Scientific  Data  |          (2025) 12:864  | https://doi.org/10.1038/s41597-025-05186-3
+www.nature.com/scientificdatawww.nature.com/scientificdata/
+For measuring weather information, a pole-mounted weather station is installed on the highest point of the 
+facility, as marked in Fig. 3. The weather station is located at 50.08478° N, 8.84013° E.
+Data collection.  The dataset contains measurements from electricity meters, heating and cooling meters, 
+and the weather station. Electricity meters installed in the facility are ABB-B24, Janitza UMG 96 RM-E, Janitza 
+UMG 96 PA MID+, as well as Socomec DIRIS I35, I45 and S135 meters. Heating and cooling is metered using 
+Workshop
+Office buildingDesign Studio
+Emission Lab
+Transformer Transformer
+EM dis.
+otherTestTest Test
+Test Cooling Cooling HVAC HVAC
+Test Test Cooling Cooling
+Cooling
+Design dis.
+Sim.Ventilation Cooling
+Server Server
+Server
+Office dis.
+HVAC Lobby dis.
+Workshop dis.
+Server Server Server Ventilation Ventilation Ventilation
+Server Server Cooling Cooling
+Server
+other
+other
+other
+other
+other
+other
+Sim. Sim.
+Energy production
+Transformer, grid Testing facilities, simulators
+HVAC, cooling, ventilation
+Server power supply, server cooling
+TestTest Test
+TransformerTransformer
+PV
+PV
+PV
+PV
+CHP
+other
+Non-metered appliances
+Power distribution
+H1.Z15
+V.ZE84
+V.Z84
+H1.Z23H1.Z26 H1.Z27
+H1.Z10 H1.Z11 H1.Z12 H1.Z13 H1.Z14
+H1.Z18 H1.Z21 H1.Z22 H1.Z24 H1.Z25
+H1.Z16
+H1.Z19 H1.Z23
+V.Z81 V.Z82
+H1.Z310
+H1.Z20
+H1.ZE20
+H2.T.Z33
+H3.Z47H3.Z42 H3.Z43 H3.Z44 H3.Z45 H3.Z48 H3.Z49
+H3.ZE43 H3.ZE44
+H3.Z46
+H3.Z312
+H2.T.Z30
+H2.T.Z31 H2.T.Z32
+H2.T.Z34
+H2.Z61 H2.Z62 H2.Z63 H2.Z64 H2.Z65 H2.Z66 H2.Z67 H2.Z68 H2.Z69 H2.Z70
+H2.ZE64 H2.ZE65 H2.ZE66 H2.ZE67
+H3.Z71
+H2.Z35 H2.Z36
+H2.Z311
+EM dis.
+EM dis. EM dis.
+H1.Z28
+H1.Z17 H1.Z29
+External grid
+Office dis. Office dis.
+H4.ZE50 H4.ZE51
+H4.Z50 H4.Z51
+other
+Robolab
+H2.ZE74
+Des. dis. Des. dis.
+H3.Z40 H3.Z41
+H3.ZE40 H3.ZE41
+other
+other
+H2.Z351 H2.Z361
+Fig. 1 Schematic of the electricity metering hierarchy of the facility. Each sensor is labeled with a uniform 
+resource name (URN) which reveals some information on the sensor: H1, H2, H3, H4 and V corresponds to the 
+physical location of the meter within the facility, i.e., the sub-distribution it belongs to. As it is to be expected for 
+a real facility where the setup was installed incrementally over a long period of time, this naming scheme is not 
+fully consistent and unified.
+--- Page 4 ---
+4Scientific  Data  |          (2025) 12:864  | https://doi.org/10.1038/s41597-025-05186-3
+www.nature.com/scientificdatawww.nature.com/scientificdata/
+SensorStar 2/2U meters. The list of all meters and uniform resource names (URNs) present in the dataset can be 
+found in Tables 2 and 3. Weather measurements are collected from a Lufft WS501-UMB weather station.
+Data from the meters and the weather station is queried and processed by a number of different IP gateways, 
+namely Tixi Data Gateways, Socomec DIRIS D50 and D70, and VisualGateway gateways, a proprietary gateway 
+solution for querying Janitza meters and the weather station. The gateways query the various meters via Modbus/
+RTU or M-Bus protocol. From the gateways, data is transfered via HTTPS to a proprietary monitoring server, 
+which in turn stores the data into an influxdb time series database. Data from the Janitza and Socomec meters, 
+as well as the weather station, is recorded only by change-of-value, i.e., only when the measured values change 
+by more than a certain threshold. For ABB-B24 and SensorStar meters however data is recorded periodically at 
+1m in sample resolution. Both Tixi Data Gateways and VisualGateway gateways buffer queried data locally. The 
+buffer is queried by the monitoring server at regular intervals to transfer the data into the influxdb. The buffer 
+can hold data of an extended amount of time, and can thus bridge temporary communication failures. The 
+Socomec gateways have no such buffer and are queried directly from the monitoring server. While the Tixi gate
+-
+ways query data continuously, they transfer data into the buffer only once every 1m in, at which all collected data 
+within this interval is transmitted. This behavior introduces a jitter in the recorded data of 0–59 s which cannot 
+be mitigated. As the gateways query and collect measurement data, they attach UTC timestamps based on their 
+internal device time. Initially, until March 2020, only the VisualGateway gateways synchronized their internal 
+time through a time server. The Tixi gateways do not support time synchronization via the network time proto
+-
+col (NTP) and were thus not synchronized, leading to drift in the timestamps, rendering correlation or summa-
+tion of measurements across different gateways difficult. Since March 2020, the internal time of the Tixi gateways 
+has been synchronized periodically by updating it via the gateways’ diagnostics interface through the monitor
+-
+ing server. The drift present in the data prior to this date is systematic and was mitigated in the dataset. Since the 
+Socomec meters are queried directly by the monitoring server, their measurements received synchronized 
+timestamps.
+The heating and cooling meters collected measurements of power, energy, volume flow, and flow tempera
+-
+tures. The employed meters calculate power and energy from temperature and volume flow measurements. The 
+measurements of the heating and cooling meters are listed in Table 4. For all electricity meters, power, energy, 
+frequency information as well as three-phase current, voltage, power and power factor were collected. All meas
+-
+urements of the electricity meters are listed in Table 5. The measurements recorded by the weather station are 
+listed in Table 6.
+Data cleaning and post-processing. The presented dataset was recorded over the course of 6 years 
+between January 1, 2018 until December 31, 2023. During this time span, a multitude of issues occurred which 
+directly affected the data collection, like measurement outages, maintenance, device replacements and addition 
+of new sensors.
+CM 1
+HVAC 2
+H1.Z16
+CM 2 CM 3
+Server O1
+HVAC 5 ReceptionOffice
+H1.Z11 H1.Z12 H1.Z24 H1.Z25
+H1.K12
+V.K21
+H1.K16 H1.K11 H1.K14
+H2.K21
+HVAC 3
+H1.K15
+(a) Cooling system (b) Heating system
+CHP Boiler
+Total
+H1.W12
+H1.W11
+CHP
+H1.Z20
+H1.ZE20
+Fig. 2 Schematic of the central cooling- and heating-system with respective meters. Y ellow nodes indicate 
+electricity meters, blue nodes cooling meters, pink nodes heating meters. The nodes immediately below the 
+cooling machines indicate the heat exchangers of the cooling machines. The CHP’s co-produced electricity is 
+redundantly metered by two meters.
+Group Module Type Facing Slope Peak Power
+1 SI-Enduro 300 Wp 95° East 5° 68 kWp
+2 SI-Enduro 300 Wp 275° West 5° 68 kWp
+3 Heckert Nemo 2.0 325 Wp 70° East 11° 274 kWp
+4 SI-Enduro 300 Wp 250° West 11° 274 kWp
+5 Heckert Nemo 2.0 325 Wp 58° East 11° 32.5 kWp
+6 Heckert Nemo 2.0 325 Wp 238° West 11° 32.5 kWp
+Table 1. Parameters of the 6 individual groups making up the PV system of the facility.
+--- Page 5 ---
+5Scientific  Data  |          (2025) 12:864  | https://doi.org/10.1038/s41597-025-05186-3
+www.nature.com/scientificdatawww.nature.com/scientificdata/
+In order to produce a consistent dataset, the impact of such issues needs to be clarified and the corresponding 
+data corrected, whenever possible. We therefore apply a cleaning and post-processing pipeline to the data, which 
+is illustrated in Fig.  4. In a first step, known issues are manually specified. Additionally, systematic issues are 
+detected using a rule-based detection mechanism. Before correcting the manually and automatically collected 
+issues, first, data is harmonized to ensure consistency in naming and sign convention. After issue correction is 
+applied, all measurements are aligned in time before being resampled into equidistantly sampled time series. 
+Eventually, based on the resampled data, single missing measurements are calculated, and processed data is 
+exported. In the following, each step of the pipeline will be described in more detail.
+Manual specification of known issues. A number of issues that were caused by external influences or installation 
+problems are known. These were specified manually and then corrected automatically later in the pipeline, as 
+will be described in the issue correction section. The following such issues were encountered:
+Main cooling meter failure. The mechanical flow sensor of the main cooling meter V.K21, which meters the 
+cooling power generated by all three cooling machines, broke twice for extended periods of time. Measurements 
+are reconstructed from submeters, as described in the issue correction section.
+Design studio meters powered off. For an extended period of time (May 14 - June 4, 2018), main and subme-
+ters in the design studio were powered off, causing a gap in the data.
+Wrongly configured design studio main meter. The main meter of the design studio H2.T.Z33 was con-
+figured wrongly during January 17 – 29, 2018, yielding faulty measurement data. This time span was marked for 
+removal from the dataset, yielding a gap to be corrected, as described in the issue correction section.
+Implausible PV meter readings. PV meter H2.Z311 recorded implausible power/energy measurements dur-
+ing November 12 – 16, 2020, hence the time span was marked for removal.
+Wrong conversion factor in meter. After installation of the PV system in June 2020, the meter H2.Z311, 
+which is connected through a current transformer, was configured with an incorrect conversion factor accounting 
+for the transformation, until correction in February 2021. During this time span, the measurements of power, 
+energy and current need to be rescaled. Similarly, after installation of the redundancy meters H4.ZE50 and H4.
+ZE51, incorrect conversion factors were configured, which has not yet been corrected in the physical installation. 
+Therefore, all corresponding measurements need to be rescaled.
+Interference on test chamber meter H1.Z19 from nearby CHP wire. Since maintenance in November 
+2022, the line measured by meter H1.Z19 was unused, yet measured non-zero power due to interference from 
+the nearby CHP line. Between March and November 2022, after installation of nearby CHP meter H1.ZE20, 
+the meter H1.Z19 incorrectly measured asymmetric loads across the three phases. Therefore, the period from 
+March 2022 until December 2023 was marked for removal.
+Rule-based issue detection. Most measurement issues can be classified as one of three types: Zero value meas-
+urements, value leaps or measurement gaps. These issues can be detected reliably using simple rules:
+Zero measurement detection. A zero value in a cumulative measurement (i.e., energy or flow volume) 
+right after a non-zero value indicates a measurement issue. The issue is marked from the beginning of the zero 
+value until it changes back to a non-zero value. This issue occurs when gateways or meters are restarted and 
+Group 1 & 2
+Group 3 & 4
+Group 5 & 6
+Weather station
+Fig. 3 Aerial view of the Honda R&D facility in Offenbach, Germany with highlighted PV groups. PV modules 
+are grouped by orientation, and two groups of opposite orientation each are installed together. The pole-
+mounted weather station is located in the center of the facility to deliver representative measurements of solar 
+irradiation.
+--- Page 18 ---
+18Scientific  Data  |          (2025) 12:864  | https://doi.org/10.1038/s41597-025-05186-3
+www.nature.com/scientificdatawww.nature.com/scientificdata/
+redundant information could be leveraged for issue correction, this has not been done in the correction pipeline, 
+instead both Z and ZE meters have been processed separately. However, as illustrated in the previous note, the 
+availability of both sets of measurement data can still be helpful for further analyses.
+Unaddressed issues. In some rare cases, not all measurements from a given meter are present in the dataset 
+due to the batch-wise querying process, where different measurements from the same meter are queried in sepa-
+rate batches. As a result, if an outage occurs between batches, individual measurements may be lost without affect-
+ing others from the same meter. However, the gap detection mechanism operates at the sensor level and assumes 
+that outages impact all queried measurements simultaneously, focusing primarily on the main measurements 
+(e.g., energy or power). Consequently, if a non-main measurement is missing while the main measurements used 
+for issue detection are successfully queried, the data gap is not detected or corrected.
+code availability
+The Python code for reproducing the technical validation results, i.e., figures, tables and statistics, as well as 
+the code for downsampling the corrected measurement time series, and for generating the reduced aggregated 
+dataset are available on GitHub at https://github.com/HRI-EU/MonitoringDatasetAnalysis.
+Received: 19 March 2025; Accepted: 9 May 2025;
+Published: xx xx xxxx
+References
+ 1. International Energy Agency. World energy balances. https://www.iea.org/data-and-statistics/data-product/world-energy-balances 
+Accessed: 2024-06-20 (2024).
+ 2. Tronchin, L., Manfren, M. & Nastasi, B. Energy efficiency, demand side management and energy storage technologies - A critical 
+analysis of possible paths of integration in the built environment. Renewable and Sustainable Energy Reviews 95, 341–353, https://
+doi.org/10.1016/j.rser.2018.06.060 (2018).
+ 3. Kühne, S., Scheller, F ., Kondziella, H., Reichelt, D. G. & Bruckner, T. Decision support system for municipal energy utilities: 
+Approach, architecture, and implementation. Chemical Engineering & Technology 42, 1914–1922, https://doi.org/10.1002/
+ceat.201800665 (2019).
+ 4. Luo, N., Pritoni, M. & Hong, T. An overview of data tools for representing and managing building information and performance 
+data. Renewable and Sustainable Energy Reviews 147, 111224 (2021).
+ 5. Zhang, Y ., Zhou, G., Liu, Z., Huang, L. & Ren, Y . An adaptive transfer learning framework for data-scarce HV AC power consumption 
+forecasting. IEEE Transactions on Sustainable Energy 15, 2815–2825, https://doi.org/10.1109/tste.2024.3444689 (2024).
+ 6. Fan, C., Xiao, F . & Wang, S. Development of prediction models for next-day building energy consumption and peak power demand 
+using data mining techniques. Applied Energy 127, 1–10, https://doi.org/10.1016/j.apenergy.2014.04.016 (2014).
+ 7. Amasyali, K. & El-Gohary, N. M. A review of data-driven building energy consumption prediction studies. Renewable and 
+Sustainable Energy Reviews 81, 1192–1205, https://doi.org/10.1016/j.rser.2017.04.095 (2018).
+ 8. Schmitt, T., Rodemann, T. & Adamy, J. The cost of photovoltaic forecasting errors in microgrid control with peak pricing. Energies 
+14, 2569 (2021).
+ 9. Schmitt, T., Engel, J., Kopp, M. & Rodemann, T. Implicit incorporation of heuristics in MPC-based control of a hydrogen plant. In 
+2023 IEEE International Conference on Power Electronics, Smart Grid, and Renewable Energy (PESGRE), 1–8 (IEEE, 2023).
+ 10. Stadie, M. et al. V2B vehicle to building charging manager. In Proceedings of the EVTeC: 5th International Electric Vehicle Technology 
+Conference (2021).
+ 11. Engel, J., Schmitt, T., Rodemann, T. & Adamy, J. Hierarchical economic model predictive control approach for a building energy 
+management system with scenario-driven EV charging. IEEE Transactions on Smart Grid 13, 3082–3093, https://doi.org/10.1109/
+TSG.2022.3160390 (2022).
+ 12. Rodemann, T. A comparison of different many-objective optimization algorithms for energy system optimization. In International 
+Conference on the Applications of Evolutionary Computation (Part of EvoStar), 3–18 (Springer, 2019).
+ 13. Aghaei Pour, P ., Rodemann, T., Hakanen, J. & Miettinen, K. Surrogate assisted interactive multiobjective optimization in energy 
+system design of buildings. Optimization and Engineering 1–25 (2022).
+ 14. Liu, Q., Lanfermann, F ., Rodemann, T., Olhofer, M. & Jin, Y . Surrogate-assisted many-objective optimization of building energy 
+management. IEEE Computational Intelligence Magazine 18, 14–28, https://doi.org/10.1109/MCI.2023.3304073 (2023).
+ 15. Lanfermann, F ., Liu, Q., Jin, Y . & Schmitt, S. Identification of energy management configuration concepts from a set of pareto-
+optimal solutions. Energy Conversion and Management: X 22, 100576, https://doi.org/10.1016/j.ecmx.2024.100576 (2024).
+ 16. Lanfermann, F ., Schmitt, S. & Wollstadt, P . Understanding concept identification as consistent data clustering across multiple feature 
+spaces. In 2022 IEEE International Conference on Data Mining Workshops (ICDMW), 180–189, https://doi.org/10.1109/
+ICDMW58026.2022.00032 (2022).
+ 17. Schmitt, T., Engel, J. & Rodemann, T. Regression-based model error compensation for hierarchical MPC building energy 
+management system. In 2023 IEEE Conference on Control Technology and Applications (CCTA) proceedings, https://doi.org/10.1109/
+CCTA54093.2023.10252861 (IEEE, 2023).
+ 18. Engel, J., Schmitt, T., Rodemann, T. & Adamy, J. Evaluating the impact of data availability on machine learning-augmented MPC for 
+a building energy management system. In 2024 IEEE PES Innovative Smart Grid Technologies Europe (ISGT Europe) (2024).
+ 19. Engel, J., Schmitt, T., Rodemann, T. & Adamy, J. Hierarchical MPC for building energy management: Incorporating data-driven 
+error compensation and mitigating information asymmetry. Applied Energy (2024).
+ 20. Castellani, A., Schmitt, S. & Squartini, S. Real-world anomaly detection by using digital twin systems and weakly supervised 
+learning. IEEE Transactions on Industrial Informatics 17, 4733–4742 (2020).
+ 21. Schmitt, S., Castellani, A. & Squartini, S. Method and system for semi-supervised deep anomaly detection for large-scale industrial 
+monitoring systems based on time-series data utilizing digital twin simulation data US Patent App. 17/069,846 (2021).
+ 22. Castellani, A., Schmitt, S. & Hammer, B. Estimating the electrical power output of industrial devices with end-to-end time-series 
+classification in the presence of label noise. In Joint European Conference on Machine Learning and Knowledge Discovery in 
+Databases, 469–484 (Springer, 2021).
+ 23. Novelli, L., Wollstadt, P ., Mediano, P ., Wibral, M. & Lizier, J. T. Large-scale directed network inference with multivariate transfer 
+entropy and hierarchical statistical testing. Network Neuroscience 3, 827–847 (2019).
+ 24. Pinzuti, E., Wollstadt, P ., Gutknecht, A., Tüscher, O. & Wibral, M. Measuring spectrally-resolved information transfer. PLoS 
+Computational Biology 16, e1008526 (2020).
+ 25. Ehrlich, D. A. et al. Partial information decomposition for continuous variables based on shared exclusions: Analytical formulation 
+and estimation. Phys. Rev. E 110, 014115, https://doi.org/10.1103/PhysRevE.110.014115 (2024).
+
+--- Page 19 ---
+19Scientific  Data  |          (2025) 12:864  | https://doi.org/10.1038/s41597-025-05186-3
+www.nature.com/scientificdatawww.nature.com/scientificdata/
+ 26. Schmitt, T.Multi-Objective Building Energy Management Optimization with Model Predictive Control. Ph.D. thesis, Technical 
+University of Darmstadt, Darmstadt, https://doi.org/10.26083/tuprints-00022344 (2022).
+ 27. Engel, J. et al. A real-world energy management data set from a smart company building for optimization and machine learning 
+[Dataset], https://doi.org/10.5061/DRYAD.73N5TB363 (2024).
+acknowledgements
+The authors thank Martin Stadie and Sven Rebhan for their support, as well as Monika Wicke and Markus 
+Mauksch for their diligent work in supporting the creation of the dataset. S.S. acknowledges funding by the 
+European Union. Views and opinions expressed are however those of the author(s) only and do not necessarily 
+reflect those of the European Union or European Commission. Neither the European Union nor the granting 
+authority can be held responsible for them. Grant Agreement 101080086 – NeQST.
+Author contributions
+CRediT: Conceptualization: J.E., A.C., P .W ., T.R.; Data curation: J.E., A.C., S.S., R.U.; Formal Analysis: J.E., A.C., 
+T.S., S.S., R.U.; Investigation: J.E., A.C., F .L., T.S., S.S., L.F ., S.L., R.U.; Methodology: J.E., A.C., P .W ., S.S., R.U.; 
+Project administration: PW , T.R.; Resources: D.L., F .J., R.U.; Software: J.E., A.C., T.S., S.S., R.U.; Supervision: P .W ., 
+T.R.; Validation: J.E., A.C., S.S.; Visualization: J.E., A.C., F .L., T.S., L.F .; Writing - original draft: J.E., A.C., S.S.; 
+Writing - review & editing: J.E., A.C., P .W ., F .L., T.S., S.S., L.F ., S.L., D.L., F .J., R.U., T.R.
+Competing interests
+JE, AC, PW , FL, TS, SS, LF , SL, DL and TR are employees of Honda Research Institute Europe. FJ is an employee 
+of Honda R&D Europe (Germany). RU is an employee of EA Systems Dresden and completed consultancy work 
+paid by Honda Research Institute Europe as part of the data acquisition and processing for this study. Funding 
+parties had no role in the collection, analysis, and interpretation of data, and had no role in the decision to 
+publish, or the preparation of the manuscript.
+additional information
+Correspondence and requests for materials should be addressed to J.E.
+Reprints and permissions information is available at www.nature.com/reprints.
+Publisher’s note Springer Nature remains neutral with regard to jurisdictional claims in published maps and 
+institutional affiliations.
+Open Access This article is licensed under a Creative Commons Attribution-NonCommercial-NoD-
+erivatives 4.0 International License, which permits any non-commercial use, sharing, distribution 
+and reproduction in any medium or format, as long as you give appropriate credit to the original author(s) and 
+the source, provide a link to the Creative Commons licence, and indicate if you modified the licensed material. 
+You do not have permission under this licence to share adapted material derived from this article or parts of it. 
+The images or other third party material in this article are included in the article’s Creative Commons licence, 
+unless indicated otherwise in a credit line to the material. If material is not included in the article’s Creative Com-
+mons licence and your intended use is not permitted by statutory regulation or exceeds the permitted use, you 
+will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit http://cre-
+ativecommons.org/licenses/by-nc-nd/4.0/.
+ 
+© The Author(s) 2025
