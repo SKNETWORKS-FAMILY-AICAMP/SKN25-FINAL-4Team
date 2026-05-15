@@ -5,7 +5,253 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EMS 데이터 분석 보고서</title>
 <style>
-{css}
+/* EMS Report Style — Clean Professional */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+:root {
+  --primary: #1a56db;
+  --primary-light: #e8eefb;
+  --accent: #059669;
+  --warn: #d97706;
+  --danger: #dc2626;
+  --text: #1f2937;
+  --text-light: #6b7280;
+  --border: #e5e7eb;
+  --bg: #ffffff;
+  --bg-alt: #f9fafb;
+  --code-bg: #f3f4f6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11pt;
+  line-height: 1.75;
+  color: var(--text);
+  background: var(--bg);
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 20mm 18mm;
+}
+
+/* Cover */
+.cover {
+  text-align: center;
+  padding: 60px 0 40px;
+  border-bottom: 3px solid var(--primary);
+  margin-bottom: 40px;
+  page-break-after: always;
+}
+.cover h1 {
+  font-size: 28pt;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+.cover .subtitle {
+  font-size: 14pt;
+  color: var(--text-light);
+  margin-bottom: 40px;
+}
+.cover .meta {
+  font-size: 11pt;
+  color: var(--text-light);
+  line-height: 2;
+}
+.cover .meta strong { color: var(--text); }
+
+/* TOC */
+.toc {
+  page-break-after: always;
+  padding: 20px 0;
+}
+.toc h2 {
+  font-size: 18pt;
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+}
+.toc ol {
+  list-style: none;
+  counter-reset: toc-counter;
+}
+.toc ol li {
+  counter-increment: toc-counter;
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--border);
+  font-size: 12pt;
+}
+.toc ol li::before {
+  content: counter(toc-counter) ". ";
+  font-weight: 700;
+  color: var(--primary);
+}
+.toc ol li a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+/* Headings */
+h1 {
+  font-size: 22pt;
+  font-weight: 700;
+  color: var(--primary);
+  border-bottom: 3px solid var(--primary);
+  padding-bottom: 8px;
+  margin: 40px 0 20px;
+  page-break-after: avoid;
+}
+h2 {
+  font-size: 16pt;
+  font-weight: 700;
+  color: var(--primary);
+  border-left: 4px solid var(--primary);
+  padding-left: 12px;
+  margin: 32px 0 16px;
+  page-break-after: avoid;
+}
+h3 {
+  font-size: 13pt;
+  font-weight: 600;
+  color: #374151;
+  margin: 24px 0 12px;
+  page-break-after: avoid;
+}
+
+/* Paragraphs */
+p { margin: 8px 0 12px; text-align: justify; }
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 10pt;
+  page-break-inside: avoid;
+}
+thead th {
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid var(--primary);
+}
+tbody td {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+}
+tbody tr:nth-child(even) { background: var(--bg-alt); }
+tbody tr:hover { background: var(--primary-light); }
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 16px auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+figure {
+  margin: 20px 0;
+  page-break-inside: avoid;
+}
+figcaption {
+  text-align: center;
+  font-size: 10pt;
+  color: var(--text-light);
+  font-style: italic;
+  margin-top: 6px;
+}
+
+/* Code blocks */
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 18px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 9.5pt;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 12px 0;
+  page-break-inside: avoid;
+}
+code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 9.5pt;
+  background: var(--code-bg);
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+pre code { background: none; padding: 0; }
+
+/* Callout boxes */
+.callout {
+  border-left: 4px solid;
+  padding: 14px 18px;
+  margin: 16px 0;
+  border-radius: 0 6px 6px 0;
+  font-size: 10.5pt;
+  page-break-inside: avoid;
+}
+.callout-info { border-color: var(--primary); background: var(--primary-light); }
+.callout-warn { border-color: var(--warn); background: #fffbeb; }
+.callout-danger { border-color: var(--danger); background: #fef2f2; }
+.callout-success { border-color: var(--accent); background: #ecfdf5; }
+.callout strong { display: block; margin-bottom: 4px; }
+
+/* Lists */
+ul, ol { margin: 8px 0; padding-left: 24px; }
+li { margin: 4px 0; }
+
+/* Horizontal rule */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 30px 0;
+}
+
+/* Highlight box */
+.highlight-box {
+  background: linear-gradient(135deg, var(--primary-light), #f0f4ff);
+  border: 1px solid #c7d8f0;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+/* Key number */
+.key-number {
+  font-size: 28pt;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* Chart grid */
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin: 20px 0;
+}
+
+/* Page break */
+.page-break { page-break-before: always; }
+
+/* Print */
+@media print {
+  body { padding: 15mm; }
+  .page-break { page-break-before: always; }
+  a { color: var(--text); text-decoration: none; }
+}
+
 
 /* Image Modal */
 .modal {

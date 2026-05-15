@@ -198,7 +198,7 @@ def build_html(body: str, css: str) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EMS 데이터 분석 보고서</title>
 <style>
-{{css}}
+{css}
 
 /* Image Modal */
 .modal {{
