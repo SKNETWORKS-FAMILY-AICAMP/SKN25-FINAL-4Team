@@ -1,0 +1,14 @@
+artifact_uri: file:///root/mlruns/964837063349992348/448f1074eabb42e6b061db3464cf85ad/artifacts
+end_time: 1779085908602
+entry_point_name: ''
+experiment_id: '964837063349992348'
+lifecycle_stage: active
+run_id: 448f1074eabb42e6b061db3464cf85ad
+run_name: lstm_ae_anomaly_detection
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1779085294019
+status: 3
+tags: []
+user_id: root

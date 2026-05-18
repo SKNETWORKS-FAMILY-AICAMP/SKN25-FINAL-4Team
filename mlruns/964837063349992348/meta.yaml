@@ -1,0 +1,8 @@
+artifact_location: file:///root/mlruns/964837063349992348
+creation_time: 1779085019174
+experiment_id: '964837063349992348'
+last_update_time: 1779085019174
+lifecycle_stage: active
+name: LSTM-AE-Anomaly
+trace_location: null
+workspace: default

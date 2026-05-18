@@ -1,0 +1,8 @@
+artifact_location: file:///root/mlruns/321563286738964390
+creation_time: 1779086114468
+experiment_id: '321563286738964390'
+last_update_time: 1779086114468
+lifecycle_stage: active
+name: SSA-IPSO-LSTM
+trace_location: null
+workspace: default

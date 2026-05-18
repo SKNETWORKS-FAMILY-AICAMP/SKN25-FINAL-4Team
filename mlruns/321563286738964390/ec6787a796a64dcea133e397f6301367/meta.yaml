@@ -1,0 +1,14 @@
+artifact_uri: file:///root/mlruns/321563286738964390/ec6787a796a64dcea133e397f6301367/artifacts
+end_time: 1779091760230
+entry_point_name: ''
+experiment_id: '321563286738964390'
+lifecycle_stage: active
+run_id: ec6787a796a64dcea133e397f6301367
+run_name: ssa_ipso_lstm_grid_P
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1779091639033
+status: 4
+tags: []
+user_id: root
