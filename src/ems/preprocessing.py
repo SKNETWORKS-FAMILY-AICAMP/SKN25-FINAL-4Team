@@ -2,6 +2,63 @@ from __future__ import annotations
 
 import pandas as pd
 
+# EDA 확정 이상치 처리 기준
+
+# 절댓값 처리: 변류기 방향 오류 (전 기간)
+ABS_VALUE_METERS = {
+    "H1.Z15": ["I1", "I2", "I3", "P"],
+    "H1.Z28": ["I1", "I2", "I3", "P"],
+}
+
+# WQ 음수 고착 계량기 (전 기간 절댓값)
+ABS_WQ_METERS = {
+    "H1.Z10", "H2.T.Z30", "H2.Z64", "H2.Z65",
+    "H3.Z40", "H3.Z41", "H4.Z51",
+}
+
+# 제거 대상 (전 기간)
+DROP_METER_MEASUREMENTS = {
+    "V.Z81": ["W_in"],
+}
+
+# NaN 처리: 특정 구간
+NAN_INTERVALS = [
+    {
+        "meter_urn": "H2.T.Z34",
+        "measurements": ["U1", "U2", "U3", "f"],
+        "start": "2020-03-07",
+        "end": "2020-03-09",
+    },
+    {
+        "meter_urn": "H2.ZE66",
+        "measurements": ["PF"],
+        "start": "2022-03-01",
+        "end": None,
+    },
+    {
+        "meter_urn": "H2.ZE67",
+        "measurements": ["PF"],
+        "start": "2022-03-01",
+        "end": None,
+    },
+]
+
+# 플래그 대상: 단상 전압 이상
+VOLTAGE_FLAG_INTERVALS = [
+    {
+        "meter_urn": "H2.ZE74",
+        "measurement": "U2",
+        "start": "2022-03-18",
+        "end": "2022-04-09",
+        "flag": "single_phase_voltage_anomaly",
+    },
+]
+
+# 모델 제외 대상
+MODEL_EXCLUDE = {
+    "H1.K15": ["Tdiff"],
+    "H1.K12": None,  # 2022년 이후 전체 제외
+}
 
 # 발전 계량기 7개
 PRODUCTION_METERS = {
@@ -125,12 +182,62 @@ def flag_anomalies(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+def apply_eda_corrections(df: pd.DataFrame) -> pd.DataFrame:
+    """4단계 보완: EDA에서 확정된 이상치 처리."""
+    df = df.copy()
+
+    # 절댓값 처리: 변류기 방향 오류
+    for meter_urn, measurements in ABS_VALUE_METERS.items():
+        mask = (df["meter_urn"] == meter_urn) & (df["measurement"].isin(measurements))
+        df.loc[mask, "value"] = df.loc[mask, "value"].abs()
+
+    # WQ 음수 고착 절댓값 처리
+    wq_mask = (
+        df["meter_urn"].isin(ABS_WQ_METERS) &
+        (df["measurement"] == "WQ")
+    )
+    df.loc[wq_mask, "value"] = df.loc[wq_mask, "value"].abs()
+
+    # 제거 대상
+    for meter_urn, measurements in DROP_METER_MEASUREMENTS.items():
+        drop_mask = (
+            (df["meter_urn"] == meter_urn) &
+            (df["measurement"].isin(measurements))
+        )
+        df = df[~drop_mask]
+
+    # NaN 처리
+    for interval in NAN_INTERVALS:
+        mask = (
+            (df["meter_urn"] == interval["meter_urn"]) &
+            (df["measurement"].isin(interval["measurements"])) &
+            (df["ts"] >= pd.Timestamp(interval["start"], tz="UTC"))
+        )
+        if interval["end"]:
+            mask &= df["ts"] < pd.Timestamp(interval["end"], tz="UTC")
+        df.loc[mask, "value"] = float("nan")
+        df.loc[mask, "quality_flag"] = "eda_nan"
+
+    # 플래그 처리
+    for flag_cfg in VOLTAGE_FLAG_INTERVALS:
+        mask = (
+            (df["meter_urn"] == flag_cfg["meter_urn"]) &
+            (df["measurement"] == flag_cfg["measurement"]) &
+            (df["ts"] >= pd.Timestamp(flag_cfg["start"], tz="UTC")) &
+            (df["ts"] < pd.Timestamp(flag_cfg["end"], tz="UTC"))
+        )
+        df.loc[mask, "quality_flag"] = flag_cfg["flag"]
+
+    return df
+
+
 
 def run_pipeline(df: pd.DataFrame) -> pd.DataFrame:
-    """전처리 파이프라인 전체 실행."""
     df = validate_input(df)
     df = basic_clean(df)
     df = apply_sign_convention(df)
     df = apply_ct_corrections(df)
     df = flag_anomalies(df)
+    df = apply_eda_corrections(df)  # 추가
     return df
+
