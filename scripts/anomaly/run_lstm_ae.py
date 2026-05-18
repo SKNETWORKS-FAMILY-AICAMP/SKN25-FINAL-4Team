@@ -8,7 +8,7 @@ LSTM-Autoencoder 이상탐지 모델
 탐지 방식: 재구성 오차(MSE) 기반 비지도 이상탐지
 임계치  : MSD (mean + k*std, k=3) 방식 사용
 해상도  : 1시간 단위
-분할    : train 2018~2020 (정상 데이터만) / test 2022~2023
+분할    : train 2018~2021 (정상 데이터만) / test 2023
 
 실행 방법:
     python run_lstm_ae.py
@@ -319,9 +319,9 @@ def main():
         })
 
         # ── 1. 데이터 로드 ──
-        print("학습 데이터 로드 중 (2018~2020)...")
+        print("학습 데이터 로드 중 (2018~2021)...")
         df_train = load_range(TRAIN_START, TRAIN_END)
-        print("테스트 데이터 로드 중 (2022~2023)...")
+        print("테스트 데이터 로드 중 (2023)...")
         df_test  = load_range(TEST_START,  TEST_END)
 
         # ── 2. 전처리 ──
