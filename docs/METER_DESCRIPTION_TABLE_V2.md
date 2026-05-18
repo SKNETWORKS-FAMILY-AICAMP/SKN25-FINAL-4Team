@@ -24,11 +24,11 @@
 
 | meter_urn | 설명 | system_role | 방향성 | 상위 계통 | 하위 계통 | anomaly_target | 모델링 권장 | 비고 |
 |---|---|---|---|---|---|---|---|---|
-| V.Z84 | PV 그룹1&2 메인 | PV 그룹별 발전량 감시 | 단방향(생산 중심) | 태양광 인버터/집합 출력측 | 건물 전력 계통으로 연계 | P | 기상(Igm) 연계 예측/이상탐지에 적합 | V prefix는 physical location / sub-distribution group 의미, 2019-06 설치 시작, 이중화 계량기 쌍 존재 |
-| V.ZE84 | PV 그룹1&2 redundant | PV 그룹별 발전량 감시 | 단방향(생산 중심) | 태양광 인버터/집합 출력측 | 건물 전력 계통으로 연계 | P | 기상(Igm) 연계 예측/이상탐지에 적합 | V prefix는 physical location / sub-distribution group 의미, 2022-11 redundant 설치, 이중화 계량기 쌍 존재 |
-| H1.Z310 | PV 그룹3 | PV 그룹별 발전량 감시 | 단방향(생산 중심) | 태양광 인버터/집합 출력측 | 건물 전력 계통으로 연계 | P | 기상(Igm) 연계 예측/이상탐지에 적합 | H1 prefix는 physical location / sub-distribution group 의미, 2020-06 설치 시작 |
-| H2.Z311 | PV 그룹4&5 | PV 그룹별 발전량 감시 | 단방향(생산 중심) | 태양광 인버터/집합 출력측 | 건물 전력 계통으로 연계 | P | 기상(Igm) 연계 예측/이상탐지에 적합 | H2 prefix는 physical location / sub-distribution group 의미, 2020-06 설치 시작 |
-| H3.Z312 | PV 그룹6 | PV 그룹별 발전량 감시 | 단방향(생산 중심) | 태양광 인버터/집합 출력측 | 건물 전력 계통으로 연계 | P | 기상(Igm) 연계 예측/이상탐지에 적합 | H3 prefix는 physical location / sub-distribution group 의미, 2020-06 설치 시작 |
+| V.Z84 | PV Parking Lot | PV 그룹별 발전량 감시 | 단방향(생산 중심) | 태양광 인버터/집합 출력측 | 건물 전력 계통으로 연계 | P | 기상(Igm) 연계 예측/이상탐지에 적합 | V prefix는 physical location / sub-distribution group 의미, 2019-06 설치 시작, 이중화 계량기 쌍 존재 |
+| V.ZE84 | PV Parking Lot redundant | PV 그룹별 발전량 감시 | 단방향(생산 중심) | 태양광 인버터/집합 출력측 | 건물 전력 계통으로 연계 | P | 기상(Igm) 연계 예측/이상탐지에 적합 | V prefix는 physical location / sub-distribution group 의미, 2022-11 redundant 설치, 이중화 계량기 쌍 존재 |
+| H1.Z310 | PV Emission Lab | PV 그룹별 발전량 감시 | 단방향(생산 중심) | 태양광 인버터/집합 출력측 | 건물 전력 계통으로 연계 | P | 기상(Igm) 연계 예측/이상탐지에 적합 | H1 prefix는 physical location / sub-distribution group 의미, 2020-06 설치 시작 |
+| H2.Z311 | PV Office Building | PV 그룹별 발전량 감시 | 단방향(생산 중심) | 태양광 인버터/집합 출력측 | 건물 전력 계통으로 연계 | P | 기상(Igm) 연계 예측/이상탐지에 적합 | H2 prefix는 physical location / sub-distribution group 의미, 2020-06 설치 시작 |
+| H3.Z312 | PV Design Studio | PV 그룹별 발전량 감시 | 단방향(생산 중심) | 태양광 인버터/집합 출력측 | 건물 전력 계통으로 연계 | P | 기상(Igm) 연계 예측/이상탐지에 적합 | H3 prefix는 physical location / sub-distribution group 의미, 2020-06 설치 시작 |
 
 ## cooling_central
 그룹 요약: 중앙 냉각기 전력 계통
@@ -59,8 +59,8 @@
 |---|---|---|---|---|---|---|---|---|
 | V.K21 | 중앙 냉수 공급 메인 | 냉수 공급/구역 냉방 열량 감시 | 유량·온도차 기반 중립 계측 | 냉수 공급 또는 구역 분기점 | 구역 냉방 부하로 연결 | Tdiff | 열량 전용 이상탐지/설비 효율 해석에 적합 |  |
 | H1.K11 | HVAC 3&5 | 냉수 공급/구역 냉방 열량 감시 | 유량·온도차 기반 중립 계측 | 냉수 공급 또는 구역 분기점 | 구역 냉방 부하로 연결 | Tdiff | 열량 전용 이상탐지/설비 효율 해석에 적합 |  |
-| H1.K12 | HVAC 2 | 냉수 공급/구역 냉방 열량 감시 | 유량·온도차 기반 중립 계측 | 냉수 공급 또는 구역 분기점 | 구역 냉방 부하로 연결 | Tdiff | 열량 전용 이상탐지/설비 효율 해석에 적합 |  |
-| H1.K14 | Office&Reception | 냉수 공급/구역 냉방 열량 감시 | 유량·온도차 기반 중립 계측 | 냉수 공급 또는 구역 분기점 | 구역 냉방 부하로 연결 | Tdiff | 열량 전용 이상탐지/설비 효율 해석에 적합 |  |
+| H1.K12 | Emission lab HVAC 1/2 | 냉수 공급/구역 냉방 열량 감시 | 유량·온도차 기반 중립 계측 | 냉수 공급 또는 구역 분기점 | 구역 냉방 부하로 연결 | Tdiff | 열량 전용 이상탐지/설비 효율 해석에 적합 |  |
+| H1.K14 | Emission lab cooling to office | 냉수 공급/구역 냉방 열량 감시 | 유량·온도차 기반 중립 계측 | 냉수 공급 또는 구역 분기점 | 구역 냉방 부하로 연결 | Tdiff | 열량 전용 이상탐지/설비 효율 해석에 적합 |  |
 | H1.K15 | HVAC 3 | 냉수 공급/구역 냉방 열량 감시 | 유량·온도차 기반 중립 계측 | 냉수 공급 또는 구역 분기점 | 구역 냉방 부하로 연결 | Tdiff | 열량 전용 이상탐지/설비 효율 해석에 적합 |  |
 | H1.K16 | Server O1 | 냉수 공급/구역 냉방 열량 감시 | 유량·온도차 기반 중립 계측 | 냉수 공급 또는 구역 분기점 | 구역 냉방 부하로 연결 | Tdiff | 열량 전용 이상탐지/설비 효율 해석에 적합 |  |
 | H2.K21 | Office 냉방 | 냉수 공급/구역 냉방 열량 감시 | 유량·온도차 기반 중립 계측 | 냉수 공급 또는 구역 분기점 | 구역 냉방 부하로 연결 | Tdiff | 열량 전용 이상탐지/설비 효율 해석에 적합 |  |
@@ -85,8 +85,8 @@
 
 | meter_urn | 설명 | system_role | 방향성 | 상위 계통 | 하위 계통 | anomaly_target | 모델링 권장 | 비고 |
 |---|---|---|---|---|---|---|---|---|
-| V.Z81 | Transformer | 상위 전원/변압기 부하 감시 | 대체로 단방향(소비 중심) | 상위 수전/변압기측 | 하위 distribution, server, HVAC 등으로 분기 | P | 계통 balance 체크와 상위 feature로 유용 |  |
-| V.Z82 | Transformer | 상위 전원/변압기 부하 감시 | 대체로 단방향(소비 중심) | 상위 수전/변압기측 | 하위 distribution, server, HVAC 등으로 분기 | P | 계통 balance 체크와 상위 feature로 유용 |  |
+| V.Z81 | Parking lot transformer 2 | 상위 전원/변압기 부하 감시 | 대체로 단방향(소비 중심) | 상위 수전/변압기측 | 하위 distribution, server, HVAC 등으로 분기 | P | 계통 balance 체크와 상위 feature로 유용 |  |
+| V.Z82 | Parking lot transformer 1 | 상위 전원/변압기 부하 감시 | 대체로 단방향(소비 중심) | 상위 수전/변압기측 | 하위 distribution, server, HVAC 등으로 분기 | P | 계통 balance 체크와 상위 feature로 유용 |  |
 | H2.Z35 | Transformer | 상위 전원/변압기 부하 감시 | 대체로 단방향(소비 중심) | 상위 수전/변압기측 | 하위 distribution, server, HVAC 등으로 분기 | P | 계통 balance 체크와 상위 feature로 유용 | 이중화 계량기 쌍 존재 |
 | H2.Z351 | Transformer redundant | 상위 전원/변압기 부하 감시 | 대체로 단방향(소비 중심) | 상위 수전/변압기측 | 하위 distribution, server, HVAC 등으로 분기 | P | 계통 balance 체크와 상위 feature로 유용 | 이중화 계량기 쌍 존재 |
 | H2.Z36 | Transformer | 상위 전원/변압기 부하 감시 | 대체로 단방향(소비 중심) | 상위 수전/변압기측 | 하위 distribution, server, HVAC 등으로 분기 | P | 계통 balance 체크와 상위 feature로 유용 | 이중화 계량기 쌍 존재 |
@@ -99,7 +99,7 @@
 |---|---|---|---|---|---|---|---|---|
 | H1.Z15 | Distribution | Feed 1 상위 공급 계통 | 양방향 가능 | 상위 Feed 1 공급측 | Dist 1 및 하위 분기 부하로 연결 | None | raw는 유지, 공통 이상탐지 제외 유지, balance/관계형 feature 또는 별도 계통 모델 권장 | 공통 이상탐지 파이프라인 제외 대상 |
 | H1.Z28 | Distribution | Dist 1 배전 계통 | 양방향 가능 | Feed 1에서 유입 | Dist 1 하위 부하로 분기 | None | 단일 소비 계량기 모델 비권장, 상위 feed와 함께 관계형 분석 권장 | 공통 이상탐지 파이프라인 제외 대상 |
-| H2.T.Z31 | Distribution | 분전/배전 흐름 감시 | 일부 양방향 가능 | 상위 transformer/feed 계통 | 하위 구역 부하 또는 분기 회로 | P | 일반 소비 모델보다 계통 관계 기반 분석 권장 |  |
+| H2.T.Z31 | HVAC office 50/51 | 사무실 HVAC 전력 감시 | 단방향(소비 중심) | 사무실 공조 전원측 | 사무실 HVAC 50/51 부하 | P | 스케줄 기반 이상탐지/예측 적용 가능 |  |
 | H2.T.Z32 | Distribution | 분전/배전 흐름 감시 | 일부 양방향 가능 | 상위 transformer/feed 계통 | 하위 구역 부하 또는 분기 회로 | P | 일반 소비 모델보다 계통 관계 기반 분석 권장 |  |
 | H2.T.Z33 | Distribution | 분전/배전 흐름 감시 | 일부 양방향 가능 | 상위 transformer/feed 계통 | 하위 구역 부하 또는 분기 회로 | P | 일반 소비 모델보다 계통 관계 기반 분석 권장 |  |
 | H2.T.Z34 | Distribution | 분전/배전 흐름 감시 | 일부 양방향 가능 | 상위 transformer/feed 계통 | 하위 구역 부하 또는 분기 회로 | P | 일반 소비 모델보다 계통 관계 기반 분석 권장 |  |
@@ -110,8 +110,8 @@
 
 | meter_urn | 설명 | system_role | 방향성 | 상위 계통 | 하위 계통 | anomaly_target | 모델링 권장 | 비고 |
 |---|---|---|---|---|---|---|---|---|
-| H1.Z13 | HVAC | 공조 부하 감시 | 단방향(소비 중심) | 공조 설비 전원측 | AHU/HVAC 부하로 연결 | P | 일반 전기 소비 예측/이상탐지 가능 |  |
-| H1.Z14 | HVAC | 공조 부하 감시 | 단방향(소비 중심) | 공조 설비 전원측 | AHU/HVAC 부하로 연결 | P | 일반 전기 소비 예측/이상탐지 가능 |  |
+| H1.Z13 | Cooling 1 / HVAC 1.1 | 공조 부하 감시 | 단방향(소비 중심) | 공조 설비 전원측 | AHU/HVAC 부하로 연결 | P | 일반 전기 소비 예측/이상탐지 가능 |  |
+| H1.Z14 | Cooling 1 / HVAC 1.2 | 공조 부하 감시 | 단방향(소비 중심) | 공조 설비 전원측 | AHU/HVAC 부하로 연결 | P | 일반 전기 소비 예측/이상탐지 가능 |  |
 
 ## test
 그룹 요약: 테스트/실험 전력 계통
@@ -141,7 +141,7 @@
 | H2.ZE64 | Server redundant | 서버/IT 부하 감시 | 단방향(소비 중심) | 서버실 전원 공급측 | 서버/UPS/IT 장비 부하 | P | 안정적 소비 패턴이라 예측/이상탐지 적합 | 이중화 계량기 쌍 존재 |
 | H2.Z65 | Server | 서버/IT 부하 감시 | 단방향(소비 중심) | 서버실 전원 공급측 | 서버/UPS/IT 장비 부하 | P | 안정적 소비 패턴이라 예측/이상탐지 적합 | 이중화 계량기 쌍 존재 |
 | H2.ZE65 | Server redundant | 서버/IT 부하 감시 | 단방향(소비 중심) | 서버실 전원 공급측 | 서버/UPS/IT 장비 부하 | P | 안정적 소비 패턴이라 예측/이상탐지 적합 | 이중화 계량기 쌍 존재 |
-| H2.Z71 | Server | 서버/IT 부하 감시 | 단방향(소비 중심) | 서버실 전원 공급측 | 서버/UPS/IT 장비 부하 | P | 안정적 소비 패턴이라 예측/이상탐지 적합 |  |
+| H3.Z71 | Server O4 power supply | 서버/IT 부하 감시 | 단방향(소비 중심) | 서버실 전원 공급측 | 서버 O4 전원 부하 | P | 안정적 소비 패턴이라 예측/이상탐지 적합 |  |
 | H3.Z46 | Server | 서버/IT 부하 감시 | 단방향(소비 중심) | 서버실 전원 공급측 | 서버/UPS/IT 장비 부하 | P | 안정적 소비 패턴이라 예측/이상탐지 적합 |  |
 | H3.Z43 | Server | 서버/IT 부하 감시 | 단방향(소비 중심) | 서버실 전원 공급측 | 서버/UPS/IT 장비 부하 | P | 안정적 소비 패턴이라 예측/이상탐지 적합 | 이중화 계량기 쌍 존재 |
 | H3.ZE43 | Server redundant | 서버/IT 부하 감시 | 단방향(소비 중심) | 서버실 전원 공급측 | 서버/UPS/IT 장비 부하 | P | 안정적 소비 패턴이라 예측/이상탐지 적합 | 이중화 계량기 쌍 존재 |
@@ -183,9 +183,9 @@
 
 | meter_urn | 설명 | system_role | 방향성 | 상위 계통 | 하위 계통 | anomaly_target | 모델링 권장 | 비고 |
 |---|---|---|---|---|---|---|---|---|
-| H3.Z47 | Simulation | 시뮬레이션 구역 부하 감시 | 단방향(소비 중심) | 구역 전원 공급측 | 시뮬레이터/실험 부하로 연결 | P | 개별 모델 + 캘린더 정보가 유리 |  |
-| H3.Z48 | Simulation | 시뮬레이션 구역 부하 감시 | 단방향(소비 중심) | 구역 전원 공급측 | 시뮬레이터/실험 부하로 연결 | P | 개별 모델 + 캘린더 정보가 유리 |  |
-| H3.Z49 | Simulation | 시뮬레이션 구역 부하 감시 | 단방향(소비 중심) | 구역 전원 공급측 | 시뮬레이터/실험 부하로 연결 | P | 개별 모델 + 캘린더 정보가 유리 |  |
+| H3.Z47 | Driving simulator general | 시뮬레이션 구역 부하 감시 | 단방향(소비 중심) | 구역 전원 공급측 | 시뮬레이터/실험 부하로 연결 | P | 개별 모델 + 캘린더 정보가 유리 |  |
+| H3.Z48 | Driving simulator control | 시뮬레이션 구역 부하 감시 | 단방향(소비 중심) | 구역 전원 공급측 | 시뮬레이터/실험 부하로 연결 | P | 개별 모델 + 캘린더 정보가 유리 |  |
+| H3.Z49 | Driving simulator HVAC | 시뮬레이션 구역 부하 감시 | 단방향(소비 중심) | 구역 전원 공급측 | 시뮬레이터/실험 부하로 연결 | P | 개별 모델 + 캘린더 정보가 유리 |  |
 
 ## robolab
 그룹 요약: 로보랩 전력 계통

@@ -20,11 +20,11 @@
 
 | meter_urn | 설명 | 타입 | 에너지 | thermal_mode | anomaly_target | redundant_pair | 비고 |
 |---|---|---|---|---|---|---|---|
-| V.Z84 | PV 그룹1&2 메인 | 전기 | 생산 | - | P | V.ZE84 | V prefix는 physical location / sub-distribution group 의미, 2019-06 설치 시작, 이중화 계량기 쌍 존재 |
-| V.ZE84 | PV 그룹1&2 redundant | 전기 | 생산 | - | P | V.Z84 | V prefix는 physical location / sub-distribution group 의미, 2022-11 redundant 설치, 이중화 계량기 쌍 존재 |
-| H1.Z310 | PV 그룹3 | 전기 | 생산 | - | P | None | H1 prefix는 physical location / sub-distribution group 의미, 2020-06 설치 시작 |
-| H2.Z311 | PV 그룹4&5 | 전기 | 생산 | - | P | None | H2 prefix는 physical location / sub-distribution group 의미, 2020-06 설치 시작 |
-| H3.Z312 | PV 그룹6 | 전기 | 생산 | - | P | None | H3 prefix는 physical location / sub-distribution group 의미, 2020-06 설치 시작 |
+| V.Z84 | PV Parking Lot | 전기 | 생산 | - | P | V.ZE84 | V prefix는 physical location / sub-distribution group 의미, 2019-06 설치 시작, 이중화 계량기 쌍 존재 |
+| V.ZE84 | PV Parking Lot redundant | 전기 | 생산 | - | P | V.Z84 | V prefix는 physical location / sub-distribution group 의미, 2022-11 redundant 설치, 이중화 계량기 쌍 존재 |
+| H1.Z310 | PV Emission Lab | 전기 | 생산 | - | P | None | H1 prefix는 physical location / sub-distribution group 의미, 2020-06 설치 시작 |
+| H2.Z311 | PV Office Building | 전기 | 생산 | - | P | None | H2 prefix는 physical location / sub-distribution group 의미, 2020-06 설치 시작 |
+| H3.Z312 | PV Design Studio | 전기 | 생산 | - | P | None | H3 prefix는 physical location / sub-distribution group 의미, 2020-06 설치 시작 |
 
 ## cooling_central
 역할 요약: 중앙 냉각기 전력 계통
@@ -55,8 +55,8 @@
 |---|---|---|---|---|---|---|---|
 | V.K21 | 중앙 냉수 공급 메인 | 열량 | 중립 | 냉방 | Tdiff | None |  |
 | H1.K11 | HVAC 3&5 | 열량 | 중립 | 냉방 | Tdiff | None |  |
-| H1.K12 | HVAC 2 | 열량 | 중립 | 냉방 | Tdiff | None |  |
-| H1.K14 | Office&Reception | 열량 | 중립 | 냉방 | Tdiff | None |  |
+| H1.K12 | Emission lab HVAC 1/2 | 열량 | 중립 | 냉방 | Tdiff | None |  |
+| H1.K14 | Emission lab cooling to office | 열량 | 중립 | 냉방 | Tdiff | None |  |
 | H1.K15 | HVAC 3 | 열량 | 중립 | 냉방 | Tdiff | None |  |
 | H1.K16 | Server O1 | 열량 | 중립 | 냉방 | Tdiff | None |  |
 | H2.K21 | Office 냉방 | 열량 | 중립 | 냉방 | Tdiff | None |  |
@@ -81,8 +81,8 @@
 
 | meter_urn | 설명 | 타입 | 에너지 | thermal_mode | anomaly_target | redundant_pair | 비고 |
 |---|---|---|---|---|---|---|---|
-| V.Z81 | Transformer | 전기 | 소비 | - | P | None |  |
-| V.Z82 | Transformer | 전기 | 소비 | - | P | None |  |
+| V.Z81 | Parking lot transformer 2 | 전기 | 소비 | - | P | None |  |
+| V.Z82 | Parking lot transformer 1 | 전기 | 소비 | - | P | None |  |
 | H2.Z35 | Transformer | 전기 | 소비 | - | P | H2.Z351 | 이중화 계량기 쌍 존재 |
 | H2.Z351 | Transformer redundant | 전기 | 소비 | - | P | H2.Z35 | 이중화 계량기 쌍 존재 |
 | H2.Z36 | Transformer | 전기 | 소비 | - | P | H2.Z361 | 이중화 계량기 쌍 존재 |
@@ -95,7 +95,7 @@
 |---|---|---|---|---|---|---|---|
 | H1.Z15 | Distribution | 전기 | 소비 | - | None | None | 공통 이상탐지 파이프라인 제외 대상 |
 | H1.Z28 | Distribution | 전기 | 소비 | - | None | None | 공통 이상탐지 파이프라인 제외 대상 |
-| H2.T.Z31 | Distribution | 전기 | 소비 | - | P | None |  |
+| H2.T.Z31 | HVAC office 50/51 | 전기 | 소비 | - | P | None |  |
 | H2.T.Z32 | Distribution | 전기 | 소비 | - | P | None |  |
 | H2.T.Z33 | Distribution | 전기 | 소비 | - | P | None |  |
 | H2.T.Z34 | Distribution | 전기 | 소비 | - | P | None |  |
@@ -106,8 +106,8 @@
 
 | meter_urn | 설명 | 타입 | 에너지 | thermal_mode | anomaly_target | redundant_pair | 비고 |
 |---|---|---|---|---|---|---|---|
-| H1.Z13 | HVAC | 전기 | 소비 | - | P | None |  |
-| H1.Z14 | HVAC | 전기 | 소비 | - | P | None |  |
+| H1.Z13 | Cooling 1 / HVAC 1.1 | 전기 | 소비 | - | P | None |  |
+| H1.Z14 | Cooling 1 / HVAC 1.2 | 전기 | 소비 | - | P | None |  |
 
 ## test
 역할 요약: 테스트/실험 전력 계통
@@ -137,7 +137,7 @@
 | H2.ZE64 | Server redundant | 전기 | 소비 | - | P | H2.Z64 | 이중화 계량기 쌍 존재 |
 | H2.Z65 | Server | 전기 | 소비 | - | P | H2.ZE65 | 이중화 계량기 쌍 존재 |
 | H2.ZE65 | Server redundant | 전기 | 소비 | - | P | H2.Z65 | 이중화 계량기 쌍 존재 |
-| H2.Z71 | Server | 전기 | 소비 | - | P | None |  |
+| H3.Z71 | Server O4 power supply | 전기 | 소비 | - | P | None |  |
 | H3.Z46 | Server | 전기 | 소비 | - | P | None |  |
 | H3.Z43 | Server | 전기 | 소비 | - | P | H3.ZE43 | 이중화 계량기 쌍 존재 |
 | H3.ZE43 | Server redundant | 전기 | 소비 | - | P | H3.Z43 | 이중화 계량기 쌍 존재 |
@@ -179,9 +179,9 @@
 
 | meter_urn | 설명 | 타입 | 에너지 | thermal_mode | anomaly_target | redundant_pair | 비고 |
 |---|---|---|---|---|---|---|---|
-| H3.Z47 | Simulation | 전기 | 소비 | - | P | None |  |
-| H3.Z48 | Simulation | 전기 | 소비 | - | P | None |  |
-| H3.Z49 | Simulation | 전기 | 소비 | - | P | None |  |
+| H3.Z47 | Driving simulator general | 전기 | 소비 | - | P | None |  |
+| H3.Z48 | Driving simulator control | 전기 | 소비 | - | P | None |  |
+| H3.Z49 | Driving simulator HVAC | 전기 | 소비 | - | P | None |  |
 
 ## robolab
 역할 요약: 로보랩 전력 계통

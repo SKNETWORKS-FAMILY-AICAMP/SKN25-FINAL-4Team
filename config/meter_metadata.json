@@ -28,7 +28,7 @@
     "anomaly_target": "P",
     "group_name": "pv",
     "redundant_pair": "V.ZE84",
-    "description": "PV 그룹1&2 메인",
+    "description": "PV Parking Lot",
     "location_prefix": "V",
     "installation_note": "PV groups 1 and 2 were installed from 2019-06.",
     "note": "V prefix denotes a physical location / sub-distribution group."
@@ -40,7 +40,7 @@
     "anomaly_target": "P",
     "group_name": "pv",
     "redundant_pair": "V.Z84",
-    "description": "PV 그룹1&2 redundant",
+    "description": "PV Parking Lot redundant",
     "location_prefix": "V",
     "installation_note": "Redundant metering for PV groups 1 and 2; installed from 2022-11.",
     "note": "V prefix denotes a physical location / sub-distribution group."
@@ -52,7 +52,7 @@
     "anomaly_target": "P",
     "group_name": "pv",
     "redundant_pair": null,
-    "description": "PV 그룹3",
+    "description": "PV Emission Lab",
     "location_prefix": "H1",
     "installation_note": "PV group 3 was installed from 2020-06.",
     "note": "H1 prefix denotes a physical location / sub-distribution group."
@@ -64,7 +64,7 @@
     "anomaly_target": "P",
     "group_name": "pv",
     "redundant_pair": null,
-    "description": "PV 그룹4&5",
+    "description": "PV Office Building",
     "location_prefix": "H2",
     "installation_note": "PV groups 4 and 5 were installed from 2020-06.",
     "note": "H2 prefix denotes a physical location / sub-distribution group."
@@ -76,7 +76,7 @@
     "anomaly_target": "P",
     "group_name": "pv",
     "redundant_pair": null,
-    "description": "PV 그룹6",
+    "description": "PV Design Studio",
     "location_prefix": "H3",
     "installation_note": "PV group 6 was installed from 2020-06.",
     "note": "H3 prefix denotes a physical location / sub-distribution group."
@@ -196,7 +196,7 @@
     "anomaly_target": "Tdiff",
     "group_name": "cooling_thermal",
     "redundant_pair": null,
-    "description": "HVAC 2"
+    "description": "Emission lab HVAC 1/2"
   },
   "H1.K14": {
     "meter_type": "thermal",
@@ -205,7 +205,7 @@
     "anomaly_target": "Tdiff",
     "group_name": "cooling_thermal",
     "redundant_pair": null,
-    "description": "Office&Reception"
+    "description": "Emission lab cooling to office"
   },
   "H1.K15": {
     "meter_type": "thermal",
@@ -270,7 +270,7 @@
     "anomaly_target": "P",
     "group_name": "transformer",
     "redundant_pair": null,
-    "description": "Transformer"
+    "description": "Parking lot transformer 2"
   },
   "V.Z82": {
     "meter_type": "electric",
@@ -279,7 +279,7 @@
     "anomaly_target": "P",
     "group_name": "transformer",
     "redundant_pair": null,
-    "description": "Transformer"
+    "description": "Parking lot transformer 1"
   },
   "H2.Z35": {
     "meter_type": "electric",
@@ -340,9 +340,9 @@
     "energy_type": "consumption",
     "thermal_mode": null,
     "anomaly_target": "P",
-    "group_name": "distribution",
+    "group_name": "hvac",
     "redundant_pair": null,
-    "description": "Distribution"
+    "description": "HVAC office 50/51"
   },
   "H2.T.Z32": {
     "meter_type": "electric",
@@ -387,7 +387,7 @@
     "anomaly_target": "P",
     "group_name": "hvac",
     "redundant_pair": null,
-    "description": "HVAC"
+    "description": "Cooling 1 / HVAC 1.1"
   },
   "H1.Z14": {
     "meter_type": "electric",
@@ -396,7 +396,7 @@
     "anomaly_target": "P",
     "group_name": "hvac",
     "redundant_pair": null,
-    "description": "HVAC"
+    "description": "Cooling 1 / HVAC 1.2"
   },
   "H1.Z10": {
     "meter_type": "electric",
@@ -551,14 +551,14 @@
     "redundant_pair": "H2.Z65",
     "description": "Server redundant"
   },
-  "H2.Z71": {
+  "H3.Z71": {
     "meter_type": "electric",
     "energy_type": "consumption",
     "thermal_mode": null,
     "anomaly_target": "P",
     "group_name": "server",
     "redundant_pair": null,
-    "description": "Server"
+    "description": "Server O4 power supply"
   },
   "H3.Z46": {
     "meter_type": "electric",
@@ -720,7 +720,7 @@
     "anomaly_target": "P",
     "group_name": "simulation",
     "redundant_pair": null,
-    "description": "Simulation"
+    "description": "Driving simulator general"
   },
   "H3.Z48": {
     "meter_type": "electric",
@@ -729,7 +729,7 @@
     "anomaly_target": "P",
     "group_name": "simulation",
     "redundant_pair": null,
-    "description": "Simulation"
+    "description": "Driving simulator control"
   },
   "H3.Z49": {
     "meter_type": "electric",
@@ -738,7 +738,7 @@
     "anomaly_target": "P",
     "group_name": "simulation",
     "redundant_pair": null,
-    "description": "Simulation"
+    "description": "Driving simulator HVAC"
   },
   "H2.ZE74": {
     "meter_type": "electric",
