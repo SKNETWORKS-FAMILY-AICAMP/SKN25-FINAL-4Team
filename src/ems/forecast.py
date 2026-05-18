@@ -85,17 +85,23 @@ def build_forecast_features(
     return df
 
 
-def train_test_split_temporal(
+def train_val_test_split_temporal(
     df: pd.DataFrame,
-    split_ts: str,
-) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """시간 순서 보존 train/test 분할."""
-    split = pd.Timestamp(split_ts, tz="UTC")
-    train = df[df.index < split]
-    test = df[df.index >= split]
+    train_end_ts: str,
+    validation_end_ts: str,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """시간 순서 보존 train/validation/test 3분할."""
+    train_end = pd.Timestamp(train_end_ts, tz="UTC")
+    val_end = pd.Timestamp(validation_end_ts, tz="UTC")
+
+    train = df[df.index < train_end]
+    validation = df[(df.index >= train_end) & (df.index < val_end)]
+    test = df[df.index >= val_end]
+
     logger.info("train: %d rows (%s ~ %s)", len(train), train.index.min(), train.index.max())
-    logger.info("test:  %d rows (%s ~ %s)", len(test), test.index.min(), test.index.max())
-    return train, test
+    logger.info("validation: %d rows (%s ~ %s)", len(validation), validation.index.min(), validation.index.max())
+    logger.info("test: %d rows (%s ~ %s)", len(test), test.index.min(), test.index.max())
+    return train, validation, test
 
 
 def evaluate(y_true: np.ndarray, y_pred: np.ndarray) -> dict[str, float]:
@@ -109,6 +115,7 @@ def evaluate(y_true: np.ndarray, y_pred: np.ndarray) -> dict[str, float]:
 
 def train_xgboost(
     train: pd.DataFrame,
+    validation: pd.DataFrame,
     test: pd.DataFrame,
     target_col: str = "target",
     **xgb_params,
@@ -122,6 +129,8 @@ def train_xgboost(
     feature_cols = [c for c in train.columns if c != target_col]
     X_train = train[feature_cols].values
     y_train = train[target_col].values
+    X_val = validation[feature_cols].values
+    y_val = validation[target_col].values
     X_test = test[feature_cols].values
     y_test = test[target_col].values
 
@@ -137,7 +146,7 @@ def train_xgboost(
     params.update(xgb_params)
 
     model = XGBRegressor(**params)
-    model.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=False)
+    model.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=False)
     y_pred = model.predict(X_test)
 
     metrics = evaluate(y_test, y_pred)
@@ -154,12 +163,13 @@ def train_xgboost(
         **metrics,
     )
 
-
 def train_prophet(
     train: pd.DataFrame,
+    validation: pd.DataFrame,  # 추가
     test: pd.DataFrame,
     target_col: str = "target",
 ) -> ForecastResult:
+    # validation 인자 추가만 하고 내부 로직은 동일
     """Prophet 예측 모델."""
     try:
         from prophet import Prophet
@@ -201,9 +211,11 @@ def train_prophet(
 
 def train_svr(
     train: pd.DataFrame,
+    validation: pd.DataFrame,  # 추가
     test: pd.DataFrame,
     target_col: str = "target",
 ) -> ForecastResult:
+    # validation 인자 추가만 하고 내부 로직은 동일
     """SVR 예측 모델."""
     from sklearn.svm import SVR
 
@@ -241,9 +253,11 @@ def train_svr(
 
 def train_rf(
     train: pd.DataFrame,
+    validation: pd.DataFrame,  # 추가
     test: pd.DataFrame,
     target_col: str = "target",
 ) -> ForecastResult:
+    # validation 인자 추가만 하고 내부 로직은 동일
     """RandomForest 예측 모델."""
     from sklearn.ensemble import RandomForestRegressor
 
@@ -279,11 +293,13 @@ def train_rf(
 
 def train_sarimax(
     train: pd.DataFrame,
+    validation: pd.DataFrame,  # 추가
     test: pd.DataFrame,
     target_col: str = "target",
     order: tuple = (1, 1, 1),
     seasonal_order: tuple = (1, 1, 1, 96),
 ) -> ForecastResult:
+    # validation 인자 추가만 하고 내부 로직은 동일
     """SARIMAX 예측 모델. 계산량이 크므로 1h 해상도 권장."""
     from statsmodels.tsa.statespace.sarimax import SARIMAX
 

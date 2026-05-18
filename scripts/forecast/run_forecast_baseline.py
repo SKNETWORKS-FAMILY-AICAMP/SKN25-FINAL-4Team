@@ -41,7 +41,7 @@ from ems.forecast import (
     train_sarimax,
     train_svr,
     train_xgboost,
-    train_test_split_temporal,
+    train_val_test_split_temporal,  # 변경
 )
  
 logging.basicConfig(
@@ -65,6 +65,7 @@ def run(
     measurement: str,
     start_ts: str,
     train_end_ts: str,
+    validation_end_ts: str,  # 추가
     eval_end_ts: str,
     resolution: str,
     models: list[str],
@@ -72,103 +73,98 @@ def run(
 ) -> None:
     """예측 모델 전체 실행."""
     load_env()
- 
-    # DB 조회
+
     logger.info("DB 조회: meter=%s measurement=%s", meter_urn, measurement)
     df_raw = fetch_measurements(meter_urn, measurement, start_ts, eval_end_ts, resolution)
     if df_raw.empty:
         logger.error("데이터 없음. 종료합니다.")
         return
- 
+
     df_raw["ts"] = pd.to_datetime(df_raw["ts"], utc=True)
 
-    # 전처리 적용
     from ems.preprocessing import run_pipeline
-    df_raw["resolution_code"] = "15min"
     df_preprocessed = run_pipeline(df_raw)
     df_preprocessed = df_preprocessed[df_preprocessed["quality_flag"].isna()]
     df_preprocessed = df_preprocessed[~df_preprocessed["is_iqr_outlier"]]
 
     series = df_preprocessed.set_index("ts")["value"].sort_index()
-
     logger.info("전체 데이터: %d rows (%s ~ %s)", len(series), series.index.min(), series.index.max())
- 
-    # 피처 생성
+
     logger.info("피처 생성 중...")
     feat_df = build_forecast_features(series)
     logger.info("피처 생성 완료: %d rows × %d cols", feat_df.shape[0], feat_df.shape[1])
- 
-    # train/test 분할
-    train, test = train_test_split_temporal(feat_df, train_end_ts)
-    if len(train) == 0 or len(test) == 0:
-        logger.error("train 또는 test 데이터 없음. 분할 기준 확인 필요.")
+
+    # train / validation / test 3분할
+    train, validation, test = train_val_test_split_temporal(
+        feat_df, train_end_ts, validation_end_ts
+    )
+    if len(train) == 0 or len(validation) == 0 or len(test) == 0:
+        logger.error("train/validation/test 중 하나가 비어있습니다.")
         return
- 
-    # 모델 실행
+
     results: list[ForecastResult] = []
- 
+
     for model_name in models:
         if model_name not in MODEL_REGISTRY:
             logger.warning("알 수 없는 모델: %s. 건너뜁니다.", model_name)
             continue
- 
+
         logger.info("=== 모델 실행: %s ===", model_name)
         try:
-            result = MODEL_REGISTRY[model_name](train, test)
+            result = MODEL_REGISTRY[model_name](train, validation, test)
             result.meter_urn = meter_urn
             result.measurement = measurement
             save_forecast_result(result, output_dir)
             results.append(result)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             logger.error("모델 실패: %s error=%s", model_name, exc)
- 
-    # 비교 요약
+
     if results:
         save_forecast_comparison(results, output_dir)
         logger.info("=== 예측 모델 완료: %d개 모델 ===", len(results))
     else:
         logger.warning("실행된 모델 없음.")
  
- 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="EMS 예측 모델 실행 스크립트")
-    parser.add_argument("--meter", default="H1.W11", help="타겟 계량기 URN")
-    parser.add_argument("--measurement", default="P", help="타겟 측정 항목")
-    parser.add_argument("--start", default="2018-01-01", help="데이터 시작 시각")
-    parser.add_argument("--train-end", default="2022-01-01", help="학습 구간 종료 (replay 시작)")
-    parser.add_argument("--eval-end", default="2024-01-01", help="평가 구간 종료")
+    parser.add_argument("--meter", default="H1.W11")
+    parser.add_argument("--measurement", default="P")
+    parser.add_argument("--start", default="2018-01-01")
+    parser.add_argument("--train-end", default="2021-01-01")      # 2021-01-01로 변경
+    parser.add_argument("--validation-end", default="2022-01-01") # 추가
+    parser.add_argument("--eval-end", default="2024-01-01")
     parser.add_argument("--resolution", default="15min", choices=["15min", "1h"])
     parser.add_argument(
         "--models",
         nargs="+",
         default=["xgboost", "prophet", "rf", "svr"],
         choices=list(MODEL_REGISTRY.keys()),
-        help="실행할 모델 목록",
     )
     parser.add_argument("--output", default="outputs/forecast/baseline")
     return parser.parse_args()
- 
- 
+
+
 def main() -> None:
     args = _parse_args()
     load_env()
- 
+
     logger.info(
-        "예측 모델 시작: meter=%s measurement=%s train_end=%s eval_end=%s models=%s",
-        args.meter, args.measurement, args.train_end, args.eval_end, args.models,
+        "예측 모델 시작: meter=%s measurement=%s train_end=%s validation_end=%s eval_end=%s models=%s",
+        args.meter, args.measurement, args.train_end, args.validation_end,
+        args.eval_end, args.models,
     )
- 
+
     run(
         meter_urn=args.meter,
         measurement=args.measurement,
         start_ts=args.start,
         train_end_ts=args.train_end,
+        validation_end_ts=args.validation_end,  # 추가
         eval_end_ts=args.eval_end,
         resolution=args.resolution,
         models=args.models,
         output_dir=Path(args.output),
     )
- 
  
 if __name__ == "__main__":
     main()
