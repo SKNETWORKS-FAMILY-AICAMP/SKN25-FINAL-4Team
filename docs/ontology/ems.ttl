@@ -12,9 +12,6 @@
 ems:AnomalyEvent a owl:Class ;
     rdfs:label "향후 anomaly event 정의"@ko .
 
-ems:Feature a owl:Class ;
-    rdfs:label "향후 feature 정의"@ko .
-
 ems:anomalyPriority a owl:DatatypeProperty ;
     rdfs:label "이상탐지 검토 우선순위"@ko ;
     rdfs:domain owl:Thing ;
@@ -50,6 +47,16 @@ ems:equipmentName a owl:DatatypeProperty ;
     rdfs:domain owl:Thing ;
     rdfs:range xsd:string .
 
+ems:hasAnomalyPriorityLevel a owl:ObjectProperty ;
+    rdfs:label "이상탐지 우선순위 vocabulary"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range ems:AnomalyPriorityLevel .
+
+ems:hasDomain a owl:ObjectProperty ;
+    rdfs:label "meter의 계측 domain vocabulary"@ko ;
+    rdfs:domain ems:Meter ;
+    rdfs:range ems:MeterDomain .
+
 ems:hasGroup a owl:ObjectProperty ;
     rdfs:label "redundancy pair가 속한 group"@ko ;
     rdfs:domain ems:RedundancyPair ;
@@ -69,6 +76,11 @@ ems:hasRole a owl:ObjectProperty ;
     rdfs:label "meter의 분석 역할"@ko ;
     rdfs:domain ems:Meter ;
     rdfs:range ems:MeterRole .
+
+ems:hasSignConvention a owl:ObjectProperty ;
+    rdfs:label "부호 해석 vocabulary"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range ems:SignConvention .
 
 ems:locatedInBuilding a owl:ObjectProperty ;
     rdfs:label "meter가 building 또는 zone에 속함"@ko ;
@@ -90,7 +102,8 @@ ems:meterRoleCode a owl:DatatypeProperty ;
     rdfs:domain ems:Meter ;
     rdfs:range xsd:string .
 
-ems:meterUrn a owl:DatatypeProperty ;
+ems:meterUrn a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
     rdfs:label "DB meter identifier"@ko ;
     rdfs:domain ems:Meter ;
     rdfs:range xsd:string .
@@ -121,6 +134,16 @@ ems:sourcePath a owl:DatatypeProperty ;
     rdfs:domain ems:MetadataDocument ;
     rdfs:range xsd:string .
 
+ems:usesMeterSetRule a owl:ObjectProperty ;
+    rdfs:label "feature가 사용하는 meter set rule"@ko ;
+    rdfs:domain ems:Feature ;
+    rdfs:range ems:FeatureRule .
+
+ems:usesRedundancyPolicy a owl:ObjectProperty ;
+    rdfs:label "feature rule이 사용하는 redundancy policy"@ko ;
+    rdfs:domain ems:FeatureRule ;
+    rdfs:range ems:RedundancyPolicy .
+
 ems:visualizedBy a owl:ObjectProperty ;
     rdfs:label "entity를 확인할 수 있는 view"@ko ;
     rdfs:domain owl:Thing ;
@@ -146,7 +169,10 @@ emsres:meter_H1_K11 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "hvac_thermal" ;
     ems:equipmentName "Emission lab HVAC 3/5" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_thermal ;
     ems:hasRole emsres:role_thermal_flow ;
+    ems:hasSignConvention emsres:sign_direction_depends_on_equipment_context ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "thermal" ;
     ems:meterRoleCode "thermal_flow" ;
@@ -165,7 +191,10 @@ emsres:meter_H1_K12 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "hvac_thermal" ;
     ems:equipmentName "Emission lab HVAC 1/2" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_thermal ;
     ems:hasRole emsres:role_thermal_flow ;
+    ems:hasSignConvention emsres:sign_direction_depends_on_equipment_context ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "thermal" ;
     ems:meterRoleCode "thermal_flow" ;
@@ -184,7 +213,10 @@ emsres:meter_H1_K14 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "hvac_thermal" ;
     ems:equipmentName "Emission lab cooling to office" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_thermal ;
     ems:hasRole emsres:role_thermal_flow ;
+    ems:hasSignConvention emsres:sign_direction_depends_on_equipment_context ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "thermal" ;
     ems:meterRoleCode "thermal_flow" ;
@@ -203,7 +235,10 @@ emsres:meter_H1_K15 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "hvac_thermal" ;
     ems:equipmentName "Emission lab HVAC 3" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_thermal ;
     ems:hasRole emsres:role_thermal_flow ;
+    ems:hasSignConvention emsres:sign_direction_depends_on_equipment_context ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "thermal" ;
     ems:meterRoleCode "thermal_flow" ;
@@ -222,7 +257,10 @@ emsres:meter_H1_K16 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_thermal" ;
     ems:equipmentName "Server room O1" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_thermal ;
     ems:hasRole emsres:role_thermal_flow ;
+    ems:hasSignConvention emsres:sign_direction_depends_on_equipment_context ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "thermal" ;
     ems:meterRoleCode "thermal_flow" ;
@@ -241,7 +279,10 @@ emsres:meter_H1_W11 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "heat_generation" ;
     ems:equipmentName "Total heat generation" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_thermal ;
     ems:hasRole emsres:role_thermal_flow ;
+    ems:hasSignConvention emsres:sign_direction_depends_on_equipment_context ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "thermal" ;
     ems:meterRoleCode "thermal_flow" ;
@@ -260,7 +301,10 @@ emsres:meter_H1_W12 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "chp_heat_generation" ;
     ems:equipmentName "CHP heat generation" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_thermal ;
     ems:hasRole emsres:role_thermal_flow ;
+    ems:hasSignConvention emsres:sign_direction_depends_on_equipment_context ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "thermal" ;
     ems:meterRoleCode "thermal_flow" ;
@@ -279,7 +323,10 @@ emsres:meter_H1_Z10 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -299,7 +346,10 @@ emsres:meter_H1_Z11 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "central_cooling" ;
     ems:equipmentName "CM2" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -319,7 +369,10 @@ emsres:meter_H1_Z12 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "central_cooling" ;
     ems:equipmentName "CM2" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -339,7 +392,10 @@ emsres:meter_H1_Z13 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -359,7 +415,10 @@ emsres:meter_H1_Z14 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -380,7 +439,10 @@ emsres:meter_H1_Z15 a owl:NamedIndividual,
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentLayer "feed" ;
     ems:equipmentName "Feed emission lab 1" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -400,7 +462,10 @@ emsres:meter_H1_Z16 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "central_cooling" ;
     ems:equipmentName "CM1" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -421,7 +486,10 @@ emsres:meter_H1_Z17 a owl:NamedIndividual,
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentLayer "distribution" ;
     ems:equipmentName "Distribution emission lab 1" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -441,7 +509,10 @@ emsres:meter_H1_Z18 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -461,7 +532,10 @@ emsres:meter_H1_Z19 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -481,7 +555,10 @@ emsres:meter_H1_Z21 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -501,7 +578,10 @@ emsres:meter_H1_Z22 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -521,7 +601,10 @@ emsres:meter_H1_Z23 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -541,7 +624,10 @@ emsres:meter_H1_Z24 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "central_cooling" ;
     ems:equipmentName "CM3" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -561,7 +647,10 @@ emsres:meter_H1_Z25 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "central_cooling" ;
     ems:equipmentName "CM3" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -581,7 +670,10 @@ emsres:meter_H1_Z26 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -601,7 +693,10 @@ emsres:meter_H1_Z27 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -622,7 +717,10 @@ emsres:meter_H1_Z28 a owl:NamedIndividual,
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentLayer "feed" ;
     ems:equipmentName "Feed emission lab 2" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -643,7 +741,10 @@ emsres:meter_H1_Z29 a owl:NamedIndividual,
     ems:equipmentGroupCode "emission_lab" ;
     ems:equipmentLayer "distribution" ;
     ems:equipmentName "Distribution emission lab 2" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -663,7 +764,10 @@ emsres:meter_H1_Z310 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "pv" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_production ;
+    ems:hasSignConvention emsres:sign_negative_production_positive_noise_or_reverse_flow ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "production" ;
@@ -682,7 +786,10 @@ emsres:meter_H2_K21 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "hvac_thermal" ;
     ems:equipmentName "HVAC office" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_thermal ;
     ems:hasRole emsres:role_thermal_flow ;
+    ems:hasSignConvention emsres:sign_direction_depends_on_equipment_context ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "thermal" ;
     ems:meterRoleCode "thermal_flow" ;
@@ -701,7 +808,10 @@ emsres:meter_H2_T_Z30 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "office_distribution" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -720,7 +830,10 @@ emsres:meter_H2_T_Z31 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "ventilation" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -739,7 +852,10 @@ emsres:meter_H2_T_Z32 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "office_distribution" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -758,7 +874,10 @@ emsres:meter_H2_T_Z33 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "design_studio_distribution" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -777,7 +896,10 @@ emsres:meter_H2_T_Z34 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "workshop_test" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -796,7 +918,10 @@ emsres:meter_H2_Z311 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "pv" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_production ;
+    ems:hasSignConvention emsres:sign_negative_production_positive_noise_or_reverse_flow ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "production" ;
@@ -815,7 +940,10 @@ emsres:meter_H2_Z35 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "grid_transformer" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -834,7 +962,10 @@ emsres:meter_H2_Z351 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "grid_transformer" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -853,7 +984,10 @@ emsres:meter_H2_Z36 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "grid_transformer" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -872,7 +1006,10 @@ emsres:meter_H2_Z361 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "grid_transformer" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -891,7 +1028,10 @@ emsres:meter_H2_Z61 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -911,7 +1051,10 @@ emsres:meter_H2_Z62 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -931,7 +1074,10 @@ emsres:meter_H2_Z63 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -951,7 +1097,10 @@ emsres:meter_H2_Z68 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "ventilation" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -970,7 +1119,10 @@ emsres:meter_H2_Z69 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "ventilation" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -989,7 +1141,10 @@ emsres:meter_H2_Z70 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "ventilation" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1008,7 +1163,10 @@ emsres:meter_H2_ZE74 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "workshop_test" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1027,7 +1185,10 @@ emsres:meter_H3_Z312 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "pv" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_production ;
+    ems:hasSignConvention emsres:sign_negative_production_positive_noise_or_reverse_flow ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "production" ;
@@ -1046,7 +1207,10 @@ emsres:meter_H3_Z42 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "ventilation" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1065,7 +1229,10 @@ emsres:meter_H3_Z45 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "local_cooling" ;
     ems:equipmentName "로컬 냉방" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1084,7 +1251,10 @@ emsres:meter_H3_Z46 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1104,7 +1274,10 @@ emsres:meter_H3_Z47 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "design_studio_distribution" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1123,7 +1296,10 @@ emsres:meter_H3_Z48 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "design_studio_distribution" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1142,7 +1318,10 @@ emsres:meter_H3_Z49 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "design_studio_distribution" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1161,7 +1340,10 @@ emsres:meter_H3_Z71 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1181,7 +1363,10 @@ emsres:meter_V_K21 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "cooling_thermal" ;
     ems:equipmentName "Main cooling machines 1, 2, 3" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_thermal ;
     ems:hasRole emsres:role_thermal_flow ;
+    ems:hasSignConvention emsres:sign_direction_depends_on_equipment_context ;
     ems:locatedInBuilding emsres:building_V ;
     ems:meterDomain "thermal" ;
     ems:meterRoleCode "thermal_flow" ;
@@ -1200,7 +1385,10 @@ emsres:meter_V_Z81 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "grid_transformer" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_V ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1219,7 +1407,10 @@ emsres:meter_V_Z82 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "grid_transformer" ;
     ems:equipmentName "" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_V ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1238,7 +1429,10 @@ emsres:meter_WeatherStation_Weather a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "weather_station" ;
     ems:equipmentName "Weather station" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_4 ;
+    ems:hasDomain emsres:domain_weather ;
     ems:hasRole emsres:role_weather ;
+    ems:hasSignConvention emsres:sign_no_sign_convention ;
     ems:locatedInBuilding emsres:building_WeatherStation ;
     ems:meterDomain "weather" ;
     ems:meterRoleCode "weather" ;
@@ -1246,6 +1440,11 @@ emsres:meter_WeatherStation_Weather a owl:NamedIndividual,
     ems:noteFile "docs/_archive/notes/meter_graph/계량기_기상관측소_Weather.md" ;
     ems:signConvention "no_sign_convention" ;
     ems:visualizedBy emsres:view_ems_meter_system_all .
+
+emsres:policy_pair_comparison a owl:NamedIndividual,
+        ems:RedundancyPolicy ;
+    rdfs:label "Primary와 redundant endpoint를 비교 feature로 분리"@ko ;
+    ems:definedBy emsres:doc_meter_metadata .
 
 emsres:redundancy_H1_Z20__H1_ZE20 a owl:NamedIndividual,
         ems:RedundancyPair ;
@@ -1367,14 +1566,29 @@ emsres:redundancy_V_Z84__V_ZE84 a owl:NamedIndividual,
     ems:hasRedundantMeter emsres:meter_V_ZE84 ;
     ems:visualizedBy emsres:view_focus_redundancy .
 
+emsres:rule_aggregate_excludes_redundant a owl:NamedIndividual,
+        ems:FeatureRule ;
+    rdfs:label "Aggregate feature에서는 redundant endpoint를 기본 제외"@ko ;
+    ems:definedBy emsres:doc_meter_metadata ;
+    ems:usesRedundancyPolicy emsres:policy_exclude_redundant_endpoint .
+
+emsres:rule_energy_aggregate_excludes_weather a owl:NamedIndividual,
+        ems:FeatureRule ;
+    rdfs:label "Energy aggregate에는 weather meter를 포함하지 않음"@ko ;
+    ems:definedBy emsres:doc_meter_metadata .
+
+emsres:rule_live_replay_no_future a owl:NamedIndividual,
+        ems:FeatureRule ;
+    rdfs:label "Live replay feature는 현재 tick 이전 데이터만 사용"@ko ;
+    ems:definedBy emsres:doc_meter_metadata .
+
 emsres:view_redundancy_graph a owl:NamedIndividual,
         ems:VisualizationView ;
     rdfs:label "redundancy_graph" ;
     ems:sourcePath "docs/_archive/notes/meter_graph/중복계량_그래프.md" .
 
-ems:WeatherMeter a owl:Class ;
-    rdfs:label "기상 계량기"@ko ;
-    rdfs:subClassOf ems:Meter .
+ems:Feature a owl:Class ;
+    rdfs:label "향후 feature 정의"@ko .
 
 emsres:building_WeatherStation a owl:NamedIndividual,
         ems:Building ;
@@ -1382,12 +1596,19 @@ emsres:building_WeatherStation a owl:NamedIndividual,
     ems:buildingCode "WeatherStation" ;
     ems:definedBy emsres:doc_meter_metadata .
 
+emsres:domain_weather a owl:NamedIndividual,
+        ems:MeterDomain ;
+    rdfs:label "weather" ;
+    ems:definedBy emsres:doc_meter_metadata ;
+    ems:meterDomain "weather" .
+
 emsres:group_chp_heat_generation a owl:NamedIndividual,
         ems:EquipmentGroup ;
     rdfs:label "chp_heat_generation" ;
     ems:anomalyPriority 2 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "chp_heat_generation" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
     ems:meterCount 1 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_열병합_열생산.md" ;
     ems:primaryView "building_energy_flow" ;
@@ -1400,6 +1621,7 @@ emsres:group_cooling_thermal a owl:NamedIndividual,
     ems:anomalyPriority 3 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "cooling_thermal" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
     ems:meterCount 1 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_냉방_열.md" ;
     ems:primaryView "building_energy_flow" ;
@@ -1412,6 +1634,7 @@ emsres:group_heat_generation a owl:NamedIndividual,
     ems:anomalyPriority 2 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "heat_generation" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
     ems:meterCount 1 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_열생산.md" ;
     ems:primaryView "building_energy_flow" ;
@@ -1424,6 +1647,7 @@ emsres:group_server_thermal a owl:NamedIndividual,
     ems:anomalyPriority 2 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_thermal" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
     ems:meterCount 1 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_서버_열.md" ;
     ems:primaryView "building_energy_flow" ;
@@ -1436,16 +1660,23 @@ emsres:group_weather_station a owl:NamedIndividual,
     ems:anomalyPriority 4 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "weather_station" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_4 ;
     ems:meterCount 1 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_기상관측.md" ;
     ems:primaryView "building_energy_flow" ;
     ems:visualizedBy emsres:view_ems_meter_system_overview,
         emsres:view_meter_inventory_graph .
 
+emsres:policy_exclude_redundant_endpoint a owl:NamedIndividual,
+        ems:RedundancyPolicy ;
+    rdfs:label "Aggregate feature에서 redundant endpoint를 제외"@ko ;
+    ems:definedBy emsres:doc_meter_metadata .
+
 emsres:role_weather a owl:NamedIndividual,
         ems:MeterRole ;
     rdfs:label "weather" ;
     ems:definedBy emsres:doc_meter_metadata ;
+    ems:hasSignConvention emsres:sign_no_sign_convention ;
     ems:meterRoleCode "weather" ;
     ems:signConvention "no_sign_convention" .
 
@@ -1455,6 +1686,7 @@ emsres:group_workshop_test a owl:NamedIndividual,
     ems:anomalyPriority 3 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "workshop_test" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
     ems:meterCount 2 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_워크숍_시험.md" ;
     ems:primaryView "meter_inventory_graph" ;
@@ -1471,7 +1703,10 @@ emsres:meter_H1_Z20 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "chp" ;
     ems:equipmentName "CHP" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_production ;
+    ems:hasSignConvention emsres:sign_negative_production_positive_noise_or_reverse_flow ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "production" ;
@@ -1492,7 +1727,10 @@ emsres:meter_H1_ZE20 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "chp" ;
     ems:equipmentName "CHP" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_production ;
+    ems:hasSignConvention emsres:sign_negative_production_positive_noise_or_reverse_flow ;
     ems:locatedInBuilding emsres:building_H1 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "production" ;
@@ -1513,7 +1751,10 @@ emsres:meter_H2_Z64 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
     ems:equipmentName "Server EU power supply 1" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1535,7 +1776,10 @@ emsres:meter_H2_Z65 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
     ems:equipmentName "Server EU power supply 2" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1557,7 +1801,10 @@ emsres:meter_H2_Z66 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "local_cooling" ;
     ems:equipmentName "Local cooling 1, 로컬 냉방" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1578,7 +1825,10 @@ emsres:meter_H2_Z67 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "local_cooling" ;
     ems:equipmentName "Local cooling 2, 로컬 냉방" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1599,7 +1849,10 @@ emsres:meter_H2_ZE64 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
     ems:equipmentName "Server EU power supply 1" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1621,7 +1874,10 @@ emsres:meter_H2_ZE65 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
     ems:equipmentName "Server EU power supply 2" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1643,7 +1899,10 @@ emsres:meter_H2_ZE66 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "local_cooling" ;
     ems:equipmentName "Local cooling 1, 로컬 냉방" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1664,7 +1923,10 @@ emsres:meter_H2_ZE67 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "local_cooling" ;
     ems:equipmentName "Local cooling 2, 로컬 냉방" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H2 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1685,7 +1947,10 @@ emsres:meter_H3_Z40 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "design_studio_distribution" ;
     ems:equipmentName "Design studio distribution 1" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1706,7 +1971,10 @@ emsres:meter_H3_Z41 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "design_studio_distribution" ;
     ems:equipmentName "Design studio distribution 4" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1727,7 +1995,10 @@ emsres:meter_H3_Z43 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
     ems:equipmentName "Server O4 cooling 1" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1749,7 +2020,10 @@ emsres:meter_H3_Z44 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
     ems:equipmentName "Server O4 cooling 2" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1771,7 +2045,10 @@ emsres:meter_H3_ZE40 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "design_studio_distribution" ;
     ems:equipmentName "Design studio distribution 1" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1792,7 +2069,10 @@ emsres:meter_H3_ZE41 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "design_studio_distribution" ;
     ems:equipmentName "Design studio distribution 4" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1813,7 +2093,10 @@ emsres:meter_H3_ZE43 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
     ems:equipmentName "Server O4 cooling 1" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1835,7 +2118,10 @@ emsres:meter_H3_ZE44 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
     ems:equipmentName "Server O4 cooling 2" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H3 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1857,7 +2143,10 @@ emsres:meter_H4_Z50 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "office_distribution" ;
     ems:equipmentName "Office B4 distribution 3" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H4 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1878,7 +2167,10 @@ emsres:meter_H4_Z51 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "office_distribution" ;
     ems:equipmentName "Office B4 distribution 4" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H4 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1899,7 +2191,10 @@ emsres:meter_H4_ZE50 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "office_distribution" ;
     ems:equipmentName "Office B4 distribution 3" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H4 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1920,7 +2215,10 @@ emsres:meter_H4_ZE51 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "office_distribution" ;
     ems:equipmentName "Office B4 distribution 4" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_consumption ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:locatedInBuilding emsres:building_H4 ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "consumption" ;
@@ -1941,7 +2239,10 @@ emsres:meter_V_Z84 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "pv" ;
     ems:equipmentName "PV group 1/2" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_production ;
+    ems:hasSignConvention emsres:sign_negative_production_positive_noise_or_reverse_flow ;
     ems:locatedInBuilding emsres:building_V ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "production" ;
@@ -1962,7 +2263,10 @@ emsres:meter_V_ZE84 a owl:NamedIndividual,
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "pv" ;
     ems:equipmentName "PV group 1/2" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
+    ems:hasDomain emsres:domain_electricity ;
     ems:hasRole emsres:role_production ;
+    ems:hasSignConvention emsres:sign_negative_production_positive_noise_or_reverse_flow ;
     ems:locatedInBuilding emsres:building_V ;
     ems:meterDomain "electricity" ;
     ems:meterRoleCode "production" ;
@@ -1973,12 +2277,32 @@ emsres:meter_V_ZE84 a owl:NamedIndividual,
     ems:visualizedBy emsres:view_ems_meter_system_all,
         emsres:view_focus_redundancy .
 
+emsres:priority_4 a owl:NamedIndividual,
+        ems:AnomalyPriorityLevel ;
+    rdfs:label "priority 4" ;
+    ems:anomalyPriority 4 ;
+    ems:definedBy emsres:doc_meter_metadata .
+
+emsres:sign_no_sign_convention a owl:NamedIndividual,
+        ems:SignConvention ;
+    rdfs:label "no_sign_convention" ;
+    ems:definedBy emsres:doc_meter_metadata ;
+    ems:signConvention "no_sign_convention" .
+
+ems:RedundancyPolicy a owl:Class ;
+    rdfs:label "중복 계량 처리 정책"@ko .
+
+ems:WeatherMeter a owl:Class ;
+    rdfs:label "기상 계량기"@ko ;
+    rdfs:subClassOf ems:Meter .
+
 emsres:group_chp a owl:NamedIndividual,
         ems:EquipmentGroup ;
     rdfs:label "chp" ;
     ems:anomalyPriority 1 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "chp" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
     ems:meterCount 2 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_열병합.md" ;
     ems:primaryView "building_energy_flow" ;
@@ -1986,17 +2310,29 @@ emsres:group_chp a owl:NamedIndividual,
         emsres:view_focus_redundancy,
         emsres:view_meter_inventory_graph .
 
+ems:MeterDomain a owl:Class ;
+    rdfs:label "계측 domain vocabulary"@ko .
+
 emsres:building_H4 a owl:NamedIndividual,
         ems:Building ;
     rdfs:label "H4" ;
     ems:buildingCode "H4" ;
     ems:definedBy emsres:doc_meter_metadata .
 
+ems:AnomalyPriorityLevel a owl:Class ;
+    rdfs:label "이상탐지 우선순위 vocabulary"@ko .
+
+ems:FeatureRule a owl:Class ;
+    rdfs:label "feature 생성 규칙"@ko .
+
 ems:MetadataDocument a owl:Class ;
     rdfs:label "기준 metadata 문서"@ko .
 
 ems:MeterRole a owl:Class ;
     rdfs:label "계량기 분석 역할"@ko .
+
+ems:SignConvention a owl:Class ;
+    rdfs:label "부호 해석 vocabulary"@ko .
 
 emsres:building_V a owl:NamedIndividual,
         ems:Building ;
@@ -2010,6 +2346,7 @@ emsres:group_central_cooling a owl:NamedIndividual,
     ems:anomalyPriority 1 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "central_cooling" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
     ems:meterCount 5 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_중앙냉방.md" ;
     ems:primaryView "central_cooling_graph" ;
@@ -2023,6 +2360,7 @@ emsres:group_hvac_thermal a owl:NamedIndividual,
     ems:anomalyPriority 3 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "hvac_thermal" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
     ems:meterCount 5 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_공조_열.md" ;
     ems:primaryView "building_energy_flow" ;
@@ -2035,6 +2373,7 @@ emsres:group_ventilation a owl:NamedIndividual,
     ems:anomalyPriority 3 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "ventilation" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
     ems:meterCount 5 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_환기.md" ;
     ems:primaryView "meter_inventory_graph" ;
@@ -2047,6 +2386,7 @@ emsres:group_grid_transformer a owl:NamedIndividual,
     ems:anomalyPriority 1 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "grid_transformer" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_1 ;
     ems:meterCount 6 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_수전_변압기.md" ;
     ems:primaryView "building_energy_flow" ;
@@ -2059,6 +2399,7 @@ emsres:group_pv a owl:NamedIndividual,
     ems:anomalyPriority 2 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "pv" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
     ems:meterCount 5 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_태양광.md" ;
     ems:primaryView "building_energy_flow" ;
@@ -2080,6 +2421,7 @@ emsres:group_local_cooling a owl:NamedIndividual,
     ems:anomalyPriority 2 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "local_cooling" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
     ems:meterCount 5 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_로컬냉방.md" ;
     ems:primaryView "central_cooling_graph" ;
@@ -2091,6 +2433,7 @@ emsres:role_production a owl:NamedIndividual,
         ems:MeterRole ;
     rdfs:label "production" ;
     ems:definedBy emsres:doc_meter_metadata ;
+    ems:hasSignConvention emsres:sign_negative_production_positive_noise_or_reverse_flow ;
     ems:meterRoleCode "production" ;
     ems:signConvention "negative_production_positive_noise_or_reverse_flow" .
 
@@ -2100,6 +2443,7 @@ emsres:group_office_distribution a owl:NamedIndividual,
     ems:anomalyPriority 3 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "office_distribution" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
     ems:meterCount 6 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_사무실_분전.md" ;
     ems:primaryView "meter_inventory_graph" ;
@@ -2107,19 +2451,33 @@ emsres:group_office_distribution a owl:NamedIndividual,
         emsres:view_focus_redundancy,
         emsres:view_meter_inventory_graph .
 
-ems:ThermalMeter a owl:Class ;
-    rdfs:label "열 계량기"@ko ;
-    rdfs:subClassOf ems:Meter .
+emsres:sign_negative_production_positive_noise_or_reverse_flow a owl:NamedIndividual,
+        ems:SignConvention ;
+    rdfs:label "negative_production_positive_noise_or_reverse_flow" ;
+    ems:definedBy emsres:doc_meter_metadata ;
+    ems:signConvention "negative_production_positive_noise_or_reverse_flow" .
 
 ems:VisualizationView a owl:Class ;
     rdfs:label "Canvas, Mermaid, Excalidraw 보기"@ko .
+
+emsres:domain_thermal a owl:NamedIndividual,
+        ems:MeterDomain ;
+    rdfs:label "thermal" ;
+    ems:definedBy emsres:doc_meter_metadata ;
+    ems:meterDomain "thermal" .
 
 emsres:role_thermal_flow a owl:NamedIndividual,
         ems:MeterRole ;
     rdfs:label "thermal_flow" ;
     ems:definedBy emsres:doc_meter_metadata ;
+    ems:hasSignConvention emsres:sign_direction_depends_on_equipment_context ;
     ems:meterRoleCode "thermal_flow" ;
     ems:signConvention "direction_depends_on_equipment_context" .
+
+ems:ThermalMeter a owl:Class ;
+    rdfs:label "열 계량기"@ko ;
+    rdfs:subClassOf ems:Meter ;
+    owl:disjointWith ems:WeatherMeter .
 
 emsres:group_design_studio_distribution a owl:NamedIndividual,
         ems:EquipmentGroup ;
@@ -2127,6 +2485,7 @@ emsres:group_design_studio_distribution a owl:NamedIndividual,
     ems:anomalyPriority 3 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "design_studio_distribution" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
     ems:meterCount 8 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_디자인스튜디오_분전.md" ;
     ems:primaryView "meter_inventory_graph" ;
@@ -2134,12 +2493,19 @@ emsres:group_design_studio_distribution a owl:NamedIndividual,
         emsres:view_focus_redundancy,
         emsres:view_meter_inventory_graph .
 
+emsres:sign_direction_depends_on_equipment_context a owl:NamedIndividual,
+        ems:SignConvention ;
+    rdfs:label "direction_depends_on_equipment_context" ;
+    ems:definedBy emsres:doc_meter_metadata ;
+    ems:signConvention "direction_depends_on_equipment_context" .
+
 emsres:group_emission_lab a owl:NamedIndividual,
         ems:EquipmentGroup ;
     rdfs:label "emission_lab" ;
     ems:anomalyPriority 3 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "emission_lab" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_3 ;
     ems:meterCount 14 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_배출실험실.md" ;
     ems:primaryView "meter_inventory_graph" ;
@@ -2166,12 +2532,19 @@ emsres:building_H3 a owl:NamedIndividual,
     ems:buildingCode "H3" ;
     ems:definedBy emsres:doc_meter_metadata .
 
+emsres:priority_1 a owl:NamedIndividual,
+        ems:AnomalyPriorityLevel ;
+    rdfs:label "priority 1" ;
+    ems:anomalyPriority 1 ;
+    ems:definedBy emsres:doc_meter_metadata .
+
 emsres:group_server_power a owl:NamedIndividual,
         ems:EquipmentGroup ;
     rdfs:label "server_power" ;
     ems:anomalyPriority 2 ;
     ems:definedBy emsres:doc_meter_metadata ;
     ems:equipmentGroupCode "server_power" ;
+    ems:hasAnomalyPriorityLevel emsres:priority_2 ;
     ems:meterCount 13 ;
     ems:noteFile "docs/_archive/notes/meter_graph/그룹_서버전원.md" ;
     ems:primaryView "meter_inventory_graph" ;
@@ -2205,21 +2578,48 @@ emsres:building_H1 a owl:NamedIndividual,
     ems:buildingCode "H1" ;
     ems:definedBy emsres:doc_meter_metadata .
 
+emsres:priority_2 a owl:NamedIndividual,
+        ems:AnomalyPriorityLevel ;
+    rdfs:label "priority 2" ;
+    ems:anomalyPriority 2 ;
+    ems:definedBy emsres:doc_meter_metadata .
+
 emsres:view_focus_redundancy a owl:NamedIndividual,
         ems:VisualizationView ;
     rdfs:label "focus_redundancy" ;
     ems:sourcePath "docs/_archive/notes/meter_graph/집중보기_중복계량.canvas" .
 
+emsres:priority_3 a owl:NamedIndividual,
+        ems:AnomalyPriorityLevel ;
+    rdfs:label "priority 3" ;
+    ems:anomalyPriority 3 ;
+    ems:definedBy emsres:doc_meter_metadata .
+
 emsres:role_consumption a owl:NamedIndividual,
         ems:MeterRole ;
     rdfs:label "consumption" ;
     ems:definedBy emsres:doc_meter_metadata ;
+    ems:hasSignConvention emsres:sign_positive_consumption_negative_quality_candidate ;
     ems:meterRoleCode "consumption" ;
+    ems:signConvention "positive_consumption_negative_quality_candidate" .
+
+emsres:sign_positive_consumption_negative_quality_candidate a owl:NamedIndividual,
+        ems:SignConvention ;
+    rdfs:label "positive_consumption_negative_quality_candidate" ;
+    ems:definedBy emsres:doc_meter_metadata ;
     ems:signConvention "positive_consumption_negative_quality_candidate" .
 
 ems:ElectricityMeter a owl:Class ;
     rdfs:label "전기 계량기"@ko ;
-    rdfs:subClassOf ems:Meter .
+    rdfs:subClassOf ems:Meter ;
+    owl:disjointWith ems:ThermalMeter,
+        ems:WeatherMeter .
+
+emsres:domain_electricity a owl:NamedIndividual,
+        ems:MeterDomain ;
+    rdfs:label "electricity" ;
+    ems:definedBy emsres:doc_meter_metadata ;
+    ems:meterDomain "electricity" .
 
 emsres:view_ems_meter_system_all a owl:NamedIndividual,
         ems:VisualizationView ;

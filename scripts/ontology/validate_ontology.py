@@ -17,20 +17,26 @@ from typing import Iterable
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import OWL, RDF, RDFS
 
+try:
+    from pyshacl import validate as pyshacl_validate
+except ImportError:  # pragma: no cover - exercised only when dependency is missing
+    pyshacl_validate = None
+
 ROOT = Path(__file__).resolve().parents[2]
 TTL_PATH = ROOT / "docs/ontology/ems.ttl"
 PROTEGE_PATH = ROOT / "docs/ontology/ems_protege.owl"
+SHAPES_PATH = ROOT / "docs/ontology/ems_shapes.ttl"
 
 EMS = Namespace("https://nousresearch.local/ems/ontology#")
 RES = Namespace("https://nousresearch.local/ems/resource/")
 
 EXPECTED_COUNTS = {
-    "ttl_triples": 2064,
-    "protege_triples": 2064,
+    "ttl_triples": 2438,
+    "protege_triples": 2438,
     "owl_ontology": 1,
-    "owl_named_individual": 131,
-    "classes": 12,
-    "object_properties": 9,
+    "owl_named_individual": 147,
+    "classes": 17,
+    "object_properties": 14,
     "data_properties": 13,
     "meters": 81,
     "electricity_meters": 71,
@@ -46,8 +52,8 @@ EXPECTED_COUNTS = {
     "central_cooling_meters": 5,
     "emission_lab_meters": 14,
     "server_power_redundancy_pairs": 4,
-    "sign_convention_triples": 85,
-    "anomaly_priority_triples": 98,
+    "sign_convention_triples": 89,
+    "anomaly_priority_triples": 102,
     "primary_view_triples": 17,
     "group_visualized_by_triples": 43,
     "equipment_layer_triples": 4,
@@ -55,14 +61,19 @@ EXPECTED_COUNTS = {
 
 EXPECTED_CLASSES = {
     "AnomalyEvent",
+    "AnomalyPriorityLevel",
     "Building",
     "ElectricityMeter",
     "EquipmentGroup",
     "Feature",
+    "FeatureRule",
     "MetadataDocument",
     "Meter",
     "MeterRole",
+    "MeterDomain",
     "RedundancyPair",
+    "RedundancyPolicy",
+    "SignConvention",
     "ThermalMeter",
     "VisualizationView",
     "WeatherMeter",
@@ -75,9 +86,14 @@ EXPECTED_OBJECT_PROPERTIES = {
     "hasPrimaryMeter",
     "hasRedundantMeter",
     "hasRole",
+    "hasDomain",
+    "hasSignConvention",
+    "hasAnomalyPriorityLevel",
     "locatedInBuilding",
     "redundantWith",
     "visualizedBy",
+    "usesRedundancyPolicy",
+    "usesMeterSetRule",
 }
 
 EXPECTED_DATA_PROPERTIES = {
@@ -359,6 +375,25 @@ def validate_operational_mappings(graph: Graph) -> list[ValidationResult]:
     return results
 
 
+def validate_shacl() -> list[ValidationResult]:
+    if pyshacl_validate is None:
+        return [ValidationResult("shacl_pyshacl_installed", True, False, False)]
+    if not SHAPES_PATH.exists():
+        return [ValidationResult("shacl_shapes_file_exists", True, False, False)]
+
+    conforms, _, report_text = pyshacl_validate(
+        data_graph=str(TTL_PATH),
+        shacl_graph=str(SHAPES_PATH),
+        data_graph_format="turtle",
+        shacl_graph_format="turtle",
+        inference="none",
+        advanced=True,
+    )
+    if not conforms:
+        print(report_text)
+    return [ValidationResult("shacl_conforms", True, bool(conforms), bool(conforms))]
+
+
 def print_results(results: list[ValidationResult]) -> None:
     for result in results:
         status = "PASS" if result.ok else "FAIL"
@@ -376,10 +411,12 @@ def main() -> int:
     results.extend(validate_redundancy(ttl_graph))
     results.extend(validate_analysis_invariants(ttl_graph))
     results.extend(validate_operational_mappings(ttl_graph))
+    results.extend(validate_shacl())
 
     print({
         "ttl_path": str(TTL_PATH.relative_to(ROOT)),
         "protege_path": str(PROTEGE_PATH.relative_to(ROOT)),
+        "shapes_path": str(SHAPES_PATH.relative_to(ROOT)),
         "checks": len(results),
     })
     print_results(results)

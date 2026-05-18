@@ -13,6 +13,7 @@ Output:
 from __future__ import annotations
 
 from pathlib import Path
+import argparse
 import re
 from rdflib import Graph, Namespace, Literal, URIRef
 from rdflib.namespace import RDF, RDFS, OWL, XSD
@@ -52,6 +53,17 @@ GROUP_ANOMALY_PRIORITIES = {
     "cooling_thermal": 3,
     "hvac_thermal": 3,
     "weather_station": 4,
+}
+
+REDUNDANCY_POLICIES = {
+    "exclude_redundant_endpoint": "Aggregate feature에서 redundant endpoint를 제외",
+    "pair_comparison": "Primary와 redundant endpoint를 비교 feature로 분리",
+}
+
+FEATURE_RULES = {
+    "energy_aggregate_excludes_weather": "Energy aggregate에는 weather meter를 포함하지 않음",
+    "aggregate_excludes_redundant": "Aggregate feature에서는 redundant endpoint를 기본 제외",
+    "live_replay_no_future": "Live replay feature는 현재 tick 이전 데이터만 사용",
 }
 
 FOCUSED_VIEW_BY_GROUP = {
@@ -194,11 +206,18 @@ def build_graph() -> Graph:
         "MetadataDocument": "기준 metadata 문서",
         "Feature": "향후 feature 정의",
         "AnomalyEvent": "향후 anomaly event 정의",
+        "MeterDomain": "계측 domain vocabulary",
+        "SignConvention": "부호 해석 vocabulary",
+        "AnomalyPriorityLevel": "이상탐지 우선순위 vocabulary",
+        "RedundancyPolicy": "중복 계량 처리 정책",
+        "FeatureRule": "feature 생성 규칙",
     }.items():
         add_class(graph, name, label)
 
     for sub, sup in [("ElectricityMeter", "Meter"), ("ThermalMeter", "Meter"), ("WeatherMeter", "Meter")]:
         graph.add((EMS[sub], RDFS.subClassOf, EMS[sup]))
+    for left, right in [("ElectricityMeter", "ThermalMeter"), ("ElectricityMeter", "WeatherMeter"), ("ThermalMeter", "WeatherMeter")]:
+        graph.add((EMS[left], OWL.disjointWith, EMS[right]))
 
     for name, domain, range_, label in [
         ("belongsToGroup", EMS.Meter, EMS.EquipmentGroup, "meter가 equipment group에 속함"),
@@ -210,6 +229,11 @@ def build_graph() -> Graph:
         ("hasGroup", EMS.RedundancyPair, EMS.EquipmentGroup, "redundancy pair가 속한 group"),
         ("visualizedBy", OWL.Thing, EMS.VisualizationView, "entity를 확인할 수 있는 view"),
         ("definedBy", OWL.Thing, EMS.MetadataDocument, "entity 기준 문서"),
+        ("hasDomain", EMS.Meter, EMS.MeterDomain, "meter의 계측 domain vocabulary"),
+        ("hasSignConvention", OWL.Thing, EMS.SignConvention, "부호 해석 vocabulary"),
+        ("hasAnomalyPriorityLevel", OWL.Thing, EMS.AnomalyPriorityLevel, "이상탐지 우선순위 vocabulary"),
+        ("usesRedundancyPolicy", EMS.FeatureRule, EMS.RedundancyPolicy, "feature rule이 사용하는 redundancy policy"),
+        ("usesMeterSetRule", EMS.Feature, EMS.FeatureRule, "feature가 사용하는 meter set rule"),
     ]:
         add_object_property(graph, name, domain, range_, label)
     graph.add((EMS.redundantWith, RDF.type, OWL.SymmetricProperty))
@@ -230,6 +254,7 @@ def build_graph() -> Graph:
         ("meterCount", EMS.EquipmentGroup, XSD.integer, "group meter count"),
     ]:
         add_data_property(graph, name, domain, range_, label)
+    graph.add((EMS.meterUrn, RDF.type, OWL.FunctionalProperty))
 
     for name, source in {
         "meter_metadata": "docs/specs/계량기_메타데이터.md",
@@ -258,6 +283,45 @@ def build_graph() -> Graph:
         graph.add((uri, RDFS.label, Literal(key)))
         graph.add((uri, EMS.sourcePath, Literal(source)))
 
+    for domain in ["electricity", "thermal", "weather"]:
+        uri = RES[f"domain_{slug(domain)}"]
+        graph.add((uri, RDF.type, OWL.NamedIndividual))
+        graph.add((uri, RDF.type, EMS.MeterDomain))
+        graph.add((uri, RDFS.label, Literal(domain)))
+        graph.add((uri, EMS.meterDomain, Literal(domain)))
+        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
+
+    for sign in sorted(set(ROLE_SIGN_CONVENTIONS.values())):
+        uri = RES[f"sign_{slug(sign)}"]
+        graph.add((uri, RDF.type, OWL.NamedIndividual))
+        graph.add((uri, RDF.type, EMS.SignConvention))
+        graph.add((uri, RDFS.label, Literal(sign)))
+        graph.add((uri, EMS.signConvention, Literal(sign)))
+        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
+
+    for priority in [1, 2, 3, 4]:
+        uri = RES[f"priority_{priority}"]
+        graph.add((uri, RDF.type, OWL.NamedIndividual))
+        graph.add((uri, RDF.type, EMS.AnomalyPriorityLevel))
+        graph.add((uri, RDFS.label, Literal(f"priority {priority}")))
+        graph.add((uri, EMS.anomalyPriority, Literal(priority, datatype=XSD.integer)))
+        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
+
+    for key, label in REDUNDANCY_POLICIES.items():
+        uri = RES[f"policy_{slug(key)}"]
+        graph.add((uri, RDF.type, OWL.NamedIndividual))
+        graph.add((uri, RDF.type, EMS.RedundancyPolicy))
+        graph.add((uri, RDFS.label, Literal(label, lang="ko")))
+        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
+
+    for key, label in FEATURE_RULES.items():
+        uri = RES[f"rule_{slug(key)}"]
+        graph.add((uri, RDF.type, OWL.NamedIndividual))
+        graph.add((uri, RDF.type, EMS.FeatureRule))
+        graph.add((uri, RDFS.label, Literal(label, lang="ko")))
+        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
+    graph.add((RES.rule_aggregate_excludes_redundant, EMS.usesRedundancyPolicy, RES.policy_exclude_redundant_endpoint))
+
     for role in sorted({str(m["meter_role"]) for m in meter_records}):
         uri = RES[f"role_{slug(role)}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
@@ -265,6 +329,7 @@ def build_graph() -> Graph:
         graph.add((uri, RDFS.label, Literal(role)))
         graph.add((uri, EMS.meterRoleCode, Literal(role)))
         graph.add((uri, EMS.signConvention, Literal(ROLE_SIGN_CONVENTIONS[role])))
+        graph.add((uri, EMS.hasSignConvention, RES[f"sign_{slug(ROLE_SIGN_CONVENTIONS[role])}"]))
         graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
 
     for building in sorted({str(m["building_code"]) for m in meter_records}):
@@ -288,6 +353,7 @@ def build_graph() -> Graph:
         if rec.get("primary_view"):
             graph.add((uri, EMS.primaryView, Literal(str(rec["primary_view"]))))
         graph.add((uri, EMS.anomalyPriority, Literal(GROUP_ANOMALY_PRIORITIES[code], datatype=XSD.integer)))
+        graph.add((uri, EMS.hasAnomalyPriorityLevel, RES[f"priority_{GROUP_ANOMALY_PRIORITIES[code]}"]))
         graph.add((uri, EMS.noteFile, Literal(str(rec["note_file"]))))
         graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
         graph.add((uri, EMS.visualizedBy, RES.view_ems_meter_system_overview))
@@ -313,6 +379,7 @@ def build_graph() -> Graph:
         graph.add((uri, RDFS.label, Literal(urn)))
         graph.add((uri, EMS.meterUrn, Literal(urn)))
         graph.add((uri, EMS.meterDomain, Literal(domain)))
+        graph.add((uri, EMS.hasDomain, RES[f"domain_{slug(domain)}"]))
         graph.add((uri, EMS.meterRoleCode, Literal(role)))
         graph.add((uri, EMS.equipmentGroupCode, Literal(group_code)))
         graph.add((uri, EMS.equipmentName, Literal(str(rec.get("equipment_name", "")))))
@@ -320,7 +387,9 @@ def build_graph() -> Graph:
             graph.add((uri, EMS.equipmentLayer, Literal(str(rec["equipment_layer"]))))
         graph.add((uri, EMS.buildingCode, Literal(building)))
         graph.add((uri, EMS.signConvention, Literal(ROLE_SIGN_CONVENTIONS[role])))
+        graph.add((uri, EMS.hasSignConvention, RES[f"sign_{slug(ROLE_SIGN_CONVENTIONS[role])}"]))
         graph.add((uri, EMS.anomalyPriority, Literal(GROUP_ANOMALY_PRIORITIES[group_code], datatype=XSD.integer)))
+        graph.add((uri, EMS.hasAnomalyPriorityLevel, RES[f"priority_{GROUP_ANOMALY_PRIORITIES[group_code]}"]))
         graph.add((uri, EMS.noteFile, Literal(str(rec["note_file"]))))
         graph.add((uri, EMS.belongsToGroup, RES[f"group_{slug(group_code)}"]))
         graph.add((uri, EMS.locatedInBuilding, RES[f"building_{slug(building)}"]))
@@ -357,12 +426,31 @@ def build_graph() -> Graph:
     return graph
 
 
-def main() -> None:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Generate EMS ontology artifacts")
+    parser.add_argument(
+        "--source",
+        choices=["markdown", "db"],
+        default="markdown",
+        help="Metadata source. DB source is read-only and requires approved metadata tables.",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = parse_args(argv)
+    if args.source == "db":
+        from load_metadata_from_db import ensure_db_metadata_available
+
+        ensure_db_metadata_available()
+        raise SystemExit("DB metadata source generation is not implemented yet; use --source markdown")
+
     graph = build_graph()
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     graph.serialize(destination=str(OUTPUT_PATH), format="turtle")
     graph.serialize(destination=str(PROTEGE_OUTPUT_PATH), format="xml")
     print({
+        "source": args.source,
         "path": str(OUTPUT_PATH.relative_to(ROOT)),
         "protege_path": str(PROTEGE_OUTPUT_PATH.relative_to(ROOT)),
         "triples": len(graph),
