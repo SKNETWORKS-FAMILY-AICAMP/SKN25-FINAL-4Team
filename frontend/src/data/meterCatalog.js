@@ -1,5 +1,5 @@
 // Meter Catalog — Honda R&D Europe (Offenbach am Main, Germany)
-// Source: Tables 2 & 3 + Fig. 1 of Engel et al. 2025 (Scientific Data, doi:10.1038/s41597-025-05186-3)
+// Source: Tables 2 & 3 + Fig. 1 of Gruner et al. 2025 (Scientific Data, doi:10.1038/s41597-024-04263-x)
 // H1 avgKw: 2022 measured averages from draw_h1_diagram.py / draw_h1_flow.py
 // PV avgKw: proportional to panel share (H1.Z310 = 11kW ≈ 103kWp → ~0.107 W/Wp avg)
 // Other avgKw: null (individual meter CSVs not available locally)
@@ -60,8 +60,8 @@ export const METER_CATALOG = [
     buildingName: 'Emission Lab',
     type: 'electricity',
     role: 'production',
-    label: 'CHP 발전기 (주 미터)',
-    desc: 'CHP production — Viessmann Vitobloc 199kWel 열병합 발전기',
+    label: 'CHP 발전기 (원본 미터, ~2022)',
+    desc: 'CHP production — Viessmann Vitobloc 199kWel 열병합 발전기. 2022년까지 유효. H1.ZE20과 동일 선로 — 절대 합산 금지',
     avgKw: -54.7,
     tags: ['CHP'],
   },
@@ -71,10 +71,10 @@ export const METER_CATALOG = [
     buildingName: 'Emission Lab',
     type: 'electricity',
     role: 'production',
-    label: 'CHP 발전기 (백업 미터)',
-    desc: 'CHP production 백업 계량기. 2023년 교정법 대응 설치',
+    label: 'CHP 발전기 (교정 미터, 2023~)',
+    desc: 'CHP production — 2023년 교정법 대응 설치. 2023년 이후 primary 미터. H1.Z20과 동일 선로 — 절대 합산 금지',
     avgKw: -85.0,
-    tags: ['CHP', '백업미터'],
+    tags: ['CHP', '교정미터'],
   },
   {
     id: 'H1.Z310',
