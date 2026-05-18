@@ -473,7 +473,4 @@ def run_pipeline(df: pd.DataFrame) -> pd.DataFrame:
     df = flag_anomalies(df)
     df = apply_eda_corrections(df)
     df = apply_physical_constraints(df)
-    df = build_imbalance_features(df)  # 5단계 추가
-    df = build_time_features(df)       # 5단계 추가 [자의적]
     return df
-
