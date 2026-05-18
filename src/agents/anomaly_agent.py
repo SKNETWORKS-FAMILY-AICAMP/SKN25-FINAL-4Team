@@ -20,6 +20,27 @@ from ontology_indexer import embed_query
 
 DB_URL    = os.getenv("DATABASE_URL")
 
+# ── 시설 이벤트 컨텍스트 ─────────────────────────────────────────
+
+_REGIME_EVENTS = """
+Regime 경계 (설비 변경 이벤트):
+- 2019-02-13: CHP Logic 변경 (On/Off → 연속 모듈레이션)
+- 2019-06-01: PV Phase 1 설치
+- 2020-03-01: COVID-19 (가동 패턴 급변 — 부하 감소)
+- 2020-06-01: PV Phase 2 증설 (풀 용량)
+- 2020-09-09: Meter Swap (H2.Z35/Z36 → H2.Z351/Z361 교체, 6일 결측)
+- 2023-06-01: Heat Modernization (CHP 하절기 가동 패턴 변화)
+"""
+
+# 이 구간의 에너지 데이터는 실측값이 아닌 인공 보정값(과거 데이터 복사)임
+_GATEWAY_FAILURES = """
+게이트웨이 장애 구간 (인공 보정 데이터 — 이상으로 오판 금지):
+- 2020-02-13 ~ 2020-03-06: Workshop Gateway Failure #1 (전체 시스템)
+- 2020-08-20 ~ 2020-09-17: Emission Lab Gateway Failure (전체 시스템)
+- 2021-11-15 ~ 2021-12-10: Distribution Gateway Failure (전체 시스템 + 기상 10% 결측)
+- 2022-05-06 ~ 2022-07-14: Workshop Gateway Failure #2 (전체 시스템, 69일)
+"""
+
 
 # ── 날짜 파싱 ────────────────────────────────────────────────────
 
@@ -179,6 +200,11 @@ def run(state: dict) -> dict:
 시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력망: 독일 공공 전력망.
 전력 용어: "계통 전력" 또는 "외부 계통 전력"만 사용 (한전·수전량 등 한국 용어 사용 금지).
 {history_block}
+
+## 시설 이벤트 참조
+{_REGIME_EVENTS}
+{_GATEWAY_FAILURES}
+※ 게이트웨이 장애 구간의 이상은 실제 설비 문제가 아닌 인공 보정 데이터 특성일 수 있으므로 반드시 명시하세요.
 
 ## 조회 기간: {period_str}
 ## 이상탐지 결과 ({len(recent)}건, MEDIUM 이상만)

@@ -7,8 +7,12 @@ PDF 저장: reportlab 기반 (generate_pdf() 호출).
 
 import os
 import io
+import sys
 from datetime import datetime
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from anomaly_agent import _REGIME_EVENTS, _GATEWAY_FAILURES
 
 import psycopg2
 from llm_client import chat as llm_chat
@@ -213,6 +217,10 @@ def run(state: dict) -> dict:
 시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력망: 독일 공공 전력망.
 전력 용어: "계통 전력" 또는 "외부 계통 전력"만 사용 (한전·수전량 등 한국 용어 사용 금지).
 {history_block}
+
+## 시설 이벤트 참조
+{_REGIME_EVENTS}
+{_GATEWAY_FAILURES}
 
 ## 최근 KPI 데이터 (출처: {source})
 {kpi_block}
