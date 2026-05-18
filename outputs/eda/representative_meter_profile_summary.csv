@@ -1,4 +1,0 @@
-﻿meter_urn,meter_type,group_name,anomaly_target,rows,valid_rows,issue_count,invalid_segments
-H1.Z20,electric,chp,P,52585,52585,0,0
-V.K21,thermal,cooling_thermal,Tdiff,52583,52583,0,0
-H2.Z61,electric,server,P,52585,52585,0,0

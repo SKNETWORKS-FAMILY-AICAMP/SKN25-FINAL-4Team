@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Electric STL Dashboard</title>
+  <script src="https://cdn.plot.ly/plotly-3.1.0.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #f3f7fc 0%, #e8eef8 100%);
+      color: #182235;
+    }
+    .wrap {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .panel {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid #d6e0ef;
+      border-radius: 20px;
+      box-shadow: 0 18px 50px rgba(25, 43, 84, 0.08);
+      padding: 20px;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 28px;
+    }
+    p {
+      margin: 0 0 18px;
+      color: #53647f;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 280px));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #35507e;
+      letter-spacing: 0.02em;
+    }
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #bfd0ea;
+      background: #fff;
+      color: #182235;
+      font-size: 14px;
+    }
+    .meta {
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #61728e;
+    }
+    #plot {
+      width: 100%;
+      height: 1120px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <h1>Electric STL Plotly Dashboard</h1>
+      <p>계량기와 컬럼을 선택하면 4행 STL 분해 그래프가 같은 x축 범위로 함께 확대/이동됩니다.</p>
+      <div class="controls">
+        <div>
+          <label for="meter-select">Meter</label>
+          <select id="meter-select"></select>
+        </div>
+        <div>
+          <label for="feature-select">Column</label>
+          <select id="feature-select"></select>
+        </div>
+      </div>
+      <div class="meta" id="meta-text"></div>
+      <div id="plot"></div>
+    </div>
+  </div>
+  <script>
+    const manifest = {"H1.Z10": {"label": "H1.Z10 - Test", "description": "Test", "group": "test", "energy_type": "consumption", "features": [{"feature": "P", "unit": "W", "path": "electric/H1.Z10/P.js"}, {"feature": "W", "unit": null, "path": "electric/H1.Z10/W.js"}, {"feature": "PF", "unit": "ratio", "path": "electric/H1.Z10/PF.js"}, {"feature": "PF1", "unit": null, "path": "electric/H1.Z10/PF1.js"}, {"feature": "PF2", "unit": null, "path": "electric/H1.Z10/PF2.js"}, {"feature": "PF3", "unit": null, "path": "electric/H1.Z10/PF3.js"}, {"feature": "P1", "unit": null, "path": "electric/H1.Z10/P1.js"}, {"feature": "P2", "unit": null, "path": "electric/H1.Z10/P2.js"}, {"feature": "P3", "unit": null, "path": "electric/H1.Z10/P3.js"}, {"feature": "I1", "unit": "A", "path": "electric/H1.Z10/I1.js"}, {"feature": "I2", "unit": null, "path": "electric/H1.Z10/I2.js"}, {"feature": "I3", "unit": null, "path": "electric/H1.Z10/I3.js"}, {"feature": "U1", "unit": null, "path": "electric/H1.Z10/U1.js"}, {"feature": "U2", "unit": null, "path": "electric/H1.Z10/U2.js"}, {"feature": "U3", "unit": null, "path": "electric/H1.Z10/U3.js"}, {"feature": "Q", "unit": "var", "path": "electric/H1.Z10/Q.js"}, {"feature": "f", "unit": "Hz", "path": "electric/H1.Z10/f.js"}, {"feature": "W_in", "unit": null, "path": "electric/H1.Z10/W_in.js"}, {"feature": "W_out", "unit": null, "path": "electric/H1.Z10/W_out.js"}, {"feature": "Ta", "unit": "degC", "path": "electric/H1.Z10/Ta.js"}, {"feature": "Igm", "unit": "W/m2", "path": "electric/H1.Z10/Igm.js"}]}, "H1.Z13": {"label": "H1.Z13 - HVAC", "description": "HVAC", "group": "hvac", "energy_type": "consumption", "features": [{"feature": "P", "unit": "W", "path": "electric/H1.Z13/P.js"}, {"feature": "W", "unit": null, "path": "electric/H1.Z13/W.js"}, {"feature": "PF", "unit": "ratio", "path": "electric/H1.Z13/PF.js"}, {"feature": "PF1", "unit": null, "path": "electric/H1.Z13/PF1.js"}, {"feature": "PF2", "unit": null, "path": "electric/H1.Z13/PF2.js"}, {"feature": "PF3", "unit": null, "path": "electric/H1.Z13/PF3.js"}, {"feature": "P1", "unit": null, "path": "electric/H1.Z13/P1.js"}, {"feature": "P2", "unit": null, "path": "electric/H1.Z13/P2.js"}, {"feature": "P3", "unit": null, "path": "electric/H1.Z13/P3.js"}, {"feature": "I1", "unit": "A", "path": "electric/H1.Z13/I1.js"}, {"feature": "I2", "unit": null, "path": "electric/H1.Z13/I2.js"}, {"feature": "I3", "unit": null, "path": "electric/H1.Z13/I3.js"}, {"feature": "U1", "unit": null, "path": "electric/H1.Z13/U1.js"}, {"feature": "U2", "unit": null, "path": "electric/H1.Z13/U2.js"}, {"feature": "U3", "unit": null, "path": "electric/H1.Z13/U3.js"}, {"feature": "Q", "unit": "var", "path": "electric/H1.Z13/Q.js"}, {"feature": "f", "unit": "Hz", "path": "electric/H1.Z13/f.js"}, {"feature": "W_in", "unit": null, "path": "electric/H1.Z13/W_in.js"}, {"feature": "W_out", "unit": null, "path": "electric/H1.Z13/W_out.js"}, {"feature": "Ta", "unit": "degC", "path": "electric/H1.Z13/Ta.js"}, {"feature": "Igm", "unit": "W/m2", "path": "electric/H1.Z13/Igm.js"}]}, "H1.Z16": {"label": "H1.Z16 - CM1", "description": "CM1", "group": "cooling_central", "energy_type": "consumption", "features": [{"feature": "P", "unit": "W", "path": "electric/H1.Z16/P.js"}, {"feature": "W", "unit": null, "path": "electric/H1.Z16/W.js"}, {"feature": "PF", "unit": "ratio", "path": "electric/H1.Z16/PF.js"}, {"feature": "PF1", "unit": null, "path": "electric/H1.Z16/PF1.js"}, {"feature": "PF2", "unit": null, "path": "electric/H1.Z16/PF2.js"}, {"feature": "PF3", "unit": null, "path": "electric/H1.Z16/PF3.js"}, {"feature": "P1", "unit": null, "path": "electric/H1.Z16/P1.js"}, {"feature": "P2", "unit": null, "path": "electric/H1.Z16/P2.js"}, {"feature": "P3", "unit": null, "path": "electric/H1.Z16/P3.js"}, {"feature": "I1", "unit": "A", "path": "electric/H1.Z16/I1.js"}, {"feature": "I2", "unit": null, "path": "electric/H1.Z16/I2.js"}, {"feature": "I3", "unit": null, "path": "electric/H1.Z16/I3.js"}, {"feature": "U1", "unit": null, "path": "electric/H1.Z16/U1.js"}, {"feature": "U2", "unit": null, "path": "electric/H1.Z16/U2.js"}, {"feature": "U3", "unit": null, "path": "electric/H1.Z16/U3.js"}, {"feature": "Q", "unit": "var", "path": "electric/H1.Z16/Q.js"}, {"feature": "f", "unit": "Hz", "path": "electric/H1.Z16/f.js"}, {"feature": "W_in", "unit": null, "path": "electric/H1.Z16/W_in.js"}, {"feature": "W_out", "unit": null, "path": "electric/H1.Z16/W_out.js"}, {"feature": "Ta", "unit": "degC", "path": "electric/H1.Z16/Ta.js"}, {"feature": "Igm", "unit": "W/m2", "path": "electric/H1.Z16/Igm.js"}]}, "H1.Z20": {"label": "H1.Z20 - CHP 전기 생산 메인", "description": "CHP 전기 생산 메인", "group": "chp", "energy_type": "production", "features": [{"feature": "P", "unit": "W", "path": "electric/H1.Z20/P.js"}, {"feature": "W", "unit": null, "path": "electric/H1.Z20/W.js"}, {"feature": "PF", "unit": "ratio", "path": "electric/H1.Z20/PF.js"}, {"feature": "PF1", "unit": null, "path": "electric/H1.Z20/PF1.js"}, {"feature": "PF2", "unit": null, "path": "electric/H1.Z20/PF2.js"}, {"feature": "PF3", "unit": null, "path": "electric/H1.Z20/PF3.js"}, {"feature": "P1", "unit": null, "path": "electric/H1.Z20/P1.js"}, {"feature": "P2", "unit": null, "path": "electric/H1.Z20/P2.js"}, {"feature": "P3", "unit": null, "path": "electric/H1.Z20/P3.js"}, {"feature": "I1", "unit": "A", "path": "electric/H1.Z20/I1.js"}, {"feature": "I2", "unit": null, "path": "electric/H1.Z20/I2.js"}, {"feature": "I3", "unit": null, "path": "electric/H1.Z20/I3.js"}, {"feature": "U1", "unit": null, "path": "electric/H1.Z20/U1.js"}, {"feature": "U2", "unit": null, "path": "electric/H1.Z20/U2.js"}, {"feature": "U3", "unit": null, "path": "electric/H1.Z20/U3.js"}, {"feature": "Q", "unit": "var", "path": "electric/H1.Z20/Q.js"}, {"feature": "f", "unit": "Hz", "path": "electric/H1.Z20/f.js"}, {"feature": "W_in", "unit": null, "path": "electric/H1.Z20/W_in.js"}, {"feature": "W_out", "unit": null, "path": "electric/H1.Z20/W_out.js"}, {"feature": "Ta", "unit": "degC", "path": "electric/H1.Z20/Ta.js"}, {"feature": "Igm", "unit": "W/m2", "path": "electric/H1.Z20/Igm.js"}]}, "H2.T.Z33": {"label": "H2.T.Z33 - Distribution", "description": "Distribution", "group": "distribution", "energy_type": "consumption", "features": [{"feature": "P", "unit": "W", "path": "electric/H2.T.Z33/P.js"}, {"feature": "W", "unit": null, "path": "electric/H2.T.Z33/W.js"}, {"feature": "PF", "unit": "ratio", "path": "electric/H2.T.Z33/PF.js"}, {"feature": "PF1", "unit": null, "path": "electric/H2.T.Z33/PF1.js"}, {"feature": "PF2", "unit": null, "path": "electric/H2.T.Z33/PF2.js"}, {"feature": "PF3", "unit": null, "path": "electric/H2.T.Z33/PF3.js"}, {"feature": "P1", "unit": null, "path": "electric/H2.T.Z33/P1.js"}, {"feature": "P2", "unit": null, "path": "electric/H2.T.Z33/P2.js"}, {"feature": "P3", "unit": null, "path": "electric/H2.T.Z33/P3.js"}, {"feature": "I1", "unit": "A", "path": "electric/H2.T.Z33/I1.js"}, {"feature": "I2", "unit": null, "path": "electric/H2.T.Z33/I2.js"}, {"feature": "I3", "unit": null, "path": "electric/H2.T.Z33/I3.js"}, {"feature": "U1", "unit": null, "path": "electric/H2.T.Z33/U1.js"}, {"feature": "U2", "unit": null, "path": "electric/H2.T.Z33/U2.js"}, {"feature": "U3", "unit": null, "path": "electric/H2.T.Z33/U3.js"}, {"feature": "Q", "unit": "var", "path": "electric/H2.T.Z33/Q.js"}, {"feature": "f", "unit": "Hz", "path": "electric/H2.T.Z33/f.js"}, {"feature": "W_in", "unit": null, "path": "electric/H2.T.Z33/W_in.js"}, {"feature": "W_out", "unit": null, "path": "electric/H2.T.Z33/W_out.js"}, {"feature": "Ta", "unit": "degC", "path": "electric/H2.T.Z33/Ta.js"}, {"feature": "Igm", "unit": "W/m2", "path": "electric/H2.T.Z33/Igm.js"}]}, "H2.Z35": {"label": "H2.Z35 - Transformer", "description": "Transformer", "group": "transformer", "energy_type": "consumption", "features": [{"feature": "P", "unit": "W", "path": "electric/H2.Z35/P.js"}, {"feature": "W", "unit": null, "path": "electric/H2.Z35/W.js"}, {"feature": "PF", "unit": "ratio", "path": "electric/H2.Z35/PF.js"}, {"feature": "PF1", "unit": null, "path": "electric/H2.Z35/PF1.js"}, {"feature": "PF2", "unit": null, "path": "electric/H2.Z35/PF2.js"}, {"feature": "PF3", "unit": null, "path": "electric/H2.Z35/PF3.js"}, {"feature": "P1", "unit": null, "path": "electric/H2.Z35/P1.js"}, {"feature": "P2", "unit": null, "path": "electric/H2.Z35/P2.js"}, {"feature": "P3", "unit": null, "path": "electric/H2.Z35/P3.js"}, {"feature": "I1", "unit": "A", "path": "electric/H2.Z35/I1.js"}, {"feature": "I2", "unit": null, "path": "electric/H2.Z35/I2.js"}, {"feature": "I3", "unit": null, "path": "electric/H2.Z35/I3.js"}, {"feature": "U1", "unit": null, "path": "electric/H2.Z35/U1.js"}, {"feature": "U2", "unit": null, "path": "electric/H2.Z35/U2.js"}, {"feature": "U3", "unit": null, "path": "electric/H2.Z35/U3.js"}, {"feature": "Q", "unit": "var", "path": "electric/H2.Z35/Q.js"}, {"feature": "f", "unit": "Hz", "path": "electric/H2.Z35/f.js"}, {"feature": "W_in", "unit": null, "path": "electric/H2.Z35/W_in.js"}, {"feature": "W_out", "unit": null, "path": "electric/H2.Z35/W_out.js"}, {"feature": "Ta", "unit": "degC", "path": "electric/H2.Z35/Ta.js"}, {"feature": "Igm", "unit": "W/m2", "path": "electric/H2.Z35/Igm.js"}]}, "H2.Z64": {"label": "H2.Z64 - Server", "description": "Server", "group": "server", "energy_type": "consumption", "features": [{"feature": "P", "unit": "W", "path": "electric/H2.Z64/P.js"}, {"feature": "W", "unit": null, "path": "electric/H2.Z64/W.js"}, {"feature": "PF", "unit": "ratio", "path": "electric/H2.Z64/PF.js"}, {"feature": "PF1", "unit": null, "path": "electric/H2.Z64/PF1.js"}, {"feature": "PF2", "unit": null, "path": "electric/H2.Z64/PF2.js"}, {"feature": "PF3", "unit": null, "path": "electric/H2.Z64/PF3.js"}, {"feature": "P1", "unit": null, "path": "electric/H2.Z64/P1.js"}, {"feature": "P2", "unit": null, "path": "electric/H2.Z64/P2.js"}, {"feature": "P3", "unit": null, "path": "electric/H2.Z64/P3.js"}, {"feature": "I1", "unit": "A", "path": "electric/H2.Z64/I1.js"}, {"feature": "I2", "unit": null, "path": "electric/H2.Z64/I2.js"}, {"feature": "I3", "unit": null, "path": "electric/H2.Z64/I3.js"}, {"feature": "U1", "unit": null, "path": "electric/H2.Z64/U1.js"}, {"feature": "U2", "unit": null, "path": "electric/H2.Z64/U2.js"}, {"feature": "U3", "unit": null, "path": "electric/H2.Z64/U3.js"}, {"feature": "Q", "unit": "var", "path": "electric/H2.Z64/Q.js"}, {"feature": "f", "unit": "Hz", "path": "electric/H2.Z64/f.js"}, {"feature": "W_in", "unit": null, "path": "electric/H2.Z64/W_in.js"}, {"feature": "W_out", "unit": null, "path": "electric/H2.Z64/W_out.js"}, {"feature": "Ta", "unit": "degC", "path": "electric/H2.Z64/Ta.js"}, {"feature": "Igm", "unit": "W/m2", "path": "electric/H2.Z64/Igm.js"}]}, "H2.Z68": {"label": "H2.Z68 - Ventilation", "description": "Ventilation", "group": "ventilation", "energy_type": "consumption", "features": [{"feature": "P", "unit": "W", "path": "electric/H2.Z68/P.js"}, {"feature": "W", "unit": null, "path": "electric/H2.Z68/W.js"}, {"feature": "PF", "unit": "ratio", "path": "electric/H2.Z68/PF.js"}, {"feature": "PF1", "unit": null, "path": "electric/H2.Z68/PF1.js"}, {"feature": "PF2", "unit": null, "path": "electric/H2.Z68/PF2.js"}, {"feature": "PF3", "unit": null, "path": "electric/H2.Z68/PF3.js"}, {"feature": "P1", "unit": null, "path": "electric/H2.Z68/P1.js"}, {"feature": "P2", "unit": null, "path": "electric/H2.Z68/P2.js"}, {"feature": "P3", "unit": null, "path": "electric/H2.Z68/P3.js"}, {"feature": "I1", "unit": "A", "path": "electric/H2.Z68/I1.js"}, {"feature": "I2", "unit": null, "path": "electric/H2.Z68/I2.js"}, {"feature": "I3", "unit": null, "path": "electric/H2.Z68/I3.js"}, {"feature": "U1", "unit": null, "path": "electric/H2.Z68/U1.js"}, {"feature": "U2", "unit": null, "path": "electric/H2.Z68/U2.js"}, {"feature": "U3", "unit": null, "path": "electric/H2.Z68/U3.js"}, {"feature": "Q", "unit": "var", "path": "electric/H2.Z68/Q.js"}, {"feature": "f", "unit": "Hz", "path": "electric/H2.Z68/f.js"}, {"feature": "W_in", "unit": null, "path": "electric/H2.Z68/W_in.js"}, {"feature": "W_out", "unit": null, "path": "electric/H2.Z68/W_out.js"}, {"feature": "Ta", "unit": "degC", "path": "electric/H2.Z68/Ta.js"}, {"feature": "Igm", "unit": "W/m2", "path": "electric/H2.Z68/Igm.js"}]}, "H2.ZE64": {"label": "H2.ZE64 - Server redundant", "description": "Server redundant", "group": "server", "energy_type": "consumption", "features": [{"feature": "P", "unit": "W", "path": "electric/H2.ZE64/P.js"}, {"feature": "W", "unit": null, "path": "electric/H2.ZE64/W.js"}, {"feature": "PF", "unit": "ratio", "path": "electric/H2.ZE64/PF.js"}, {"feature": "PF1", "unit": null, "path": "electric/H2.ZE64/PF1.js"}, {"feature": "PF2", "unit": null, "path": "electric/H2.ZE64/PF2.js"}, {"feature": "PF3", "unit": null, "path": "electric/H2.ZE64/PF3.js"}, {"feature": "P1", "unit": null, "path": "electric/H2.ZE64/P1.js"}, {"feature": "P2", "unit": null, "path": "electric/H2.ZE64/P2.js"}, {"feature": "P3", "unit": null, "path": "electric/H2.ZE64/P3.js"}, {"feature": "I1", "unit": "A", "path": "electric/H2.ZE64/I1.js"}, {"feature": "I2", "unit": null, "path": "electric/H2.ZE64/I2.js"}, {"feature": "I3", "unit": null, "path": "electric/H2.ZE64/I3.js"}, {"feature": "U1", "unit": null, "path": "electric/H2.ZE64/U1.js"}, {"feature": "U2", "unit": null, "path": "electric/H2.ZE64/U2.js"}, {"feature": "U3", "unit": null, "path": "electric/H2.ZE64/U3.js"}, {"feature": "f", "unit": "Hz", "path": "electric/H2.ZE64/f.js"}, {"feature": "W_in", "unit": null, "path": "electric/H2.ZE64/W_in.js"}, {"feature": "W_out", "unit": null, "path": "electric/H2.ZE64/W_out.js"}, {"feature": "Ta", "unit": "degC", "path": "electric/H2.ZE64/Ta.js"}, {"feature": "Igm", "unit": "W/m2", "path": "electric/H2.ZE64/Igm.js"}]}, "H4.Z50": {"label": "H4.Z50 - Office distribution", "description": "Office distribution", "group": "office_dis", "energy_type": "consumption", "features": [{"feature": "P", "unit": "W", "path": "electric/H4.Z50/P.js"}, {"feature": "W", "unit": null, "path": "electric/H4.Z50/W.js"}, {"feature": "PF", "unit": "ratio", "path": "electric/H4.Z50/PF.js"}, {"feature": "PF1", "unit": null, "path": "electric/H4.Z50/PF1.js"}, {"feature": "PF2", "unit": null, "path": "electric/H4.Z50/PF2.js"}, {"feature": "PF3", "unit": null, "path": "electric/H4.Z50/PF3.js"}, {"feature": "P1", "unit": null, "path": "electric/H4.Z50/P1.js"}, {"feature": "P2", "unit": null, "path": "electric/H4.Z50/P2.js"}, {"feature": "P3", "unit": null, "path": "electric/H4.Z50/P3.js"}, {"feature": "I1", "unit": "A", "path": "electric/H4.Z50/I1.js"}, {"feature": "I2", "unit": null, "path": "electric/H4.Z50/I2.js"}, {"feature": "I3", "unit": null, "path": "electric/H4.Z50/I3.js"}, {"feature": "U1", "unit": null, "path": "electric/H4.Z50/U1.js"}, {"feature": "U2", "unit": null, "path": "electric/H4.Z50/U2.js"}, {"feature": "U3", "unit": null, "path": "electric/H4.Z50/U3.js"}, {"feature": "Q", "unit": "var", "path": "electric/H4.Z50/Q.js"}, {"feature": "f", "unit": "Hz", "path": "electric/H4.Z50/f.js"}, {"feature": "W_in", "unit": null, "path": "electric/H4.Z50/W_in.js"}, {"feature": "W_out", "unit": null, "path": "electric/H4.Z50/W_out.js"}, {"feature": "Ta", "unit": "degC", "path": "electric/H4.Z50/Ta.js"}, {"feature": "Igm", "unit": "W/m2", "path": "electric/H4.Z50/Igm.js"}]}, "V.Z84": {"label": "V.Z84 - PV 그룹1&2 메인", "description": "PV 그룹1&2 메인", "group": "pv", "energy_type": "production", "features": [{"feature": "P", "unit": "W", "path": "electric/V.Z84/P.js"}, {"feature": "W", "unit": null, "path": "electric/V.Z84/W.js"}, {"feature": "PF1", "unit": null, "path": "electric/V.Z84/PF1.js"}, {"feature": "PF2", "unit": null, "path": "electric/V.Z84/PF2.js"}, {"feature": "PF3", "unit": null, "path": "electric/V.Z84/PF3.js"}, {"feature": "P1", "unit": null, "path": "electric/V.Z84/P1.js"}, {"feature": "P2", "unit": null, "path": "electric/V.Z84/P2.js"}, {"feature": "P3", "unit": null, "path": "electric/V.Z84/P3.js"}, {"feature": "I1", "unit": "A", "path": "electric/V.Z84/I1.js"}, {"feature": "I2", "unit": null, "path": "electric/V.Z84/I2.js"}, {"feature": "I3", "unit": null, "path": "electric/V.Z84/I3.js"}, {"feature": "U1", "unit": null, "path": "electric/V.Z84/U1.js"}, {"feature": "U2", "unit": null, "path": "electric/V.Z84/U2.js"}, {"feature": "U3", "unit": null, "path": "electric/V.Z84/U3.js"}, {"feature": "W_in", "unit": null, "path": "electric/V.Z84/W_in.js"}, {"feature": "W_out", "unit": null, "path": "electric/V.Z84/W_out.js"}, {"feature": "Ta", "unit": "degC", "path": "electric/V.Z84/Ta.js"}, {"feature": "Igm", "unit": "W/m2", "path": "electric/V.Z84/Igm.js"}]}};
+    const meterSelect = document.getElementById("meter-select");
+    const featureSelect = document.getElementById("feature-select");
+    const metaText = document.getElementById("meta-text");
+    let activeScript = null;
+
+    function setOptions(selectEl, options) {
+      selectEl.innerHTML = "";
+      options.forEach((option) => {
+        const el = document.createElement("option");
+        el.value = option.value;
+        el.textContent = option.label;
+        selectEl.appendChild(el);
+      });
+    }
+
+    function initMeterOptions() {
+      const options = Object.entries(manifest).map(([meter, info]) => {
+        return { value: meter, label: info.label };
+      });
+      setOptions(meterSelect, options);
+    }
+
+    function updateFeatureOptions() {
+      const meterInfo = manifest[meterSelect.value];
+      const options = meterInfo.features.map((item) => {
+        const label = item.unit ? `${item.feature} [${item.unit}]` : item.feature;
+        return { value: item.feature, label };
+      });
+      setOptions(featureSelect, options);
+    }
+
+    function loadFeaturePayload(path) {
+      return new Promise((resolve, reject) => {
+        if (activeScript) {
+          activeScript.remove();
+          activeScript = null;
+        }
+        delete window.STL_PAYLOAD;
+        const script = document.createElement("script");
+        script.src = path + "?t=" + Date.now();
+        script.onload = () => resolve(window.STL_PAYLOAD);
+        script.onerror = () => reject(new Error("payload load failed"));
+        activeScript = script;
+        document.body.appendChild(script);
+      });
+    }
+
+    function buildTitle(payload) {
+      const unit = payload.unit ? ` [${payload.unit}]` : "";
+      return `${payload.meter_urn} - ${payload.feature} STL 분해 (±3σ)${unit}`;
+    }
+
+    async function renderPlot() {
+      const meterInfo = manifest[meterSelect.value];
+      const featureInfo = meterInfo.features.find((item) => item.feature === featureSelect.value);
+      if (!featureInfo) {
+        return;
+      }
+
+      const payload = await loadFeaturePayload(featureInfo.path);
+      metaText.textContent =
+        `description=${meterInfo.description || "-"} | group=${meterInfo.group || "-"} | ` +
+        `energy=${meterInfo.energy_type || "-"} | total=${payload.n_total} | ` +
+        `anomaly=${payload.n_anomaly} (${payload.ratio.toFixed(2)}%) | null_ratio=${payload.null_ratio.toFixed(2)}%`;
+
+      const commonLine = {
+        mode: "lines",
+        type: "scattergl",
+        line: { width: 1 },
+        hovertemplate: "%{x}<br>%{y}<extra></extra>",
+      };
+
+      const traces = [
+        {
+          ...commonLine,
+          x: payload.ts,
+          y: payload.observed,
+          name: "Observed",
+          line: { color: "steelblue", width: 1 },
+          xaxis: "x",
+          yaxis: "y",
+        },
+        {
+          ...commonLine,
+          x: payload.ts,
+          y: payload.trend,
+          name: "Trend",
+          line: { color: "orange", width: 1 },
+          xaxis: "x2",
+          yaxis: "y2",
+        },
+        {
+          ...commonLine,
+          x: payload.ts,
+          y: payload.seasonal,
+          name: "Seasonal",
+          line: { color: "green", width: 1 },
+          xaxis: "x3",
+          yaxis: "y3",
+        },
+        {
+          ...commonLine,
+          x: payload.ts,
+          y: payload.residual,
+          name: "Residual",
+          line: { color: "gray", width: 1 },
+          xaxis: "x4",
+          yaxis: "y4",
+        },
+        {
+          type: "scattergl",
+          mode: "markers",
+          x: payload.anomaly_ts,
+          y: payload.anomaly_values,
+          name: "Residual anomaly",
+          marker: { color: "red", size: 5 },
+          xaxis: "x4",
+          yaxis: "y4",
+          hovertemplate: "%{x}<br>anomaly=%{y}<extra></extra>",
+        },
+      ];
+
+      const annotations = [
+        { text: "Observed", x: 0, xref: "paper", y: 1.0, yref: "paper", xanchor: "left", yanchor: "bottom", showarrow: false, font: { size: 12, color: "#182235" } },
+        { text: "Trend", x: 0, xref: "paper", y: 0.74, yref: "paper", xanchor: "left", yanchor: "bottom", showarrow: false, font: { size: 12, color: "#182235" } },
+        { text: "Seasonal", x: 0, xref: "paper", y: 0.48, yref: "paper", xanchor: "left", yanchor: "bottom", showarrow: false, font: { size: 12, color: "#182235" } },
+        { text: "Residual", x: 0, xref: "paper", y: 0.22, yref: "paper", xanchor: "left", yanchor: "bottom", showarrow: false, font: { size: 12, color: "#182235" } },
+      ];
+
+      const upperShapes = [0, 1, 2, 3].map((idx) => null).filter(Boolean);
+      upperShapes.push(
+        {
+          type: "line",
+          xref: "x4",
+          yref: "y4",
+          x0: payload.ts[0],
+          x1: payload.ts[payload.ts.length - 1],
+          y0: payload.upper,
+          y1: payload.upper,
+          line: { color: "red", width: 1, dash: "dash" },
+        },
+        {
+          type: "line",
+          xref: "x4",
+          yref: "y4",
+          x0: payload.ts[0],
+          x1: payload.ts[payload.ts.length - 1],
+          y0: payload.lower,
+          y1: payload.lower,
+          line: { color: "red", width: 1, dash: "dash" },
+        },
+        {
+          type: "line",
+          xref: "x4",
+          yref: "y4",
+          x0: payload.ts[0],
+          x1: payload.ts[payload.ts.length - 1],
+          y0: payload.mean,
+          y1: payload.mean,
+          line: { color: "black", width: 1, dash: "dot" },
+        }
+      );
+
+      const layout = {
+        title: { text: buildTitle(payload) },
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "#ffffff",
+        font: { family: "Segoe UI, sans-serif", color: "#182235" },
+        hovermode: "x unified",
+        showlegend: false,
+        margin: { l: 80, r: 30, t: 80, b: 60 },
+        height: 1120,
+        annotations,
+        shapes: upperShapes,
+        xaxis: { domain: [0, 1], anchor: "y", matches: "x4", showticklabels: false },
+        xaxis2: { domain: [0, 1], anchor: "y2", matches: "x4", showticklabels: false },
+        xaxis3: { domain: [0, 1], anchor: "y3", matches: "x4", showticklabels: false },
+        xaxis4: { domain: [0, 1], anchor: "y4", rangeslider: { visible: true }, title: { text: "Time" } },
+        yaxis: { domain: [0.78, 1.0], title: { text: "Observed" } },
+        yaxis2: { domain: [0.52, 0.74], title: { text: "Trend" } },
+        yaxis3: { domain: [0.26, 0.48], title: { text: "Seasonal" } },
+        yaxis4: { domain: [0.0, 0.22], title: { text: "Residual" } },
+      };
+
+      Plotly.react("plot", traces, layout, { responsive: true, displaylogo: false });
+    }
+
+    meterSelect.addEventListener("change", async () => {
+      updateFeatureOptions();
+      await renderPlot();
+    });
+
+    featureSelect.addEventListener("change", renderPlot);
+
+    async function init() {
+      initMeterOptions();
+      updateFeatureOptions();
+      await renderPlot();
+    }
+
+    init();
+  </script>
+</body>
+</html>

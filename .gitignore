@@ -1,6 +1,7 @@
+api/
 .env
 AGENTS.md
-WORKlog.md
+WORKLOG.md
 
 # Python
 __pycache__/
@@ -19,9 +20,6 @@ env/
 # Jupyter
 .ipynb_checkpoints/
 
-# Data files (raw & processed)
-data/raw/
-data/processed/
 
 # Model artifacts
 *.h5
@@ -35,7 +33,26 @@ data/processed/
 mlflow/
 
 # Generated outputs
-outputs/
+outputs/eda/
+outputs/h1z16_ensemble/
+outputs/h1z16_if/
+outputs/h1z16_lstm/
+outputs/h1z16_stl/
+outputs/redundant_pair_compare
+outputs/redundant_pair_compare_raw/
+outputs/raw_eda/electric_6year/
+outputs/raw_eda/electric_plotly_6year/
+outputs/raw_eda/electric_plotly_seasonal/
+outputs/raw_eda/electric_seasonal/
+outputs/raw_eda/electric_plotly_yearly/
+outputs/raw_eda/electric_yearly/
+outputs/raw_eda/thermal_6year/
+outputs/raw_eda/thermal_plotly_6year/
+outputs/raw_eda/thermal_plotly_seasonal/
+outputs/raw_eda/thermal_seasonal/
+outputs/raw_eda/thermal_plotly_yearly/
+outputs/raw_eda/thermal_yearly/
+
 
 # Logs
 *.log

@@ -25,10 +25,13 @@ from scripts.fetch_h1z16_with_weather import (
 )
 
 
-OUTPUT_ROOT = PROJECT_ROOT / "outputs" / "raw_eda"
-SIX_YEAR_DIR = OUTPUT_ROOT / "electric_6year"
-YEARLY_DIR = OUTPUT_ROOT / "electric_yearly"
-SEASONAL_DIR = OUTPUT_ROOT / "electric_seasonal"
+OUTPUT_ROOT = PROJECT_ROOT / "outputs" / "raw_eda" / "correlation" / "static"
+SIX_YEAR_DIR = OUTPUT_ROOT / "png" / "electric" / "6year"
+YEARLY_DIR = OUTPUT_ROOT / "png" / "electric" / "yearly"
+SEASONAL_DIR = OUTPUT_ROOT / "png" / "electric" / "seasonal"
+SIX_YEAR_CSV_DIR = OUTPUT_ROOT / "csv" / "electric" / "6year"
+YEARLY_CSV_DIR = OUTPUT_ROOT / "csv" / "electric" / "yearly"
+SEASONAL_CSV_DIR = OUTPUT_ROOT / "csv" / "electric" / "seasonal"
 
 MIN_PERIOD_ROWS = 24
 MAX_HEATMAP_COLUMNS = 20
@@ -480,6 +483,9 @@ def main() -> None:
     SIX_YEAR_DIR.mkdir(parents=True, exist_ok=True)
     YEARLY_DIR.mkdir(parents=True, exist_ok=True)
     SEASONAL_DIR.mkdir(parents=True, exist_ok=True)
+    SIX_YEAR_CSV_DIR.mkdir(parents=True, exist_ok=True)
+    YEARLY_CSV_DIR.mkdir(parents=True, exist_ok=True)
+    SEASONAL_CSV_DIR.mkdir(parents=True, exist_ok=True)
 
     engine = build_engine()
     weather_df, weather_columns = fetch_weather_df(engine)
@@ -542,13 +548,16 @@ def main() -> None:
                 )
             )
 
-    save_outputs(SIX_YEAR_DIR, all_six_year_summary, all_six_year_long)
-    save_outputs(YEARLY_DIR, all_yearly_summary, all_yearly_long)
-    save_outputs(SEASONAL_DIR, all_seasonal_summary, all_seasonal_long)
+    save_outputs(SIX_YEAR_CSV_DIR, all_six_year_summary, all_six_year_long)
+    save_outputs(YEARLY_CSV_DIR, all_yearly_summary, all_yearly_long)
+    save_outputs(SEASONAL_CSV_DIR, all_seasonal_summary, all_seasonal_long)
 
-    logger.info("6year 저장: %s", SIX_YEAR_DIR)
-    logger.info("yearly 저장: %s", YEARLY_DIR)
-    logger.info("seasonal 저장: %s", SEASONAL_DIR)
+    logger.info("6year PNG 저장: %s", SIX_YEAR_DIR)
+    logger.info("yearly PNG 저장: %s", YEARLY_DIR)
+    logger.info("seasonal PNG 저장: %s", SEASONAL_DIR)
+    logger.info("6year CSV 저장: %s", SIX_YEAR_CSV_DIR)
+    logger.info("yearly CSV 저장: %s", YEARLY_CSV_DIR)
+    logger.info("seasonal CSV 저장: %s", SEASONAL_CSV_DIR)
 
 
 if __name__ == "__main__":
