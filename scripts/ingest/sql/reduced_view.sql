@@ -30,12 +30,14 @@ WITH agg AS (
     GROUP BY ts, measurement
 
     UNION ALL
-    -- Electricity: CHP
-    SELECT ts, 'electricity' AS category, 'chp' AS subcategory, measurement, SUM(value) AS value
+    -- Electricity: CHP (H1.ZE20 우선, 없으면 H1.Z20 fallback — 동일 선로 이중계측, 합산 금지)
+    SELECT DISTINCT ON (ts, measurement)
+        ts, 'electricity' AS category, 'chp' AS subcategory, measurement, value
     FROM ems.cr_measurement_15min
-    WHERE meter_urn = 'H1.Z20'
+    WHERE meter_urn IN ('H1.ZE20', 'H1.Z20')
       AND measurement IN ('P', 'W', 'Q', 'WQ')
-    GROUP BY ts, measurement
+    ORDER BY ts, measurement,
+             CASE meter_urn WHEN 'H1.ZE20' THEN 1 ELSE 2 END
 
     UNION ALL
     -- Heating: total
@@ -54,12 +56,14 @@ WITH agg AS (
     GROUP BY ts, measurement
 
     UNION ALL
-    -- Heating: chp_elec
-    SELECT ts, 'heating' AS category, 'chp_elec' AS subcategory, measurement, SUM(value) AS value
+    -- Heating: chp_elec (H1.ZE20 우선, 없으면 H1.Z20 fallback)
+    SELECT DISTINCT ON (ts, measurement)
+        ts, 'heating' AS category, 'chp_elec' AS subcategory, measurement, value
     FROM ems.cr_measurement_15min
-    WHERE meter_urn = 'H1.Z20'
+    WHERE meter_urn IN ('H1.ZE20', 'H1.Z20')
       AND measurement IN ('P', 'W')
-    GROUP BY ts, measurement
+    ORDER BY ts, measurement,
+             CASE meter_urn WHEN 'H1.ZE20' THEN 1 ELSE 2 END
 
     UNION ALL
     -- Cooling: total
@@ -106,12 +110,14 @@ WITH agg AS (
     GROUP BY ts, measurement
 
     UNION ALL
-    -- Electricity: CHP
-    SELECT ts, 'electricity' AS category, 'chp' AS subcategory, measurement, SUM(value) AS value
+    -- Electricity: CHP (H1.ZE20 우선, 없으면 H1.Z20 fallback — 동일 선로 이중계측, 합산 금지)
+    SELECT DISTINCT ON (ts, measurement)
+        ts, 'electricity' AS category, 'chp' AS subcategory, measurement, value
     FROM ems.cr_measurement_1h
-    WHERE meter_urn = 'H1.Z20'
+    WHERE meter_urn IN ('H1.ZE20', 'H1.Z20')
       AND measurement IN ('P', 'W', 'Q', 'WQ')
-    GROUP BY ts, measurement
+    ORDER BY ts, measurement,
+             CASE meter_urn WHEN 'H1.ZE20' THEN 1 ELSE 2 END
 
     UNION ALL
     -- Heating: total
@@ -130,12 +136,14 @@ WITH agg AS (
     GROUP BY ts, measurement
 
     UNION ALL
-    -- Heating: chp_elec
-    SELECT ts, 'heating' AS category, 'chp_elec' AS subcategory, measurement, SUM(value) AS value
+    -- Heating: chp_elec (H1.ZE20 우선, 없으면 H1.Z20 fallback)
+    SELECT DISTINCT ON (ts, measurement)
+        ts, 'heating' AS category, 'chp_elec' AS subcategory, measurement, value
     FROM ems.cr_measurement_1h
-    WHERE meter_urn = 'H1.Z20'
+    WHERE meter_urn IN ('H1.ZE20', 'H1.Z20')
       AND measurement IN ('P', 'W')
-    GROUP BY ts, measurement
+    ORDER BY ts, measurement,
+             CASE meter_urn WHEN 'H1.ZE20' THEN 1 ELSE 2 END
 
     UNION ALL
     -- Cooling: total
