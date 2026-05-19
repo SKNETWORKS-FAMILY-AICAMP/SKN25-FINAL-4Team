@@ -34,3 +34,4 @@ tmp/
 compose.dev.yml
 docker/Dockerfile.dev
 docker/local.env.example
+mlruns/
