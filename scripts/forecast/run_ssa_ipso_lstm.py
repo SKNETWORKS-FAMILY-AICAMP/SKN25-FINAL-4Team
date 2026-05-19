@@ -50,8 +50,8 @@ LR          = 0.001
 BATCH_SIZE_DEFAULT = 24
 FUZZY_ENTROPY_SAMPLE = 500  # O(N²) 방지용 샘플링 크기
 
-IPSO_MAX_ITER   = 50
-IPSO_N_PARTICLES = 10
+IPSO_MAX_ITER   = 10
+IPSO_N_PARTICLES = 5
 W_MAX, W_MIN    = 0.9, 0.2
 C1, C2          = 2.0, 2.0
 
