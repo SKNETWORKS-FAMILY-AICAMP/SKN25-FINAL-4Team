@@ -1,0 +1,16 @@
+meter_urn,status,train_sequences,validation_sequences,test_sequences,train_time_sec,device,missing_before_fill,observed_rows,fit_rows,mlflow_run_id,val.MAE,val.RMSE,val.MAPE,test.MAE,test.RMSE,test.MAPE,chunk,reason
+H1.ZE20,skipped,0,760,8735,,,43065,9519,33264,,,,,,,,full_p_meters_chunk2_seq24_e10_mlflow,insufficient_sequences
+H2.Z35,skipped,22512,0,0,,,29004,23580,33264,,,,,,,,full_p_meters_chunk2_seq24_e10_mlflow,insufficient_sequences
+H2.Z36,skipped,22512,0,0,,,29004,23580,33264,,,,,,,,full_p_meters_chunk2_seq24_e10_mlflow,insufficient_sequences
+H2.ZE64,skipped,0,6826,8735,,,36999,15585,33264,,,,,,,,full_p_meters_chunk3_seq24_e10_mlflow,insufficient_sequences
+H2.ZE65,skipped,0,6826,8206,,,37528,15056,33264,,,,,,,,full_p_meters_chunk3_seq24_e10_mlflow,insufficient_sequences
+H2.ZE66,skipped,0,6826,8735,,,36999,15585,33264,,,,,,,,full_p_meters_chunk3_seq24_e10_mlflow,insufficient_sequences
+H2.ZE67,skipped,0,6826,8735,,,36999,15585,33264,,,,,,,,full_p_meters_chunk3_seq24_e10_mlflow,insufficient_sequences
+H2.ZE74,skipped,0,6922,8735,,,36903,15681,33264,,,,,,,,full_p_meters_chunk3_seq24_e10_mlflow,insufficient_sequences
+H3.ZE40,skipped,0,6927,8735,,,36898,15686,33264,,,,,,,,full_p_meters_chunk4_seq24_e10_mlflow,insufficient_sequences
+H3.ZE41,skipped,0,6927,8735,,,36898,15686,33264,,,,,,,,full_p_meters_chunk4_seq24_e10_mlflow,insufficient_sequences
+H3.ZE43,skipped,0,6927,8735,,,36898,15686,33264,,,,,,,,full_p_meters_chunk4_seq24_e10_mlflow,insufficient_sequences
+H3.ZE44,skipped,0,6927,8735,,,36898,15686,33264,,,,,,,,full_p_meters_chunk4_seq24_e10_mlflow,insufficient_sequences
+H4.ZE50,skipped,0,6829,8735,,,36996,15588,33264,,,,,,,,full_p_meters_chunk4_seq24_e10_mlflow,insufficient_sequences
+H4.ZE51,skipped,0,6829,8735,,,36996,15588,33264,,,,,,,,full_p_meters_chunk4_seq24_e10_mlflow,insufficient_sequences
+V.ZE84,skipped,0,921,8735,,,42904,9680,33264,,,,,,,,full_p_meters_chunk4_seq24_e10_mlflow,insufficient_sequences

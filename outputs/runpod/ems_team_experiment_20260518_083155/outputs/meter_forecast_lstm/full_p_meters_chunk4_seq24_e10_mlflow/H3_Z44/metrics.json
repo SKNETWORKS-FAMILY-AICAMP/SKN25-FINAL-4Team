@@ -1,0 +1,23 @@
+{
+  "meter_urn": "H3.Z44",
+  "status": "completed",
+  "val": {
+    "MAE": 434.4229431152344,
+    "RMSE": 790.4684448242188,
+    "MAPE": 131.8398895263672
+  },
+  "test": {
+    "MAE": 420.7737121582031,
+    "RMSE": 797.2222290039062,
+    "MAPE": 119.44169616699219
+  },
+  "train_sequences": 32449,
+  "validation_sequences": 8736,
+  "test_sequences": 8735,
+  "train_time_sec": 4.7979419231414795,
+  "device": "cuda",
+  "missing_before_fill": 744,
+  "observed_rows": 51840,
+  "fit_rows": 33264,
+  "mlflow_run_id": "05db8f302e1c4e688dcd712bf527465e"
+}

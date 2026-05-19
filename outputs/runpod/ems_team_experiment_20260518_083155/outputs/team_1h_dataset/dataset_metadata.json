@@ -1,0 +1,93 @@
+{
+  "created_at": "2026-05-18T07:29:21.758962+00:00",
+  "source_relation": "ems.reduced_measurement_1h (derived from ems.cr_measurement_1h)",
+  "target": "grid_P",
+  "feature_cols": [
+    "grid_P",
+    "pv_P",
+    "chp_P",
+    "Ta",
+    "Igm",
+    "hour_sin",
+    "hour_cos",
+    "dow_sin",
+    "dow_cos",
+    "month_sin",
+    "month_cos"
+  ],
+  "p_sign_convention": "positive = consumption / grid import; negative = generation / grid export",
+  "target_definition": "grid_P is non-negative grid import/consumption active power, computed as max(raw signed grid transformer aggregate P, 0); target y is next-hour grid_P",
+  "model_sign_convention": {
+    "grid_P": "non-negative grid import/consumption; raw signed value preserved as raw_grid_P",
+    "pv_P": "raw signed PV P; negative when generating",
+    "chp_P": "raw signed CHP P; negative when generating"
+  },
+  "split": {
+    "train": "2018-01-01 <= ts < 2022-01-01",
+    "validation": "2022-01-01 <= ts < 2023-01-01",
+    "test": "2023-01-01 <= ts < 2024-01-01"
+  },
+  "gateway_outages": [
+    {
+      "name": "Workshop gateway failure #1",
+      "start": "2020-02-13 00:00:00+00",
+      "end": "2020-03-06 00:00:00+00"
+    },
+    {
+      "name": "Emission lab gateway failure",
+      "start": "2020-08-20 00:00:00+00",
+      "end": "2020-09-17 00:00:00+00"
+    },
+    {
+      "name": "Distribution gateway failure",
+      "start": "2021-11-15 00:00:00+00",
+      "end": "2021-12-10 00:00:00+00"
+    },
+    {
+      "name": "Workshop gateway failure #2",
+      "start": "2022-05-06 00:00:00+00",
+      "end": "2022-07-14 00:00:00+00"
+    }
+  ],
+  "missing_policy": "fill model value columns with 0 after observed flags are stored",
+  "scaler": "MinMaxScaler(feature_range=(0,1), clip=True, fit on train rows excluding gateway outages)",
+  "missing_before_fill": {
+    "grid_P": 1,
+    "pv_P": 13055,
+    "chp_P": 1,
+    "Ta": 1235,
+    "Igm": 1235
+  },
+  "outputs": {
+    "raw": "/workspace/ems_team_experiment/outputs/team_1h_dataset/team_1h_features_raw.parquet",
+    "scaled": "/workspace/ems_team_experiment/outputs/team_1h_dataset/team_1h_features_scaled.parquet",
+    "scaler": "/workspace/ems_team_experiment/outputs/team_1h_dataset/minmax_scaler.pkl",
+    "split_summary": "/workspace/ems_team_experiment/outputs/team_1h_dataset/split_summary.csv"
+  },
+  "scaler_data_min": {
+    "grid_P": 0.0,
+    "pv_P": -560494.125,
+    "chp_P": -212801.34375,
+    "Ta": -10.81519889831543,
+    "Igm": 0.0,
+    "hour_sin": -1.0,
+    "hour_cos": -1.0,
+    "dow_sin": -0.9749279022216797,
+    "dow_cos": -0.9009688496589661,
+    "month_sin": -1.0,
+    "month_cos": -1.0
+  },
+  "scaler_data_max": {
+    "grid_P": 661302.0625,
+    "pv_P": 19.763418197631836,
+    "chp_P": 21529.427734375,
+    "Ta": 39.349571228027344,
+    "Igm": 990.3561401367188,
+    "hour_sin": 1.0,
+    "hour_cos": 1.0,
+    "dow_sin": 0.9749279022216797,
+    "dow_cos": 1.0,
+    "month_sin": 1.0,
+    "month_cos": 1.0
+  }
+}

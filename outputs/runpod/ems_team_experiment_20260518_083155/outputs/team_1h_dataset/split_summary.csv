@@ -1,0 +1,4 @@
+split,rows,gateway_outage_rows,grid_P_observed,pv_P_observed,chp_P_observed,Ta_observed,Igm_observed
+test,8760,0,8759,8759,8759,8759,8759
+train,35064,1800,35064,22010,35064,33961,33961
+validation,8760,1656,8760,8760,8760,8629,8629

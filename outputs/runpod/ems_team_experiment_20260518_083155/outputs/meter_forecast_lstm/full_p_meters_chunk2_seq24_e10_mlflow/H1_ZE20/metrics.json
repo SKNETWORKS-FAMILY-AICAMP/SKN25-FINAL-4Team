@@ -1,0 +1,11 @@
+{
+  "meter_urn": "H1.ZE20",
+  "status": "skipped",
+  "reason": "insufficient_sequences",
+  "train_sequences": 0,
+  "validation_sequences": 760,
+  "test_sequences": 8735,
+  "missing_before_fill": 43065,
+  "observed_rows": 9519,
+  "fit_rows": 33264
+}

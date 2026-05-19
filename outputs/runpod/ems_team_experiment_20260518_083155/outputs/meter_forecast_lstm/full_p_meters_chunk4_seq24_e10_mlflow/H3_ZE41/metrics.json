@@ -1,0 +1,11 @@
+{
+  "meter_urn": "H3.ZE41",
+  "status": "skipped",
+  "reason": "insufficient_sequences",
+  "train_sequences": 0,
+  "validation_sequences": 6927,
+  "test_sequences": 8735,
+  "missing_before_fill": 36898,
+  "observed_rows": 15686,
+  "fit_rows": 33264
+}

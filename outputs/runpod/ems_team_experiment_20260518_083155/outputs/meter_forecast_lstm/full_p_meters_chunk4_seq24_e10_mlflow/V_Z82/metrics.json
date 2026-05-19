@@ -1,0 +1,23 @@
+{
+  "meter_urn": "V.Z82",
+  "status": "completed",
+  "val": {
+    "MAE": 12358.1259765625,
+    "RMSE": 18195.486328125,
+    "MAPE": 611.0801391601562
+  },
+  "test": {
+    "MAE": 17180.470703125,
+    "RMSE": 24642.31640625,
+    "MAPE": 555.564453125
+  },
+  "train_sequences": 33168,
+  "validation_sequences": 8736,
+  "test_sequences": 8735,
+  "train_time_sec": 4.324477195739746,
+  "device": "cuda",
+  "missing_before_fill": 1,
+  "observed_rows": 52583,
+  "fit_rows": 33264,
+  "mlflow_run_id": "ecb213d7ce12420ab1ef24079de64771"
+}
