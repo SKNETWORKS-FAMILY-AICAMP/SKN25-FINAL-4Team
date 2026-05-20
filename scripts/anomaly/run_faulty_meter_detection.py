@@ -54,6 +54,12 @@ def detect_faulty_meters(date, engine, z_threshold=3.0):
 
         if b.empty or t.empty:
             continue
+        # WeatherStation 제외
+        if meter == 'WeatherStation.Weather':
+            continue
+        # 가동 중단 계량기 제외 (baseline 평균이 거의 0)
+        if abs(b.mean()) < 1.0:
+            continue
 
         b_mean = b.mean()
         b_std  = b.std()
