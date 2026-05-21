@@ -3,12 +3,16 @@ import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
   CartesianGrid, Legend,
 } from 'recharts'
-import axios from 'axios'
+import { getForecastStatus, trainModel, getForecastCompare, getForecastBacktest } from '../api/client'
 
-const api = axios.create({ baseURL: 'http://localhost:8000' })
+const MODEL_COLOR = { prophet: '#58a6ff', xgboost: '#3fb950', lstm: '#d29922', 'vmd-lstm': '#a371f7' }
 
-const MODEL_COLOR = { prophet: '#58a6ff', xgboost: '#3fb950', lstm: '#d29922' }
-const MODEL_LABEL = { prophet: 'Prophet', xgboost: 'XGBoost', lstm: 'LSTM' }
+// 데이터 범위: DB 기준 최신 1년을 컨텍스트로 사용
+const DATA_END   = '2024-01-01'
+const DATA_START = '2023-01-01'
+const TRAIN_START = '2018-01-01'
+const TRAIN_END   = '2024-01-01'
+const MODEL_LABEL = { prophet: 'Prophet', xgboost: 'XGBoost', lstm: 'LSTM', 'vmd-lstm': 'VMD-LSTM' }
 
 const tooltip = {
   contentStyle: { background: '#161b22', border: '1px solid #30363d', borderRadius: 8, fontSize: 12 },
@@ -16,8 +20,13 @@ const tooltip = {
 }
 
 function StatusBadge({ status }) {
-  const color = status === 'done' ? '#3fb950' : status === 'running' ? '#d29922' : status?.startsWith('error') ? '#f85149' : '#6e7681'
-  const label = status === 'done' ? '학습 완료' : status === 'running' ? '학습 중...' : status?.startsWith('error') ? '오류' : '미학습'
+  const isRunning = status === 'running' || status?.startsWith('running:')
+  const epochMatch = status?.match(/running: epoch (\d+)\/(\d+)/)
+  const color = status === 'done' ? '#3fb950' : isRunning ? '#d29922' : status?.startsWith('error') ? '#f85149' : '#6e7681'
+  const label = status === 'done' ? '학습 완료'
+    : epochMatch ? `학습 중 ${epochMatch[1]}/${epochMatch[2]} 에폭`
+    : isRunning ? '학습 중...'
+    : status?.startsWith('error') ? '오류' : '미학습'
   return <span style={{ fontSize: 11, padding: '2px 7px', borderRadius: 4, background: color + '22', color, border: `1px solid ${color}44` }}>{label}</span>
 }
 
@@ -25,39 +34,59 @@ export default function ForecastPanel() {
   const [tab,      setTab]      = useState('forecast')  // 'forecast' | 'backtest'
   const [status,   setStatus]   = useState({})
   const [hours,    setHours]    = useState(24)
-  const [models,   setModels]   = useState({ prophet: true, xgboost: true, lstm: true })
+  const [models,   setModels]   = useState({ prophet: true, xgboost: true, lstm: true, 'vmd-lstm': true })
 
   // Prophet은 72h 초과 시 자동 비활성화
   useEffect(() => {
     if (hours > 72) setModels(p => ({ ...p, prophet: false }))
     else            setModels(p => ({ ...p, prophet: true  }))
   }, [hours])
+
   const [forecast, setForecast] = useState(null)
   const [loading,  setLoading]  = useState(false)
   const [error,    setError]    = useState('')
   const [btFreq,   setBtFreq]   = useState('W')
   const [btData,   setBtData]   = useState(null)
   const [btLoading,setBtLoading]= useState(false)
+  const [training, setTraining] = useState(false)
+  const [trainMsg, setTrainMsg] = useState('')
 
   // 학습 상태 폴링
   useEffect(() => {
-    const poll = () => api.get('/forecast/train/status').then(r => setStatus(r.data.status ?? {})).catch(() => {})
+    const poll = () => getForecastStatus().then(r => setStatus(r.data.status ?? {})).catch(() => {})
     poll()
     const id = setInterval(poll, 3000)
     return () => clearInterval(id)
   }, [])
 
   const trainAll = async () => {
-    await Promise.all(['prophet','xgboost','lstm'].map(m =>
-      api.post(`/forecast/train/${m}?start=2018-01-01&end=2024-01-01&horizon=${hours}`).catch(() => {})
-    ))
-    setStatus(s => ({ ...s, prophet: 'running', xgboost: 'running', lstm: 'running' }))
+    setTraining(true)
+    setTrainMsg('')
+    try {
+      const results = await Promise.allSettled(
+        ['prophet','xgboost','lstm'].map(m => trainModel(m, TRAIN_START, TRAIN_END, hours))
+      )
+      const failed = results
+        .map((r, i) => r.status === 'rejected' ? ['prophet','xgboost','lstm'][i] : null)
+        .filter(Boolean)
+      if (failed.length > 0) {
+        setTrainMsg(`학습 요청 실패: ${failed.join(', ')}`)
+      } else {
+        setTrainMsg('학습이 시작되었습니다. 완료까지 수 분~20분 소요됩니다.')
+        setStatus(s => ({ ...s, prophet: 'running', xgboost: 'running', lstm: 'running' }))
+      }
+    } catch (e) {
+      setTrainMsg('학습 요청 중 오류: ' + (e.message ?? ''))
+    } finally {
+      setTraining(false)
+    }
   }
+
 
   const runForecast = async () => {
     setLoading(true); setError(''); setForecast(null)
     try {
-      const r = await api.get(`/forecast/compare?hours=${hours}&start=2023-06-01&end=2024-01-01`)
+      const r = await getForecastCompare(hours, DATA_START, DATA_END)
       // 결과 병합: 타임스탬프 기준으로 합치기
       const merged = {}
       for (const [model, rows] of Object.entries(r.data.models ?? {})) {
@@ -83,7 +112,7 @@ export default function ForecastPanel() {
   const runBacktest = async () => {
     setBtLoading(true); setBtData(null)
     try {
-      const r = await api.get(`/forecast/backtest?freq=${btFreq}`, { timeout: 120000 })
+      const r = await getForecastBacktest(undefined, undefined, btFreq)
       setBtData(r.data)
     } catch (e) {
       setBtData({ error: e.message })
@@ -93,7 +122,9 @@ export default function ForecastPanel() {
   }
 
   const activeModels = Object.entries(models).filter(([,v]) => v).map(([k]) => k)
+  const isRunning = m => status[m] === 'running' || status[m]?.startsWith('running:')
   const allDone = ['prophet','xgboost','lstm'].every(m => status[m] === 'done')
+
 
   return (
     <div style={s.wrap}>
@@ -176,17 +207,18 @@ export default function ForecastPanel() {
         {/* ── 미래 예측 탭 ── */}
         {tab === 'forecast' && (<>
         {/* 모델 상태 카드 */}
-        <div style={s.cards}>
-          {['prophet','xgboost','lstm'].map(m => (
+        <div style={{ ...s.cards, gridTemplateColumns:'repeat(4,1fr)' }}>
+          {['prophet','xgboost','lstm','vmd-lstm'].map(m => (
             <div key={m} style={s.card}>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
                 <span style={{ fontSize:13, fontWeight:600, color: MODEL_COLOR[m] }}>{MODEL_LABEL[m]}</span>
-                <StatusBadge status={status[m]}/>
+                <StatusBadge status={m === 'vmd-lstm' ? (status['vmd-lstm'] ?? 'done') : status[m]}/>
               </div>
               <div style={{ fontSize:11, color:'#6e7681' }}>
-                {m === 'prophet'  && '계절성 분해 + 날씨 회귀'}
-                {m === 'xgboost' && 'Lag 피처 + 시간/날씨'}
-                {m === 'lstm'    && '다변량 시퀀스 학습'}
+                {m === 'prophet'   && '계절성 분해 + 날씨 회귀'}
+                {m === 'xgboost'  && 'Lag 피처 + 시간/날씨'}
+                {m === 'lstm'     && '다변량 시퀀스 학습'}
+                {m === 'vmd-lstm' && 'VMD 분해 + LSTM + Attention'}
               </div>
               <div style={{ display:'flex', gap:4, marginTop:6, flexWrap:'wrap' }}>
                 {m === 'prophet' && (
@@ -204,6 +236,12 @@ export default function ForecastPanel() {
                 {m === 'lstm' && (
                   <span style={{ fontSize:10, color:'#6e7681', background:'#161b22', borderRadius:4, padding:'2px 6px' }}>3년 백테스트</span>
                 )}
+                {m === 'vmd-lstm' && (
+                  <span style={{ fontSize:10, color:'#a371f7', background:'#1e1034', borderRadius:4, padding:'2px 6px' }}>사전학습 완료</span>
+                )}
+                {m === 'vmd-lstm' && (
+                  <span style={{ fontSize:10, color:'#6e7681', background:'#161b22', borderRadius:4, padding:'2px 6px' }}>ML팀 최고성능</span>
+                )}
               </div>
             </div>
           ))}
@@ -220,21 +258,28 @@ export default function ForecastPanel() {
             ))}
           </div>
           <div style={{ display:'flex', gap:8 }}>
-            {!allDone && (
-              <button style={s.trainBtn} onClick={trainAll}>
-                모델 학습 시작
-              </button>
-            )}
+            <button style={{ ...s.trainBtn, opacity: training ? 0.6 : 1 }}
+              onClick={trainAll} disabled={training}>
+              {training ? '요청 중...' : allDone ? '재학습' : '모델 학습 시작'}
+            </button>
             <button style={{ ...s.predictBtn, opacity: loading ? 0.5 : 1 }}
               onClick={runForecast} disabled={loading}>
               {loading ? '예측 중...' : '예측 실행'}
             </button>
           </div>
         </div>
+        {trainMsg && (
+          <div style={{ fontSize:12, padding:'8px 12px', borderRadius:8,
+            ...(trainMsg.includes('실패') || trainMsg.includes('오류')
+              ? { background:'#2d1517', border:'1px solid #f85149', color:'#f85149' }
+              : { background:'#0f2d1a', border:'1px solid #3fb950', color:'#3fb950' }) }}>
+            {trainMsg}
+          </div>
+        )}
 
         {/* 모델 선택 토글 */}
         <div style={{ display:'flex', gap:10, alignItems:'center' }}>
-          {['prophet','xgboost','lstm'].map(m => {
+          {['prophet','xgboost','lstm','vmd-lstm'].map(m => {
             const disabled = m === 'prophet' && hours > 72
             return (
               <label key={m} style={{ display:'flex', alignItems:'center', gap:5, cursor: disabled ? 'not-allowed' : 'pointer', fontSize:12, opacity: disabled ? 0.4 : 1 }}>

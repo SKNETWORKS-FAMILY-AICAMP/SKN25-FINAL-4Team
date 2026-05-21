@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   BarChart, Bar, LineChart, Line,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
   ReferenceLine, Legend, PieChart, Pie, Cell,
 } from 'recharts'
-import { getAnomalies, getAnomalySummary, getAnomalyTimeline, getAnomalyTypes, getAnomalyContext, sendChat } from '../api/client'
+import { getAnomalies, getAnomalySummary, getAnomalyTimeline, getAnomalyTypes,
+         getAnomalyContext, sendChat, runDetection, getDetectionStatus } from '../api/client'
 
 const SEV_COLOR  = { HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#58a6ff' }
 const TYPE_LABEL = {
@@ -16,24 +17,37 @@ const tooltip = {
   labelStyle: { color: '#e6edf3' },
 }
 
-// 이상 유형별 표시할 지표
+// 게이트웨이 장애 구간 (인공 보정 데이터 → 이상 오판 가능)
+const GATEWAY_FAILURES = [
+  ['2020-02-13', '2020-03-06', 'Workshop Gateway Failure #1'],
+  ['2020-08-20', '2020-09-17', 'Emission Lab Gateway Failure'],
+  ['2021-11-15', '2021-12-10', 'Distribution Gateway Failure'],
+  ['2022-05-06', '2022-07-14', 'Workshop Gateway Failure #2'],
+]
+
+function getGatewayFailure(timestamp) {
+  if (!timestamp) return null
+  const t = timestamp.slice(0, 10)
+  return GATEWAY_FAILURES.find(([s, e]) => t >= s && t <= e) ?? null
+}
+
 const TYPE_METRICS = {
-  COPDrop:          [{ key: 'cop',          name: 'COP',          color: '#58a6ff', unit: '' }],
-  CHPOutage:        [{ key: 'chp_P',        name: 'CHP (kW)',     color: '#3fb950', unit: 'kW' }],
-  PowerSpike:       [{ key: 'grid_P',       name: '계통 전력 (kW)', color: '#f85149', unit: 'kW' }],
-  NightConsumption: [{ key: 'grid_P',       name: '계통 전력 (kW)', color: '#f85149', unit: 'kW' }],
-  PVNightNonZero:   [{ key: 'pv_P',         name: 'PV (kW)',      color: '#d29922', unit: 'kW' }],
-  Unknown:          [
+  COPDrop:          [{ key: 'cop',    name: 'COP',          color: '#58a6ff', unit: '' }],
+  CHPOutage:        [{ key: 'chp_P',  name: 'CHP (kW)',     color: '#3fb950', unit: 'kW' }],
+  PowerSpike:       [{ key: 'grid_P', name: '계통 전력 (kW)', color: '#f85149', unit: 'kW' }],
+  NightConsumption: [{ key: 'grid_P', name: '계통 전력 (kW)', color: '#f85149', unit: 'kW' }],
+  PVNightNonZero:   [{ key: 'pv_P',  name: 'PV (kW)',      color: '#d29922', unit: 'kW' }],
+  Unknown: [
     { key: 'grid_P', name: '계통 전력 (kW)', color: '#f85149', unit: 'kW' },
     { key: 'cop',    name: 'COP',            color: '#58a6ff', unit: '' },
   ],
 }
 
 function DetailPanel({ item, onClose }) {
-  const [ctx,     setCtx]     = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [ai,      setAi]      = useState('')
-  const [aiLoad,  setAiLoad]  = useState(false)
+  const [ctx,    setCtx]    = useState(null)
+  const [loading,setLoading]= useState(true)
+  const [ai,     setAi]     = useState('')
+  const [aiLoad, setAiLoad] = useState(false)
 
   useEffect(() => {
     setCtx(null); setAi(''); setLoading(true)
@@ -52,31 +66,64 @@ function DetailPanel({ item, onClose }) {
     finally { setAiLoad(false) }
   }
 
-  const metrics = TYPE_METRICS[item.anomaly_type] ?? TYPE_METRICS.Unknown
+  const metrics  = TYPE_METRICS[item.anomaly_type] ?? TYPE_METRICS.Unknown
   const anomalyTs = ctx?.anomaly_ts?.slice(0, 16).replace('T', ' ')
+  const isNewModel = item.source === 'vmd-lstm-residual'
+  const gf = getGatewayFailure(item.timestamp)
 
   return (
     <div style={s.detail}>
       {/* 헤더 */}
       <div style={s.detailHeader}>
-        <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
           <span style={{ ...s.sevBadge, background: SEV_COLOR[item.severity] ?? '#555' }}>{item.severity}</span>
           <span style={s.detailType}>{TYPE_LABEL[item.anomaly_type] ?? item.anomaly_type}</span>
+          {isNewModel && (
+            <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: '#1e1034', color: '#a371f7', border: '1px solid #a371f744' }}>
+              VMD-LSTM
+            </span>
+          )}
         </div>
         <button style={s.closeBtn} onClick={onClose}>✕</button>
       </div>
       <div style={s.detailTs}>{item.timestamp?.slice(0,16).replace('T',' ')}</div>
+
+      {/* 게이트웨이 장애 경고 */}
+      {gf && (
+        <div style={s.gwAlert}>
+          ⚠️ <b>게이트웨이 장애 구간</b> — {gf[2]} ({gf[0]} ~ {gf[1]})<br/>
+          <span style={{ fontSize: 11, opacity: 0.8 }}>이 구간 데이터는 인공 보정값이므로 이상 오판 가능성이 있습니다.</span>
+        </div>
+      )}
+
       <div style={s.detailDesc}>{item.description}</div>
 
-      {/* 모델 점수 */}
-      <div style={s.scoreRow}>
-        <span style={s.scoreChip}>통계 {item.score_stat?.toFixed(1) ?? '–'}</span>
-        <span style={s.scoreChip}>IsoForest {item.score_iso?.toFixed(3) ?? '–'}</span>
-        <span style={s.scoreChip}>LSTM {typeof item.score_lstm === 'number' ? item.score_lstm.toFixed(3) : '–'}</span>
-        <span style={{ ...s.scoreChip, background: '#21262d', color: SEV_COLOR[item.severity] }}>
-          {item.vote_count}개 모델 동의
-        </span>
-      </div>
+      {/* 모델 점수 — 신 모델 vs 구 앙상블 구분 표시 */}
+      {isNewModel ? (
+        <div style={s.scoreRow}>
+          <span style={s.scoreChip}>
+            실제 {item.actual_w != null ? (item.actual_w / 1000).toFixed(1) + ' kW' : '–'}
+          </span>
+          <span style={s.scoreChip}>
+            예측 {item.predicted_w != null ? (item.predicted_w / 1000).toFixed(1) + ' kW' : '–'}
+          </span>
+          <span style={{ ...s.scoreChip, color: '#f85149' }}>
+            잔차 {item.residual_w != null ? (item.residual_w / 1000).toFixed(1) + ' kW' : '–'}
+          </span>
+          <span style={{ ...s.scoreChip, background: '#21262d', color: SEV_COLOR[item.severity] }}>
+            {item.vote_count}개 모델 동의
+          </span>
+        </div>
+      ) : (
+        <div style={s.scoreRow}>
+          <span style={s.scoreChip}>통계 {item.score_stat?.toFixed(1) ?? '–'}</span>
+          <span style={s.scoreChip}>IsoForest {item.score_iso?.toFixed(3) ?? '–'}</span>
+          <span style={s.scoreChip}>LSTM-AE {typeof item.score_lstm === 'number' ? item.score_lstm.toFixed(3) : '–'}</span>
+          <span style={{ ...s.scoreChip, background: '#21262d', color: SEV_COLOR[item.severity] }}>
+            {item.vote_count}개 모델 동의
+          </span>
+        </div>
+      )}
 
       {/* 시계열 차트 */}
       <div style={s.chartSection}>
@@ -121,48 +168,119 @@ function DetailPanel({ item, onClose }) {
   )
 }
 
+// 새 탐지 실행 패널
+function RunDetectionPanel({ onDone }) {
+  const [start,   setStart]   = useState('2023-01-01')
+  const [end,     setEnd]     = useState('2023-06-01')
+  const [jobId,   setJobId]   = useState(null)
+  const [status,  setStatus]  = useState(null)
+  const [open,    setOpen]    = useState(false)
+  const pollRef = useRef(null)
+
+  const startJob = async () => {
+    try {
+      const r = await runDetection(start, end)
+      const id = r.data.job_id
+      setJobId(id)
+      setStatus({ status: 'queued' })
+      pollRef.current = setInterval(async () => {
+        const s = await getDetectionStatus(id)
+        setStatus(s.data)
+        if (s.data.status === 'done' || s.data.status === 'error') {
+          clearInterval(pollRef.current)
+          if (s.data.status === 'done') onDone()
+        }
+      }, 3000)
+    } catch (e) {
+      setStatus({ status: 'error', error: String(e) })
+    }
+  }
+
+  useEffect(() => () => clearInterval(pollRef.current), [])
+
+  const statusColor = status?.status === 'done' ? '#3fb950'
+    : status?.status === 'error' ? '#f85149'
+    : status?.status === 'running' ? '#d29922' : '#8b949e'
+
+  return (
+    <div style={s.runPanel}>
+      <button style={s.runToggle} onClick={() => setOpen(o => !o)}>
+        {open ? '▲' : '▼'} VMD-LSTM 새 탐지 실행
+      </button>
+      {open && (
+        <div style={s.runForm}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 12, color: '#8b949e' }}>기간:</span>
+            <input type="date" style={s.dateInput} value={start} onChange={e => setStart(e.target.value)}/>
+            <span style={{ fontSize: 12, color: '#6e7681' }}>~</span>
+            <input type="date" style={s.dateInput} value={end} onChange={e => setEnd(e.target.value)}/>
+            <button style={{ ...s.runBtn, opacity: status?.status === 'running' || status?.status === 'queued' ? 0.5 : 1 }}
+              onClick={startJob}
+              disabled={status?.status === 'running' || status?.status === 'queued'}>
+              탐지 실행
+            </button>
+          </div>
+          {status && (
+            <div style={{ fontSize: 12, color: statusColor, marginTop: 6 }}>
+              {status.status === 'queued'  && '대기 중...'}
+              {status.status === 'running' && '탐지 중... (수 분 소요)'}
+              {status.status === 'done'    && `완료 — ${status.total ?? 0}건 저장 (${JSON.stringify(status.counts ?? {})})`}
+              {status.status === 'error'   && `오류: ${status.error}`}
+              {status.model && <span style={{ color: '#a371f7', marginLeft: 8 }}>[{status.model}]</span>}
+            </div>
+          )}
+          <div style={{ fontSize: 11, color: '#6e7681', marginTop: 4 }}>
+            VMD-LSTM 잔차 + Isolation Forest 앙상블로 재탐지 후 DB에 저장합니다.
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 const TYPE_COLORS = {
   COPDrop: '#58a6ff', CHPOutage: '#3fb950', PowerSpike: '#f85149',
   NightConsumption: '#d29922', PVNightNonZero: '#a371f7', Unknown: '#6e7681',
 }
 
 export default function AnomalyPanel() {
-  const [items,    setItems]    = useState([])
-  const [summary,  setSummary]  = useState([])
-  const [timeline, setTimeline] = useState([])
-  const [types,    setTypes]    = useState([])
-  const [severity, setSeverity] = useState('MEDIUM+')
-  const [year,     setYear]     = useState('')
-  const [month,    setMonth]    = useState('')
-  const [offset,   setOffset]   = useState(0)
-  const [total,    setTotal]    = useState(0)
-  const [loading,  setLoading]  = useState(true)
-  const [selected, setSelected] = useState(null)
+  const [items,   setItems]   = useState([])
+  const [summary, setSummary] = useState([])
+  const [timeline,setTimeline]= useState([])
+  const [types,   setTypes]   = useState([])
+  const [severity,setSeverity]= useState('MEDIUM+')
+  const [year,    setYear]    = useState('')
+  const [month,   setMonth]   = useState('')
+  const [offset,  setOffset]  = useState(0)
+  const [total,   setTotal]   = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [selected,setSelected]= useState(null)
+  const [excludeGf, setExcludeGf] = useState(true)
   const PAGE = 50
 
-  useEffect(() => {
-    // 타입 요약은 필터와 무관하게 1회만 로드
-    getAnomalyTypes().then(r => setTypes(r.data.types ?? [])).catch(() => {})
-  }, [])
-
-  useEffect(() => {
+  const loadList = () => {
     setLoading(true)
     Promise.all([
       getAnomalySummary(),
       getAnomalyTimeline(),
-      getAnomalies(PAGE, severity || undefined, year || undefined, month || undefined, offset),
-    ]).then(([s, t, a]) => {
-      setSummary(s.data.summary ?? [])
+      getAnomalies(PAGE, severity || undefined, year || undefined, month || undefined, offset, excludeGf),
+    ]).then(([sv, t, a]) => {
+      setSummary(sv.data.summary ?? [])
       setTimeline(t.data.timeline ?? [])
       setItems(a.data.items ?? [])
       setTotal(a.data.total ?? 0)
     }).finally(() => setLoading(false))
-  }, [severity, year, month, offset])
+  }
 
-  const resetFilters = () => { setSeverity('MEDIUM+'); setYear(''); setMonth(''); setOffset(0); setSelected(null) }
+  useEffect(() => {
+    getAnomalyTypes().then(r => setTypes(r.data.types ?? [])).catch(() => {})
+  }, [])
+
+  useEffect(() => { loadList() }, [severity, year, month, offset, excludeGf]) // eslint-disable-line
 
   return (
     <div style={s.wrap}>
+      {/* 헤더 */}
       <div style={s.header}>
         <span style={s.title}>이상탐지 결과</span>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -181,11 +299,19 @@ export default function AnomalyPanel() {
             <option value="LOW">LOW만</option>
             <option value="">전체 (LOW 포함)</option>
           </select>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#8b949e', cursor: 'pointer', userSelect: 'none' }}>
+            <input type="checkbox" checked={excludeGf}
+              onChange={e => { setExcludeGf(e.target.checked); setOffset(0); setSelected(null) }}/>
+            장애구간 제외
+          </label>
         </div>
       </div>
 
+      {/* 새 탐지 실행 패널 */}
+      <RunDetectionPanel onDone={() => { setOffset(0); loadList() }} />
+
       <div style={s.body}>
-        {/* 좌측: 요약 + 타임라인 + 목록 */}
+        {/* 좌측 */}
         <div style={{ ...s.left, width: selected ? '38%' : '100%' }}>
           {/* 요약 카드 */}
           <div style={s.cards}>
@@ -216,8 +342,8 @@ export default function AnomalyPanel() {
                 </PieChart>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 5, flex: 1 }}>
                   {types.map(t => {
-                    const total_count = types.reduce((a, b) => a + b.count, 0)
-                    const pct = total_count ? ((t.count / total_count) * 100).toFixed(1) : 0
+                    const tc = types.reduce((a, b) => a + b.count, 0)
+                    const pct = tc ? ((t.count / tc) * 100).toFixed(1) : 0
                     return (
                       <div key={t.type} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11 }}>
                         <div style={{ width: 8, height: 8, borderRadius: '50%', background: TYPE_COLORS[t.type] ?? '#6e7681', flexShrink: 0 }}/>
@@ -263,33 +389,51 @@ export default function AnomalyPanel() {
           <div style={s.list}>
             {loading && [1,2,3,4,5].map(i => (
               <div key={i} style={{ ...s.item, cursor: 'default' }}>
-                <div className="skeleton" style={{ height: 18, width: '40%', marginBottom: 8 }}/>
-                <div className="skeleton" style={{ height: 13, width: '80%' }}/>
+                <div style={{ height: 18, width: '40%', marginBottom: 8, background: '#21262d', borderRadius: 4 }}/>
+                <div style={{ height: 13, width: '80%', background: '#21262d', borderRadius: 4 }}/>
               </div>
             ))}
             {!loading && items.length === 0 && <div style={s.empty}>탐지된 이상 없음</div>}
-            {items.map(item => (
-              <div key={item.id}
-                style={{ ...s.item, ...(selected?.id === item.id ? s.itemActive : {}) }}
-                onClick={() => setSelected(selected?.id === item.id ? null : item)}
-              >
-                <div style={s.itemTop}>
-                  <span style={{ ...s.sevBadge, background: SEV_COLOR[item.severity] ?? '#555' }}>
-                    {item.severity}
-                  </span>
-                  <span style={s.typeLabel}>{TYPE_LABEL[item.anomaly_type] ?? item.anomaly_type}</span>
-                  <span style={s.ts}>{item.timestamp?.slice(0,16).replace('T',' ')}</span>
-                </div>
-                <div style={s.desc}>{item.description}</div>
-                {!selected && (
-                  <div style={s.scores}>
-                    통계 {item.score_stat?.toFixed(1) ?? '–'} &nbsp;·&nbsp;
-                    IsoForest {item.score_iso?.toFixed(3) ?? '–'} &nbsp;·&nbsp;
-                    LSTM {typeof item.score_lstm === 'number' ? item.score_lstm.toFixed(3) : '–'}
+            {items.map(item => {
+              const gf = getGatewayFailure(item.timestamp)
+              const isNew = item.source === 'vmd-lstm-residual'
+              return (
+                <div key={item.id}
+                  style={{ ...s.item, ...(selected?.id === item.id ? s.itemActive : {}) }}
+                  onClick={() => setSelected(selected?.id === item.id ? null : item)}
+                >
+                  <div style={s.itemTop}>
+                    <span style={{ ...s.sevBadge, background: SEV_COLOR[item.severity] ?? '#555' }}>
+                      {item.severity}
+                    </span>
+                    <span style={s.typeLabel}>{TYPE_LABEL[item.anomaly_type] ?? item.anomaly_type}</span>
+                    {isNew && (
+                      <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#1e1034', color: '#a371f7', border: '1px solid #a371f733' }}>
+                        VMD
+                      </span>
+                    )}
+                    {gf && (
+                      <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#2d1f00', color: '#d29922', border: '1px solid #d2992233' }}>
+                        장애구간
+                      </span>
+                    )}
+                    <span style={s.ts}>{item.timestamp?.slice(0,16).replace('T',' ')}</span>
                   </div>
-                )}
-              </div>
-            ))}
+                  <div style={s.desc}>{item.description}</div>
+                  {!selected && (
+                    <div style={s.scores}>
+                      {isNew
+                        ? <>실제 {item.actual_w != null ? (item.actual_w/1000).toFixed(1)+'kW' : '–'} &nbsp;·&nbsp;
+                           잔차 {item.residual_w != null ? (item.residual_w/1000).toFixed(1)+'kW' : '–'}</>
+                        : <>통계 {item.score_stat?.toFixed(1) ?? '–'} &nbsp;·&nbsp;
+                           IsoForest {item.score_iso?.toFixed(3) ?? '–'} &nbsp;·&nbsp;
+                           LSTM-AE {typeof item.score_lstm === 'number' ? item.score_lstm.toFixed(3) : '–'}</>
+                      }
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
 
           {/* 페이지네이션 */}
@@ -319,7 +463,7 @@ export default function AnomalyPanel() {
 
 const s = {
   wrap:       { display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' },
-  header:     { padding: '16px 20px 12px', borderBottom: '1px solid #21262d', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 },
+  header:     { padding: '14px 20px 10px', borderBottom: '1px solid #21262d', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 },
   title:      { fontWeight: 600, fontSize: 15, color: '#e6edf3' },
   select:     { background: '#161b22', border: '1px solid #30363d', borderRadius: 6, color: '#e6edf3', padding: '4px 8px', fontSize: 13, cursor: 'pointer' },
   body:       { flex: 1, overflow: 'hidden', display: 'flex', gap: 0 },
@@ -333,17 +477,26 @@ const s = {
   empty:      { textAlign: 'center', color: '#8b949e', paddingTop: 20 },
   item:       { background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '10px 14px', cursor: 'pointer', transition: 'border-color .15s' },
   itemActive: { borderColor: '#58a6ff', background: '#1f2937' },
-  itemTop:    { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 },
+  itemTop:    { display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 },
   sevBadge:   { fontSize: 11, padding: '1px 6px', borderRadius: 4, color: '#0d1117', fontWeight: 700, flexShrink: 0 },
   typeLabel:  { fontSize: 13, fontWeight: 600, color: '#e6edf3' },
   ts:         { marginLeft: 'auto', fontSize: 11, color: '#8b949e', fontVariantNumeric: 'tabular-nums' },
   desc:       { fontSize: 12, color: '#8b949e', marginBottom: 4 },
   scores:     { fontSize: 11, color: '#6e7681' },
+  pageBtn:    { padding: '5px 12px', background: '#161b22', border: '1px solid #30363d', borderRadius: 6, color: '#e6edf3', fontSize: 12, cursor: 'pointer' },
+
+  // 새 탐지 실행 패널
+  runPanel:   { borderBottom: '1px solid #21262d', flexShrink: 0, background: '#0d1117' },
+  runToggle:  { width: '100%', padding: '8px 20px', background: 'none', border: 'none', color: '#8b949e', fontSize: 12, textAlign: 'left', cursor: 'pointer' },
+  runForm:    { padding: '8px 20px 12px', display: 'flex', flexDirection: 'column', gap: 4 },
+  dateInput:  { background: '#161b22', border: '1px solid #30363d', borderRadius: 6, color: '#e6edf3', padding: '4px 8px', fontSize: 13 },
+  runBtn:     { padding: '5px 14px', background: '#1f6feb', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 13 },
+  gwAlert:    { fontSize: 12, color: '#d29922', background: '#2d1f00', border: '1px solid #d2992244', borderRadius: 8, padding: '8px 12px', lineHeight: 1.7 },
 
   // 상세 패널
   detail:       { display: 'flex', flexDirection: 'column', gap: 12 },
   detailHeader: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
-  detailType:   { fontSize: 15, fontWeight: 600, color: '#e6edf3', marginLeft: 8 },
+  detailType:   { fontSize: 15, fontWeight: 600, color: '#e6edf3' },
   detailTs:     { fontSize: 12, color: '#8b949e' },
   detailDesc:   { fontSize: 13, color: '#e6edf3', lineHeight: 1.6, background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '10px 14px' },
   scoreRow:     { display: 'flex', flexWrap: 'wrap', gap: 6 },
@@ -354,7 +507,6 @@ const s = {
   miniChart:    { background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '10px 14px' },
   miniChartTitle: { fontSize: 11, color: '#8b949e', marginBottom: 6 },
   closeBtn:     { background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: 16, padding: '2px 6px' },
-  pageBtn:      { padding: '5px 12px', background: '#161b22', border: '1px solid #30363d', borderRadius: 6, color: '#e6edf3', fontSize: 12, cursor: 'pointer' },
   aiSection:    { display: 'flex', flexDirection: 'column', gap: 8 },
   aiBtn:        { padding: '9px 16px', background: '#1f6feb', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 13, width: '100%' },
   aiText:       { fontSize: 13, color: '#e6edf3', lineHeight: 1.7, background: '#161b22', border: '1px solid #30363d', borderRadius: 8, padding: '12px 14px', whiteSpace: 'pre-wrap' },

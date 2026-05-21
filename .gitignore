@@ -34,6 +34,8 @@ ENV/
 # ── 모델 / 데이터 (용량 크거나 재현 가능) ────────────────────────────
 src/models/anomaly/saved/
 src/models/forecasting/saved/
+backend/src/models/anomaly/saved/
+backend/src/models/forecasting/saved/
 mlruns/
 mlruns.db
 *.pkl

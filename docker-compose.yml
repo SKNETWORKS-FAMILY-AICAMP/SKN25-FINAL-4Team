@@ -1,17 +1,20 @@
 services:
   backend:
     build:
-      context: .
-      dockerfile: backend.Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: ems-backend
     restart: unless-stopped
     env_file: .env
     environment:
       - PYTHONUNBUFFERED=1
+      - ML_MODEL_DIR=/app/ml_models
     volumes:
       # 학습된 모델 파일 유지
-      - ./src/models/forecasting/saved:/app/src/models/forecasting/saved
-      - ./src/models/anomaly/saved:/app/src/models/anomaly/saved
+      - ./backend/src/models/forecasting/saved:/app/src/models/forecasting/saved
+      - ./backend/src/models/anomaly/saved:/app/src/models/anomaly/saved
+      # ML 팀 학습 모델 (VMD-LSTM, Residual+IF)
+      - ../ML/outputs/models:/app/ml_models:ro
     ports:
       - "8000:8000"
     healthcheck:
@@ -22,12 +25,12 @@ services:
 
   frontend:
     build:
-      context: .
-      dockerfile: frontend.Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: ems-frontend
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       backend:
         condition: service_healthy

@@ -1,0 +1,22 @@
+# 저장된 모델 (docker-compose에서 volume mount로 제공)
+src/models/forecasting/saved/
+src/models/anomaly/saved/
+
+# Python 캐시
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# 개발 파일
+.env
+.env.*
+*.log
+.git/
+.gitignore
+
+# 데이터/노트북
+**/*.ipynb
+src/data/*.pdf

@@ -119,7 +119,7 @@ export default function ChatPanel() {
               {m.role === 'user'
                 ? <span>{m.text}</span>
                 : <div style={s.mdWrap}>
-                    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} components={MD_COMPONENTS}>
                       {m.text}
                     </ReactMarkdown>
                   </div>
@@ -165,6 +165,32 @@ export default function ChatPanel() {
   )
 }
 
+const MD_COMPONENTS = {
+  h1: ({ children }) => <div style={{ fontSize: 17, fontWeight: 700, color: '#e6edf3', borderBottom: '1px solid #30363d', paddingBottom: 6, marginTop: 16, marginBottom: 10 }}>{children}</div>,
+  h2: ({ children }) => <div style={{ fontSize: 15, fontWeight: 700, color: '#e6edf3', borderBottom: '1px solid #21262d', paddingBottom: 4, marginTop: 14, marginBottom: 8 }}>{children}</div>,
+  h3: ({ children }) => <div style={{ fontSize: 13, fontWeight: 700, color: '#58a6ff', marginTop: 12, marginBottom: 6 }}>{children}</div>,
+  p:  ({ children }) => <p style={{ margin: '0 0 10px', lineHeight: 1.75, color: '#e6edf3' }}>{children}</p>,
+  ul: ({ children }) => <ul style={{ margin: '4px 0 10px', paddingLeft: 20, listStyleType: 'disc', color: '#e6edf3' }}>{children}</ul>,
+  ol: ({ children }) => <ol style={{ margin: '4px 0 10px', paddingLeft: 20, listStyleType: 'decimal', color: '#e6edf3' }}>{children}</ol>,
+  li: ({ children }) => <li style={{ marginBottom: 4, lineHeight: 1.7, color: '#e6edf3' }}>{children}</li>,
+  strong: ({ children }) => <strong style={{ fontWeight: 700, color: '#f0f6fc' }}>{children}</strong>,
+  em:     ({ children }) => <em     style={{ fontStyle: 'italic', color: '#d2a8ff' }}>{children}</em>,
+  hr: () => <hr style={{ border: 'none', borderTop: '1px solid #30363d', margin: '12px 0' }} />,
+  blockquote: ({ children }) => (
+    <blockquote style={{ borderLeft: '3px solid #58a6ff', paddingLeft: 12, margin: '8px 0', color: '#8b949e', fontStyle: 'italic' }}>
+      {children}
+    </blockquote>
+  ),
+  code: ({ inline, children }) => inline
+    ? <code style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 4, padding: '1px 6px', fontSize: 12, color: '#79c0ff', fontFamily: 'monospace' }}>{children}</code>
+    : <pre style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 8, padding: '12px 14px', overflowX: 'auto', marginBottom: 10 }}>
+        <code style={{ fontSize: 12, color: '#e6edf3', fontFamily: 'monospace', whiteSpace: 'pre' }}>{children}</code>
+      </pre>,
+  table: ({ children }) => <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, marginBottom: 10 }}>{children}</table>,
+  th: ({ children }) => <th style={{ padding: '6px 10px', background: '#21262d', color: '#e6edf3', fontWeight: 600, textAlign: 'left', borderBottom: '1px solid #30363d' }}>{children}</th>,
+  td: ({ children }) => <td style={{ padding: '5px 10px', color: '#c9d1d9', borderBottom: '1px solid #21262d' }}>{children}</td>,
+}
+
 const s = {
   wrap:       { display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' },
   chatHeader: { padding: '14px 20px 12px', borderBottom: '1px solid #21262d', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 },
@@ -187,7 +213,7 @@ const s = {
   aiBubble:   { background: '#161b22', border: '1px solid #30363d', borderBottomLeftRadius: 4 },
   errorBubble:{ background: '#2d1517', border: '1px solid #f85149', color: '#f85149' },
   badge:      { display: 'inline-block', fontSize: 11, padding: '1px 7px', borderRadius: 4, color: '#0d1117', fontWeight: 700, marginBottom: 8 },
-  mdWrap:     { color: '#e6edf3' },
+  mdWrap:     { color: '#e6edf3', lineHeight: 1.75, fontSize: 13 },
   copyBtn:    { position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: 14, padding: '2px 4px', borderRadius: 4 },
   typing:     { display: 'flex', gap: 5, alignItems: 'center', height: 20, padding: '2px 0' },
   inputWrap:  { padding: '12px 20px 20px', borderTop: '1px solid #21262d', display: 'flex', gap: 8, flexShrink: 0 },

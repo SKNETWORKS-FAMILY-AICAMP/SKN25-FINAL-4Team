@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import DashboardPanel  from './components/DashboardPanel'
 import ChatPanel       from './components/ChatPanel'
 import AnomalyPanel    from './components/AnomalyPanel'
@@ -27,6 +27,18 @@ const PANELS = {
 export default function App() {
   const [tab, setTab]   = useState('dashboard')
   const visited = useRef(new Set(['dashboard']))
+  const [apiOk, setApiOk] = useState(null)  // null=확인중, true=연결, false=오류
+
+  useEffect(() => {
+    const BASE = import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL ?? 'http://localhost:8000')
+    const check = () =>
+      fetch(`${BASE}/health`, { signal: AbortSignal.timeout(4000) })
+        .then(r => setApiOk(r.ok))
+        .catch(() => setApiOk(false))
+    check()
+    const id = setInterval(check, 30000)
+    return () => clearInterval(id)
+  }, [])
 
   const handleTab = (id) => {
     visited.current.add(id)
@@ -55,8 +67,13 @@ export default function App() {
           ))}
         </nav>
         <div style={styles.sidebarFooter}>
-          <div style={styles.footerDot} />
-          <span style={{ fontSize: 12, color: '#8b949e' }}>API 연결됨</span>
+          <div style={{
+            ...styles.footerDot,
+            background: apiOk === null ? '#d29922' : apiOk ? '#3fb950' : '#f85149',
+          }} />
+          <span style={{ fontSize: 12, color: '#8b949e' }}>
+            {apiOk === null ? 'API 확인 중' : apiOk ? 'API 연결됨' : 'API 오프라인'}
+          </span>
         </div>
       </aside>
 
