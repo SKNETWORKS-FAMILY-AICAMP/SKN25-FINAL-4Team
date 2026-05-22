@@ -834,6 +834,61 @@ function MeterRow({ meter }) {
   )
 }
 
+// ─── PaperFigures ─────────────────────────────────────────────────────────────
+
+function PaperFigures() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div style={{ marginTop: 28, borderTop: '1px solid #21262d', paddingTop: 20 }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          background: 'none', border: 'none', cursor: 'pointer',
+          color: '#8b949e', fontSize: 13, padding: 0, marginBottom: open ? 16 : 0,
+        }}
+      >
+        <span style={{ fontSize: 16, lineHeight: 1 }}>{open ? '▾' : '▸'}</span>
+        <span style={{ fontWeight: 600, color: '#e6edf3' }}>논문 원본 다이어그램</span>
+        <span style={{ fontSize: 11, color: '#484f58' }}>Gruner et al. Scientific Data 2025</span>
+      </button>
+
+      {open && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+
+          {/* Fig. 1 */}
+          <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '16px 20px' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#58a6ff', marginBottom: 4 }}>Fig. 1</div>
+            <div style={{ fontSize: 12, color: '#8b949e', marginBottom: 12, lineHeight: 1.5 }}>
+              전기 계량기 계층 구조 — H1(Emission Lab) · H2(Workshop/Office) · H3(Design Studio) · H4(Office B4) · V(부지 공통)
+            </div>
+            <img
+              src="/fig1_meter_hierarchy.png"
+              alt="Fig.1 Electricity metering hierarchy"
+              style={{ width: '100%', borderRadius: 6, border: '1px solid #21262d', display: 'block' }}
+            />
+          </div>
+
+          {/* Fig. 2 */}
+          <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '16px 20px' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#58a6ff', marginBottom: 4 }}>Fig. 2</div>
+            <div style={{ fontSize: 12, color: '#8b949e', marginBottom: 12, lineHeight: 1.5 }}>
+              냉방·난방 시스템 미터 구성 — 냉각기(CM1/2/3) · V.K21 냉각 통합 · CHP(H1.ZE20) · 보일러(H1.W12)
+            </div>
+            <img
+              src="/fig2_hvac_meters.png"
+              alt="Fig.2 Central cooling and heating system meters"
+              style={{ width: '100%', borderRadius: 6, border: '1px solid #21262d', display: 'block' }}
+            />
+          </div>
+
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Main Panel ───────────────────────────────────────────────────────────────
 
 export default function TopologyPanel() {
@@ -1003,6 +1058,9 @@ export default function TopologyPanel() {
           </div>
         </div>
       </div>
+
+      {/* ── 논문 원본 다이어그램 ── */}
+      <PaperFigures />
     </div>
   )
 }
