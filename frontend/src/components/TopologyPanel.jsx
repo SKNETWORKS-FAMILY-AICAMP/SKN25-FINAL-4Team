@@ -889,9 +889,267 @@ function PaperFigures() {
   )
 }
 
+// ─── Power Aggregation View ───────────────────────────────────────────────────
+
+function VBadge({ name, color }) {
+  return (
+    <span style={{
+      fontFamily: 'monospace', fontSize: 12, fontWeight: 700,
+      background: color + '1a', color, border: `1px solid ${color}55`,
+      borderRadius: 4, padding: '2px 8px', whiteSpace: 'nowrap',
+    }}>{name}</span>
+  )
+}
+
+function MChip({ id, kw, dimmed, warn }) {
+  return (
+    <span style={{
+      fontFamily: 'monospace', fontSize: 10,
+      background: '#0d1117', border: `1px solid ${warn ? '#f8514966' : '#30363d'}`,
+      borderRadius: 4, padding: '2px 7px',
+      color: dimmed ? '#484f58' : warn ? '#f85149' : '#79c0ff',
+      whiteSpace: 'nowrap', opacity: dimmed ? 0.6 : 1,
+    }}>
+      {id}
+      {kw != null && (
+        <span style={{ color: kw < 0 ? '#3fb950' : '#d29922', marginLeft: 4 }}>
+          {kw > 0 ? '+' : ''}{kw}kW
+        </span>
+      )}
+    </span>
+  )
+}
+
+function AggBlock({ label, meters, fallback, op, variable, varColor, desc, note }) {
+  return (
+    <div style={{ background: '#161b22', border: `1px solid ${varColor}33`, borderRadius: 8, padding: '12px 14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 12, color: '#8b949e', fontWeight: 600, minWidth: 120 }}>{label}</span>
+        <span style={{ fontSize: 11, background: '#21262d', color: '#d29922', borderRadius: 4, padding: '1px 7px', fontWeight: 700 }}>
+          {op}
+        </span>
+        <span style={{ color: '#484f58', fontSize: 16 }}>→</span>
+        <VBadge name={variable} color={varColor} />
+        {desc && <span style={{ fontSize: 11, color: '#6e7681' }}>{desc}</span>}
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+        {meters.map(m => <MChip key={m.id} {...m} />)}
+      </div>
+      {fallback?.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 6, alignItems: 'center' }}>
+          <span style={{ fontSize: 10, color: '#484f58' }}>fallback (~2022):</span>
+          {fallback.map(m => <MChip key={m.id} {...m} dimmed />)}
+        </div>
+      )}
+      {note && (
+        <div style={{ marginTop: 7, fontSize: 10, color: '#f85149', display: 'flex', gap: 4 }}>
+          <span>⚠</span><span>{note}</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function KpiLine({ children }) {
+  return (
+    <div style={{
+      background: '#0d1117', border: '1px solid #21262d', borderRadius: 6,
+      padding: '9px 14px', fontSize: 12,
+      display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
+    }}>
+      {children}
+    </div>
+  )
+}
+
+function PowerAggregationView() {
+  const sectionTitle = (icon, title, sub, color) => (
+    <div style={{ fontSize: 13, fontWeight: 700, color, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+      <span>{icon} {title}</span>
+      {sub && <span style={{ fontSize: 10, color: '#484f58', fontWeight: 400 }}>{sub}</span>}
+    </div>
+  )
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+
+      {/* 설명 */}
+      <div style={{ fontSize: 12, color: '#8b949e', background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '10px 14px', lineHeight: 1.7 }}>
+        아래는 <span style={{ fontFamily: 'monospace', color: '#79c0ff', fontSize: 11 }}>loader.py</span>에서 원시 계량기 데이터를 집계해 만드는 변수들입니다.
+        <span style={{ color: '#d29922', marginLeft: 6 }}>양수 = 소비/인입</span>
+        <span style={{ color: '#3fb950', marginLeft: 8 }}>음수 = 생산/역송전</span>
+      </div>
+
+      {/* ── 전기 에너지 ── */}
+      <div>
+        {sectionTitle('⚡', '전기 에너지 집계', 'W 단위', '#58a6ff')}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <AggBlock
+            label="계통 전력" op="Σ" variable="grid_P" varColor="#f85149"
+            desc="부지 전체 계통 인입 (4개 변압기 합산)"
+            meters={[
+              { id: 'V.Z81' }, { id: 'V.Z82' },
+              { id: 'H2.Z351' }, { id: 'H2.Z361' },
+            ]}
+          />
+          <AggBlock
+            label="태양광 (PV)" op="Σ |·|" variable="pv_P" varColor="#3fb950"
+            desc="생산값 음수 → 절댓값. 총 749kWp · 평균 ≈ 80kW"
+            meters={[
+              { id: 'H1.Z310', kw: -11.0 }, { id: 'H2.Z311', kw: -33.9 },
+              { id: 'H3.Z312', kw: -20.6 }, { id: 'V.Z84',   kw: -14.6 },
+            ]}
+          />
+          <AggBlock
+            label="CHP 발전기" op="coalesce + |·|" variable="chp_P" varColor="#58a6ff"
+            desc="H1.ZE20 우선(2023~), 없으면 H1.Z20 사용 → 절댓값. 평균 ≈ 85kW"
+            note="동일 선로 이중계측 — 두 미터 절대 합산 금지"
+            meters={[{ id: 'H1.ZE20', kw: -85.0 }]}
+            fallback={[{ id: 'H1.Z20', kw: -54.7 }]}
+          />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
+          <KpiLine>
+            <span style={{ color: '#6e7681' }}>총 공급 =</span>
+            <VBadge name="grid_P" color="#f85149" />
+            <span style={{ color: '#484f58' }}>+</span>
+            <VBadge name="pv_P" color="#3fb950" />
+            <span style={{ color: '#484f58' }}>+</span>
+            <VBadge name="chp_P" color="#58a6ff" />
+          </KpiLine>
+          <KpiLine>
+            <span style={{ color: '#6e7681' }}>자급률 (self_sufficiency) = (</span>
+            <VBadge name="pv_P" color="#3fb950" />
+            <span style={{ color: '#484f58' }}>+</span>
+            <VBadge name="chp_P" color="#58a6ff" />
+            <span style={{ color: '#6e7681' }}>) ÷ 총 공급</span>
+            <span style={{ color: '#8b949e', marginLeft: 4 }}>· 평균 ≈ 38%</span>
+          </KpiLine>
+        </div>
+      </div>
+
+      {/* ── 냉방 시스템 ── */}
+      <div>
+        {sectionTitle('❄', '냉방 시스템 집계', '냉각기 전기 투입 → 냉수 열량 출력', '#a371f7')}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <AggBlock
+            label="냉각기 전기 소비" op="Σ" variable="cool_elec_P" varColor="#a371f7"
+            desc="CM1 · CM2 · CM3 전기 입력 합산. 총 ≈ 25kW"
+            meters={[
+              { id: 'H1.Z16', kw:  1.1 }, { id: 'H1.Z11', kw:  4.4 },
+              { id: 'H1.Z12', kw:  4.5 }, { id: 'H1.Z24', kw:  7.6 },
+              { id: 'H1.Z25', kw:  7.3 },
+            ]}
+          />
+          <AggBlock
+            label="냉방 출력 (열량)" op="직접 측정" variable="cool_output_P" varColor="#a371f7"
+            desc="중앙 냉각기(CM1+CM2+CM3) 냉수 출력. 평균 ≈ 54kW · Tvl = 6.5°C"
+            note="V.K21 기계식 센서 반복 고장 → 고장 구간은 H1.K11+K12+K14+K16 합산으로 재구성"
+            meters={[{ id: 'V.K21', kw: 54.0 }]}
+          />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
+          <KpiLine>
+            <span style={{ color: '#6e7681' }}>COP =</span>
+            <VBadge name="cool_output_P" color="#a371f7" />
+            <span style={{ color: '#484f58' }}>÷</span>
+            <VBadge name="cool_elec_P" color="#a371f7" />
+            <span style={{ color: '#8b949e', marginLeft: 4 }}>· 중앙값 ≈ 2.06 · 범위 0.5 ~ 5.0</span>
+          </KpiLine>
+        </div>
+      </div>
+
+      {/* ── 열 에너지 ── */}
+      <div>
+        {sectionTitle('🔥', '열 에너지 집계', 'CHP 폐열 + 보일러 → 건물 난방', '#d29922')}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <AggBlock
+            label="CHP 폐열 회수" op="직접 측정" variable="chp_heat_P" varColor="#d29922"
+            desc="CHP 엔진 폐열 회수량. Tvl = 52.9°C · 평균 ≈ 90kW"
+            meters={[{ id: 'H1.W12', kw: 90.2 }]}
+          />
+          <AggBlock
+            label="총 열 공급" op="직접 측정" variable="heat_total_P" varColor="#d29922"
+            desc="보일러 + CHP 열 합계. Tvl = 73.4°C · 평균 ≈ 247kW"
+            meters={[{ id: 'H1.W11', kw: 247.1 }]}
+          />
+        </div>
+        <div style={{ marginTop: 8 }}>
+          <KpiLine>
+            <span style={{ color: '#6e7681' }}>보일러 기여 (추정) =</span>
+            <VBadge name="heat_total_P" color="#d29922" />
+            <span style={{ color: '#484f58' }}>−</span>
+            <VBadge name="chp_heat_P" color="#d29922" />
+            <span style={{ color: '#8b949e', marginLeft: 4 }}>≈ 247 − 90 = 157kW · 별도 계량기 없음</span>
+          </KpiLine>
+        </div>
+      </div>
+
+      {/* ── 기상 ── */}
+      <div>
+        {sectionTitle('🌤', '기상 데이터', '직접 측정, 별도 집계 없음', '#8b949e')}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {[
+            { id: 'Ta',  desc: '외기온 (°C)',        color: '#8b949e' },
+            { id: 'Igm', desc: '수평면 일사량 (W/m²)', color: '#8b949e' },
+          ].map(v => (
+            <div key={v.id} style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <VBadge name={v.id} color={v.color} />
+              <span style={{ fontSize: 11, color: '#6e7681' }}>{v.desc}</span>
+              <span style={{ fontFamily: 'monospace', fontSize: 10, color: '#484f58' }}>WeatherStation.Weather</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── 전체 변수 요약 테이블 ── */}
+      <div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#e6edf3', marginBottom: 10 }}>전체 변수 요약</div>
+        <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 8, overflow: 'hidden' }}>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+              <thead>
+                <tr style={{ background: '#0d1117', borderBottom: '1px solid #21262d' }}>
+                  {['변수명', '단위', '평균', '소스 계량기', '연산'].map(h => (
+                    <th key={h} style={{ padding: '8px 12px', textAlign: 'left', color: '#8b949e', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { var: 'grid_P',           color: '#f85149', unit: 'W',    avg: '?',    src: 'V.Z81, V.Z82, H2.Z351, H2.Z361',  op: 'Σ' },
+                  { var: 'pv_P',             color: '#3fb950', unit: 'W',    avg: '~80kW', src: 'H1.Z310, H2.Z311, H3.Z312, V.Z84', op: 'Σ |·|' },
+                  { var: 'chp_P',            color: '#58a6ff', unit: 'W',    avg: '~85kW', src: 'H1.ZE20 (우선) / H1.Z20',           op: 'coalesce |·|' },
+                  { var: 'cool_elec_P',      color: '#a371f7', unit: 'W',    avg: '~25kW', src: 'H1.Z11, Z12, Z16, Z24, Z25',       op: 'Σ' },
+                  { var: 'cool_output_P',    color: '#a371f7', unit: 'W',    avg: '~54kW', src: 'V.K21 (고장 시 서브미터 재구성)',   op: '직접 측정' },
+                  { var: 'chp_heat_P',       color: '#d29922', unit: 'W',    avg: '90kW',  src: 'H1.W12',                            op: '직접 측정' },
+                  { var: 'heat_total_P',     color: '#d29922', unit: 'W',    avg: '247kW', src: 'H1.W11',                            op: '직접 측정' },
+                  { var: 'cop',              color: '#79c0ff', unit: '–',    avg: '2.06',  src: 'cool_output_P, cool_elec_P',        op: 'output ÷ elec' },
+                  { var: 'self_sufficiency', color: '#3fb950', unit: '%',    avg: '~38%',  src: 'pv_P, chp_P, grid_P',              op: '(pv+chp) ÷ total' },
+                  { var: 'Ta',               color: '#8b949e', unit: '°C',   avg: '~12°C', src: 'WeatherStation.Weather',            op: '직접 측정' },
+                  { var: 'Igm',              color: '#8b949e', unit: 'W/m²', avg: '–',     src: 'WeatherStation.Weather',            op: '직접 측정' },
+                ].map(row => (
+                  <tr key={row.var} style={{ borderBottom: '1px solid #21262d' }}>
+                    <td style={{ padding: '7px 12px', fontFamily: 'monospace', color: row.color, fontWeight: 700 }}>{row.var}</td>
+                    <td style={{ padding: '7px 12px', color: '#484f58' }}>{row.unit}</td>
+                    <td style={{ padding: '7px 12px', color: '#8b949e', fontWeight: 600 }}>{row.avg}</td>
+                    <td style={{ padding: '7px 12px', color: '#6e7681', fontSize: 11 }}>{row.src}</td>
+                    <td style={{ padding: '7px 12px', color: '#d29922', fontSize: 11, fontFamily: 'monospace' }}>{row.op}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main Panel ───────────────────────────────────────────────────────────────
 
 export default function TopologyPanel() {
+  const [view, setView] = useState('topology')
   const [activeBuilding, setActiveBuilding] = useState('all')
   const [search, setSearch] = useState('')
   const [roleFilter, setRoleFilter] = useState('all')
@@ -932,6 +1190,24 @@ export default function TopologyPanel() {
           </span>
         </div>
       </div>
+
+      {/* ── View Toggle ── */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
+        {[['topology', '🔌 토폴로지'], ['aggregation', '➕ 전력 집계 구조']].map(([v, l]) => (
+          <button key={v} onClick={() => setView(v)} style={{
+            padding: '7px 16px', borderRadius: 6, border: '1px solid',
+            borderColor: view === v ? '#58a6ff' : '#21262d',
+            background:  view === v ? '#1f6feb22' : 'transparent',
+            color:       view === v ? '#58a6ff' : '#8b949e',
+            fontSize: 13, cursor: 'pointer', fontWeight: view === v ? 600 : 400,
+            transition: 'all .15s',
+          }}>{l}</button>
+        ))}
+      </div>
+
+      {view === 'aggregation' && <PowerAggregationView />}
+
+      {view === 'topology' && <>
 
       {/* ── 논문 원본 다이어그램 ── */}
       <PaperFigures />
@@ -1061,6 +1337,8 @@ export default function TopologyPanel() {
           </div>
         </div>
       </div>
+
+      </>}
     </div>
   )
 }
