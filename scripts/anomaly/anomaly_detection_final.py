@@ -24,6 +24,7 @@ from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 import torch
 import torch.nn as nn
+from torch.utils.data import DataLoader, TensorDataset
 import optuna
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
@@ -41,6 +42,7 @@ METERS = ["V.Z81", "V.Z82", "H2.Z35", "H2.Z351", "H2.Z36", "H2.Z361"]
 MEASUREMENTS = ["P", "U1", "PF"]
 N_TRIALS = 50
 TUNE_METER = "V.Z81"
+BATCH_SIZE = 512
 
 OUT_DIR = Path("outputs/anomaly")
 MODEL_DIR = OUT_DIR / "models"
@@ -88,12 +90,15 @@ class LSTMAutoencoder(nn.Module):
         return self.output_layer(dec_out)
 
 
-def compute_lstm_errors(series, hidden_size, window_size, epochs, lr):
+def compute_lstm_errors(series, hidden_size, window_size, epochs, lr, batch_size=BATCH_SIZE):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     scaler = StandardScaler()
     scaled = scaler.fit_transform(series.reshape(-1, 1)).flatten()
     X = np.array([scaled[i:i+window_size] for i in range(len(scaled) - window_size)])
-    X_tensor = torch.FloatTensor(X).unsqueeze(-1).to(device)
+    X_tensor = torch.FloatTensor(X).unsqueeze(-1)
+
+    dataset = TensorDataset(X_tensor)
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     model = LSTMAutoencoder(hidden_size=hidden_size, num_layers=2).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
@@ -101,14 +106,25 @@ def compute_lstm_errors(series, hidden_size, window_size, epochs, lr):
 
     model.train()
     for _ in range(epochs):
-        optimizer.zero_grad()
-        loss = criterion(model(X_tensor), X_tensor)
-        loss.backward()
-        optimizer.step()
+        for (batch,) in loader:
+            batch = batch.to(device)
+            optimizer.zero_grad()
+            loss = criterion(model(batch), batch)
+            loss.backward()
+            optimizer.step()
+            del batch
 
+    # 재구성 오차 계산 (배치)
     model.eval()
+    recon_list = []
+    infer_loader = DataLoader(TensorDataset(X_tensor), batch_size=batch_size, shuffle=False)
     with torch.no_grad():
-        recon = model(X_tensor).cpu().numpy().squeeze(-1)
+        for (batch,) in infer_loader:
+            batch = batch.to(device)
+            out = model(batch).cpu().numpy().squeeze(-1)
+            recon_list.append(out)
+            del batch
+    recon = np.concatenate(recon_list, axis=0)
 
     errors = np.zeros(len(series))
     counts = np.zeros(len(series))
@@ -116,6 +132,10 @@ def compute_lstm_errors(series, hidden_size, window_size, epochs, lr):
         err = np.abs(X[i] - recon[i])
         errors[i:i+window_size] += err
         counts[i:i+window_size] += 1
+
+    # GPU 캐시 비우기
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
 
     return errors / np.maximum(counts, 1), model, scaler
 
@@ -231,7 +251,6 @@ def run_all(n_trials=N_TRIALS):
     best_params = {}
     all_rows = []
 
-    # 변수별 튜닝
     for meas in MEASUREMENTS:
         print(f"\n[튜닝] {TUNE_METER} / {meas}")
         series, _ = load_data(TUNE_METER, meas)
@@ -243,7 +262,6 @@ def run_all(n_trials=N_TRIALS):
 
         best_params[meas] = {"lstm": lstm_params, "if": if_params}
 
-        # 파라미터 저장
         param_path = PARAM_DIR / f"best_params_{meas}.json"
         with open(param_path, "w") as f:
             json.dump(best_params[meas], f, indent=2)
@@ -251,7 +269,6 @@ def run_all(n_trials=N_TRIALS):
         print(f"  LSTM: {lstm_params}")
         print(f"  IF: {if_params}")
 
-    # 18개 조합 전체 분석
     total = len(METERS) * len(MEASUREMENTS)
     done = 0
 
@@ -262,7 +279,6 @@ def run_all(n_trials=N_TRIALS):
             series, ts = load_data(meter, meas)
             params = best_params[meas]
 
-            # 모델 학습 + 저장
             meter_key = meter.replace(".", "_")
             lstm_model_path = MODEL_DIR / f"lstm_ae_{meter_key}_{meas}.pt"
             if_model_path = MODEL_DIR / f"if_{meter_key}_{meas}.joblib"
@@ -272,7 +288,6 @@ def run_all(n_trials=N_TRIALS):
             q_flags = run_iqr(series)
             score = l_flags + i_flags + q_flags
 
-            # 이상점만 CSV rows에 추가
             for i, t in enumerate(ts):
                 if score[i] > 0:
                     all_rows.append({
@@ -300,7 +315,6 @@ def run_all(n_trials=N_TRIALS):
                 "params": params
             }
 
-    # 결과 CSV 저장
     csv_path = RESULT_DIR / "anomaly_results.csv"
     pd.DataFrame(all_rows).to_csv(csv_path, index=False, encoding="utf-8-sig")
     print(f"\n결과 CSV 저장: {csv_path} ({len(all_rows)}개 이상점)")
