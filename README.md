@@ -15,8 +15,8 @@ SK Networks AI Family 25기 4팀 파이널 프로젝트.
 | 💬 **대화형 질의** | 자연어로 에너지 데이터 질문 → LLM 답변 (OpenAI / Anthropic / Gemini 선택 가능) |
 | 🚨 **이상탐지** | Isolation Forest + VMD-LSTM Residual 앙상블 (HIGH / MEDIUM / LOW) |
 | 📈 **전력 예측** | Prophet · XGBoost · LSTM · VMD-LSTM 모델 비교 및 백테스트 |
-| 📄 **KPI 보고서** | 월간 에너지 KPI 자동 생성 + PDF 출력 |
-| 🔌 **계량기 토폴로지** | 81개 미터 에너지 흐름 시각화 (건물별 탭, Sankey 차트) |
+| 📄 **KPI 보고서** | 월간 에너지 KPI 자동 생성 + PDF 출력 · 냉방-외기온 상관 차트 |
+| 🔌 **계량기 토폴로지** | 81개 미터 에너지 흐름 시각화 · 전력 집계 구조도 (건물별 탭) |
 
 ---
 
@@ -25,15 +25,20 @@ SK Networks AI Family 25기 4팀 파이널 프로젝트.
 ```
 사용자 질문
     ↓
-Orchestrator (의도 분류)
-    ├── anomaly  → 이상탐지 Agent  → Critic → 답변
-    ├── forecast → 예측 Agent      → Critic → 답변
-    ├── report   → 보고서 Agent    → Critic → 답변 + PDF
-    └── rag      → RAG Agent       → Critic → 답변
+Orchestrator (키워드 룰 → LLM 폴백으로 의도 분류)
+    ├── anomaly  → 이상탐지 Agent → 답변
+    ├── forecast → 예측 Agent     → 답변
+    ├── report   → 보고서 Agent   → 답변 + PDF
+    └── rag      → RAG Agent      → 답변
+    ↓
+Critic (용어 교정 — 문자열 치환, LLM 미사용)
 
 FastAPI (포트 8000)  ←→  React 대시보드 (Docker: 8080)
 PostgreSQL + TimescaleDB + pgvector
 ```
+
+> **응답 속도**: 의도 분류를 키워드 룰로 처리하고 Critic을 문자열 치환으로 대체해  
+> LLM 호출을 질문당 최대 3회 → 1~2회로 감소.
 
 ---
 
@@ -88,7 +93,7 @@ GEMINI_API_KEY=
 ## 실행 방법 A — Docker Compose (권장)
 
 ```bash
-docker compose up --build
+docker compose up --build -d
 ```
 
 | 서비스 | 주소 |
@@ -98,7 +103,8 @@ docker compose up --build
 | API 문서 (Swagger) | http://localhost:8000/docs |
 | 헬스체크 | http://localhost:8000/health |
 
-> **재빌드 시 속도**: BuildKit 캐시 마운트가 적용되어 있어, requirements가 변경되지 않으면 pip/npm 설치를 스킵합니다.
+> **빌드 시간**: BuildKit 캐시 마운트 + CPU-only torch 적용으로 첫 빌드 약 5~8분,  
+> 이후 재빌드(소스 변경만)는 수십 초 내외.
 
 ---
 
@@ -139,6 +145,7 @@ npm run dev                      # http://localhost:5173
 | GET | `/anomalies` | 이상탐지 결과 목록 (필터: severity, year, month) |
 | GET | `/anomalies/summary` | 심각도별 건수 요약 |
 | GET | `/anomalies/timeline` | 월별 이상탐지 추이 |
+| GET | `/anomalies/events` | Regime 이벤트 + 게이트웨이 장애 구간 목록 |
 | GET | `/anomalies/types` | 이상 유형별 통계 |
 | GET | `/anomalies/{id}/context` | 특정 이상 전후 컨텍스트 |
 | POST | `/anomalies/run` | 백그라운드 이상탐지 실행 |
@@ -156,7 +163,7 @@ npm run dev                      # http://localhost:5173
 ### 보고서
 | 메서드 | 경로 | 설명 |
 |--------|------|------|
-| GET | `/report` | KPI 보고서 조회 + PDF 생성 |
+| GET | `/report` | KPI 보고서 조회 + PDF 생성 (cooling_vs_temp 포함) |
 | POST | `/report/aggregate` | 보고서 데이터 재집계 |
 
 ---
@@ -180,53 +187,57 @@ curl -X POST "http://localhost:8000/forecast/train/lstm"
 ```
 SKN25-FINAL-4Team/
 ├── backend/
-│   ├── Dockerfile
+│   ├── Dockerfile                        # CPU-only torch, BuildKit 캐시 마운트
 │   ├── requirements.backend.txt
 │   ├── scripts/
 │   │   └── ingest/sql/
-│   │       └── reduced_view.sql      # TimescaleDB 뷰 (ZE/Z 미터 정규화)
+│   │       └── reduced_view.sql          # TimescaleDB 뷰 (ZE/Z 미터 정규화)
+│   ├── tests/                            # pytest 테스트
+│   │   ├── conftest.py
+│   │   ├── test_agents.py
+│   │   └── test_api_basic.py
 │   └── src/
-│       ├── agents/                   # LangGraph 멀티 에이전트
-│       │   ├── orchestrator.py       # 의도 분류 + 라우팅
-│       │   ├── anomaly_agent.py      # 이상탐지 해석
-│       │   ├── forecast_agent.py     # 전력 예측
-│       │   ├── reporting_agent.py    # KPI 보고서 + PDF
-│       │   ├── rag_agent.py          # 프롬프트 주입형 RAG
-│       │   └── state.py              # 공유 AgentState
+│       ├── agents/                       # LangGraph 멀티 에이전트
+│       │   ├── orchestrator.py           # 의도 분류(키워드 룰+LLM 폴백) + 라우팅
+│       │   ├── anomaly_agent.py          # 이상탐지 해석
+│       │   ├── forecast_agent.py         # 전력 예측
+│       │   ├── reporting_agent.py        # KPI 보고서 + PDF
+│       │   ├── rag_agent.py              # 프롬프트 주입형 RAG
+│       │   └── state.py                  # 공유 AgentState
 │       ├── api/
-│       │   ├── main.py               # FastAPI 진입점
-│       │   ├── db.py                 # psycopg2 커넥션 풀
-│       │   └── routers/              # chat / anomalies / forecast / report
+│       │   ├── main.py                   # FastAPI 진입점
+│       │   ├── db.py                     # psycopg2 커넥션 풀
+│       │   └── routers/                  # chat / anomalies / forecast / report
 │       ├── data/
-│       │   └── loader.py             # DB 데이터 로더
-│       ├── knowledge/                # 도메인 지식 및 메타데이터
-│       │   ├── domain_knowledge.py   # 시스템 프롬프트용 상수
-│       │   ├── embedding.py          # 문서 검색용 벡터 임베딩
-│       │   └── meter_metadata.json   # 81개 미터 및 설비 그룹 정보
+│       │   └── loader.py                 # DB 데이터 로더
+│       ├── knowledge/                    # 도메인 지식 (온톨로지 대체)
+│       │   ├── domain_knowledge.py       # 시스템 프롬프트용 상수
+│       │   ├── embedding.py              # 문서 검색용 벡터 임베딩
+│       │   └── meter_metadata.json       # 81개 미터 및 설비 그룹 정보
 │       └── models/
 │           ├── anomaly/
-│           │   ├── ensemble.py       # Isolation Forest + Residual 앙상블
-│           │   └── residual_model.py # VMD-LSTM 잔차 기반 이상탐지
+│           │   ├── ensemble.py           # Isolation Forest + Residual 앙상블
+│           │   └── residual_model.py     # VMD-LSTM 잔차 기반 이상탐지
 │           └── forecasting/
 │               ├── prophet_model.py
 │               ├── xgboost_model.py
 │               ├── lstm_model.py
-│               └── vmd_lstm_model.py # VMD + LSTM + Attention
+│               └── vmd_lstm_model.py     # VMD + LSTM + Attention
 ├── frontend/
 │   ├── Dockerfile
 │   ├── nginx.conf
 │   └── src/
 │       ├── components/
-│       │   ├── DashboardPanel.jsx
-│       │   ├── ChatPanel.jsx
-│       │   ├── AnomalyPanel.jsx
-│       │   ├── ForecastPanel.jsx
-│       │   ├── ReportPanel.jsx
-│       │   └── TopologyPanel.jsx     # 81개 미터 에너지 흐름 시각화
+│       │   ├── DashboardPanel.jsx        # KPI 카드, 에너지 믹스, COP 추이
+│       │   ├── ChatPanel.jsx             # 대화형 질의 UI
+│       │   ├── AnomalyPanel.jsx          # 이상탐지 결과 + 이벤트 뷰
+│       │   ├── ForecastPanel.jsx         # 모델 비교 예측 차트
+│       │   ├── ReportPanel.jsx           # 월간 KPI + 냉방-외기온 차트
+│       │   └── TopologyPanel.jsx         # 에너지 흐름 시각화 + 전력 집계 구조도
 │       ├── data/
-│       │   └── meterCatalog.js       # 계량기 메타데이터 (Gruner et al. 2025)
+│       │   └── meterCatalog.js           # 계량기 메타데이터 (Gruner et al. 2025)
 │       └── api/
-│           └── client.js             # Axios API 클라이언트
+│           └── client.js                 # Axios API 클라이언트
 ├── .env.example
 └── docker-compose.yml
 ```
