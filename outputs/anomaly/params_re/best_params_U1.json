@@ -1,0 +1,17 @@
+{
+  "lstm": {
+    "hidden_size": 64,
+    "window_size": 12,
+    "epochs": 23,
+    "lr": 0.009895759584374365,
+    "threshold_k": 3.9604267859594042
+  },
+  "if": {
+    "contamination": 0.02681124032122738,
+    "n_estimators": 235,
+    "max_samples": 64
+  },
+  "bollinger": {
+    "window_size": 36
+  }
+}
