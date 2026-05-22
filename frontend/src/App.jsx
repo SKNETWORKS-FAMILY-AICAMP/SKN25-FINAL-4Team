@@ -93,15 +93,15 @@ export default function App() {
 }
 
 const styles = {
-  app:          { display: 'flex', height: '100vh', overflow: 'hidden' },
-  sidebar:      { width: 220, background: '#161b22', borderRight: '1px solid #21262d', display: 'flex', flexDirection: 'column', flexShrink: 0 },
-  logo:         { padding: '20px 16px', borderBottom: '1px solid #21262d', display: 'flex', alignItems: 'center', gap: 10 },
-  logoIcon:     { fontSize: 24, width: 36, height: 36, background: '#1f6feb22', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  app:          { display: 'flex', height: '100vh', overflow: 'hidden', background: 'radial-gradient(circle at 10% 20%, #161b22 0%, #0d1117 100%)' },
+  sidebar:      { width: 230, background: 'rgba(22, 27, 34, 0.4)', backdropFilter: 'blur(20px)', borderRight: '1px solid rgba(48, 54, 61, 0.5)', display: 'flex', flexDirection: 'column', flexShrink: 0, zIndex: 10 },
+  logo:         { padding: '24px 20px', display: 'flex', alignItems: 'center', gap: 12 },
+  logoIcon:     { fontSize: 24, width: 40, height: 40, background: 'linear-gradient(135deg, #1f6feb, #58a6ff)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(88, 166, 255, 0.3)' },
   logoTitle:    { fontSize: 14, fontWeight: 700, color: '#e6edf3' },
-  logoSub:      { fontSize: 11, color: '#8b949e' },
-  nav:          { flex: 1, padding: '12px 10px', display: 'flex', flexDirection: 'column', gap: 4 },
-  navBtn:       { width: '100%', padding: '9px 12px', background: 'transparent', border: 'none', borderRadius: 6, color: '#8b949e', fontSize: 13, textAlign: 'left', cursor: 'pointer', transition: 'background .15s, color .15s' },
-  navActive:    { background: '#1f6feb22', color: '#58a6ff', fontWeight: 600 },
+  logoSub:      { fontSize: 11, color: '#8b949e', letterSpacing: '0.5px' },
+  nav:          { flex: 1, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 6 },
+  navBtn:       { width: '100%', padding: '10px 14px', background: 'transparent', border: 'none', borderRadius: 8, color: '#8b949e', fontSize: 13, fontWeight: 500, textAlign: 'left', cursor: 'pointer', transition: 'all .2s ease' },
+  navActive:    { background: 'rgba(31, 111, 235, 0.15)', color: '#58a6ff', fontWeight: 600, boxShadow: 'inset 3px 0 0 #58a6ff' },
   sidebarFooter:{ padding: '14px 16px', borderTop: '1px solid #21262d', display: 'flex', alignItems: 'center', gap: 8 },
   footerDot:    { width: 7, height: 7, borderRadius: '50%', background: '#3fb950' },
   main:         { flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' },

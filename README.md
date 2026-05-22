@@ -191,7 +191,7 @@ SKN25-FINAL-4Team/
 │       │   ├── anomaly_agent.py      # 이상탐지 해석
 │       │   ├── forecast_agent.py     # 전력 예측
 │       │   ├── reporting_agent.py    # KPI 보고서 + PDF
-│       │   ├── rag_agent.py          # 온톨로지 RAG
+│       │   ├── rag_agent.py          # 프롬프트 주입형 RAG
 │       │   └── state.py              # 공유 AgentState
 │       ├── api/
 │       │   ├── main.py               # FastAPI 진입점
@@ -199,7 +199,10 @@ SKN25-FINAL-4Team/
 │       │   └── routers/              # chat / anomalies / forecast / report
 │       ├── data/
 │       │   └── loader.py             # DB 데이터 로더
-│       ├── knowledge/                # 에너지 도메인 온톨로지 (OWL/TTL)
+│       ├── knowledge/                # 도메인 지식 및 메타데이터
+│       │   ├── domain_knowledge.py   # 시스템 프롬프트용 상수
+│       │   ├── embedding.py          # 문서 검색용 벡터 임베딩
+│       │   └── meter_metadata.json   # 81개 미터 및 설비 그룹 정보
 │       └── models/
 │           ├── anomaly/
 │           │   ├── ensemble.py       # Isolation Forest + Residual 앙상블

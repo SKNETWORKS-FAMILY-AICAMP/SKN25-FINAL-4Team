@@ -11,7 +11,9 @@
   --accent2:   #3fb950;
   --danger:    #f85149;
   --warning:   #d29922;
-  --font:      'Segoe UI', system-ui, sans-serif;
+  --font:      'Inter', 'Segoe UI', system-ui, sans-serif;
+  --glass-bg:  rgba(22, 27, 34, 0.6);
+  --glass-border: rgba(48, 54, 61, 0.5);
 }
 
 body {
@@ -53,3 +55,31 @@ body {
 }
 .typing span:nth-child(2) { animation-delay: .2s; }
 .typing span:nth-child(3) { animation-delay: .4s; }
+
+/* 공통 Glassmorphism 카드 유틸리티 */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+}
+
+/* 호버 시 부드러운 트랜지션 애니메이션 */
+.hover-lift {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* 버튼용 부드러운 글로우 트랜지션 */
+.btn-glow {
+  transition: all 0.2s ease;
+}
+.btn-glow:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.2);
+}
