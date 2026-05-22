@@ -963,185 +963,234 @@ function KpiLine({ children }) {
 }
 
 function PowerAggregationView() {
-  const sectionTitle = (icon, title, sub, color) => (
-    <div style={{ fontSize: 13, fontWeight: 700, color, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-      <span>{icon} {title}</span>
-      {sub && <span style={{ fontSize: 10, color: '#484f58', fontWeight: 400 }}>{sub}</span>}
-    </div>
+  // ── layout constants ────────────────────────────────────────
+  const MX=8,  MW=122, MH=24, MG=6       // meter box
+  const OX=145, OW=64                     // op badge
+  const VX=222, VW=146, VH=38            // variable box
+  const KX=400, KW=178, KH=38            // kpi box (right column)
+  const SVG_W = KX + KW + 14
+
+  // ── diagram data ────────────────────────────────────────────
+  const SECTIONS = [
+    {
+      key: 'elec', label: '⚡  전기 에너지 집계', lColor: '#58a6ff',
+      rows: [
+        { id:'grid_P',  color:'#f85149', op:'Σ',        desc:'계통 인입  ±kW',
+          meters:[{id:'V.Z81'},{id:'V.Z82'},{id:'H2.Z351'},{id:'H2.Z361'}] },
+        { id:'pv_P',   color:'#3fb950', op:'Σ |·|',    desc:'태양광  avg~80kW',
+          meters:[{id:'H1.Z310'},{id:'H2.Z311'},{id:'H3.Z312'},{id:'V.Z84'}] },
+        { id:'chp_P',  color:'#58a6ff', op:'coalesce', desc:'CHP 발전  avg~85kW',
+          meters:[{id:'H1.ZE20',note:'현행 2023~'},{id:'H1.Z20',dim:true,note:'구형 ~2022'}] },
+      ],
+      kpis:[
+        { label:'총 공급 = grid + pv + chp', sub:'전기 에너지 합산',   color:'#e6edf3' },
+        { label:'자급률  ≈ 38%',             sub:'(pv+chp) ÷ 총공급', color:'#3fb950' },
+      ],
+    },
+    {
+      key: 'cool', label: '❄  냉방 시스템 집계', lColor: '#a371f7',
+      rows: [
+        { id:'cool_elec_P',   color:'#a371f7', op:'Σ',    desc:'냉각기 전기  ~25kW',
+          meters:[{id:'H1.Z11'},{id:'H1.Z12'},{id:'H1.Z16'},{id:'H1.Z24'},{id:'H1.Z25'}] },
+        { id:'cool_output_P', color:'#79c0ff', op:'측정',  desc:'냉수 출력  ~54kW',
+          meters:[{id:'V.K21',warn:true,note:'센서 반복 고장'}] },
+      ],
+      kpis:[
+        { label:'COP = output ÷ elec', sub:'중앙값 ≈ 2.06  범위 0.5~5', color:'#a371f7' },
+      ],
+    },
+    {
+      key: 'heat', label: '🔥  열 에너지 집계', lColor: '#d29922',
+      rows: [
+        { id:'chp_heat_P',   color:'#d29922', op:'측정',  desc:'CHP 폐열  ~90kW',   meters:[{id:'H1.W12'}] },
+        { id:'heat_total_P', color:'#d29922', op:'측정',  desc:'총 열 공급  ~247kW', meters:[{id:'H1.W11'}] },
+      ],
+      kpis:[
+        { label:'보일러 추정  ≈ 157kW', sub:'heat_total − chp_heat  (직접 계량 없음)', color:'#d29922' },
+      ],
+    },
+    {
+      key: 'weather', label: '🌤  기상 데이터 (직접 측정)', lColor: '#8b949e',
+      rows: [
+        { id:'Ta',  color:'#8b949e', op:'직접', desc:'외기온  avg~12°C', meters:[{id:'V.WS',note:'WeatherStation'}] },
+        { id:'Igm', color:'#8b949e', op:'직접', desc:'수평면 일사량  W/m²', meters:[{id:'V.WS',note:'WeatherStation'}] },
+      ],
+      kpis:[],
+    },
+  ]
+
+  // ── compute y positions ──────────────────────────────────────
+  const ROW_GAP=14, SEC_H=22, SEC_GAP=28, KPI_GAP=8
+  let curY = 10
+  const layout = SECTIONS.map(sec => {
+    const secLY = curY
+    curY += SEC_H + 6
+    const rows = sec.rows.map(row => {
+      const nM = row.meters.length
+      const mTot = nM*MH + (nM-1)*MG
+      const bH   = Math.max(mTot, VH) + 4
+      const mOff = (bH - mTot) / 2
+      const varCY = curY + bH/2
+      const r = {...row, bY:curY, bH, mOff, varCY}
+      curY += bH + ROW_GAP
+      return r
+    })
+    const kpiY = sec.kpis.length ? curY + 6 : curY
+    const kpiRows = sec.kpis.map((k, i) => ({...k, y: kpiY + i*(KH+KPI_GAP)}))
+    if (sec.kpis.length) curY = kpiY + sec.kpis.length*(KH+KPI_GAP) + SEC_GAP
+    else curY += SEC_GAP
+    return {...sec, secLY, rows, kpiRows}
+  })
+  const svgH = curY + 10
+
+  // ── SVG helpers ──────────────────────────────────────────────
+  const Arrow = ({x1, y, x2, color}) => (
+    <g>
+      <line x1={x1} y1={y} x2={x2-7} y2={y} stroke={color} strokeWidth={1.5}/>
+      <polygon points={`${x2},${y} ${x2-8},${y-4} ${x2-8},${y+4}`} fill={color}/>
+    </g>
   )
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-
-      {/* 설명 */}
-      <div style={{ fontSize: 12, color: '#8b949e', background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '10px 14px', lineHeight: 1.7 }}>
-        아래는 <span style={{ fontFamily: 'monospace', color: '#79c0ff', fontSize: 11 }}>loader.py</span>에서 원시 계량기 데이터를 집계해 만드는 변수들입니다.
-        <span style={{ color: '#d29922', marginLeft: 6 }}>양수 = 소비/인입</span>
-        <span style={{ color: '#3fb950', marginLeft: 8 }}>음수 = 생산/역송전</span>
+    <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '14px 10px', overflowX: 'auto' }}>
+      {/* legend */}
+      <div style={{ display:'flex', gap:18, marginBottom:12, fontSize:11, color:'#6e7681' }}>
+        <span><span style={{ fontFamily:'monospace', background:'#58a6ff22', color:'#58a6ff', border:'1px solid #58a6ff44', borderRadius:3, padding:'1px 5px' }}>meter.ID</span> 원시 계량기</span>
+        <span style={{ color:'#d29922' }}>badge</span><span>= 집계 연산</span>
+        <span>→</span>
+        <span><span style={{ fontFamily:'monospace', background:'#3fb95022', color:'#3fb950', border:'1px solid #3fb95044', borderRadius:3, padding:'1px 5px' }}>variable</span> 분석 변수</span>
+        <span style={{ borderLeft:'1px solid #21262d', paddingLeft:10 }}><span style={{ borderBottom:'1px dashed #8b949e' }}>- - -</span> 파생 KPI</span>
       </div>
 
-      {/* ── 전기 에너지 ── */}
-      <div>
-        {sectionTitle('⚡', '전기 에너지 집계', 'W 단위', '#58a6ff')}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <AggBlock
-            label="계통 전력" op="Σ" variable="grid_P" varColor="#f85149"
-            desc="부지 전체 계통 인입 (4개 변압기 합산)"
-            meters={[
-              { id: 'V.Z81' }, { id: 'V.Z82' },
-              { id: 'H2.Z351' }, { id: 'H2.Z361' },
-            ]}
-          />
-          <AggBlock
-            label="태양광 (PV)" op="Σ |·|" variable="pv_P" varColor="#3fb950"
-            desc="생산값 음수 → 절댓값. 총 749kWp · 평균 ≈ 80kW"
-            meters={[
-              { id: 'H1.Z310', kw: -11.0 }, { id: 'H2.Z311', kw: -33.9 },
-              { id: 'H3.Z312', kw: -20.6 }, { id: 'V.Z84',   kw: -14.6 },
-            ]}
-          />
-          <AggBlock
-            label="CHP 발전기" op="coalesce + |·|" variable="chp_P" varColor="#58a6ff"
-            desc="H1.ZE20 우선(2023~), 없으면 H1.Z20 사용 → 절댓값. 평균 ≈ 85kW"
-            note="동일 선로 이중계측 — 두 미터 절대 합산 금지"
-            meters={[{ id: 'H1.ZE20', kw: -85.0 }]}
-            fallback={[{ id: 'H1.Z20', kw: -54.7 }]}
-          />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
-          <KpiLine>
-            <span style={{ color: '#6e7681' }}>총 공급 =</span>
-            <VBadge name="grid_P" color="#f85149" />
-            <span style={{ color: '#484f58' }}>+</span>
-            <VBadge name="pv_P" color="#3fb950" />
-            <span style={{ color: '#484f58' }}>+</span>
-            <VBadge name="chp_P" color="#58a6ff" />
-          </KpiLine>
-          <KpiLine>
-            <span style={{ color: '#6e7681' }}>자급률 (self_sufficiency) = (</span>
-            <VBadge name="pv_P" color="#3fb950" />
-            <span style={{ color: '#484f58' }}>+</span>
-            <VBadge name="chp_P" color="#58a6ff" />
-            <span style={{ color: '#6e7681' }}>) ÷ 총 공급</span>
-            <span style={{ color: '#8b949e', marginLeft: 4 }}>· 평균 ≈ 38%</span>
-          </KpiLine>
-        </div>
-      </div>
+      <svg viewBox={`0 0 ${SVG_W} ${svgH}`}
+        style={{ width:'100%', minWidth: Math.min(SVG_W, 560), display:'block' }}>
 
-      {/* ── 냉방 시스템 ── */}
-      <div>
-        {sectionTitle('❄', '냉방 시스템 집계', '냉각기 전기 투입 → 냉수 열량 출력', '#a371f7')}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <AggBlock
-            label="냉각기 전기 소비" op="Σ" variable="cool_elec_P" varColor="#a371f7"
-            desc="CM1 · CM2 · CM3 전기 입력 합산. 총 ≈ 25kW"
-            meters={[
-              { id: 'H1.Z16', kw:  1.1 }, { id: 'H1.Z11', kw:  4.4 },
-              { id: 'H1.Z12', kw:  4.5 }, { id: 'H1.Z24', kw:  7.6 },
-              { id: 'H1.Z25', kw:  7.3 },
-            ]}
-          />
-          <AggBlock
-            label="냉방 출력 (열량)" op="직접 측정" variable="cool_output_P" varColor="#a371f7"
-            desc="중앙 냉각기(CM1+CM2+CM3) 냉수 출력. 평균 ≈ 54kW · Tvl = 6.5°C"
-            note="V.K21 기계식 센서 반복 고장 → 고장 구간은 H1.K11+K12+K14+K16 합산으로 재구성"
-            meters={[{ id: 'V.K21', kw: 54.0 }]}
-          />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
-          <KpiLine>
-            <span style={{ color: '#6e7681' }}>COP =</span>
-            <VBadge name="cool_output_P" color="#a371f7" />
-            <span style={{ color: '#484f58' }}>÷</span>
-            <VBadge name="cool_elec_P" color="#a371f7" />
-            <span style={{ color: '#8b949e', marginLeft: 4 }}>· 중앙값 ≈ 2.06 · 범위 0.5 ~ 5.0</span>
-          </KpiLine>
-        </div>
-      </div>
+        {layout.map((sec, si) => (
+          <g key={sec.key}>
+            {/* section separator */}
+            {si > 0 && (
+              <line x1={0} y1={sec.secLY-14} x2={SVG_W} y2={sec.secLY-14}
+                stroke="#21262d" strokeWidth={1} strokeDasharray="6 4"/>
+            )}
+            {/* section label */}
+            <text x={10} y={sec.secLY+15} fontSize={12} fontWeight="bold" fill={sec.lColor}>
+              {sec.label}
+            </text>
 
-      {/* ── 열 에너지 ── */}
-      <div>
-        {sectionTitle('🔥', '열 에너지 집계', 'CHP 폐열 + 보일러 → 건물 난방', '#d29922')}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <AggBlock
-            label="CHP 폐열 회수" op="직접 측정" variable="chp_heat_P" varColor="#d29922"
-            desc="CHP 엔진 폐열 회수량. Tvl = 52.9°C · 평균 ≈ 90kW"
-            meters={[{ id: 'H1.W12', kw: 90.2 }]}
-          />
-          <AggBlock
-            label="총 열 공급" op="직접 측정" variable="heat_total_P" varColor="#d29922"
-            desc="보일러 + CHP 열 합계. Tvl = 73.4°C · 평균 ≈ 247kW"
-            meters={[{ id: 'H1.W11', kw: 247.1 }]}
-          />
-        </div>
-        <div style={{ marginTop: 8 }}>
-          <KpiLine>
-            <span style={{ color: '#6e7681' }}>보일러 기여 (추정) =</span>
-            <VBadge name="heat_total_P" color="#d29922" />
-            <span style={{ color: '#484f58' }}>−</span>
-            <VBadge name="chp_heat_P" color="#d29922" />
-            <span style={{ color: '#8b949e', marginLeft: 4 }}>≈ 247 − 90 = 157kW · 별도 계량기 없음</span>
-          </KpiLine>
-        </div>
-      </div>
+            {/* aggregation rows */}
+            {sec.rows.map(row => {
+              const opCY = row.varCY
+              const midX = (MX+MW + OX) / 2
 
-      {/* ── 기상 ── */}
-      <div>
-        {sectionTitle('🌤', '기상 데이터', '직접 측정, 별도 집계 없음', '#8b949e')}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {[
-            { id: 'Ta',  desc: '외기온 (°C)',        color: '#8b949e' },
-            { id: 'Igm', desc: '수평면 일사량 (W/m²)', color: '#8b949e' },
-          ].map(v => (
-            <div key={v.id} style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <VBadge name={v.id} color={v.color} />
-              <span style={{ fontSize: 11, color: '#6e7681' }}>{v.desc}</span>
-              <span style={{ fontFamily: 'monospace', fontSize: 10, color: '#484f58' }}>WeatherStation.Weather</span>
-            </div>
-          ))}
-        </div>
-      </div>
+              return (
+                <g key={row.id}>
+                  {/* meter boxes + fan-in bezier curves */}
+                  {row.meters.map((m, i) => {
+                    const mTop = row.bY + row.mOff + i*(MH+MG)
+                    const mCY  = mTop + MH/2
+                    const clr  = m.dim ? '#484f58' : '#8b949e'
+                    return (
+                      <g key={m.id + i} opacity={m.dim ? 0.35 : 1}>
+                        <rect x={MX} y={mTop} width={MW} height={MH} rx={4}
+                          fill="#0d1117" stroke={clr} strokeWidth={1.5}/>
+                        <text x={MX+MW/2} y={mTop+(m.note?11:15)} textAnchor="middle"
+                          fontSize={10} fontFamily="monospace"
+                          fill={m.dim ? '#484f58' : '#58a6ff'} fontWeight="bold">{m.id}</text>
+                        {m.note && (
+                          <text x={MX+MW/2} y={mTop+22} textAnchor="middle"
+                            fontSize={7.5} fill={m.warn ? '#f8514988' : '#484f58'}>{m.note}</text>
+                        )}
+                        {m.warn && (
+                          <text x={MX+MW-10} y={mTop+13} fontSize={9} fill="#d29922">⚠</text>
+                        )}
+                        {/* fan-in curve */}
+                        <path
+                          d={`M ${MX+MW} ${mCY} C ${midX} ${mCY} ${midX} ${opCY} ${OX} ${opCY}`}
+                          fill="none" stroke={row.color}
+                          strokeWidth={m.dim ? 0.8 : 1.1}
+                          opacity={m.dim ? 0.2 : 0.55}
+                          strokeDasharray={m.dim ? '4 3' : undefined}
+                        />
+                      </g>
+                    )
+                  })}
 
-      {/* ── 전체 변수 요약 테이블 ── */}
-      <div>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#e6edf3', marginBottom: 10 }}>전체 변수 요약</div>
-        <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 8, overflow: 'hidden' }}>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
-              <thead>
-                <tr style={{ background: '#0d1117', borderBottom: '1px solid #21262d' }}>
-                  {['변수명', '단위', '평균', '소스 계량기', '연산'].map(h => (
-                    <th key={h} style={{ padding: '8px 12px', textAlign: 'left', color: '#8b949e', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { var: 'grid_P',           color: '#f85149', unit: 'W',    avg: '?',    src: 'V.Z81, V.Z82, H2.Z351, H2.Z361',  op: 'Σ' },
-                  { var: 'pv_P',             color: '#3fb950', unit: 'W',    avg: '~80kW', src: 'H1.Z310, H2.Z311, H3.Z312, V.Z84', op: 'Σ |·|' },
-                  { var: 'chp_P',            color: '#58a6ff', unit: 'W',    avg: '~85kW', src: 'H1.ZE20 (우선) / H1.Z20',           op: 'coalesce |·|' },
-                  { var: 'cool_elec_P',      color: '#a371f7', unit: 'W',    avg: '~25kW', src: 'H1.Z11, Z12, Z16, Z24, Z25',       op: 'Σ' },
-                  { var: 'cool_output_P',    color: '#a371f7', unit: 'W',    avg: '~54kW', src: 'V.K21 (고장 시 서브미터 재구성)',   op: '직접 측정' },
-                  { var: 'chp_heat_P',       color: '#d29922', unit: 'W',    avg: '90kW',  src: 'H1.W12',                            op: '직접 측정' },
-                  { var: 'heat_total_P',     color: '#d29922', unit: 'W',    avg: '247kW', src: 'H1.W11',                            op: '직접 측정' },
-                  { var: 'cop',              color: '#79c0ff', unit: '–',    avg: '2.06',  src: 'cool_output_P, cool_elec_P',        op: 'output ÷ elec' },
-                  { var: 'self_sufficiency', color: '#3fb950', unit: '%',    avg: '~38%',  src: 'pv_P, chp_P, grid_P',              op: '(pv+chp) ÷ total' },
-                  { var: 'Ta',               color: '#8b949e', unit: '°C',   avg: '~12°C', src: 'WeatherStation.Weather',            op: '직접 측정' },
-                  { var: 'Igm',              color: '#8b949e', unit: 'W/m²', avg: '–',     src: 'WeatherStation.Weather',            op: '직접 측정' },
-                ].map(row => (
-                  <tr key={row.var} style={{ borderBottom: '1px solid #21262d' }}>
-                    <td style={{ padding: '7px 12px', fontFamily: 'monospace', color: row.color, fontWeight: 700 }}>{row.var}</td>
-                    <td style={{ padding: '7px 12px', color: '#484f58' }}>{row.unit}</td>
-                    <td style={{ padding: '7px 12px', color: '#8b949e', fontWeight: 600 }}>{row.avg}</td>
-                    <td style={{ padding: '7px 12px', color: '#6e7681', fontSize: 11 }}>{row.src}</td>
-                    <td style={{ padding: '7px 12px', color: '#d29922', fontSize: 11, fontFamily: 'monospace' }}>{row.op}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+                  {/* op badge (pill) */}
+                  {(() => {
+                    const oh = 24
+                    return (
+                      <>
+                        <rect x={OX} y={opCY-oh/2} width={OW} height={oh} rx={oh/2}
+                          fill={row.color+'22'} stroke={row.color} strokeWidth={1.5}/>
+                        <text x={OX+OW/2} y={opCY+4.5} textAnchor="middle"
+                          fontSize={9} fontFamily="monospace"
+                          fill={row.color} fontWeight="bold">{row.op}</text>
+                      </>
+                    )
+                  })()}
+
+                  {/* arrow op→var */}
+                  <Arrow x1={OX+OW} y={opCY} x2={VX} color={row.color}/>
+
+                  {/* variable box */}
+                  <rect x={VX} y={opCY-VH/2} width={VW} height={VH} rx={6}
+                    fill={row.color+'1a'} stroke={row.color} strokeWidth={2}/>
+                  <text x={VX+VW/2} y={opCY-VH/2+14} textAnchor="middle"
+                    fontSize={11} fontFamily="monospace" fill={row.color} fontWeight="bold">
+                    {row.id}
+                  </text>
+                  <text x={VX+VW/2} y={opCY-VH/2+27} textAnchor="middle"
+                    fontSize={8.5} fill="#6e7681">{row.desc}</text>
+                </g>
+              )
+            })}
+
+            {/* KPI connections + boxes */}
+            {sec.kpiRows.length > 0 && (() => {
+              const first = sec.rows[0]
+              const last  = sec.rows[sec.rows.length-1]
+              const brX   = VX+VW+14   // bracket x
+              const topY  = first.varCY
+              const botY  = last.varCY
+              const midY  = (topY+botY)/2
+              const kpiMidY = (sec.kpiRows[0].y + sec.kpiRows[sec.kpiRows.length-1].y + KH) / 2
+
+              return (
+                <g>
+                  {/* right-side bracket */}
+                  <line x1={VX+VW} y1={topY} x2={brX} y2={topY} stroke="#30363d" strokeWidth={1}/>
+                  <line x1={brX}   y1={topY} x2={brX} y2={botY}  stroke="#30363d" strokeWidth={1}/>
+                  <line x1={VX+VW} y1={botY} x2={brX} y2={botY}  stroke="#30363d" strokeWidth={1}/>
+                  {/* bracket mid → KX */}
+                  <line x1={brX} y1={midY} x2={KX-6} y2={kpiMidY}
+                    stroke="#30363d" strokeWidth={1} strokeDasharray="4 3"/>
+                  <polygon points={`${KX},${kpiMidY} ${KX-8},${kpiMidY-4} ${KX-8},${kpiMidY+4}`} fill="#30363d"/>
+
+                  {/* kpi boxes */}
+                  {sec.kpiRows.map((kpi, ki) => {
+                    const kx = KX, ky = kpi.y, kCX = kx+KW/2
+                    return (
+                      <g key={ki}>
+                        {ki > 0 && (
+                          <line x1={kCX} y1={ky-KPI_GAP} x2={kCX} y2={ky-1}
+                            stroke={kpi.color} strokeWidth={1} opacity={0.3}/>
+                        )}
+                        <rect x={kx} y={ky} width={KW} height={KH} rx={6}
+                          fill={kpi.color+'15'} stroke={kpi.color}
+                          strokeWidth={1.5} strokeDasharray="5 3"/>
+                        <text x={kCX} y={ky+14} textAnchor="middle"
+                          fontSize={10} fill={kpi.color} fontWeight="bold">{kpi.label}</text>
+                        <text x={kCX} y={ky+27} textAnchor="middle"
+                          fontSize={8} fill="#6e7681">{kpi.sub}</text>
+                      </g>
+                    )
+                  })}
+                </g>
+              )
+            })()}
+          </g>
+        ))}
+      </svg>
     </div>
   )
 }
