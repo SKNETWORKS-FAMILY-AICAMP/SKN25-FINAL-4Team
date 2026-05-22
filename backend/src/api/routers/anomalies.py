@@ -111,6 +111,102 @@ async def anomaly_timeline():
         return {"error": str(e), "timeline": []}
 
 
+@router.get("/events")
+async def anomaly_events(
+    severity:   Optional[str] = Query(None, description="HIGH / MEDIUM / LOW"),
+    year:       Optional[int] = Query(None),
+    month:      Optional[int] = Query(None),
+    gap_hours:  int           = Query(2, ge=1, le=24, description="이 시간 이내 연속 이상을 하나의 이벤트로 묶음"),
+    exclude_gf: bool          = Query(True),
+):
+    """연속된 이상 포인트를 이벤트 단위로 통합해 반환."""
+    try:
+        with _db_conn() as conn:
+            cur = conn.cursor()
+            conds, params = [], []
+            if severity:
+                conds.append("severity = %s"); params.append(severity.upper())
+            if year:
+                conds.append("EXTRACT(YEAR  FROM timestamp) = %s"); params.append(year)
+            if month:
+                conds.append("EXTRACT(MONTH FROM timestamp) = %s"); params.append(month)
+            if exclude_gf:
+                conds.append("(gateway_failure IS NULL OR gateway_failure = FALSE)")
+            where = ("WHERE " + " AND ".join(conds)) if conds else ""
+            cur.execute(f"""
+                SELECT timestamp, meter_id, anomaly_type, severity,
+                       score_stat, score_iso, score_lstm, vote_count,
+                       actual_w, predicted_w, residual_w
+                FROM anomaly_results {where}
+                ORDER BY meter_id, anomaly_type, timestamp;
+            """, params)
+            rows = cur.fetchall()
+    except Exception as e:
+        return {"error": str(e), "events": []}
+
+    if not rows:
+        return {"events": [], "total": 0}
+
+    # 연속 이상 포인트 → 이벤트 병합
+    CAUSE_MAP = {
+        "COPDrop":          "효율 저하",
+        "CHPOutage":        "CHP 정지",
+        "PowerSpike":       "전력 급등",
+        "NightConsumption": "야간 과소비",
+        "PVNightNonZero":   "PV 야간 비정상",
+        "Unknown":          "미분류",
+    }
+    events, current = [], None
+    gap = timedelta(hours=gap_hours)
+
+    for ts, meter_id, atype, sev, s_stat, s_iso, s_lstm, votes, actual, pred, resid in rows:
+        if ts.tzinfo is None:
+            ts = ts.replace(tzinfo=timezone.utc)
+        peak_score = max(v for v in [s_stat, s_iso, s_lstm] if v is not None) if any(
+            v is not None for v in [s_stat, s_iso, s_lstm]) else 0.0
+
+        if (current and current["meter_id"] == meter_id
+                and current["anomaly_type"] == atype
+                and ts - current["_last_ts"] <= gap):
+            current["end"] = ts.isoformat()
+            current["_last_ts"] = ts
+            current["point_count"] += 1
+            if peak_score > current["peak_score"]:
+                current["peak_score"] = round(peak_score, 4)
+            if resid and (current["peak_residual_w"] is None or abs(resid) > abs(current["peak_residual_w"])):
+                current["peak_residual_w"] = round(resid, 1)
+        else:
+            if current:
+                current.pop("_last_ts")
+                current["duration_h"] = round(
+                    (datetime.fromisoformat(current["end"]) -
+                     datetime.fromisoformat(current["start"])).total_seconds() / 3600, 1)
+                events.append(current)
+            current = {
+                "start":           ts.isoformat(),
+                "end":             ts.isoformat(),
+                "_last_ts":        ts,
+                "meter_id":        meter_id,
+                "anomaly_type":    atype,
+                "cause_label":     CAUSE_MAP.get(atype, atype),
+                "severity":        sev,
+                "point_count":     1,
+                "peak_score":      round(peak_score, 4),
+                "peak_residual_w": round(resid, 1) if resid is not None else None,
+                "duration_h":      0,
+            }
+
+    if current:
+        current.pop("_last_ts")
+        current["duration_h"] = round(
+            (datetime.fromisoformat(current["end"]) -
+             datetime.fromisoformat(current["start"])).total_seconds() / 3600, 1)
+        events.append(current)
+
+    events.sort(key=lambda e: e["start"], reverse=True)
+    return {"events": events, "total": len(events)}
+
+
 @router.get("/types")
 async def anomaly_types():
     """이상 유형별 건수 요약 (파이차트용)."""

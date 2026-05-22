@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import {
-  LineChart, Line, BarChart, Bar,
-  XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
+  LineChart, Line, BarChart, Bar, ScatterChart, Scatter,
+  XAxis, YAxis, ZAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
+  ReferenceLine,
 } from 'recharts'
 import { getReport } from '../api/client'
 
@@ -118,11 +119,12 @@ function downloadCSV(items, view) {
 }
 
 export default function ReportPanel() {
-  const [raw,     setRaw]     = useState([])
-  const [months,  setMonths]  = useState(72)
-  const [view,    setView]    = useState('monthly')   // 'monthly' | 'seasonal' | 'yearly'
-  const [loading, setLoading] = useState(true)
-  const [error,   setError]   = useState('')
+  const [raw,           setRaw]           = useState([])
+  const [coolingVsTemp, setCoolingVsTemp] = useState([])
+  const [months,        setMonths]        = useState(72)
+  const [view,          setView]          = useState('monthly')   // 'monthly' | 'seasonal' | 'yearly'
+  const [loading,       setLoading]       = useState(true)
+  const [error,         setError]         = useState('')
 
   useEffect(() => {
     setLoading(true)
@@ -131,6 +133,7 @@ export default function ReportPanel() {
       .then(r => {
         if (r.data.error) throw new Error(r.data.error)
         setRaw((r.data.items ?? []).reverse())
+        setCoolingVsTemp(r.data.cooling_vs_temp ?? [])
       })
       .catch(e => setError(e.message ?? '데이터 로드 실패'))
       .finally(() => setLoading(false))
@@ -144,6 +147,21 @@ export default function ReportPanel() {
   }, [raw, view])
 
   const latest = items[items.length - 1]
+
+  // 전월 대비 변화 (monthly 뷰, 최근 12개월)
+  const momData = useMemo(() => {
+    if (view !== 'monthly' || raw.length < 2) return []
+    return raw.slice(1).map((curr, i) => {
+      const prev = raw[i]
+      const consumptionDelta = prev.total_consumption_kwh
+        ? (curr.total_consumption_kwh - prev.total_consumption_kwh) / prev.total_consumption_kwh * 100
+        : null
+      const selfDelta = prev.self_sufficiency_pct != null && curr.self_sufficiency_pct != null
+        ? curr.self_sufficiency_pct - prev.self_sufficiency_pct
+        : null
+      return { period: curr.period.slice(2), consumption_delta: consumptionDelta, self_delta: selfDelta }
+    }).slice(-12)
+  }, [raw, view])
 
   const viewLabel = { monthly: '월별', seasonal: '계절별', yearly: '연도별' }
 
@@ -267,6 +285,59 @@ export default function ReportPanel() {
                   <Legend wrapperStyle={{ fontSize: 11 }}/>
                   <Bar yAxisId="left"  dataKey="self_sufficiency_pct"  name="자급률"  fill="#3fb950" radius={[3,3,0,0]} opacity={0.85}/>
                   <Bar yAxisId="right" dataKey="total_consumption_kwh" name="소비량"  fill="#1f6feb" radius={[3,3,0,0]} opacity={0.6}/>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {/* 냉방 부하 vs 외기온 상관관계 */}
+          {coolingVsTemp.length > 1 && (
+            <div style={s.chartBox}>
+              <div style={s.chartTitle}>냉방 부하 vs 외기온 상관관계 (월별 평균)</div>
+              <ResponsiveContainer width="100%" height={200}>
+                <ScatterChart margin={{ top: 4, right: 24, left: -10, bottom: 16 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#21262d"/>
+                  <XAxis type="number" dataKey="avg_ta" name="외기온" unit="°C"
+                    tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false}
+                    label={{ value: '외기온 (°C)', position: 'insideBottom', offset: -6, fill: '#6e7681', fontSize: 10 }}/>
+                  <YAxis type="number" dataKey="avg_cool_kw" name="냉방부하" unit=" kW"
+                    tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false} axisLine={false}/>
+                  <ZAxis range={[30, 30]}/>
+                  <Tooltip {...tooltip} cursor={{ strokeDasharray: '3 3' }}
+                    content={({ payload }) => {
+                      if (!payload?.length) return null
+                      const d = payload[0].payload
+                      return (
+                        <div style={{ ...tooltip.contentStyle, padding: '8px 12px' }}>
+                          <div style={{ color: '#e6edf3', marginBottom: 4, fontWeight: 600 }}>{d.period}</div>
+                          <div style={{ color: '#f85149' }}>외기온: {d.avg_ta}°C</div>
+                          <div style={{ color: '#58a6ff' }}>냉방 부하: {d.avg_cool_kw} kW</div>
+                        </div>
+                      )
+                    }}/>
+                  <Scatter data={coolingVsTemp} fill="#f85149" opacity={0.75}/>
+                </ScatterChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {/* 전월 대비 변화 (월별 뷰) */}
+          {view === 'monthly' && momData.length > 0 && (
+            <div style={s.chartBox}>
+              <div style={s.chartTitle}>전월 대비 변화 (최근 12개월)</div>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={momData} margin={{ top: 4, right: 12, left: -10, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#21262d"/>
+                  <XAxis dataKey="period" tick={{ fontSize: 9, fill: '#8b949e' }} tickLine={false}
+                    interval={Math.max(0, Math.floor(momData.length / 8) - 1)}/>
+                  <YAxis tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false} axisLine={false}
+                    tickFormatter={v => `${v > 0 ? '+' : ''}${v.toFixed(0)}%`}/>
+                  <ReferenceLine y={0} stroke="#30363d" strokeWidth={1}/>
+                  <Tooltip {...tooltip}
+                    formatter={(v, n) => v != null ? [`${v > 0 ? '+' : ''}${v.toFixed(1)}%`, n] : ['–', n]}/>
+                  <Legend wrapperStyle={{ fontSize: 11 }}/>
+                  <Bar dataKey="consumption_delta" name="소비량 변화%"  fill="#1f6feb" radius={[2,2,0,0]} opacity={0.8}/>
+                  <Bar dataKey="self_delta"         name="자급률 변화%p" fill="#3fb950" radius={[2,2,0,0]} opacity={0.8}/>
                 </BarChart>
               </ResponsiveContainer>
             </div>

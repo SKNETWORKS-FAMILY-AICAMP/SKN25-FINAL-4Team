@@ -5,7 +5,7 @@ import {
   ReferenceLine, Legend, PieChart, Pie, Cell,
 } from 'recharts'
 import { getAnomalies, getAnomalySummary, getAnomalyTimeline, getAnomalyTypes,
-         getAnomalyContext, sendChat, runDetection, getDetectionStatus } from '../api/client'
+         getAnomalyContext, getAnomalyEvents, sendChat, runDetection, getDetectionStatus } from '../api/client'
 
 const SEV_COLOR  = { HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#58a6ff' }
 const TYPE_LABEL = {
@@ -243,6 +243,86 @@ const TYPE_COLORS = {
   NightConsumption: '#d29922', PVNightNonZero: '#a371f7', Unknown: '#6e7681',
 }
 
+const CAUSE_COLORS = {
+  '효율 저하':     { bg: '#0d1b2a', border: '#58a6ff', text: '#58a6ff' },
+  'CHP 정지':      { bg: '#0d1f12', border: '#3fb950', text: '#3fb950' },
+  '전력 급등':     { bg: '#2d0d0d', border: '#f85149', text: '#f85149' },
+  '야간 과소비':   { bg: '#2d1f00', border: '#d29922', text: '#d29922' },
+  'PV 야간 비정상':{ bg: '#1e0f2e', border: '#a371f7', text: '#a371f7' },
+  '미분류':        { bg: '#1c1f24', border: '#6e7681', text: '#6e7681' },
+}
+
+function CauseBadge({ label }) {
+  const c = CAUSE_COLORS[label] ?? CAUSE_COLORS['미분류']
+  return (
+    <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 4,
+      background: c.bg, border: `1px solid ${c.border}`, color: c.text, fontWeight: 600 }}>
+      {label}
+    </span>
+  )
+}
+
+function EventsView({ severity, year, month, excludeGf }) {
+  const [events,  setEvents]  = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    getAnomalyEvents(severity === 'MEDIUM+' ? undefined : severity || undefined,
+      year || undefined, month || undefined, 2, excludeGf)
+      .then(r => setEvents(r.data.events ?? []))
+      .catch(() => setEvents([]))
+      .finally(() => setLoading(false))
+  }, [severity, year, month, excludeGf])
+
+  if (loading) return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '12px 0' }}>
+      {[1,2,3,4].map(i => (
+        <div key={i} style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '12px 16px' }}>
+          <div style={{ height: 14, width: '50%', background: '#21262d', borderRadius: 4, marginBottom: 8 }}/>
+          <div style={{ height: 12, width: '80%', background: '#21262d', borderRadius: 4 }}/>
+        </div>
+      ))}
+    </div>
+  )
+
+  if (events.length === 0) return (
+    <div style={{ textAlign: 'center', color: '#8b949e', paddingTop: 40 }}>이벤트 없음</div>
+  )
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ fontSize: 12, color: '#8b949e', marginBottom: 4 }}>
+        총 <b style={{ color: '#e6edf3' }}>{events.length}</b>개 이벤트
+        <span style={{ marginLeft: 8, color: '#484f58' }}>(연속 이상 포인트를 하나의 이벤트로 통합)</span>
+      </div>
+      {events.map((ev, i) => (
+        <div key={i} style={{
+          background: '#161b22', border: `1px solid ${SEV_COLOR[ev.severity] ?? '#30363d'}22`,
+          borderLeft: `3px solid ${SEV_COLOR[ev.severity] ?? '#30363d'}`,
+          borderRadius: 8, padding: '10px 14px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, flexWrap: 'wrap' }}>
+            <span style={{ ...s.sevBadge, background: SEV_COLOR[ev.severity] }}>{ev.severity}</span>
+            <CauseBadge label={ev.cause_label} />
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#e6edf3' }}>{ev.meter_id}</span>
+            <span style={{ marginLeft: 'auto', fontSize: 11, color: '#6e7681' }}>
+              {ev.point_count}포인트 · {ev.duration_h}시간
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: 16, fontSize: 11, color: '#8b949e', flexWrap: 'wrap' }}>
+            <span>시작 <b style={{ color: '#e6edf3' }}>{ev.start?.slice(0,16).replace('T',' ')}</b></span>
+            <span>종료 <b style={{ color: '#e6edf3' }}>{ev.end?.slice(0,16).replace('T',' ')}</b></span>
+            {ev.peak_residual_w != null && (
+              <span>최대 잔차 <b style={{ color: '#f85149' }}>{(ev.peak_residual_w/1000).toFixed(1)} kW</b></span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function AnomalyPanel() {
   const [items,   setItems]   = useState([])
   const [summary, setSummary] = useState([])
@@ -256,6 +336,7 @@ export default function AnomalyPanel() {
   const [loading, setLoading] = useState(true)
   const [selected,setSelected]= useState(null)
   const [excludeGf, setExcludeGf] = useState(true)
+  const [viewMode, setViewMode] = useState('points')  // 'points' | 'events'
   const PAGE = 50
 
   const loadList = () => {
@@ -282,7 +363,18 @@ export default function AnomalyPanel() {
     <div style={s.wrap}>
       {/* 헤더 */}
       <div style={s.header}>
-        <span style={s.title}>이상탐지 결과</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={s.title}>이상탐지 결과</span>
+          <div style={{ display: 'flex', background: '#21262d', borderRadius: 6, padding: 2, gap: 2 }}>
+            {[['points','포인트 목록'],['events','이벤트 통합']].map(([mode, label]) => (
+              <button key={mode} onClick={() => setViewMode(mode)} style={{
+                padding: '3px 10px', borderRadius: 4, border: 'none', cursor: 'pointer', fontSize: 12,
+                background: viewMode === mode ? '#1f6feb' : 'transparent',
+                color: viewMode === mode ? '#fff' : '#8b949e', fontWeight: viewMode === mode ? 600 : 400,
+              }}>{label}</button>
+            ))}
+          </div>
+        </div>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           <select style={s.select} value={year} onChange={e => { setYear(e.target.value); setMonth(''); setOffset(0); setSelected(null) }}>
             <option value="">전체 연도</option>
@@ -310,7 +402,13 @@ export default function AnomalyPanel() {
       {/* 새 탐지 실행 패널 */}
       <RunDetectionPanel onDone={() => { setOffset(0); loadList() }} />
 
-      <div style={s.body}>
+      {viewMode === 'events' && (
+        <div style={{ flex: 1, overflowY: 'auto', padding: '12px 20px 20px' }}>
+          <EventsView severity={severity} year={year} month={month} excludeGf={excludeGf} />
+        </div>
+      )}
+
+      <div style={{ ...s.body, display: viewMode === 'points' ? 'flex' : 'none' }}>
         {/* 좌측 */}
         <div style={{ ...s.left, width: selected ? '38%' : '100%' }}>
           {/* 요약 카드 */}

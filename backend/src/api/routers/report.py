@@ -111,7 +111,7 @@ async def aggregate_monthly(
 
 @router.get("")
 async def get_report(months: int = Query(3, ge=1, le=84)):
-    """최근 N개월 KPI 리포트 조회."""
+    """최근 N개월 KPI 리포트 + 냉방-외기온 상관 데이터 조회."""
     try:
         with _db_conn() as conn:
             cur = conn.cursor()
@@ -123,8 +123,44 @@ async def get_report(months: int = Query(3, ge=1, le=84)):
             """, (months,))
             rows = cur.fetchall()
     except Exception as e:
-        return {"error": str(e), "items": []}
+        return {"error": str(e), "items": [], "cooling_vs_temp": []}
 
     cols = ["period", "total_consumption_kwh", "self_sufficiency_pct",
             "avg_cop", "anomaly_count", "grid_dependency_pct", "pv_kwh", "chp_kwh"]
-    return {"items": [dict(zip(cols, r)) for r in rows]}
+    items = [dict(zip(cols, r)) for r in rows]
+
+    # 냉방-외기온 상관 데이터: ems DB에서 월별 avg(cool_output_P), avg(Ta) 조회
+    cooling_vs_temp = []
+    try:
+        from data.loader import load_range
+        if items:
+            periods = sorted(r["period"] for r in items)
+            start_str = periods[0] + "-01"
+            # 마지막 period 다음 달까지
+            last = periods[-1]
+            yr, mo = int(last[:4]), int(last[5:7])
+            mo += 1
+            if mo > 12:
+                mo, yr = 1, yr + 1
+            end_str = f"{yr}-{mo:02d}-01"
+            df = load_range(start_str, end_str)
+            if not df.empty:
+                df["ts"] = pd.to_datetime(df["ts"])
+                df["period"] = df["ts"].dt.to_period("M").astype(str)
+                grp = df.groupby("period").agg(
+                    avg_ta=("Ta", "mean"),
+                    avg_cool_kw=("cool_output_P", lambda x: x.mean(skipna=True) / 1000),
+                ).reset_index()
+                grp = grp[grp["period"].isin([r["period"] for r in items])]
+                cooling_vs_temp = [
+                    {
+                        "period":       r["period"],
+                        "avg_ta":       round(float(r["avg_ta"]), 1) if pd.notna(r["avg_ta"]) else None,
+                        "avg_cool_kw":  round(float(r["avg_cool_kw"]), 1) if pd.notna(r["avg_cool_kw"]) else None,
+                    }
+                    for _, r in grp.iterrows()
+                ]
+    except Exception:
+        pass  # 데이터 없을 시 빈 배열 반환
+
+    return {"items": items, "cooling_vs_temp": cooling_vs_temp}

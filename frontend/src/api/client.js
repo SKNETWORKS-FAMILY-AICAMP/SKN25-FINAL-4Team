@@ -12,6 +12,8 @@ export const getAnomalies = (limit = 50, severity, year, month, offset = 0, excl
 export const getAnomalySummary  = () => api.get('/anomalies/summary')
 export const getAnomalyTimeline = () => api.get('/anomalies/timeline')
 export const getAnomalyTypes    = () => api.get('/anomalies/types')
+export const getAnomalyEvents   = (severity, year, month, gapHours = 2, excludeGf = true) =>
+  api.get('/anomalies/events', { params: { ...(severity && { severity }), ...(year && { year }), ...(month && { month }), gap_hours: gapHours, exclude_gf: excludeGf } })
 export const getAnomalyContext  = (id, hours = 24) => api.get(`/anomalies/${id}/context`, { params: { hours } })
 export const getReport          = (months = 12) => api.get('/report', { params: { months } })
 export const runDetection       = (start, end) => api.post('/anomalies/run', null, { params: { start, end } })

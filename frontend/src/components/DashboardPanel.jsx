@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  CartesianGrid, Legend,
+  BarChart, Bar, LineChart, Line,
+  XAxis, YAxis, Tooltip, ResponsiveContainer,
+  CartesianGrid, Legend, ReferenceLine,
 } from 'recharts'
 import { getReport, getAnomalySummary, getAnomalies } from '../api/client'
 
@@ -208,6 +209,25 @@ export default function DashboardPanel() {
                   <Tooltip {...tt} formatter={v => [`${v.toLocaleString()} kWh`]}/>
                   <Bar dataKey="total_consumption_kwh" name="소비량" fill="#1f6feb" radius={[3,3,0,0]}/>
                 </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* COP 추이 (전체 너비) */}
+            <div style={{ ...s.chartBox, gridColumn: '1 / -1' }}>
+              <div style={s.chartTitle}>월별 평균 COP 추이 (냉방 성능계수)</div>
+              <ResponsiveContainer width="100%" height={160}>
+                <LineChart data={report.slice(-12)} margin={{ top: 4, right: 24, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#21262d"/>
+                  <XAxis dataKey="period" tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false}
+                    tickFormatter={v => v?.slice(2)}/>
+                  <YAxis tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false} axisLine={false}
+                    domain={['auto', 'auto']}/>
+                  <ReferenceLine y={2.06} stroke="#30363d" strokeDasharray="4 2"
+                    label={{ value: '중앙값 2.06', position: 'right', fontSize: 10, fill: '#6e7681' }}/>
+                  <Tooltip {...tt} formatter={v => [v?.toFixed(3), 'COP']}/>
+                  <Line type="monotone" dataKey="avg_cop" name="COP" stroke="#58a6ff" strokeWidth={2}
+                    dot={{ fill: '#58a6ff', r: 3 }} activeDot={{ r: 5 }}/>
+                </LineChart>
               </ResponsiveContainer>
             </div>
 
