@@ -1,0 +1,12 @@
+{
+  "lstm": {
+    "hidden_size": 64,
+    "window_size": 12,
+    "epochs": 45,
+    "lr": 0.0037120812239514554,
+    "threshold_k": 3.3210168962436395
+  },
+  "if": {
+    "contamination": 0.014332370841890988
+  }
+}

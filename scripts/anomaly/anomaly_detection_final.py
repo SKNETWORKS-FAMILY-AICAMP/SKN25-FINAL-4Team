@@ -168,10 +168,12 @@ def build_if_features(series):
     df["lag2"] = df["v"].shift(2)
     df["roll_mean"] = df["v"].rolling(24).mean()
     df["roll_std"] = df["v"].rolling(24).std()
-    df = df.fillna(method="bfill").fillna(method="ffill")
+    
+    # Pandas 2.0+ 호환 버전으로 수정
+    df = df.bfill().ffill()
+    
     scaler = StandardScaler()
     return scaler.fit_transform(df.values), scaler
-
 
 def train_if(series, params, save_path=None):
     feat, scaler = build_if_features(series)
