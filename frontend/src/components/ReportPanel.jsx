@@ -197,7 +197,7 @@ export default function ReportPanel() {
       {!loading && error && (
         <div style={{ margin: '24px', padding: '14px 18px', background: '#2d1517', border: '1px solid #f85149', borderRadius: 10, color: '#f85149', fontSize: 13 }}>
           데이터 로드 실패: {error}
-          <button onClick={() => { setError(''); setLoading(true); getReport(months).then(r => setRaw((r.data.items ?? []).reverse())).catch(e => setError(e.message ?? '')).finally(() => setLoading(false)) }}
+          <button onClick={() => { setError(''); setLoading(true); getReport(months).then(r => { setRaw((r.data.items ?? []).reverse()); setCoolingVsTemp(r.data.cooling_vs_temp ?? []) }).catch(e => setError(e.message ?? '')).finally(() => setLoading(false)) }}
             style={{ marginLeft: 12, padding: '3px 10px', background: 'none', border: '1px solid #f85149', borderRadius: 6, color: '#f85149', cursor: 'pointer', fontSize: 12 }}>
             재시도
           </button>

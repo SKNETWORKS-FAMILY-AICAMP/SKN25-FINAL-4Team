@@ -19,6 +19,7 @@ export const getReport          = (months = 12) => api.get('/report', { params: 
 export const runDetection       = (start, end) => api.post('/anomalies/run', null, { params: { start, end } })
 export const getDetectionStatus = (jobId) => api.get(`/anomalies/run/status/${jobId}`)
 
+export const getForecastModels  = () => api.get('/forecast/models')
 export const getForecastStatus  = () => api.get('/forecast/train/status')
 export const trainModel         = (model, start = '2018-01-01', end = '2024-01-01', horizon = 24) =>
   api.post(`/forecast/train/${model}`, null, { params: { start, end, horizon } })

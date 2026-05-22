@@ -11,6 +11,58 @@ router = APIRouter(prefix="/forecast", tags=["forecast"])
 _STATUS_DIR = Path(__file__).parent.parent.parent / "models" / "forecasting" / "saved"
 _PROCS: dict[str, "subprocess.Popen"] = {}
 
+# ── 모델 레지스트리 ──────────────────────────────────────────────────
+# 모델 추가/변경 시 이 dict만 수정하면 /forecast/models API와 프론트엔드에 자동 반영됨.
+MODEL_REGISTRY: dict[str, dict] = {
+    "prophet": {
+        "name":        "prophet",
+        "label":       "Prophet",
+        "color":       "#58a6ff",
+        "description": "계절성 분해 + 날씨 회귀",
+        "trainable":   True,
+        "max_hours":   72,
+        "badges": [
+            {"text": "단기(≤72h) 전용", "color": "#d29922", "bg": "#2d2209"},
+        ],
+    },
+    "xgboost": {
+        "name":        "xgboost",
+        "label":       "XGBoost",
+        "color":       "#3fb950",
+        "description": "Lag 피처 + 시간/날씨",
+        "trainable":   True,
+        "max_hours":   None,
+        "badges": [
+            {"text": "MAPE 4.7%",   "color": "#3fb950", "bg": "#0f2d1a"},
+            {"text": "3년 백테스트", "color": "#6e7681", "bg": "#161b22"},
+        ],
+    },
+    "lstm": {
+        "name":        "lstm",
+        "label":       "LSTM",
+        "color":       "#d29922",
+        "description": "다변량 시퀀스 학습",
+        "trainable":   True,
+        "max_hours":   None,
+        "badges": [
+            {"text": "MAPE 8.5%",   "color": "#d29922", "bg": "#2d2209"},
+            {"text": "3년 백테스트", "color": "#6e7681", "bg": "#161b22"},
+        ],
+    },
+    "vmd-lstm": {
+        "name":        "vmd-lstm",
+        "label":       "VMD-LSTM",
+        "color":       "#a371f7",
+        "description": "VMD 분해 + LSTM + Attention",
+        "trainable":   False,
+        "max_hours":   None,
+        "badges": [
+            {"text": "사전학습 완료",  "color": "#a371f7", "bg": "#1e1034"},
+            {"text": "ML팀 최고성능", "color": "#6e7681", "bg": "#161b22"},
+        ],
+    },
+}
+
 
 def _status_file(model_name: str) -> Path:
     (_STATUS_DIR / model_name).mkdir(parents=True, exist_ok=True)
@@ -33,6 +85,23 @@ def _get_status(model_name: str) -> str:
     return text
 
 
+@router.get("/models")
+async def get_models():
+    """등록된 예측 모델 목록 및 메타데이터 반환. 모델 추가/변경 시 MODEL_REGISTRY만 수정하면 됨."""
+    from models.forecasting.vmd_lstm_model import is_available as vmd_available
+    result = []
+    for meta in MODEL_REGISTRY.values():
+        entry = dict(meta)
+        if meta["trainable"]:
+            entry["status"] = _get_status(meta["name"])
+        else:
+            avail = vmd_available() if meta["name"] == "vmd-lstm" else False
+            entry["status"] = "done" if avail else "idle"
+            entry["available"] = avail
+        result.append(entry)
+    return {"models": result}
+
+
 @router.post("/train/{model_name}")
 async def train_model(
     model_name: str,
@@ -40,15 +109,17 @@ async def train_model(
     end:     str = Query("2024-01-01"),
     horizon: int = Query(24, ge=1, le=168),
 ):
-    """학습 시작 (별도 프로세스). model_name: prophet | xgboost | lstm | vmd-lstm"""
+    """학습 시작 (별도 프로세스)."""
     import subprocess
-    if model_name == "vmd-lstm":
-        from models.forecasting.vmd_lstm_model import is_available
-        return {"status": "pretrained", "model": "vmd-lstm",
-                "message": "VMD-LSTM은 ML 팀 사전학습 모델을 사용합니다.",
-                "available": is_available()}
-    if model_name not in ("prophet", "xgboost", "lstm"):
+    if model_name not in MODEL_REGISTRY:
         return {"error": f"지원하지 않는 모델: {model_name}"}
+    if not MODEL_REGISTRY[model_name]["trainable"]:
+        if model_name == "vmd-lstm":
+            from models.forecasting.vmd_lstm_model import is_available
+            return {"status": "pretrained", "model": "vmd-lstm",
+                    "message": "VMD-LSTM은 ML 팀 사전학습 모델을 사용합니다.",
+                    "available": is_available()}
+        return {"error": f"{model_name}은 사전학습 모델입니다."}
     proc = _PROCS.get(model_name)
     if proc and proc.poll() is None:
         return {"status": "already_running", "model": model_name}
@@ -88,8 +159,10 @@ except Exception as e:
 async def training_status():
     """학습 상태 조회."""
     from models.forecasting.vmd_lstm_model import is_available
-    status = {m: _get_status(m) for m in ("prophet", "xgboost", "lstm")}
-    status["vmd-lstm"] = "done" if is_available() else "idle"
+    status = {n: _get_status(n) for n, m in MODEL_REGISTRY.items() if m["trainable"]}
+    for n, m in MODEL_REGISTRY.items():
+        if not m["trainable"] and n == "vmd-lstm":
+            status[n] = "done" if is_available() else "idle"
     return {"status": status}
 
 
@@ -101,7 +174,8 @@ async def predict(
     end:   str = Query("2024-01-01"),
 ):
     """예측 실행. start/end는 컨텍스트 데이터 범위."""
-    if model_name not in ("prophet", "xgboost", "lstm"):
+    trainable = {n for n, m in MODEL_REGISTRY.items() if m["trainable"]}
+    if model_name not in trainable:
         return {"error": f"지원하지 않는 모델: {model_name}"}
     try:
         from data.loader import load_range
