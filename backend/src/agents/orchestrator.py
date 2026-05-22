@@ -181,7 +181,6 @@ def run(question: str) -> str:
         "intent":           "",
         "rag_answer":       "",
         "rag_sources":      [],
-        "ontology_context": [],
         "anomaly_result":   {},
         "report_result":    "",
         "forecast_result":  {},

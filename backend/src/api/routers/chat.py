@@ -39,7 +39,6 @@ def _invoke_graph(question: str, lc_messages: list) -> dict:
         "question":         question,
         "intent":           "",
         "rag_answer":       "",
-        "ontology_context": [],
         "anomaly_result":   {},
         "report_result":    "",
         "forecast_result":  {},

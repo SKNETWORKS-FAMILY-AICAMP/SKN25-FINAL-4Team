@@ -13,7 +13,6 @@ class AgentState(TypedDict):
     intent: str                          # 의도 분류: rag / anomaly / report / forecast / general
     rag_answer: str                      # RAG Agent 답변
     rag_sources: list[str]               # RAG Agent 참조 소스
-    ontology_context: list[str]          # 온톨로지 검색 결과
     anomaly_result: dict                 # Anomaly Agent 결과
     report_result: str                   # Reporting Agent 결과
     forecast_result: dict                # Forecast Agent 결과

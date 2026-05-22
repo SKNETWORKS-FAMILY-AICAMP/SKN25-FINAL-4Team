@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent.parent / "knowledge"))
-from ontology_indexer import embed_query
+from domain_knowledge import ANOMALY_DOMAIN_PROMPT
 
 DB_URL    = os.getenv("DATABASE_URL")
 
@@ -234,23 +234,7 @@ def _load_sensor_df_for_anomalies(anomalies: list[dict]):
         return None
 
 
-def _search_ontology(question: str) -> list[str]:
-    """이상 관련 온톨로지 지식 검색."""
-    try:
-        vec     = embed_query(question)
-        vec_str = "[" + ",".join(str(x) for x in vec) + "]"
-        conn    = psycopg2.connect(DB_URL)
-        cur     = conn.cursor()
-        cur.execute("""
-            SELECT content FROM ontology_knowledge
-            ORDER BY embedding <=> %s::vector
-            LIMIT 5;
-        """, (vec_str,))
-        rows = cur.fetchall()
-        conn.close()
-        return [r[0] for r in rows]
-    except Exception:
-        return []
+
 
 
 # ── 메인 실행 ────────────────────────────────────────────────────
@@ -290,8 +274,6 @@ def run(state: dict) -> dict:
     if sensor_df is not None:
         recent = _enrich_with_sensors(recent, sensor_df)
 
-    ontology = _search_ontology(question)
-
     # 날짜 표시
     period_str = f"{start} ~ {end}" if start else "최근 20건"
     source_str = "VMD-LSTM 잔차+IF (실시간)" if ml_source else "anomaly_results DB"
@@ -315,7 +297,6 @@ def run(state: dict) -> dict:
         "\n".join(_fmt_anomaly(r) for r in recent)
         if recent else "해당 기간 탐지된 이상 없음"
     )
-    ontology_block = "\n".join(f"- {s}" for s in ontology) or "없음"
 
     # 대화 히스토리
     history_lines = []
@@ -339,8 +320,7 @@ def run(state: dict) -> dict:
 각 항목 아래 "센서:" 줄이 있으면 해당 시각의 실측값입니다. 이를 근거로 원인을 분석하세요.
 {anomaly_block}
 
-## 관련 도메인 지식
-{ontology_block}
+{ANOMALY_DOMAIN_PROMPT}
 
 ## 사용자 질문
 {question}
