@@ -963,12 +963,183 @@ function KpiLine({ children }) {
 }
 
 function PowerAggregationView() {
-  // ── layout constants ────────────────────────────────────────
-  const MX=8,  MW=122, MH=24, MG=6       // meter box
-  const OX=145, OW=64                     // op badge
-  const VX=222, VW=146, VH=38            // variable box
-  const KX=400, KW=178, KH=38            // kpi box (right column)
-  const SVG_W = KX + KW + 14
+  // ── 위→아래 계층 그래프 ──────────────────────────────────────
+  // Level 0 (top):    계량기 클러스터 (원시 미터)
+  // Level 1 (middle): 집계 변수 노드
+  // Level 2 (bottom): 파생 KPI 노드
+  const SVG_W = 920, SVG_H = 430
+  const Y_VAR = 252, VAR_W = 112, VAR_H = 40
+  const Y_KPI = 370, KPI_W = 158, KPI_H = 38
+  const CTOP = 18, MH = 19, MG = 4, MW = 94
+  const MIN_CBOT = 148   // 짧은 클러스터도 최소 이 y까지 내려옴
+
+  const VARS = [
+    { id:'grid_P',        x:72,  color:'#f85149', op:'Σ',
+      desc:'계통 인입',
+      meters:[{id:'V.Z81'},{id:'V.Z82'},{id:'H2.Z351'},{id:'H2.Z361'}] },
+    { id:'pv_P',         x:208, color:'#3fb950', op:'Σ |·|',
+      desc:'태양광  avg~80kW',
+      meters:[{id:'H1.Z310'},{id:'H2.Z311'},{id:'H3.Z312'},{id:'V.Z84'}] },
+    { id:'chp_P',        x:338, color:'#58a6ff', op:'coalesce',
+      desc:'CHP 발전  avg~85kW',
+      meters:[{id:'H1.ZE20',note:'현행'},{id:'H1.Z20',dim:true,note:'구형'}] },
+    { id:'cool_elec_P',  x:500, color:'#a371f7', op:'Σ',
+      desc:'냉각기 전기  ~25kW',
+      meters:[{id:'H1.Z11'},{id:'H1.Z12'},{id:'H1.Z16'},{id:'H1.Z24'},{id:'H1.Z25'}] },
+    { id:'cool_output_P',x:642, color:'#79c0ff', op:'직접측정',
+      desc:'냉수 출력  ~54kW',
+      meters:[{id:'V.K21',warn:true}] },
+    { id:'chp_heat_P',   x:762, color:'#d29922', op:'직접측정',
+      desc:'CHP 폐열  ~90kW',
+      meters:[{id:'H1.W12'}] },
+    { id:'heat_total_P', x:860, color:'#d29922', op:'직접측정',
+      desc:'총 열 공급  ~247kW',
+      meters:[{id:'H1.W11'}] },
+  ]
+
+  const KPIS = [
+    { id:'supply',   label:'총 공급',       sub:'grid + pv + chp',      x:135, color:'#e6edf3',
+      from:['grid_P','pv_P','chp_P'] },
+    { id:'selfsuff', label:'자급률  ≈ 38%',  sub:'(pv + chp) ÷ 총공급',  x:295, color:'#3fb950',
+      from:['pv_P','chp_P'] },
+    { id:'cop',      label:'COP  ≈ 2.06',   sub:'output ÷ elec',         x:571, color:'#a371f7',
+      from:['cool_elec_P','cool_output_P'] },
+    { id:'boiler',   label:'보일러  ≈ 157kW',sub:'heat_total − chp_heat', x:811, color:'#d29922',
+      from:['chp_heat_P','heat_total_P'] },
+  ]
+
+  const varMap = Object.fromEntries(VARS.map(v => [v.id, v]))
+
+  return (
+    <div style={{ background:'#161b22', border:'1px solid #21262d', borderRadius:8, padding:'14px 10px', overflowX:'auto' }}>
+      <div style={{ display:'flex', gap:18, marginBottom:10, fontSize:10, color:'#6e7681', paddingLeft:2 }}>
+        <span style={{ fontFamily:'monospace', background:'#58a6ff18', color:'#58a6ff', border:'1px solid #58a6ff44', borderRadius:3, padding:'1px 5px' }}>meter.ID</span>
+        <span>→ 연산(pill) → 집계 변수 →</span>
+        <span style={{ borderBottom:'1px dashed #8b949e' }}>- - →</span>
+        <span style={{ color:'#8b949e' }}>파생 KPI</span>
+      </div>
+
+      <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+        style={{ width:'100%', minWidth:600, display:'block' }}>
+        <defs>
+          {['f85149','3fb950','58a6ff','a371f7','79c0ff','d29922','e6edf3'].map(c => (
+            <marker key={c} id={`ar${c}`} markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+              <polygon points="0 0, 7 3.5, 0 7" fill={`#${c}`} opacity="0.85"/>
+            </marker>
+          ))}
+        </defs>
+
+        {/* ── 섹션 구분선 ── */}
+        {[423, 714].map(x => (
+          <line key={x} x1={x} y1={8} x2={x} y2={SVG_H-22}
+            stroke="#21262d" strokeWidth={1} strokeDasharray="5 4"/>
+        ))}
+        {/* 섹션 레이블 (하단) */}
+        {[
+          { x:211,  label:'⚡  전기 에너지',  color:'#58a6ff' },
+          { x:568,  label:'❄  냉방 시스템',   color:'#a371f7' },
+          { x:817,  label:'🔥  열 에너지',    color:'#d29922' },
+        ].map(s => (
+          <text key={s.x} x={s.x} y={SVG_H-6} textAnchor="middle"
+            fontSize={11} fontWeight="bold" fill={s.color}>{s.label}</text>
+        ))}
+
+        {/* ── 집계 변수 노드 + 계량기 클러스터 ── */}
+        {VARS.map(v => {
+          const nM   = v.meters.length
+          const cH_natural = CTOP + nM*(MH+MG) - MG + 32   // 32 = 상단 패딩(8)+하단(8)+op배지(16)
+          const cBot = Math.max(cH_natural, MIN_CBOT)
+          const cH   = cBot - CTOP
+          const cW   = MW + 14
+          const cx   = v.x
+
+          return (
+            <g key={v.id}>
+              {/* 클러스터 외곽 박스 */}
+              <rect x={cx-cW/2} y={CTOP} width={cW} height={cH}
+                rx={8} fill="#0d1117" stroke="#30363d" strokeWidth={1.5}/>
+
+              {/* 계량기 칩 */}
+              {v.meters.map((m, i) => {
+                const my = CTOP + 8 + i*(MH+MG)
+                return (
+                  <g key={m.id+i} opacity={m.dim ? 0.32 : 1}>
+                    <rect x={cx-MW/2} y={my} width={MW} height={MH} rx={3}
+                      fill="#161b22" stroke={m.dim ? '#484f58' : '#21262d'} strokeWidth={1}/>
+                    <text x={cx} y={my+13} textAnchor="middle"
+                      fontSize={9} fontFamily="monospace"
+                      fill={m.dim ? '#484f58' : '#58a6ff'} fontWeight="bold">
+                      {m.id}{m.warn ? ' ⚠' : ''}
+                    </text>
+                    {m.note && (
+                      <text x={cx+MW/2-3} y={my+13} textAnchor="end"
+                        fontSize={7} fill="#484f58">{m.note}</text>
+                    )}
+                  </g>
+                )
+              })}
+
+              {/* 연산 배지 (클러스터 하단) */}
+              <rect x={cx-32} y={cBot-20} width={64} height={18} rx={9}
+                fill={v.color+'28'} stroke={v.color} strokeWidth={1.2}/>
+              <text x={cx} y={cBot-8} textAnchor="middle"
+                fontSize={8.5} fontFamily="monospace" fill={v.color} fontWeight="bold">
+                {v.op}
+              </text>
+
+              {/* 수직 연결선: 클러스터 → 변수 박스 */}
+              <line x1={cx} y1={cBot}
+                x2={cx} y2={Y_VAR - VAR_H/2 - 3}
+                stroke={v.color} strokeWidth={1.8}
+                markerEnd={`url(#ar${v.color.slice(1)})`}/>
+
+              {/* 집계 변수 박스 */}
+              <rect x={cx-VAR_W/2} y={Y_VAR-VAR_H/2} width={VAR_W} height={VAR_H} rx={7}
+                fill={v.color+'1c'} stroke={v.color} strokeWidth={2.2}/>
+              <text x={cx} y={Y_VAR-5} textAnchor="middle"
+                fontSize={11} fontFamily="monospace" fill={v.color} fontWeight="bold">
+                {v.id}
+              </text>
+              <text x={cx} y={Y_VAR+10} textAnchor="middle"
+                fontSize={8} fill="#6e7681">{v.desc}</text>
+            </g>
+          )
+        })}
+
+        {/* ── 파생 KPI 노드 + 변수→KPI 베지어 곡선 ── */}
+        {KPIS.map(k => {
+          const ky = Y_KPI - KPI_H/2
+          const midY = (Y_VAR + VAR_H/2 + ky) / 2
+
+          return (
+            <g key={k.id}>
+              {/* 소스 변수 → KPI 연결 곡선 */}
+              {k.from.map(vid => {
+                const vn = varMap[vid]
+                return (
+                  <path key={vid}
+                    d={`M ${vn.x} ${Y_VAR+VAR_H/2} C ${vn.x} ${midY} ${k.x} ${midY} ${k.x} ${ky}`}
+                    fill="none" stroke={vn.color} strokeWidth={1.3}
+                    opacity={0.4} strokeDasharray="5 3"/>
+                )
+              })}
+              {/* KPI 상단 화살표 */}
+              <polygon points={`${k.x},${ky} ${k.x-4},${ky-7} ${k.x+4},${ky-7}`}
+                fill={k.color} opacity={0.75}/>
+              {/* KPI 박스 (점선 테두리) */}
+              <rect x={k.x-KPI_W/2} y={ky} width={KPI_W} height={KPI_H} rx={7}
+                fill={k.color+'14'} stroke={k.color} strokeWidth={1.5} strokeDasharray="5 3"/>
+              <text x={k.x} y={ky+14} textAnchor="middle"
+                fontSize={10} fill={k.color} fontWeight="bold">{k.label}</text>
+              <text x={k.x} y={ky+27} textAnchor="middle"
+                fontSize={8.5} fill="#6e7681">{k.sub}</text>
+            </g>
+          )
+        })}
+      </svg>
+    </div>
+  )
+}
 
   // ── diagram data ────────────────────────────────────────────
   const SECTIONS = [
