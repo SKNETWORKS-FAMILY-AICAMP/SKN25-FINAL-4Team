@@ -8,7 +8,6 @@ import sys
 from dataclasses import dataclass, field
 from typing import Optional
 
-import psycopg2
 from llm_client import chat as llm_chat
 from dotenv import load_dotenv
 
@@ -18,7 +17,9 @@ sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent.parent / "kno
 from embedding import embed_query
 from domain_knowledge import DOMAIN_KNOWLEDGE_PROMPT
 
-DB_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/energy_db")
+sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent.parent / "api"))
+from db import get_conn
+
 TOP_K = 5  # 검색할 문서 수
 
 
@@ -37,19 +38,18 @@ def search_documents(question: str, top_k: int = TOP_K) -> list[str]:
         embedding = embed_query(question)
         vec_str = "[" + ",".join(str(x) for x in embedding) + "]"
 
-        conn = psycopg2.connect(DB_URL)
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT content, source
-                FROM energy_documents
-                ORDER BY embedding <=> %s::vector
-                LIMIT %s;
-                """,
-                (vec_str, top_k),
-            )
-            rows = cur.fetchall()
-        conn.close()
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT content, source
+                    FROM energy_documents
+                    ORDER BY embedding <=> %s::vector
+                    LIMIT %s;
+                    """,
+                    (vec_str, top_k),
+                )
+                rows = cur.fetchall()
         return [row[0] for row in rows]
     except Exception:
         return []

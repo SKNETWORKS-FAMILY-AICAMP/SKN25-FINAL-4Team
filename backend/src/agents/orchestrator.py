@@ -34,7 +34,11 @@ import reporting_agent
 import forecast_agent
 
 
-# ── 노드 1: 의도 분류 ────────────────────────────────────────────
+# ── 노드 1: 의도 분류 (키워드 룰 → LLM 폴백) ───────────────────
+
+_KW_ANOMALY  = re.compile(r"이상|비정상|스파이크|급등|급락|오류|센서|탐지|경보|알람|fault|anomal")
+_KW_REPORT   = re.compile(r"보고서|리포트|report|kpi|월간|요약|통계|실적|집계|월별\s*현황")
+_KW_FORECAST = re.compile(r"예측|전망|앞으로|내일|다음\s*주|장기|예상|forecast|미래|될\s*것")
 
 INTENT_PROMPT = """사용자 질문을 읽고 아래 중 하나로만 답하세요. 다른 말은 하지 마세요.
 
@@ -46,13 +50,38 @@ INTENT_PROMPT = """사용자 질문을 읽고 아래 중 하나로만 답하세�
 질문: {question}"""
 
 
+def _rule_classify(question: str) -> str | None:
+    """키워드 룰로 명확히 분류 가능하면 반환, 애매하면 None."""
+    q = question.lower()
+    scores = {
+        "anomaly":  len(_KW_ANOMALY.findall(q)),
+        "report":   len(_KW_REPORT.findall(q)),
+        "forecast": len(_KW_FORECAST.findall(q)),
+    }
+    best, count = max(scores.items(), key=lambda x: x[1])
+    if count >= 1:
+        # 두 카테고리가 동점이면 LLM에 위임
+        second = sorted(scores.values(), reverse=True)[1]
+        if count > second:
+            return best
+    return None
+
+
 def classify_intent(state: AgentState) -> AgentState:
+    question = state["question"]
+
+    intent = _rule_classify(question)
+    if intent:
+        print(f"[Orchestrator] 의도 분류 (룰): '{question}' → {intent}")
+        return {**state, "intent": intent}
+
+    # 룰로 판단 불가 → LLM 폴백
     raw = llm_chat(
-        [{"role": "user", "content": INTENT_PROMPT.format(question=state["question"])}],
+        [{"role": "user", "content": INTENT_PROMPT.format(question=question)}],
         max_tokens=10,
     ).strip().lower()
     intent = raw if raw in ("anomaly", "report", "rag", "forecast") else "rag"
-    print(f"[Orchestrator] 의도 분류: '{state['question']}' → {intent}")
+    print(f"[Orchestrator] 의도 분류 (LLM): '{question}' → {intent}")
     return {**state, "intent": intent}
 
 
@@ -82,29 +111,25 @@ def forecast_node(state: AgentState) -> AgentState:
     return forecast_agent.langgraph_node(state)
 
 
-# ── 노드 6: Critic Agent (품질 이슈가 있을 때만 LLM 호출) ────────
+# ── 노드 6: Critic (LLM 제거 — 문자열 치환으로 대체) ─────────────
 
-# 검토 없이 통과시킬 기준: 이 키워드가 없으면 도메인 오류 가능성 낮음
 _BAD_TERMS = re.compile(r"한전|수전량|수전\s*전력|kWh당|㎾h|전기요금|전력요금")
-_DOMAIN_KW = re.compile(r"kW|kWh|°C|COP|자급률|계통|이상탐지|예측|보고서")
 
-CRITIC_PROMPT = """당신은 에너지 분석 품질 검토자입니다.
-시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력망: 독일 공공 전력망.
-아래 답변을 검토하고 문제가 있으면 수정된 최종 답변을 제시하세요.
-문제가 없으면 원본 답변을 그대로 반환하세요.
+_REPLACEMENTS = [
+    (re.compile(r"한전"),          "독일 공공 전력망"),
+    (re.compile(r"수전량"),        "계통 인입 전력량"),
+    (re.compile(r"수전\s*전력"),   "계통 전력"),
+    (re.compile(r"전기요금"),      "전력 비용"),
+    (re.compile(r"전력요금"),      "전력 비용"),
+    (re.compile(r"㎾h"),           "kWh"),
+    (re.compile(r"kWh당"),         "kWh 단가"),
+]
 
-검토 기준:
-- 한전·수전량·수전 전력 등 한국 전력 용어 → "계통 전력"으로 교체
-- 단위(W, kWh, °C) 누락
-- COP 계산 시 0나누기 미언급 (COP 관련 질문일 때)
-- PV 야간 NaN을 결측으로 오해
-- 수치가 맥락에 맞지 않음 (자급률 6년평균 39.6%·2022년 46.9%, COP 중앙값 2.06)
-- 과도한 추측
 
-원본 질문: {question}
-원본 답변: {answer}
-
-최종 답변:"""
+def _fix_terms(text: str) -> str:
+    for pattern, replacement in _REPLACEMENTS:
+        text = pattern.sub(replacement, text)
+    return text
 
 
 def critic_node(state: AgentState) -> AgentState:
@@ -113,27 +138,13 @@ def critic_node(state: AgentState) -> AgentState:
     if not answer:
         return {**state, "final_answer": "답변을 생성할 수 없습니다."}
 
-    # 빠른 통과: 한국 전력 용어가 없고 도메인 키워드도 적으면 그대로 반환
-    has_bad   = bool(_BAD_TERMS.search(answer))
-    has_domain = bool(_DOMAIN_KW.search(answer))
-    if not has_bad and not has_domain:
-        print("[Critic] 통과 (검토 불필요)")
-        return {**state, "final_answer": answer}
+    if _BAD_TERMS.search(answer):
+        answer = _fix_terms(answer)
+        print("[Critic] 용어 교정 완료")
+    else:
+        print("[Critic] 통과")
 
-    # 한국 용어가 없고 짧은 답변이면 그대로 반환
-    if not has_bad and len(answer) < 300:
-        print("[Critic] 통과 (짧은 도메인 답변)")
-        return {**state, "final_answer": answer}
-
-    print("[Critic Agent] 검토 중...")
-    final = llm_chat(
-        [{"role": "user", "content": CRITIC_PROMPT.format(
-            question=state["question"],
-            answer=answer,
-        )}],
-        max_tokens=1500,
-    ).strip()
-    return {**state, "final_answer": final, "critic_feedback": final}
+    return {**state, "final_answer": answer}
 
 
 # ── 그래프 조립 ──────────────────────────────────────────────────
