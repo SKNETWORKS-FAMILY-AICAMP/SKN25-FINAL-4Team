@@ -11,6 +11,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 # Python 의존성 (BuildKit 캐시 마운트로 재빌드 시 다운로드 스킵)
 COPY requirements.backend.txt .
+# torch CPU-only 먼저 설치 (GPU 없는 환경: ~200MB vs CUDA 포함 ~2GB)
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install torch --index-url https://download.pytorch.org/whl/cpu
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements.backend.txt
 
