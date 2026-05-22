@@ -837,10 +837,10 @@ function MeterRow({ meter }) {
 // ─── PaperFigures ─────────────────────────────────────────────────────────────
 
 function PaperFigures() {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true)
 
   return (
-    <div style={{ marginTop: 28, borderTop: '1px solid #21262d', paddingTop: 20 }}>
+    <div style={{ marginBottom: 20 }}>
       <button
         onClick={() => setOpen(o => !o)}
         style={{
@@ -932,6 +932,9 @@ export default function TopologyPanel() {
           </span>
         </div>
       </div>
+
+      {/* ── 논문 원본 다이어그램 ── */}
+      <PaperFigures />
 
       {/* ── Summary Cards (전체 탭) ── */}
       {activeBuilding === 'all' && (
@@ -1058,9 +1061,6 @@ export default function TopologyPanel() {
           </div>
         </div>
       </div>
-
-      {/* ── 논문 원본 다이어그램 ── */}
-      <PaperFigures />
     </div>
   )
 }
