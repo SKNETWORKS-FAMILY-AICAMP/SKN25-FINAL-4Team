@@ -4,7 +4,14 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer,
   CartesianGrid, Legend, ReferenceLine,
 } from 'recharts'
-import { getReport, getAnomalySummary, getAnomalies } from '../api/client'
+import { getReport, getAnomalySummary, getAnomalies, getForecastCompare } from '../api/client'
+
+const FC_MODELS = [
+  { key: 'vmd-lstm', label: 'VMD-LSTM', color: '#a371f7' },
+  { key: 'lstm',     label: 'LSTM',     color: '#58a6ff' },
+  { key: 'xgboost',  label: 'XGBoost',  color: '#d29922' },
+  { key: 'prophet',  label: 'Prophet',  color: '#3fb950' },
+]
 
 const SEV_COLOR  = { HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#58a6ff' }
 const TYPE_LABEL = {
@@ -56,6 +63,7 @@ export default function DashboardPanel() {
   const [summary,  setSummary]  = useState([])
   const [recent,   setRecent]   = useState([])
   const [loading,  setLoading]  = useState(true)
+  const [forecast, setForecast] = useState(null)   // null=로딩, {}=실패, {models}=성공
 
   useEffect(() => {
     Promise.allSettled([
@@ -68,6 +76,29 @@ export default function DashboardPanel() {
       if (a.status === 'fulfilled') setRecent(a.value.data.items ?? [])
     }).finally(() => setLoading(false))
   }, [])
+
+  // 예측 프리뷰: 별도 로드 (느릴 수 있어 다른 카드 렌더를 막지 않음)
+  useEffect(() => {
+    getForecastCompare(24)
+      .then(r => setForecast(r.data?.models ?? {}))
+      .catch(() => setForecast({}))
+  }, [])
+
+  // 모델별 24시간 예측 → 인덱스 기준 정렬된 차트 데이터
+  const fcValid = forecast
+    ? FC_MODELS.filter(m => Array.isArray(forecast[m.key]) && forecast[m.key].length)
+    : []
+  const fcData = (() => {
+    if (!fcValid.length) return []
+    const len = Math.max(...fcValid.map(m => forecast[m.key].length))
+    const rows = []
+    for (let i = 0; i < len; i++) {
+      const row = { h: `+${i + 1}h` }
+      for (const m of fcValid) row[m.key] = forecast[m.key][i]?.yhat
+      rows.push(row)
+    }
+    return rows
+  })()
 
   const latest = report[report.length - 1]
   const prev   = report[report.length - 2]
@@ -120,9 +151,47 @@ export default function DashboardPanel() {
         </div>
       )}
 
-      {!loading && latest && (
+      {!loading && (
         <div style={s.body}>
+          {/* ── 전력 수요 예측 (주력) ── */}
+          <div style={{ ...s.chartBox, border: '1px solid #a371f733', marginBottom: 20 }}>
+            <div style={s.fcHeader}>
+              <div>
+                <div style={{ ...s.chartTitle, marginBottom: 2 }}>🔮 전력 수요 예측 — 향후 24시간</div>
+                <div style={{ fontSize: 11, color: '#8b949e' }}>다중 모델 비교 (Prophet · XGBoost · LSTM · VMD-LSTM)</div>
+              </div>
+              <span style={s.fcBadge}>주력 기능</span>
+            </div>
+
+            {forecast === null && (
+              <div style={{ ...sk.bar, height: 220, borderRadius: 8, marginTop: 8 }} />
+            )}
+            {forecast !== null && fcValid.length === 0 && (
+              <div style={s.fcEmpty}>
+                예측 모델을 학습하면 24시간 수요 예측이 여기에 표시됩니다.<br />
+                <span style={{ color: '#58a6ff' }}>🔮 전력 수요 예측</span> 탭에서 "전체 학습"을 실행하세요.
+              </div>
+            )}
+            {fcValid.length > 0 && (
+              <ResponsiveContainer width="100%" height={240}>
+                <LineChart data={fcData} margin={{ top: 8, right: 24, left: -12, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#21262d" />
+                  <XAxis dataKey="h" tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false} interval={2} />
+                  <YAxis tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false} axisLine={false}
+                    tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
+                  <Tooltip {...tt} formatter={(v, n) => [`${Number(v).toLocaleString()} kW`, n]} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  {fcValid.map(m => (
+                    <Line key={m.key} type="monotone" dataKey={m.key} name={m.label}
+                      stroke={m.color} strokeWidth={2} dot={false} connectNulls />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+
           {/* KPI 카드 */}
+          {latest && <>
           <div style={s.kpiRow}>
             <KpiCard
               label="자급률" value={`${latest.self_sufficiency_pct?.toFixed(1)}%`}
@@ -268,6 +337,7 @@ export default function DashboardPanel() {
               </div>
             </div>
           </div>
+          </>}
         </div>
       )}
     </div>
@@ -289,4 +359,7 @@ const s = {
   chartTitle: { fontSize: 13, fontWeight: 600, color: '#e6edf3', marginBottom: 12 },
   anomalyRow: { display: 'flex', alignItems: 'flex-start', gap: 8, padding: '7px 0', borderBottom: '1px solid #21262d' },
   sevDot:     { width: 8, height: 8, borderRadius: '50%', flexShrink: 0, marginTop: 3 },
+  fcHeader:   { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 },
+  fcBadge:    { fontSize: 11, fontWeight: 700, color: '#a371f7', background: '#a371f722', borderRadius: 4, padding: '3px 10px', flexShrink: 0 },
+  fcEmpty:    { padding: '40px 20px', textAlign: 'center', color: '#8b949e', fontSize: 13, lineHeight: 1.8 },
 }

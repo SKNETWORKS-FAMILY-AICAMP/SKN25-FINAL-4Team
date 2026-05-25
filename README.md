@@ -1,7 +1,8 @@
-# EMS Agent — 대화형 에너지 분석 AI 플랫폼
+# EMS Agent — 전력 수요 예측 AI 플랫폼
 
 SK Networks AI Family 25기 4팀 파이널 프로젝트.  
-공장 운영자가 자연어 질문만으로 에너지 데이터를 분석하고, 이상탐지·예측·KPI 보고서를 자동으로 산출하는 멀티 에이전트 시스템.
+공장 운영자를 위한 **전력 수요 예측** 중심의 에너지 분석 시스템.  
+다중 모델(Prophet·XGBoost·LSTM·VMD-LSTM)로 수요를 예측하고, 이를 기준으로 이상탐지·KPI 보고서를 보조 산출하며, 자연어 질의로 결과를 해석한다.
 
 - **데이터**: Honda R&D Europe GmbH (독일 오펜바흐) — 81개 계량기, 2018~2024년
 - **GitHub**: https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN25-FINAL-4Team
@@ -12,11 +13,11 @@ SK Networks AI Family 25기 4팀 파이널 프로젝트.
 
 | 기능 | 설명 |
 |------|------|
-| 💬 **대화형 질의** | 자연어로 에너지 데이터 질문 → LLM 답변 (OpenAI / Anthropic / Gemini 선택 가능) |
-| 🚨 **이상탐지** | Isolation Forest + VMD-LSTM Residual 앙상블 (HIGH / MEDIUM / LOW) |
-| 📈 **전력 예측** | Prophet · XGBoost · LSTM · VMD-LSTM 모델 비교 및 백테스트 |
+| 📈 **전력 수요 예측** *(주력)* | Prophet · XGBoost · LSTM · VMD-LSTM 4종 다중 모델 예측 · 모델 비교 · 백테스트 검증 |
+| 💬 **대화형 질의** | 자연어로 예측·에너지 데이터 질문 → LLM 답변 (OpenAI / Anthropic / Gemini 선택 가능) |
 | 📄 **KPI 보고서** | 월간 에너지 KPI 자동 생성 + PDF 출력 · 냉방-외기온 상관 차트 |
 | 📅 **일일 보고서** | 하루 단위 KPI + 시간대별 전력 프로파일 + AI 요약 · 매일 자동 생성 스케줄러 |
+| 🚨 **이상탐지** *(보조)* | 예측 잔차(VMD-LSTM) + Isolation Forest 앙상블 기반 이상 진단 (HIGH / MEDIUM / LOW) |
 | 🔌 **계량기 토폴로지** | 81개 미터 에너지 흐름 시각화 · 전력 집계 구조도 (건물별 탭) |
 
 ---
@@ -27,9 +28,9 @@ SK Networks AI Family 25기 4팀 파이널 프로젝트.
 사용자 질문
     ↓
 Orchestrator (키워드 룰 → LLM 폴백으로 의도 분류)
-    ├── anomaly  → 이상탐지 Agent → 답변
-    ├── forecast → 예측 Agent     → 답변
+    ├── forecast → 예측 Agent     → 답변   ◀ 주력
     ├── report   → 보고서 Agent   → 답변 + PDF
+    ├── anomaly  → 이상탐지 Agent → 답변   (보조)
     └── rag      → RAG Agent      → 답변
     ↓
 Critic (용어 교정 — 문자열 치환, LLM 미사용)

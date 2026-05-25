@@ -9,11 +9,11 @@ import TopologyPanel   from './components/TopologyPanel'
 
 const TABS = [
   { id: 'dashboard', label: '🏠 대시보드' },
+  { id: 'forecast',  label: '🔮 전력 수요 예측' },
   { id: 'chat',      label: '💬 채팅' },
-  { id: 'forecast',  label: '🔮 예측' },
-  { id: 'anomaly',   label: '⚠️ 이상탐지' },
   { id: 'report',    label: '📊 보고서' },
   { id: 'daily',     label: '📅 일일 보고서' },
+  { id: 'anomaly',   label: '⚠️ 이상탐지' },
   { id: 'topology',  label: '🔌 계량기' },
 ]
 
