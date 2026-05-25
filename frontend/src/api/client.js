@@ -26,6 +26,8 @@ export const getDailyReportList  = (limit = 30) => api.get('/report/daily/list',
 export const getLatestDataDate   = () => api.get('/report/daily/latest-data-date')
 export const getSchedulerStatus  = () => api.get('/report/daily/scheduler')
 export const runSchedulerNow     = () => api.post('/report/daily/scheduler/run', null, { timeout: 60000 })
+export const dailyDownloadUrl    = (date, format) =>
+  `${BASE}/report/daily/download?date=${encodeURIComponent(date)}&format=${format}`
 export const runDetection       = (start, end) => api.post('/anomalies/run', null, { params: { start, end } })
 export const getDetectionStatus = (jobId) => api.get(`/anomalies/run/status/${jobId}`)
 

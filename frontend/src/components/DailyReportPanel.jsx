@@ -5,7 +5,7 @@ import {
 } from 'recharts'
 import {
   getDailyReport, getDailyReportList, getLatestDataDate,
-  getSchedulerStatus, runSchedulerNow,
+  getSchedulerStatus, runSchedulerNow, dailyDownloadUrl,
 } from '../api/client'
 
 const tt = {
@@ -69,6 +69,17 @@ export default function DailyReportPanel() {
       .finally(() => { loadSched(); loadList(); setLoading(false) })
   }
 
+  const handleDownload = (fmt) => {
+    if (!report?.date) return
+    const a = document.createElement('a')
+    a.href = dailyDownloadUrl(report.date, fmt)
+    a.target = '_blank'
+    a.rel = 'noopener'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+  }
+
   const hourly = (report?.hourly_profile ?? []).map(h => ({
     ...h, hourLabel: `${String(h.hour).padStart(2, '0')}`,
   }))
@@ -118,6 +129,12 @@ export default function DailyReportPanel() {
             <div style={s.reportDate}>
               {report.date}
               {report.generated_by === 'scheduler' && <span style={s.badge}>자동 생성</span>}
+              <div style={s.dlGroup}>
+                <span style={{ fontSize: 12, color: '#6e7681' }}>다운로드:</span>
+                <button style={s.dlBtn} onClick={() => handleDownload('pdf')}>PDF</button>
+                <button style={s.dlBtn} onClick={() => handleDownload('docx')}>DOCX</button>
+                <button style={s.dlBtn} onClick={() => handleDownload('hwpx')}>HWPX</button>
+              </div>
             </div>
 
             {/* KPI 카드 */}
@@ -206,7 +223,9 @@ const s = {
   schedBar:    { display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '10px 16px', fontSize: 12 },
   dot:         { width: 8, height: 8, borderRadius: '50%', flexShrink: 0 },
   placeholder: { padding: '40px', textAlign: 'center', color: '#8b949e', fontSize: 14 },
-  reportDate:  { fontSize: 20, fontWeight: 700, color: '#e6edf3', display: 'flex', alignItems: 'center', gap: 10 },
+  reportDate:  { fontSize: 20, fontWeight: 700, color: '#e6edf3', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' },
+  dlGroup:     { display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto' },
+  dlBtn:       { background: 'transparent', border: '1px solid #30363d', borderRadius: 6, color: '#58a6ff', fontSize: 12, fontWeight: 600, padding: '5px 12px', cursor: 'pointer' },
   badge:       { fontSize: 11, fontWeight: 600, color: '#a371f7', background: '#a371f722', borderRadius: 4, padding: '2px 8px' },
   badgeSm:     { fontSize: 10, fontWeight: 600, color: '#a371f7', background: '#a371f722', borderRadius: 3, padding: '1px 6px', marginLeft: 'auto' },
   kpiRow:      { display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 },

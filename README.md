@@ -16,7 +16,7 @@ SK Networks AI Family 25기 4팀 파이널 프로젝트.
 | 📈 **전력 수요 예측** *(주력)* | Prophet · XGBoost · LSTM · VMD-LSTM 4종 다중 모델 예측 · 모델 비교 · 백테스트 검증 |
 | 💬 **대화형 질의** | 자연어로 예측·에너지 데이터 질문 → LLM 답변 (OpenAI / Anthropic / Gemini 선택 가능) |
 | 📄 **KPI 보고서** | 월간 에너지 KPI 자동 생성 + PDF 출력 · 냉방-외기온 상관 차트 |
-| 📅 **일일 보고서** | 하루 단위 KPI + 시간대별 전력 프로파일 + AI 요약 · 매일 자동 생성 스케줄러 |
+| 📅 **일일 보고서** | 하루 단위 KPI + 시간대별 전력 프로파일 + AI 요약 · 매일 자동 생성 스케줄러 · PDF/DOCX/HWPX 다운로드 |
 | 🚨 **이상탐지** *(보조)* | 예측 잔차(VMD-LSTM) + Isolation Forest 앙상블 기반 이상 진단 (HIGH / MEDIUM / LOW) |
 | 🔌 **계량기 토폴로지** | 81개 미터 에너지 흐름 시각화 · 전력 집계 구조도 (건물별 탭) |
 
@@ -171,6 +171,7 @@ npm run dev                      # http://localhost:5173
 | POST | `/report/daily/aggregate` | 특정 날짜 일일 보고서 강제 재생성 |
 | GET | `/report/daily/list` | 저장된 일일 보고서 목록 |
 | GET | `/report/daily/latest-data-date` | 데이터에 존재하는 가장 최근 완전한 날짜 |
+| GET | `/report/daily/download` | 일일 보고서 문서 다운로드 (format: pdf / docx / hwpx) |
 | GET | `/report/daily/scheduler` | 자동 생성 스케줄러 상태 (다음 실행·마지막 실행) |
 | POST | `/report/daily/scheduler/run` | 스케줄러 작업 즉시 1회 실행 |
 
@@ -219,6 +220,7 @@ SKN25-FINAL-4Team/
 │       │   ├── main.py                   # FastAPI 진입점 (lifespan에서 스케줄러 기동)
 │       │   ├── db.py                     # psycopg2 커넥션 풀
 │       │   ├── scheduler.py              # 일일 보고서 자동 생성 (APScheduler)
+│       │   ├── report_export.py          # 일일 보고서 PDF/DOCX/HWPX 변환
 │       │   └── routers/                  # chat / anomalies / forecast / report
 │       ├── data/
 │       │   └── loader.py                 # DB 데이터 로더

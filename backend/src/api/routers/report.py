@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 from dotenv import load_dotenv
 from fastapi import APIRouter, Query
+from fastapi.responses import Response
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 load_dotenv()
@@ -442,6 +443,40 @@ async def aggregate_daily(date: str = Query(..., description="YYYY-MM-DD")):
     if result is None:
         return {"error": f"{date} 데이터 없음", "date": date}
     return result
+
+
+@router.get("/daily/download")
+async def download_daily_report(
+    date: str = Query(..., description="YYYY-MM-DD"),
+    format: str = Query("pdf", description="pdf | docx | hwpx"),
+):
+    """일일 보고서를 문서 파일(PDF/DOCX/HWPX)로 다운로드."""
+    from urllib.parse import quote
+    from api import report_export
+
+    # 저장본 우선, 없으면 즉시 생성
+    report = None
+    try:
+        with _db_conn() as conn:
+            _ensure_daily_table(conn)
+            report = _fetch_daily(conn, date)
+    except Exception:
+        pass
+    if report is None:
+        report = build_daily_report(date, generated_by="manual")
+    if report is None:
+        return {"error": f"{date} 데이터 없음", "date": date}
+
+    try:
+        data, media, filename = report_export.render(report, format)
+    except ValueError as e:
+        return {"error": str(e)}
+
+    return Response(
+        content=data,
+        media_type=media,
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(filename)}"},
+    )
 
 
 @router.get("/daily/scheduler")

@@ -7,7 +7,7 @@ WORKDIR /app
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && apt-get install -y --no-install-recommends \
-    gcc g++ libpq-dev curl
+    gcc g++ libpq-dev curl fonts-nanum
 
 # Python 의존성 (BuildKit 캐시 마운트로 재빌드 시 다운로드 스킵)
 COPY requirements.backend.txt .

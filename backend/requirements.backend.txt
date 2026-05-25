@@ -11,6 +11,7 @@ prophet>=1.1.4
 torch>=2.0.0
 vmdpy>=0.1
 reportlab>=4.0.0
+python-docx>=1.1.0
 sentence-transformers>=2.3.0
 langgraph>=0.1.0
 langchain-core>=0.0.400
