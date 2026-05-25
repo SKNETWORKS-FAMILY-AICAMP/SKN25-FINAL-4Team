@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FEATURE SELECTION</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         max-width: 960px; margin: 40px auto; padding: 0 24px;
+         color: #24292e; line-height: 1.6; }
+  h1 { border-bottom: 2px solid #e1e4e8; padding-bottom: 10px; }
+  h2 { border-bottom: 1px solid #e1e4e8; padding-bottom: 6px; margin-top: 32px; }
+  h3 { margin-top: 24px; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+  th { background: #f6f8fa; border: 1px solid #d1d5da; padding: 8px 12px; text-align: left; }
+  td { border: 1px solid #d1d5da; padding: 8px 12px; }
+  tr:nth-child(even) { background: #f9f9f9; }
+  code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px;
+          font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.9em; }
+  pre { background: #f6f8fa; border: 1px solid #e1e4e8; border-radius: 6px;
+         padding: 16px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  blockquote { border-left: 4px solid #dfe2e5; margin: 0; padding: 0 16px; color: #6a737d; }
+  hr { border: none; border-top: 1px solid #e1e4e8; margin: 24px 0; }
+  del { color: #cb2431; }
+  a { color: #0366d6; }
+</style>
+</head>
+<body>
+<h1 id="feature-selection-feature">Feature Selection — 상관계수 기반 대표 feature 선정</h1>
+<h2 id="_1">분석 방법</h2>
+<ul>
+<li>전체 상관계수 HTML(plotly dashboard)에서 6year 기준 평균 절대 상관계수 |corr| 추출</li>
+<li><code>1 - |corr|</code> 을 거리로 변환 후 <strong>Complete Linkage 계층 클러스터링</strong> 적용</li>
+<li>Complete linkage: 클러스터 내 <strong>모든 쌍</strong>이 임계값을 만족해야 묶임 → 허브 문제 방지</li>
+<li>임계값: <code>|corr| &gt;= 0.7</code> (distance threshold = 0.3)</li>
+<li>전기: consumption(64개) / production(7개) 분리</li>
+<li>열: cooling(7개) / heating(2개) 분리</li>
+</ul>
+<hr />
+<h2 id="electric">전기 계량기 (Electric)</h2>
+<h3 id="_2">클러스터링 결과</h3>
+<table>
+<thead>
+<tr>
+<th>클러스터</th>
+<th>Consumption</th>
+<th>Production</th>
+<th>대표</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>전력/전류</td>
+<td>P, P1, P2, P3, I1, I2, I3, Q</td>
+<td>P, P1, P2, P3, I1, I2, I3, Q</td>
+<td><strong>P</strong></td>
+</tr>
+<tr>
+<td>전압</td>
+<td>U1, U2, U3</td>
+<td>U1, U2, U3</td>
+<td><strong>U1</strong></td>
+</tr>
+<tr>
+<td>역률</td>
+<td>PF, PF1 / PF2(단독) / PF3(단독)</td>
+<td>PF, PF1, PF2, PF3</td>
+<td><strong>PF</strong></td>
+</tr>
+<tr>
+<td>누적전력량</td>
+<td>W, W1, W2, W3</td>
+<td>W, W1, W2, W3, W_out</td>
+<td>~~W~~ <strong>제거</strong> (P와 중복, 누적값 부적합)</td>
+</tr>
+<tr>
+<td>누적무효전력량</td>
+<td>WQ, WQ_in, WQ_out, W_in</td>
+<td>WQ, WQ_in, WQ_out, W_in</td>
+<td>~~WQ~~ <strong>제거</strong> (누적값)</td>
+</tr>
+<tr>
+<td>W_out</td>
+<td>단독 (역송전 누적)</td>
+<td>W 그룹 합류</td>
+<td>~~W_out~~ <strong>제거</strong> (누적값 동일 문제)</td>
+</tr>
+<tr>
+<td>주파수</td>
+<td>f (단독)</td>
+<td>f (단독)</td>
+<td><strong>f</strong></td>
+</tr>
+<tr>
+<td>독립 단독</td>
+<td>Ua, Dc, Sc</td>
+<td>Ua, Dc, Sc</td>
+<td>물리적 판단 필요 (아래 참고)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="consumption-vs-production">Consumption vs Production 핵심 차이</h3>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>PF2/PF3</th>
+<th>W_out</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Consumption</td>
+<td>PF와 분리 (단독) — PF1↔PF2=0.686으로 complete linkage 기준 미달</td>
+<td>W와 독립 (단독 유지) — 역송전 발생분</td>
+</tr>
+<tr>
+<td>Production</td>
+<td>PF와 함께 묶임 (PF↔PF2=0.9+)</td>
+<td>W 그룹 합류 — 발전→송출이 주 방향이라 W≈W_out</td>
+</tr>
+</tbody>
+</table>
+<h3 id="feature">최종 권장 feature (전기)</h3>
+<h4 id="consumption">Consumption (소비)</h4>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Feature</th>
+<th>의미</th>
+<th>대표하는 원본</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>P</strong></td>
+<td>유효전력</td>
+<td>P, P1, P2, P3, I1, I2, I3, Q</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>U1</strong></td>
+<td>전압</td>
+<td>U1, U2, U3</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>PF</strong></td>
+<td>역률</td>
+<td>PF, PF1 (PF2/PF3는 분리되나 PF로 근사 가능)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>f</strong></td>
+<td>주파수</td>
+<td>단독</td>
+</tr>
+</tbody>
+</table>
+<h4 id="production">Production (발전)</h4>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Feature</th>
+<th>의미</th>
+<th>대표하는 원본</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>P</strong></td>
+<td>유효전력</td>
+<td>P, P1, P2, P3, I1, I2, I3, Q</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>U1</strong></td>
+<td>전압</td>
+<td>U1, U2, U3</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>PF</strong></td>
+<td>역률</td>
+<td>PF, PF1, PF2, PF3</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>f</strong></td>
+<td>주파수</td>
+<td>단독</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>누적값(W, WQ, W_out 계열) 전부 제거</strong>: W = ∫P dt 로 P와 중복 정보. 누적값은 단조증가하여 STL 분해 및 이상탐지 기준선 설정에 부적합</p>
+<p><strong>외부 변수 (Ta, Igm) 제거</strong>: 전기 계량기에서 Ta↔P=0.190, Igm↔P=0.211로 전부 0.3 미만 → 설명력 없음, 차원만 증가</p>
+<p><strong>Ua, Dc, Sc</strong>: 100% 계량기에 존재하나 내부 변수와 상관 전부 낮음 → 모델 학습 단계에서 유효성 검증 후 결정</p>
+<p><strong>현재 구현 메모</strong>: 대표 상관분석/대시보드 스크립트에서는 feature 단순화를 위해 전기 <code>f</code>를 현재 제외하고 <code>P</code>, <code>U1</code>, <code>PF</code>만 사용함</p>
+</blockquote>
+<hr />
+<h2 id="thermal">열계량기 (Thermal)</h2>
+<h3 id="_3">클러스터링 결과</h3>
+<table>
+<thead>
+<tr>
+<th>클러스터</th>
+<th>Cooling</th>
+<th>Heating</th>
+<th>대표</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>누적열량(체적)</td>
+<td>V, W</td>
+<td>V, W</td>
+<td>~~W~~ <strong>제거</strong> (P와 중복, 누적값 부적합)</td>
+</tr>
+<tr>
+<td>온도(공급/환수)</td>
+<td>Trl, Tvl</td>
+<td>Trl, Tvl</td>
+<td>~~Tvl~~ <strong>제거</strong> → Tdiff로 대체</td>
+</tr>
+<tr>
+<td>열량</td>
+<td>P (단독)</td>
+<td>P, Tdiff</td>
+<td><strong>P</strong></td>
+</tr>
+<tr>
+<td>온도차</td>
+<td>Tdiff (단독)</td>
+<td>P와 묶임</td>
+<td><strong>Tdiff 유지</strong> (냉난방 모두) — 이상탐지 핵심 변수</td>
+</tr>
+<tr>
+<td>유량</td>
+<td>qv (단독)</td>
+<td>qv (단독)</td>
+<td><strong>qv</strong></td>
+</tr>
+<tr>
+<td>독립 단독</td>
+<td>Ua, Dc, Sc</td>
+<td>Ua, Dc, Sc</td>
+<td>제거 권장</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cooling-vs-heating">Cooling vs Heating 핵심 차이</h3>
+<ul>
+<li><strong>냉방</strong>: P와 Tdiff 분리 (P↔Tdiff=0.386) → 독립적 이상 신호로 둘 다 유지</li>
+<li><strong>난방</strong>: P와 Tdiff 묶임 (P↔Tdiff=0.744) → 상관 높으나 Tdiff가 이상탐지 직접 지표이므로 유지. Tvl만으로는 공급온도 상승 원인(공급측 이상 vs 환수온도 저하) 구분 불가</li>
+</ul>
+<h3 id="_4">외부 변수 검증 (열계량기)</h3>
+<table>
+<thead>
+<tr>
+<th>외부변수</th>
+<th>Cooling</th>
+<th>Heating</th>
+<th>결론</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ta ↔ P</td>
+<td>0.453</td>
+<td><strong>0.692</strong></td>
+<td><strong>유지</strong> — 냉난방 부하는 외기온도에 직접 영향 받음</td>
+</tr>
+<tr>
+<td>Ta ↔ Tvl</td>
+<td>0.196</td>
+<td>0.549</td>
+<td>(Ta 유지 근거 추가)</td>
+</tr>
+<tr>
+<td>Ta ↔ Tdiff</td>
+<td>0.322</td>
+<td>0.513</td>
+<td>(Ta 유지 근거 추가)</td>
+</tr>
+<tr>
+<td>Igm ↔ P</td>
+<td>0.330</td>
+<td>0.320</td>
+<td><strong>제거</strong> — 냉난방 모두 0.33 이하, 설명력 낮음</td>
+</tr>
+<tr>
+<td>Igm ↔ 기타</td>
+<td>0.03~0.21</td>
+<td>0.01~0.24</td>
+<td>제거 근거 추가</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>전기와 달리 <strong>열계량기는 Ta를 유지</strong>해야 함. 외기온도는 냉난방 부하의 직접 원인 변수이며, 특히 난방에서 Ta↔P=0.692로 높은 설명력을 보임</p>
+</blockquote>
+<h3 id="feature_1">최종 권장 feature (열)</h3>
+<h4 id="cooling">Cooling (냉방)</h4>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Feature</th>
+<th>의미</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>P</strong></td>
+<td>열량</td>
+<td>단독 (Tdiff와 독립)</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>qv</strong></td>
+<td>유량</td>
+<td>단독</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Tdiff</strong></td>
+<td>온도차(Tvl-Trl)</td>
+<td>이상탐지 핵심 변수 (인수인계 문서 anomaly_target)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Ta</strong></td>
+<td>외기온도</td>
+<td>Ta↔P=0.453, 냉방 부하 설명 변수</td>
+</tr>
+</tbody>
+</table>
+<h4 id="heating">Heating (난방)</h4>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Feature</th>
+<th>의미</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>P</strong></td>
+<td>열량</td>
+<td>단독</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>qv</strong></td>
+<td>유량</td>
+<td>단독</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Tdiff</strong></td>
+<td>온도차(Tvl-Trl)</td>
+<td>P↔Tdiff=0.744로 묶이나 이상탐지 직접 신호로 유지</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Ta</strong></td>
+<td>외기온도</td>
+<td>Ta↔P=0.692, 난방 부하 핵심 설명 변수</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Tvl, Trl 제거 (냉난방 공통)</strong>: Tdiff = Tvl - Trl로 두 온도의 차이를 직접 포착. Tvl 단독은 공급온도 상승 원인 구분 불가<br />
+<strong>W, V 제거 (냉난방 공통)</strong>: 누적값 → 단조증가, STL/이상탐지 부적합<br />
+<strong>Igm 제거 (냉난방 공통)</strong>: 최대 0.33으로 낮음<br />
+<strong>Ua, Dc, Sc 제거 권장</strong>: 모든 내부 변수와 상관 낮고 물리적 해석 불명확</p>
+<p><strong>현재 구현 메모</strong>: 열계량기 meter-to-meter 상관 heatmap에서는 <code>Ta</code>가 모든 meter에 동일한 외기 시계열로 붙어 비교 정보량이 낮아 현재 스크립트에서는 제외함</p>
+</blockquote>
+<hr />
+<h2 id="_5">요약</h2>
+<table>
+<thead>
+<tr>
+<th>계량기 유형</th>
+<th>원본</th>
+<th>선정 후</th>
+<th>제거 대상</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>전기 Consumption</td>
+<td>~35개</td>
+<td><strong>4개</strong></td>
+<td>P1~P3, I1~I3, U2~U3, PF1~PF3, W계열 전부, WQ계열, Igc, Ta, Igm, rho/H/Dp/Ah</td>
+</tr>
+<tr>
+<td>전기 Production</td>
+<td>~35개</td>
+<td><strong>4개</strong></td>
+<td>P1~P3, I1~I3, U2~U3, PF1~PF3, W계열 전부, WQ계열, Igc, Ta, Igm, rho/H/Dp/Ah</td>
+</tr>
+<tr>
+<td>열 Cooling</td>
+<td>17개</td>
+<td><strong>4개</strong></td>
+<td>V, W, Tvl, Trl, Igc, Igm, rho/H/Dp/Ah, Ua, Dc, Sc</td>
+</tr>
+<tr>
+<td>열 Heating</td>
+<td>17개</td>
+<td><strong>4개</strong></td>
+<td>V, W, Tvl, Trl, Igc, Igm, rho/H/Dp/Ah, Ua, Dc, Sc</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_6">주의사항 및 한계점</h2>
+<h3 id="1-6year">1. 6year 평균 기반 분석</h3>
+<p><strong>내용</strong>: 계절별·연도별 상관관계 변화를 반영하지 않고 6년 전체 평균값으로 클러스터링했음</p>
+<p><strong>감안 가능한 이유</strong>: 6년치 평균은 계절 편향이 상쇄되어 장기적으로 안정적인 관계를 나타냄. 단기 이상치나 특정 계절의 패턴보다 전반적인 구조적 관계 파악이 목적이므로 분석 목적에 부합함</p>
+<hr />
+<h3 id="2">2. 전체 계량기 평균 기반 클러스터링</h3>
+<p><strong>내용</strong>: 개별 계량기마다 상관 구조가 다를 수 있으나, 전체 계량기의 평균 상관계수로 대표 feature를 선정했음</p>
+<p><strong>감안 가능한 이유</strong>: 전기는 consumption/production, 열은 cooling/heating으로 에너지 방향과 용도가 다른 그룹을 분리하여 분석했음. 개별 계량기 단위의 차이는 계량기 간 상관분석(다음 단계)에서 보완 예정</p>
+<hr />
+<h3 id="3">3. 건물·구역별 특성 미반영</h3>
+<p><strong>내용</strong>: H1, H2, H3 등 건물/구역별로 설비 특성이 달라 상관 구조가 다를 수 있음</p>
+<p><strong>해결 방향</strong>: Plotly 상관계수 대시보드에서 계량기별로 직접 확인 가능. 대표 계량기 선정 단계에서 계량기 간 상관분석 시 건물별 패턴을 추가로 파악</p>
+<hr />
+<h3 id="4-pf2pf3-consumption">4. PF2/PF3 정보 손실 가능성 (Consumption)</h3>
+<p><strong>내용</strong>: Consumption 기준 PF1↔PF2=0.686, PF1↔PF3=0.680, PF2↔PF3=0.640으로 complete linkage 기준(0.7) 미달 → PF2/PF3가 별도 클러스터 분리</p>
+<p><strong>감안 가능한 이유</strong>: PF↔PF2=0.742, PF↔PF3=0.783으로 70% 이상 정보가 겹침. 실용적으로 PF가 대표성을 가지며, Production에서는 전부 하나로 묶임</p>
+<hr />
+<h3 id="5">5. 외부 변수 처리 원칙</h3>
+<p><strong>전기 계량기</strong>: Ta↔P=0.190, Igm↔P=0.211로 전부 0.3 미만 → <strong>Ta, Igm 제거</strong></p>
+<p><strong>열계량기</strong>: 냉난방 부하는 외기온도에 직접 영향받는 구조<br />
+- Ta: Cooling Ta↔P=0.453 / Heating Ta↔P=0.692 → <strong>Ta 유지</strong><br />
+- Igm: 냉방 0.330, 난방 0.320 이하 → <strong>Igm 제거</strong></p>
+<hr />
+<h3 id="6-feature">6. 내부 변수 단독 feature 처리 원칙</h3>
+<ul>
+<li>내부 변수가 다른 feature와 상관이 낮다 = 독립적 정보를 가진다는 의미 → <strong>제거하지 않음</strong></li>
+<li>외부 변수와 달리, 상관이 낮을수록 오히려 고유 신호일 가능성</li>
+<li>Ua, Dc, Sc: 100% 계량기에 존재하나 물리적 의미 불명확 → 모델 학습 단계에서 검증 후 결정</li>
+</ul>
+<hr />
+<h3 id="7">7. 계량기별 컬럼 불일치</h3>
+<p><strong>내용</strong>: 계량기마다 보유 컬럼이 다름 (예: Q는 44/71개, W1은 26/71개 계량기에만 존재)</p>
+<p><strong>처리 방법</strong>: 클러스터링 시 "해당 feature 쌍이 둘 다 존재하는 계량기에서만" 평균 계산 → 없는 컬럼은 자동 제외. 대표 feature(P, U1, PF, W)는 71개 전 계량기 보유 확인 완료. 예외: V.Z84에 PF, f 없음 → 해당 계량기 적용 시 결측 처리</p>
+</body>
+</html>

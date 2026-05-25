@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Overall Representative Meter Selection (배전 제외)</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         max-width: 960px; margin: 40px auto; padding: 0 24px;
+         color: #24292e; line-height: 1.6; }
+  h1 { border-bottom: 2px solid #e1e4e8; padding-bottom: 10px; }
+  h2 { border-bottom: 1px solid #e1e4e8; padding-bottom: 6px; margin-top: 32px; }
+  h3 { margin-top: 24px; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+  th { background: #f6f8fa; border: 1px solid #d1d5da; padding: 8px 12px; text-align: left; }
+  td { border: 1px solid #d1d5da; padding: 8px 12px; }
+  tr:nth-child(even) { background: #f9f9f9; }
+  code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px;
+          font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.9em; }
+  pre { background: #f6f8fa; border: 1px solid #e1e4e8; border-radius: 6px;
+         padding: 16px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  blockquote { border-left: 4px solid #dfe2e5; margin: 0; padding: 0 16px; color: #6a737d; }
+  hr { border: none; border-top: 1px solid #e1e4e8; margin: 24px 0; }
+  a { color: #0366d6; }
+</style>
+</head>
+<body>
+<h1 id="overall-representative-meter-selection">Overall Representative Meter Selection (배전 제외)</h1>
+<p>기준:</p>
+<ul>
+<li>입력 파일: <code>outputs/raw_eda/correlation/analysis/electric_meter_correlation_representative.html</code></li>
+<li>기준 feature: <code>P</code>, <code>U1</code>, <code>PF</code></li>
+<li><code>overall</code>: 위 3개 feature의 절대 상관계수 평균</li>
+<li>군집 규칙: <code>Complete Linkage</code>, 임계값 <code>abs(corr) &gt;= 0.7</code></li>
+<li>대표 계량기: 군집 내 평균 abs(corr)가 가장 높은 계량기</li>
+<li><strong>제외</strong>: 배전반/변압기 역할 통로형 계량기 17개 제외</li>
+</ul>
+<hr />
+<h2 id="consumption">소비 계량기 (Consumption)</h2>
+<p>요약:</p>
+<ul>
+<li>전체: <code>47개</code></li>
+<li>군집(2개 이상 묶임): <code>29개</code> (13개 군집)</li>
+<li>단독 유지: <code>18개</code></li>
+<li>최종 그룹 수: <code>31개</code></li>
+</ul>
+<h3 id="_1">군집 및 대표 계량기</h3>
+<table>
+<thead>
+<tr>
+<th>그룹</th>
+<th style="text-align: right;">계량기 수</th>
+<th>대표 계량기</th>
+<th style="text-align: right;">min abs(corr)</th>
+<th style="text-align: right;">avg abs(corr)</th>
+<th>구성원</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C2</td>
+<td style="text-align: right;">4</td>
+<td><code>H2.Z66</code></td>
+<td style="text-align: right;">0.7602</td>
+<td style="text-align: right;">0.8385</td>
+<td><code>H2.Z66</code>, <code>H2.Z67</code>, <code>H2.ZE66</code>, <code>H2.ZE67</code></td>
+</tr>
+<tr>
+<td>C3</td>
+<td style="text-align: right;">2</td>
+<td><code>H1.Z12</code></td>
+<td style="text-align: right;">&gt;= 0.7041</td>
+<td style="text-align: right;">&gt;= 0.7041</td>
+<td><code>H1.Z11</code>, <code>H1.Z12</code></td>
+</tr>
+<tr>
+<td>C4</td>
+<td style="text-align: right;">2</td>
+<td><code>H4.Z51</code></td>
+<td style="text-align: right;">&gt;= 0.8214</td>
+<td style="text-align: right;">&gt;= 0.8214</td>
+<td><code>H4.Z51</code>, <code>H4.ZE51</code></td>
+</tr>
+<tr>
+<td>C5</td>
+<td style="text-align: right;">3</td>
+<td><code>H2.T.Z31</code></td>
+<td style="text-align: right;">0.8057</td>
+<td style="text-align: right;">0.8390</td>
+<td><code>H2.T.Z31</code>, <code>H2.T.Z32</code>, <code>H2.Z70</code></td>
+</tr>
+<tr>
+<td>C7</td>
+<td style="text-align: right;">2</td>
+<td><code>H1.Z13</code></td>
+<td style="text-align: right;">0.9986</td>
+<td style="text-align: right;">0.9986</td>
+<td><code>H1.Z13</code>, <code>H1.Z14</code></td>
+</tr>
+<tr>
+<td>C8</td>
+<td style="text-align: right;">2</td>
+<td><code>H1.Z21</code></td>
+<td style="text-align: right;">0.9704</td>
+<td style="text-align: right;">0.9704</td>
+<td><code>H1.Z21</code>, <code>H1.Z22</code></td>
+</tr>
+<tr>
+<td>C9</td>
+<td style="text-align: right;">2</td>
+<td><code>H1.Z24</code></td>
+<td style="text-align: right;">0.9871</td>
+<td style="text-align: right;">0.9871</td>
+<td><code>H1.Z24</code>, <code>H1.Z25</code></td>
+</tr>
+<tr>
+<td>C12</td>
+<td style="text-align: right;">2</td>
+<td><code>H2.Z62</code></td>
+<td style="text-align: right;">0.9666</td>
+<td style="text-align: right;">0.9666</td>
+<td><code>H2.Z62</code>, <code>H2.Z63</code></td>
+</tr>
+<tr>
+<td>C13</td>
+<td style="text-align: right;">2</td>
+<td><code>H2.Z64</code></td>
+<td style="text-align: right;">0.9142</td>
+<td style="text-align: right;">0.9142</td>
+<td><code>H2.Z64</code>, <code>H2.ZE64</code></td>
+</tr>
+<tr>
+<td>C14</td>
+<td style="text-align: right;">2</td>
+<td><code>H3.Z43</code></td>
+<td style="text-align: right;">0.7379</td>
+<td style="text-align: right;">0.7379</td>
+<td><code>H3.Z43</code>, <code>H3.ZE43</code></td>
+</tr>
+<tr>
+<td>C15</td>
+<td style="text-align: right;">2</td>
+<td><code>H3.Z44</code></td>
+<td style="text-align: right;">0.7454</td>
+<td style="text-align: right;">0.7454</td>
+<td><code>H3.Z44</code>, <code>H3.ZE44</code></td>
+</tr>
+<tr>
+<td>C16</td>
+<td style="text-align: right;">2</td>
+<td><code>H3.Z48</code></td>
+<td style="text-align: right;">0.7014</td>
+<td style="text-align: right;">0.7014</td>
+<td><code>H3.Z48</code>, <code>H3.Z49</code></td>
+</tr>
+<tr>
+<td>C18</td>
+<td style="text-align: right;">2</td>
+<td><code>H4.Z50</code></td>
+<td style="text-align: right;">0.8498</td>
+<td style="text-align: right;">0.8498</td>
+<td><code>H4.Z50</code>, <code>H4.ZE50</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>C3, C4의 <code>&gt;=</code> 표기: Complete Linkage 보장값. 배전 계량기 제거 후 잔존 pair의 정확한 값은 원본 상관 분석 재확인 필요</p>
+</blockquote>
+<h3 id="_2">단독 유지 계량기</h3>
+<p><code>H1.Z10</code>, <code>H1.Z16</code>, <code>H1.Z18</code>, <code>H1.Z19</code>, <code>H1.Z23</code>, <code>H1.Z26</code>, <code>H1.Z27</code>, <code>H2.Z61</code>, <code>H2.Z65</code>, <code>H2.Z68</code>, <code>H2.Z69</code>, <code>H2.ZE65</code>, <code>H2.ZE74</code>, <code>H3.Z42</code>, <code>H3.Z45</code>, <code>H3.Z46</code>, <code>H3.Z47</code>, <code>H3.Z71</code></p>
+<blockquote>
+<p><code>H2.Z61</code>: 원래 C10 소속이었으나 <code>H2.T.Z34</code> 제외로 단독 이동</p>
+</blockquote>
+<h3 id="_3">소비 계량기 대표 목록</h3>
+<p><code>H2.Z66</code>, <code>H1.Z12</code>, <code>H4.Z51</code>, <code>H2.T.Z31</code>, <code>H1.Z13</code>, <code>H1.Z21</code>, <code>H1.Z24</code>, <code>H2.Z62</code>, <code>H2.Z64</code>, <code>H3.Z43</code>, <code>H3.Z44</code>, <code>H3.Z48</code>, <code>H4.Z50</code>, <code>H1.Z10</code>, <code>H1.Z16</code>, <code>H1.Z18</code>, <code>H1.Z19</code>, <code>H1.Z23</code>, <code>H1.Z26</code>, <code>H1.Z27</code>, <code>H2.Z61</code>, <code>H2.Z65</code>, <code>H2.Z68</code>, <code>H2.Z69</code>, <code>H2.ZE65</code>, <code>H2.ZE74</code>, <code>H3.Z42</code>, <code>H3.Z45</code>, <code>H3.Z46</code>, <code>H3.Z47</code>, <code>H3.Z71</code></p>
+<hr />
+<h2 id="production">발전 계량기 (Production)</h2>
+<p>요약:</p>
+<ul>
+<li>전체: <code>7개</code></li>
+<li>군집(2개 이상 묶임): <code>2개</code></li>
+<li>단독 유지: <code>0개</code></li>
+<li>최종 그룹 수: <code>2개</code></li>
+</ul>
+<h3 id="_4">군집 및 대표 계량기</h3>
+<table>
+<thead>
+<tr>
+<th>그룹</th>
+<th style="text-align: right;">계량기 수</th>
+<th>대표 계량기</th>
+<th style="text-align: right;">min abs(corr)</th>
+<th style="text-align: right;">avg abs(corr)</th>
+<th>구성원</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td style="text-align: right;">5</td>
+<td><code>V.Z84</code></td>
+<td style="text-align: right;">0.8559</td>
+<td style="text-align: right;">0.9591</td>
+<td><code>H1.Z310</code>, <code>H2.Z311</code>, <code>H3.Z312</code>, <code>V.Z84</code>, <code>V.ZE84</code></td>
+</tr>
+<tr>
+<td>P2</td>
+<td style="text-align: right;">2</td>
+<td><code>H1.Z20</code></td>
+<td style="text-align: right;">0.9759</td>
+<td style="text-align: right;">0.9759</td>
+<td><code>H1.Z20</code>, <code>H1.ZE20</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_5">발전 계량기 대표 목록</h3>
+<p><code>V.Z84</code>, <code>H1.Z20</code></p>
+<hr />
+<h2 id="_6">해석 메모</h2>
+<ul>
+<li><code>Complete Linkage</code> 기준: 군집 내 모든 pair가 abs(corr) &gt;= 0.7이어야 묶임</li>
+<li>대표 계량기는 군집 내부 평균 abs(corr)가 가장 높은 계량기</li>
+<li><code>overall</code>은 <code>P</code>, <code>U1</code>, <code>PF</code> 기반 (<code>f</code> 제외)</li>
+</ul>
+</body>
+</html>

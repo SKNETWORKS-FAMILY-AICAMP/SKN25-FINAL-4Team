@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meter Data Collection Period (배전 제외)</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         max-width: 1100px; margin: 40px auto; padding: 0 24px; color: #24292e; line-height: 1.6; }
+  h1 { border-bottom: 2px solid #e1e4e8; padding-bottom: 10px; }
+  h2 { border-bottom: 1px solid #e1e4e8; padding-bottom: 6px; margin-top: 32px; }
+  h3 { margin-top: 24px; color: #444; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 0.9em; }
+  th { background: #f6f8fa; border: 1px solid #d1d5da; padding: 7px 10px; text-align: left; white-space: nowrap; }
+  td { border: 1px solid #d1d5da; padding: 6px 10px; }
+  tr:nth-child(even) { background: #f9f9f9; }
+  .rep   { background: #e6f3ff !important; font-weight: bold; }
+  .most  { color: #0a6640; font-weight: bold; }
+  .least { color: #c0392b; font-weight: bold; }
+  .warn  { background: #fff3cd !important; }
+  .badge-rep  { background: #0366d6; color: white; border-radius: 3px; padding: 1px 5px; font-size: 0.75em; margin-left: 4px; }
+  .badge-max  { background: #0a6640; color: white; border-radius: 3px; padding: 1px 5px; font-size: 0.75em; margin-left: 4px; }
+  .badge-min  { background: #c0392b; color: white; border-radius: 3px; padding: 1px 5px; font-size: 0.75em; margin-left: 4px; }
+  .badge-warn { background: #e67e22; color: white; border-radius: 3px; padding: 1px 5px; font-size: 0.75em; margin-left: 4px; }
+  .section-cons { border-left: 4px solid #0366d6; padding-left: 10px; }
+  .section-prod { border-left: 4px solid #28a745; padding-left: 10px; }
+  code { background: #f3f4f6; padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 0.9em; }
+  .note { color: #6a737d; font-size: 0.85em; margin-top: 4px; }
+</style>
+</head>
+<body>
+<h1>Meter Data Collection Period (배전 제외)</h1>
+<p class="note">기준: <code>cr_measurement_1h</code> 테이블, measurement = <code>P</code> 기준 레코드 수 / 기간</p>
+<p class="note">색상: <span class="badge-rep">대표</span> <span class="badge-max">최다</span> <span class="badge-min">최소</span> <span class="badge-warn">대표가 최소 데이터</span></p>
+
+<h2>군집별 요약 (최다 / 최소 계량기)</h2>
+<table>
+<tr><th>그룹</th><th>역할</th><th>대표 계량기</th><th>최다 데이터 계량기</th><th>P 레코드 수</th><th>최소 데이터 계량기</th><th>P 레코드 수</th><th>비고</th></tr>
+<tr class="warn"><td><b>C2</b></td><td>consumption</td><td><code>H2.ZE66</code></td><td><code>H2.Z66</code></td><td class='most'>52,584</td><td><code>H2.ZE66</code></td><td class='least'>15,585</td><td><span class="badge-warn">대표=최소</span></td></tr>
+<tr><td><b>C3</b></td><td>consumption</td><td><code>H1.Z12</code></td><td><code>H1.Z11</code></td><td class='most'>52,584</td><td>-</td><td class='least'>-</td><td></td></tr>
+<tr><td><b>C4</b></td><td>consumption</td><td><code>H4.Z51</code></td><td><code>H4.Z51</code></td><td class='most'>47,991</td><td><code>H4.ZE51</code></td><td class='least'>15,588</td><td></td></tr>
+<tr><td><b>C5</b></td><td>consumption</td><td><code>H2.T.Z31</code></td><td><code>H2.T.Z31</code></td><td class='most'>52,584</td><td>-</td><td class='least'>-</td><td></td></tr>
+<tr><td><b>C7</b></td><td>consumption</td><td><code>H1.Z13</code></td><td><code>H1.Z13</code></td><td class='most'>52,584</td><td>-</td><td class='least'>-</td><td></td></tr>
+<tr><td><b>C8</b></td><td>consumption</td><td><code>H1.Z21</code></td><td><code>H1.Z21</code></td><td class='most'>52,584</td><td>-</td><td class='least'>-</td><td></td></tr>
+<tr><td><b>C9</b></td><td>consumption</td><td><code>H1.Z24</code></td><td><code>H1.Z24</code></td><td class='most'>52,584</td><td>-</td><td class='least'>-</td><td></td></tr>
+<tr><td><b>C12</b></td><td>consumption</td><td><code>H2.Z62</code></td><td><code>H2.Z62</code></td><td class='most'>52,584</td><td>-</td><td class='least'>-</td><td></td></tr>
+<tr><td><b>C13</b></td><td>consumption</td><td><code>H2.Z64</code></td><td><code>H2.Z64</code></td><td class='most'>52,584</td><td><code>H2.ZE64</code></td><td class='least'>15,585</td><td></td></tr>
+<tr><td><b>C14</b></td><td>consumption</td><td><code>H3.Z43</code></td><td><code>H3.Z43</code></td><td class='most'>51,840</td><td><code>H3.ZE43</code></td><td class='least'>15,686</td><td></td></tr>
+<tr><td><b>C15</b></td><td>consumption</td><td><code>H3.Z44</code></td><td><code>H3.Z44</code></td><td class='most'>51,840</td><td><code>H3.ZE44</code></td><td class='least'>15,686</td><td></td></tr>
+<tr><td><b>C16</b></td><td>consumption</td><td><code>H3.Z48</code></td><td><code>H3.Z48</code></td><td class='most'>30,697</td><td>-</td><td class='least'>-</td><td></td></tr>
+<tr><td><b>C18</b></td><td>consumption</td><td><code>H4.Z50</code></td><td><code>H4.Z50</code></td><td class='most'>47,991</td><td><code>H4.ZE50</code></td><td class='least'>15,588</td><td></td></tr>
+<tr class="warn"><td><b>P1</b></td><td>production</td><td><code>V.ZE84</code></td><td><code>V.Z84</code></td><td class='most'>39,529</td><td><code>V.ZE84</code></td><td class='least'>9,680</td><td><span class="badge-warn">대표=최소</span></td></tr>
+<tr><td><b>P2</b></td><td>production</td><td><code>H1.Z20</code></td><td><code>H1.Z20</code></td><td class='most'>52,584</td><td><code>H1.ZE20</code></td><td class='least'>9,519</td><td></td></tr>
+</table>
+<h2>군집 상세 (소비 계량기)</h2>
+<h3 class="section-cons">군집 C2</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr><td><code>H2.Z66</code><span class="badge-max">최다</span></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H2.Z67</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr class="rep"><td><code>H2.ZE66</code><span class="badge-rep">대표</span><span class="badge-min">최소</span></td><td>15,585</td><td>2022-03-22</td><td>2023-12-31</td><td>649</td></tr>
+<tr><td><code>H2.ZE67</code></td><td>15,585</td><td>2022-03-22</td><td>2023-12-31</td><td>649</td></tr>
+</table>
+<h3 class="section-cons">군집 C3</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr><td><code>H1.Z11</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr class="rep"><td><code>H1.Z12</code><span class="badge-rep">대표</span></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+</table>
+<h3 class="section-cons">군집 C4</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr class="rep"><td><code>H4.Z51</code><span class="badge-rep">대표</span><span class="badge-max">최다</span></td><td>47,991</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H4.ZE51</code><span class="badge-min">최소</span></td><td>15,588</td><td>2022-03-22</td><td>2023-12-31</td><td>649</td></tr>
+</table>
+<h3 class="section-cons">군집 C5</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr class="rep"><td><code>H2.T.Z31</code><span class="badge-rep">대표</span></td><td>52,584</td><td>2017-12-31</td><td>2023-12-31</td><td>2190</td></tr>
+<tr><td><code>H2.T.Z32</code></td><td>52,584</td><td>2017-12-31</td><td>2023-12-31</td><td>2190</td></tr>
+<tr><td><code>H2.Z70</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+</table>
+<h3 class="section-cons">군집 C7</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr class="rep"><td><code>H1.Z13</code><span class="badge-rep">대표</span></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H1.Z14</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+</table>
+<h3 class="section-cons">군집 C8</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr class="rep"><td><code>H1.Z21</code><span class="badge-rep">대표</span></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H1.Z22</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+</table>
+<h3 class="section-cons">군집 C9</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr class="rep"><td><code>H1.Z24</code><span class="badge-rep">대표</span></td><td>52,584</td><td>2017-12-31</td><td>2023-12-31</td><td>2190</td></tr>
+<tr><td><code>H1.Z25</code></td><td>52,584</td><td>2017-12-31</td><td>2023-12-31</td><td>2190</td></tr>
+</table>
+<h3 class="section-cons">군집 C12</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr class="rep"><td><code>H2.Z62</code><span class="badge-rep">대표</span></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H2.Z63</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+</table>
+<h3 class="section-cons">군집 C13</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr class="rep"><td><code>H2.Z64</code><span class="badge-rep">대표</span><span class="badge-max">최다</span></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H2.ZE64</code><span class="badge-min">최소</span></td><td>15,585</td><td>2022-03-22</td><td>2023-12-31</td><td>649</td></tr>
+</table>
+<h3 class="section-cons">군집 C14</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr class="rep"><td><code>H3.Z43</code><span class="badge-rep">대표</span><span class="badge-max">최다</span></td><td>51,840</td><td>2018-01-01</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H3.ZE43</code><span class="badge-min">최소</span></td><td>15,686</td><td>2022-03-18</td><td>2023-12-31</td><td>653</td></tr>
+</table>
+<h3 class="section-cons">군집 C15</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr class="rep"><td><code>H3.Z44</code><span class="badge-rep">대표</span><span class="badge-max">최다</span></td><td>51,840</td><td>2018-01-01</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H3.ZE44</code><span class="badge-min">최소</span></td><td>15,686</td><td>2022-03-18</td><td>2023-12-31</td><td>653</td></tr>
+</table>
+<h3 class="section-cons">군집 C16</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr class="rep"><td><code>H3.Z48</code><span class="badge-rep">대표</span></td><td>30,697</td><td>2018-01-01</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H3.Z49</code></td><td>30,697</td><td>2018-01-01</td><td>2024-01-01</td><td>2191</td></tr>
+</table>
+<h3 class="section-cons">군집 C18</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr class="rep"><td><code>H4.Z50</code><span class="badge-rep">대표</span><span class="badge-max">최다</span></td><td>47,991</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H4.ZE50</code><span class="badge-min">최소</span></td><td>15,588</td><td>2022-03-22</td><td>2023-12-31</td><td>649</td></tr>
+</table>
+<h2>군집 상세 (발전 계량기)</h2>
+<h3 class="section-prod">군집 P1</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr><td><code>H1.Z310</code></td><td>30,817</td><td>2020-06-25</td><td>2023-12-31</td><td>1284</td></tr>
+<tr><td><code>H2.Z311</code></td><td>30,841</td><td>2020-06-24</td><td>2023-12-31</td><td>1285</td></tr>
+<tr><td><code>H3.Z312</code></td><td>30,817</td><td>2020-06-25</td><td>2023-12-31</td><td>1284</td></tr>
+<tr><td><code>V.Z84</code><span class="badge-max">최다</span></td><td>39,529</td><td>2019-06-28</td><td>2023-12-31</td><td>1647</td></tr>
+<tr class="rep"><td><code>V.ZE84</code><span class="badge-rep">대표</span><span class="badge-min">최소</span></td><td>9,680</td><td>2022-11-23</td><td>2023-12-31</td><td>403</td></tr>
+</table>
+<h3 class="section-prod">군집 P2</h3>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr class="rep"><td><code>H1.Z20</code><span class="badge-rep">대표</span><span class="badge-max">최다</span></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H1.ZE20</code><span class="badge-min">최소</span></td><td>9,519</td><td>2022-11-30</td><td>2023-12-31</td><td>396</td></tr>
+</table>
+<h2>단독 계량기 (Singletons)</h2>
+<table><tr><th>계량기</th><th>P 레코드 수</th><th>수집 시작</th><th>수집 종료</th><th>기간(일)</th></tr>
+<tr><td><code>H1.Z10</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H1.Z16</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H1.Z18</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H1.Z19</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H1.Z23</code></td><td>52,584</td><td>2017-12-31</td><td>2023-12-31</td><td>2190</td></tr>
+<tr><td><code>H1.Z26</code></td><td>52,584</td><td>2017-12-31</td><td>2023-12-31</td><td>2190</td></tr>
+<tr><td><code>H1.Z27</code></td><td>52,584</td><td>2017-12-31</td><td>2023-12-31</td><td>2190</td></tr>
+<tr><td><code>H2.Z61</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H2.Z65</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H2.Z68</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H2.Z69</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H2.ZE65</code></td><td>15,056</td><td>2022-03-22</td><td>2023-12-09</td><td>627</td></tr>
+<tr><td><code>H2.ZE74</code></td><td>15,681</td><td>2022-03-18</td><td>2023-12-31</td><td>653</td></tr>
+<tr><td><code>H3.Z42</code></td><td>51,840</td><td>2018-01-31</td><td>2023-12-31</td><td>2159</td></tr>
+<tr><td><code>H3.Z45</code></td><td>51,840</td><td>2018-01-01</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H3.Z46</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H3.Z47</code></td><td>30,697</td><td>2018-01-01</td><td>2024-01-01</td><td>2191</td></tr>
+<tr><td><code>H3.Z71</code></td><td>52,584</td><td>2017-12-31</td><td>2024-01-01</td><td>2191</td></tr>
+</table>
+</body></html>

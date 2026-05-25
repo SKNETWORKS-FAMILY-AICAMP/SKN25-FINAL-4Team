@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cluster-wise Feature Selection</title>
+  <style>
+    :root {
+      --bg: #f6f4ef;
+      --paper: #fffdf8;
+      --ink: #22201c;
+      --muted: #6a645c;
+      --line: #ddd4c8;
+      --accent: #8f3d2e;
+      --accent-soft: #f3e5dd;
+      --badge: #efe8dc;
+      --good: #215a3f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      background: linear-gradient(180deg, #f1ede5 0%, var(--bg) 100%);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 24px 56px;
+    }
+    h1, h2, h3 {
+      margin: 0;
+      line-height: 1.25;
+    }
+    h1 {
+      font-size: 34px;
+      margin-bottom: 12px;
+    }
+    h2 {
+      font-size: 24px;
+      margin-top: 36px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--line);
+    }
+    h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    p {
+      margin: 8px 0 0;
+    }
+    .lead, .meta, .note {
+      color: var(--muted);
+    }
+    .meta {
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 10px 24px rgba(48, 35, 22, 0.05);
+    }
+    .kicker {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 4px 8px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+    .cluster {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 18px;
+      box-shadow: 0 10px 24px rgba(48, 35, 22, 0.05);
+    }
+    .cluster-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .meters {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      color: #403a34;
+      background: #f7f2e8;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-top: 8px;
+      overflow-wrap: anywhere;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 14px;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      background: #f4ede1;
+      font-weight: 700;
+    }
+    .feature-list {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+    }
+    .rep {
+      font-weight: 700;
+      color: var(--good);
+    }
+    ul {
+      margin: 12px 0 0 20px;
+      padding: 0;
+    }
+    li { margin: 4px 0; }
+    .foot {
+      margin-top: 36px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>군집별 Feature Selection</h1>
+    <p class="lead">
+      전기 대표 계량기 문서 <code>OVERALL_REPRESENTATIVE_METER_SELECTION_filtered.html</code>의 최종 다중 계량기 군집을 기준으로,
+      군집 내부 계량기들만 사용해 feature 간 절대 상관관계를 다시 계산한 결과입니다.
+    </p>
+    <p class="meta">
+      기준: 전기 계량기, 기간 2018-01-01 ~ 2023-12-31, 군집 내부 평균 <code>|Pearson corr|</code>, feature clustering은
+      <code>Complete Linkage</code> + threshold <code>0.7</code>.
+    </p>
+    <p class="meta">
+      단독 계량기는 군집 내부 비교가 불가능하므로 이번 문서에서는 제외했습니다. 즉, 아래 결과는 다중 계량기 군집에 대해서만 정리했습니다.
+    </p>
+
+    <div class="summary">
+      <div class="card">
+        <div class="kicker">Consumption</div>
+        <h3>13개 다중 군집</h3>
+        <p class="note">C2, C3, C4, C5, C7, C8, C9, C12, C13, C14, C15, C16, C18</p>
+      </div>
+      <div class="card">
+        <div class="kicker">Production</div>
+        <h3>2개 다중 군집</h3>
+        <p class="note">P1, P2</p>
+      </div>
+      <div class="card">
+        <div class="kicker">Interpretation</div>
+        <h3>출력 해석 방식</h3>
+        <p class="note">각 군집마다 feature 군집과 그 안의 대표 feature를 따로 둡니다. 즉, C2용 입력 feature와 C12용 입력 feature가 달라질 수 있습니다.</p>
+      </div>
+    </div>
+
+    <h2>소비 계량기 군집</h2>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>C2</h3><strong>대표 계량기 군집 수: 4</strong></div>
+      <div class="meters">H2.Z66, H2.Z67, H2.ZE66, H2.ZE67</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, P3, I1, I2, I3, Q, PF2, PF3</td><td class="rep">Q</td><td>0.9903</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U1</td><td>0.9879</td></tr>
+          <tr><td class="feature-list">W, W_in</td><td class="rep">W</td><td>1.0000</td></tr>
+          <tr><td class="feature-list">PF</td><td class="rep">PF</td><td>-</td></tr>
+          <tr><td class="feature-list">PF1</td><td class="rep">PF1</td><td>-</td></tr>
+          <tr><td class="feature-list">W_out</td><td class="rep">W_out</td><td>-</td></tr>
+          <tr><td class="feature-list">f</td><td class="rep">f</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>C3</h3><strong>대표 계량기 군집 수: 2</strong></div>
+      <div class="meters">H1.Z11, H1.Z12</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, P3, I1, I2, I3, Q, PF3</td><td class="rep">I2</td><td>0.9782</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U1</td><td>0.9893</td></tr>
+          <tr><td class="feature-list">PF, PF1, PF2</td><td class="rep">PF</td><td>0.8804</td></tr>
+          <tr><td class="feature-list">W, W_in, W_out</td><td class="rep">W_in</td><td>0.9518</td></tr>
+          <tr><td class="feature-list">f, Ta</td><td class="rep">f</td><td>0.7319</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>C4</h3><strong>대표 계량기 군집 수: 2</strong></div>
+      <div class="meters">H4.Z51, H4.ZE51</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, I1, PF, PF1</td><td class="rep">P1</td><td>0.8742</td></tr>
+          <tr><td class="feature-list">P3, I3, PF3</td><td class="rep">P3</td><td>0.9520</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U3</td><td>0.9867</td></tr>
+          <tr><td class="feature-list">P2, I2</td><td class="rep">P2</td><td>0.9684</td></tr>
+          <tr><td class="feature-list">W, W_in</td><td class="rep">W</td><td>1.0000</td></tr>
+          <tr><td class="feature-list">Q</td><td class="rep">Q</td><td>-</td></tr>
+          <tr><td class="feature-list">PF2</td><td class="rep">PF2</td><td>-</td></tr>
+          <tr><td class="feature-list">f</td><td class="rep">f</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>C5</h3><strong>대표 계량기 군집 수: 3</strong></div>
+      <div class="meters">H2.T.Z31, H2.T.Z32, H2.Z70</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, P3, I1, I2, I3, Q, PF, PF1</td><td class="rep">Q</td><td>0.9461</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U1</td><td>0.9882</td></tr>
+          <tr><td class="feature-list">W, W_in, W_out</td><td class="rep">W_in</td><td>0.9171</td></tr>
+          <tr><td class="feature-list">PF2</td><td class="rep">PF2</td><td>-</td></tr>
+          <tr><td class="feature-list">PF3</td><td class="rep">PF3</td><td>-</td></tr>
+          <tr><td class="feature-list">f</td><td class="rep">f</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>C7</h3><strong>대표 계량기 군집 수: 2</strong></div>
+      <div class="meters">H1.Z13, H1.Z14</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, P3, I1, I2, I3, Q</td><td class="rep">I3</td><td>0.9679</td></tr>
+          <tr><td class="feature-list">PF, PF1, PF2, PF3</td><td class="rep">PF</td><td>0.9627</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U1</td><td>0.9892</td></tr>
+          <tr><td class="feature-list">W, W_in, W_out</td><td class="rep">W_in</td><td>0.8895</td></tr>
+          <tr><td class="feature-list">f</td><td class="rep">f</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>C8</h3><strong>대표 계량기 군집 수: 2</strong></div>
+      <div class="meters">H1.Z21, H1.Z22</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, P3, I1, I2, I3, Q</td><td class="rep">I1</td><td>0.9613</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U1</td><td>0.9895</td></tr>
+          <tr><td class="feature-list">PF, PF1, PF2</td><td class="rep">PF</td><td>0.8893</td></tr>
+          <tr><td class="feature-list">W, W_in, W_out</td><td class="rep">W_in</td><td>0.9694</td></tr>
+          <tr><td class="feature-list">PF3</td><td class="rep">PF3</td><td>-</td></tr>
+          <tr><td class="feature-list">f</td><td class="rep">f</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>C9</h3><strong>대표 계량기 군집 수: 2</strong></div>
+      <div class="meters">H1.Z24, H1.Z25</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, P3, I1, I2, I3, Q, PF</td><td class="rep">I3</td><td>0.9720</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U1</td><td>0.9897</td></tr>
+          <tr><td class="feature-list">W, W_in, W_out</td><td class="rep">W_in</td><td>0.8889</td></tr>
+          <tr><td class="feature-list">PF1, PF3</td><td class="rep">PF1</td><td>0.8371</td></tr>
+          <tr><td class="feature-list">PF2</td><td class="rep">PF2</td><td>-</td></tr>
+          <tr><td class="feature-list">f</td><td class="rep">f</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>C12</h3><strong>대표 계량기 군집 수: 2</strong></div>
+      <div class="meters">H2.Z62, H2.Z63</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, P3, I1, I2, I3, Q, PF, PF1, PF2, PF3</td><td class="rep">P3</td><td>0.9754</td></tr>
+          <tr><td class="feature-list">U1, U2, U3, f</td><td class="rep">U3</td><td>0.9936</td></tr>
+          <tr><td class="feature-list">W, W_out</td><td class="rep">W</td><td>0.9209</td></tr>
+          <tr><td class="feature-list">W_in</td><td class="rep">W_in</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>C13</h3><strong>대표 계량기 군집 수: 2</strong></div>
+      <div class="meters">H2.Z64, H2.ZE64</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, P3, I1, I2, I3, PF, PF1, PF2, PF3</td><td class="rep">P1</td><td>0.9302</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U1</td><td>0.9940</td></tr>
+          <tr><td class="feature-list">W, W_in, W_out</td><td class="rep">W_in</td><td>0.9068</td></tr>
+          <tr><td class="feature-list">Q</td><td class="rep">Q</td><td>-</td></tr>
+          <tr><td class="feature-list">f</td><td class="rep">f</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>C14</h3><strong>대표 계량기 군집 수: 2</strong></div>
+      <div class="meters">H3.Z43, H3.ZE43</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, P3, I1, I2, I3, Q</td><td class="rep">Q</td><td>0.9841</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U1</td><td>0.9764</td></tr>
+          <tr><td class="feature-list">PF, PF1, PF3</td><td class="rep">PF</td><td>0.8716</td></tr>
+          <tr><td class="feature-list">W, W_in, W_out</td><td class="rep">W_in</td><td>0.9039</td></tr>
+          <tr><td class="feature-list">PF2</td><td class="rep">PF2</td><td>-</td></tr>
+          <tr><td class="feature-list">f</td><td class="rep">f</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>C15</h3><strong>대표 계량기 군집 수: 2</strong></div>
+      <div class="meters">H3.Z44, H3.ZE44</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, I1, I2, I3, Q</td><td class="rep">Q</td><td>0.9573</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U1</td><td>0.9765</td></tr>
+          <tr><td class="feature-list">PF, PF1</td><td class="rep">PF</td><td>0.9315</td></tr>
+          <tr><td class="feature-list">W, W_in</td><td class="rep">W</td><td>1.0000</td></tr>
+          <tr><td class="feature-list">P3</td><td class="rep">P3</td><td>-</td></tr>
+          <tr><td class="feature-list">PF2</td><td class="rep">PF2</td><td>-</td></tr>
+          <tr><td class="feature-list">PF3</td><td class="rep">PF3</td><td>-</td></tr>
+          <tr><td class="feature-list">W_out</td><td class="rep">W_out</td><td>-</td></tr>
+          <tr><td class="feature-list">f</td><td class="rep">f</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>C16</h3><strong>대표 계량기 군집 수: 2</strong></div>
+      <div class="meters">H3.Z48, H3.Z49</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, P3, I1, I2, I3, Q, PF, PF1, PF2, PF3</td><td class="rep">I3</td><td>0.9916</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U1</td><td>0.9750</td></tr>
+          <tr><td class="feature-list">W, W_in, W_out</td><td class="rep">W_in</td><td>0.8606</td></tr>
+          <tr><td class="feature-list">f</td><td class="rep">f</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>C18</h3><strong>대표 계량기 군집 수: 2</strong></div>
+      <div class="meters">H4.Z50, H4.ZE50</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, P3, I1, I2, I3</td><td class="rep">P</td><td>0.9833</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U3</td><td>0.9868</td></tr>
+          <tr><td class="feature-list">W, W_in</td><td class="rep">W</td><td>1.0000</td></tr>
+          <tr><td class="feature-list">Q</td><td class="rep">Q</td><td>-</td></tr>
+          <tr><td class="feature-list">PF</td><td class="rep">PF</td><td>-</td></tr>
+          <tr><td class="feature-list">PF1</td><td class="rep">PF1</td><td>-</td></tr>
+          <tr><td class="feature-list">PF2</td><td class="rep">PF2</td><td>-</td></tr>
+          <tr><td class="feature-list">PF3</td><td class="rep">PF3</td><td>-</td></tr>
+          <tr><td class="feature-list">f</td><td class="rep">f</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>발전 계량기 군집</h2>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>P1</h3><strong>대표 계량기 군집 수: 5</strong></div>
+      <div class="meters">H1.Z310, H2.Z311, H3.Z312, V.Z84, V.ZE84</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, P3, I1, I2, I3, Igm</td><td class="rep">P2</td><td>0.9459</td></tr>
+          <tr><td class="feature-list">PF, PF1, PF2, PF3</td><td class="rep">PF1</td><td>0.9472</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U1</td><td>0.9868</td></tr>
+          <tr><td class="feature-list">W, W_in, W_out</td><td class="rep">W_out</td><td>0.8978</td></tr>
+          <tr><td class="feature-list">f</td><td class="rep">f</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cluster">
+      <div class="cluster-head"><h3>P2</h3><strong>대표 계량기 군집 수: 2</strong></div>
+      <div class="meters">H1.Z20, H1.ZE20</div>
+      <table>
+        <thead><tr><th>Feature 군집</th><th>대표 feature</th><th>대표 기준 군집 내 평균 |corr|</th></tr></thead>
+        <tbody>
+          <tr><td class="feature-list">P, P1, P2, P3, I1, I2, I3, Q, PF, PF1, PF2, PF3</td><td class="rep">I1</td><td>0.9823</td></tr>
+          <tr><td class="feature-list">U1, U2, U3</td><td class="rep">U1</td><td>0.9901</td></tr>
+          <tr><td class="feature-list">W, W_in, W_out</td><td class="rep">W_out</td><td>0.9885</td></tr>
+          <tr><td class="feature-list">f</td><td class="rep">f</td><td>-</td></tr>
+          <tr><td class="feature-list">Ta</td><td class="rep">Ta</td><td>-</td></tr>
+          <tr><td class="feature-list">Igm</td><td class="rep">Igm</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>해석 메모</h2>
+    <div class="card">
+      <ul>
+        <li>이번 결과는 전체 대표 계량기 집합을 한 번에 본 것이 아니라, 각 군집 내부에서만 다시 feature selection을 한 결과입니다.</li>
+        <li>따라서 같은 소비 계량기라도 C2와 C12는 대표 feature 구성이 달라질 수 있습니다.</li>
+        <li><code>W / W_in / W_out</code>은 누적 성격이 강하므로, 상관이 높더라도 이상탐지 입력 feature로 바로 쓰기보다는 제외 또는 보조 지표로 두는 편이 안전합니다.</li>
+        <li><code>Ta</code>, <code>Igm</code>은 대부분 단독으로 남았습니다. 즉 전기 계량기 내부 feature 중복 제거 관점에서는 별도 축으로 보는 것이 맞습니다.</li>
+        <li>대표 feature는 순수 상관 기준으로 뽑았기 때문에 일부 군집에서는 <code>P</code> 대신 <code>Q</code>, <code>I2</code>, <code>I3</code>, <code>P2</code> 같은 값이 대표로 선택됐습니다.</li>
+      </ul>
+    </div>
+
+    <div class="foot">
+      생성 목적: 군집별 예측/이상탐지 모델 입력 feature를 각 군집 단위로 다시 좁혀보기 위한 중간 정리 문서.
+    </div>
+  </div>
+</body>
+</html>

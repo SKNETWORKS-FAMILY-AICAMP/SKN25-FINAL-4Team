@@ -175,7 +175,7 @@
     "meter_type": "thermal",
     "energy_type": "neutral",
     "thermal_mode": "cooling",
-    "anomaly_target": "Tdiff",
+    "anomaly_target": "P",
     "group_name": "cooling_thermal",
     "redundant_pair": null,
     "description": "중앙 냉수 공급 메인"
@@ -184,7 +184,7 @@
     "meter_type": "thermal",
     "energy_type": "neutral",
     "thermal_mode": "cooling",
-    "anomaly_target": "Tdiff",
+    "anomaly_target": "P",
     "group_name": "cooling_thermal",
     "redundant_pair": null,
     "description": "HVAC 3&5"
@@ -193,7 +193,7 @@
     "meter_type": "thermal",
     "energy_type": "neutral",
     "thermal_mode": "cooling",
-    "anomaly_target": "Tdiff",
+    "anomaly_target": "P",
     "group_name": "cooling_thermal",
     "redundant_pair": null,
     "description": "Emission lab HVAC 1/2"
@@ -202,7 +202,7 @@
     "meter_type": "thermal",
     "energy_type": "neutral",
     "thermal_mode": "cooling",
-    "anomaly_target": "Tdiff",
+    "anomaly_target": "P",
     "group_name": "cooling_thermal",
     "redundant_pair": null,
     "description": "Emission lab cooling to office"
@@ -211,7 +211,7 @@
     "meter_type": "thermal",
     "energy_type": "neutral",
     "thermal_mode": "cooling",
-    "anomaly_target": "Tdiff",
+    "anomaly_target": "P",
     "group_name": "cooling_thermal",
     "redundant_pair": null,
     "description": "HVAC 3"
@@ -220,7 +220,7 @@
     "meter_type": "thermal",
     "energy_type": "neutral",
     "thermal_mode": "cooling",
-    "anomaly_target": "Tdiff",
+    "anomaly_target": "P",
     "group_name": "cooling_thermal",
     "redundant_pair": null,
     "description": "Server O1"
@@ -229,7 +229,7 @@
     "meter_type": "thermal",
     "energy_type": "neutral",
     "thermal_mode": "cooling",
-    "anomaly_target": "Tdiff",
+    "anomaly_target": "P",
     "group_name": "cooling_thermal",
     "redundant_pair": null,
     "description": "Office 냉방"
@@ -238,7 +238,7 @@
     "meter_type": "thermal",
     "energy_type": "neutral",
     "thermal_mode": "heating",
-    "anomaly_target": "Tdiff",
+    "anomaly_target": "P",
     "group_name": "heating_thermal",
     "redundant_pair": null,
     "description": "총 난방"
@@ -247,7 +247,7 @@
     "meter_type": "thermal",
     "energy_type": "neutral",
     "thermal_mode": "heating",
-    "anomaly_target": "Tdiff",
+    "anomaly_target": "P",
     "group_name": "heating_thermal",
     "redundant_pair": null,
     "description": "CHP 열 생산",

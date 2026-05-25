@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thermal Clustering Summary</title>
+  <style>
+    :root {
+      --bg: #f5f1e8;
+      --panel: #fffdf8;
+      --line: #ddd3c2;
+      --text: #22201c;
+      --muted: #665f55;
+      --accent: #8f3e27;
+      --accent-soft: #f3ddd6;
+      --good: #24593d;
+      --good-soft: #deede4;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", sans-serif;
+      background: linear-gradient(180deg, #eee7d8 0%, var(--bg) 100%);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 40px 20px 64px;
+    }
+
+    h1, h2, h3 { margin: 0; line-height: 1.2; }
+    h1 { font-size: 32px; margin-bottom: 12px; }
+    h2 { font-size: 24px; margin: 36px 0 16px; }
+    h3 { font-size: 19px; margin-bottom: 10px; }
+
+    p { margin: 0 0 10px; }
+
+    .lead {
+      color: var(--muted);
+      max-width: 920px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
+      padding: 18px 20px;
+      margin-top: 20px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .summary-item {
+      padding: 14px 16px;
+      border: 1px solid #e7dfcf;
+      border-radius: 12px;
+      background: #faf6ee;
+    }
+
+    .summary-item strong {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .summary-item span {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .scenario {
+      margin-top: 28px;
+    }
+
+    .scenario-title {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .badge-th {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .badge-kind {
+      background: var(--good-soft);
+      color: var(--good);
+    }
+
+    .group-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    .group-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px 18px 16px;
+    }
+
+    .cluster-list {
+      margin: 12px 0 0;
+      padding-left: 18px;
+    }
+
+    .cluster-list li {
+      margin: 6px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #ece4d7;
+      text-align: left;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8f3ea;
+      font-weight: 700;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .mono {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Thermal Clustering Summary</h1>
+    <p class="lead">
+      열 계량기 9개를 냉방 7개, 난방 2개로 나눈 뒤, 기존 대시보드
+      <span class="mono">outputs/raw_eda/correlation/analysis/thermal_meter_relationship_dashboard.html</span>
+      에 들어있는 상관행렬을 기준으로 군집을 정리한 문서입니다.
+      군집 규칙은 전기 대표 계량기 선정 때와 동일하게 <span class="mono">Complete Linkage</span>를 사용했습니다.
+    </p>
+
+    <div class="panel">
+      <h2>공통 기준</h2>
+      <p>- 분리 기준: <span class="mono">Cooling / Heating</span></p>
+      <p>- 군집 규칙: <span class="mono">Complete Linkage</span> (군집 내부 모든 pair가 threshold 이상이어야 묶임)</p>
+      <p>- 열 대시보드의 <span class="mono">overall</span>: <span class="mono">mean(|corr(P)|, |corr(qv)|, |corr(Tdiff)|)</span></p>
+      <p>- <span class="mono">Ta</span>는 모든 meter에 동일한 외기 시계열이라 meter-to-meter heatmap 계산에서는 제외된 상태입니다.</p>
+
+      <div class="summary-grid">
+        <div class="summary-item">
+          <strong>Cooling 계량기</strong>
+          <span class="mono">V.K21, H1.K11, H1.K12, H1.K14, H1.K15, H1.K16, H2.K21</span>
+        </div>
+        <div class="summary-item">
+          <strong>Heating 계량기</strong>
+          <span class="mono">H1.W11, H1.W12</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="scenario">
+      <div class="scenario-title">
+        <h2>1. overall 기준 0.7</h2>
+        <span class="badge badge-kind">Feature: overall</span>
+        <span class="badge badge-th">Threshold: 0.7</span>
+      </div>
+      <div class="group-grid">
+        <div class="group-card">
+          <h3>Cooling</h3>
+          <p>군집 없음. 모든 계량기가 단독으로 남았습니다.</p>
+          <ul class="cluster-list">
+            <li>`H1.K11`</li>
+            <li>`H1.K12`</li>
+            <li>`H1.K14`</li>
+            <li>`H1.K15`</li>
+            <li>`H1.K16`</li>
+            <li>`H2.K21`</li>
+            <li>`V.K21`</li>
+          </ul>
+          <table>
+            <thead><tr><th>0.7 이상 pair</th><th>값</th></tr></thead>
+            <tbody>
+              <tr><td>없음</td><td>-</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="group-card">
+          <h3>Heating</h3>
+          <p>군집 없음. 두 계량기 모두 단독입니다.</p>
+          <ul class="cluster-list">
+            <li>`H1.W11`</li>
+            <li>`H1.W12`</li>
+          </ul>
+          <table>
+            <thead><tr><th>0.7 이상 pair</th><th>값</th></tr></thead>
+            <tbody>
+              <tr><td>없음</td><td>-</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="scenario">
+      <div class="scenario-title">
+        <h2>2. P 기준 0.7</h2>
+        <span class="badge badge-kind">Feature: P</span>
+        <span class="badge badge-th">Threshold: 0.7</span>
+      </div>
+      <div class="group-grid">
+        <div class="group-card">
+          <h3>Cooling</h3>
+          <p>냉방에서는 두 개의 군집이 생겼고, `H1.K12`, `H1.K16`은 단독으로 남았습니다.</p>
+          <ul class="cluster-list">
+            <li>`[V.K21, H1.K14, H2.K21]` 대표: `H1.K14` (군집 내 평균 `0.8558`)</li>
+            <li>`[H1.K11, H1.K15]` 대표: `H1.K11` (동점 `0.7681`)</li>
+            <li>`[H1.K12]` 단독</li>
+            <li>`[H1.K16]` 단독</li>
+          </ul>
+          <table>
+            <thead><tr><th>0.7 이상 pair</th><th>값</th></tr></thead>
+            <tbody>
+              <tr><td>`H1.K14 - H2.K21`</td><td>0.9746</td></tr>
+              <tr><td>`H1.K11 - H1.K15`</td><td>0.7681</td></tr>
+              <tr><td>`V.K21 - H1.K14`</td><td>0.7371</td></tr>
+              <tr><td>`V.K21 - H2.K21`</td><td>0.7188</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="group-card">
+          <h3>Heating</h3>
+          <p>난방은 `H1.W11`, `H1.W12`가 하나의 군집으로 묶입니다.</p>
+          <ul class="cluster-list">
+            <li>`[H1.W11, H1.W12]` 대표: `H1.W11` (동점 `0.7678`)</li>
+          </ul>
+          <table>
+            <thead><tr><th>0.7 이상 pair</th><th>값</th></tr></thead>
+            <tbody>
+              <tr><td>`H1.W11 - H1.W12`</td><td>0.7678</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="scenario">
+      <div class="scenario-title">
+        <h2>3. overall 기준 0.6</h2>
+        <span class="badge badge-kind">Feature: overall</span>
+        <span class="badge badge-th">Threshold: 0.6</span>
+      </div>
+      <div class="group-grid">
+        <div class="group-card">
+          <h3>Cooling</h3>
+          <p>`overall 0.7`에서는 없던 군집이 하나 생기지만, 여전히 매우 제한적입니다.</p>
+          <ul class="cluster-list">
+            <li>`[H1.K14, H2.K21]` 대표: `H1.K14` (동점 `0.6180`)</li>
+            <li>`[H1.K11]` 단독</li>
+            <li>`[H1.K12]` 단독</li>
+            <li>`[H1.K15]` 단독</li>
+            <li>`[H1.K16]` 단독</li>
+            <li>`[V.K21]` 단독</li>
+          </ul>
+          <table>
+            <thead><tr><th>0.6 이상 pair</th><th>값</th></tr></thead>
+            <tbody>
+              <tr><td>`H1.K14 - H2.K21`</td><td>0.6180</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="group-card">
+          <h3>Heating</h3>
+          <p>난방은 `overall 0.6`에서도 군집이 없습니다.</p>
+          <ul class="cluster-list">
+            <li>`[H1.W11]` 단독</li>
+            <li>`[H1.W12]` 단독</li>
+          </ul>
+          <table>
+            <thead><tr><th>0.6 이상 pair</th><th>값</th></tr></thead>
+            <tbody>
+              <tr><td>없음</td><td>-</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="panel">
+      <h2>짧은 해석</h2>
+      <p>- 열 계량기는 `overall` 기준으로 보면 전기보다 훨씬 군집성이 약합니다.</p>
+      <p>- `P` 기준으로는 냉방과 난방 모두 일부 군집이 보이지만, `overall`로 확장하면 `qv`, `Tdiff` 차이 때문에 군집이 쉽게 깨집니다.</p>
+      <p>- 따라서 열 계량기 대표 선정은 `overall`보다 `P` 기준이 더 실용적일 가능성이 높고, `overall`은 보조 해석용으로 보는 편이 자연스럽습니다.</p>
+    </div>
+  </div>
+</body>
+</html>

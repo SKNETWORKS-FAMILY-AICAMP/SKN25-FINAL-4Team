@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overall Representative Pairwise Details</title>
+  <style>
+    :root {
+      --bg: #f6f4ee;
+      --panel: #fffdf8;
+      --line: #d8d1c2;
+      --text: #1f1c18;
+      --muted: #6a6257;
+      --accent: #a6402a;
+      --accent-soft: #f3d8d1;
+      --good: #245c3f;
+      --good-soft: #dcecdf;
+      --warn: #7b5b16;
+      --warn-soft: #f3ead1;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", sans-serif;
+      background: linear-gradient(180deg, #f2ede2 0%, var(--bg) 100%);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 40px 20px 64px;
+    }
+
+    h1, h2, h3 { margin: 0; line-height: 1.2; }
+    h1 { font-size: 32px; margin-bottom: 12px; }
+    h2 { font-size: 24px; margin: 36px 0 16px; }
+    h3 { font-size: 20px; margin-bottom: 10px; }
+    p { margin: 0 0 10px; }
+
+    .lead {
+      color: var(--muted);
+      max-width: 920px;
+    }
+
+    .panel, .cluster {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(31, 28, 24, 0.05);
+    }
+
+    .panel {
+      padding: 18px 20px;
+      margin-top: 20px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .summary-item {
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #faf6ec;
+      border: 1px solid #e6decb;
+    }
+
+    .summary-item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .summary-item span {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .cluster-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .cluster {
+      padding: 20px;
+    }
+
+    .cluster-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 14px;
+      margin-bottom: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-id { background: var(--accent-soft); color: var(--accent); }
+    .badge-rep { background: var(--good-soft); color: var(--good); }
+    .badge-note { background: var(--warn-soft); color: var(--warn); }
+
+    .members {
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .tables {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #ece5d8;
+      text-align: left;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8f3e8;
+      font-weight: 700;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    .top-row td { background: #f6fbf7; font-weight: 700; }
+    .mono { font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; }
+
+    ul { margin: 8px 0 0; padding-left: 20px; }
+    li { margin: 6px 0; }
+
+    @media (max-width: 900px) {
+      .tables { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Overall Representative Pairwise Details</h1>
+    <p class="lead">
+      기존 대표 계량기 상세 문서를, <strong>배전 담당 계량기 제외</strong> 기준으로 다시 정리한 버전입니다.
+      기준 상 <span class="mono">distribution</span>, <span class="mono">transformer</span> 계량기는 제외했고,
+      배전 계열이라도 현재 하위 계량기가 없는 것으로 본 계량기는 유지했습니다.
+      기준 feature는 기존과 동일하게 <span class="mono">P, U1, PF</span> 기반 <span class="mono">overall</span>입니다.
+    </p>
+
+    <div class="panel">
+      <h2>적용 기준</h2>
+      <p>- 군집 규칙: <span class="mono">overall |corr| &gt;= 0.7</span>, <span class="mono">Complete Linkage</span></p>
+      <p>- 대표 선택: 군집 내부 다른 계량기들과의 평균 <span class="mono">overall corr</span>가 가장 높은 계량기</p>
+      <p>- 제외: 상위 배전/변압기 성격의 <span class="mono">distribution</span>, <span class="mono">transformer</span></p>
+      <p>- 유지: 하위 계량기가 없는 것으로 본 배전 계량기 (<span class="mono">office_dis</span> 계열)</p>
+
+      <div class="summary-grid">
+        <div class="summary-item">
+          <strong>소비 다중 군집</strong>
+          <span>13개</span>
+        </div>
+        <div class="summary-item">
+          <strong>발전 다중 군집</strong>
+          <span>2개</span>
+        </div>
+        <div class="summary-item">
+          <strong>제외로 단독 전환</strong>
+          <span>C10</span>
+        </div>
+        <div class="summary-item">
+          <strong>제외로 삭제</strong>
+          <span>C1, C6, C11, C17</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>제외 영향 요약</h2>
+      <ul>
+        <li><span class="mono">C1</span>: <span class="mono">H1.Z15, H1.Z28, H1.Z29, V.Z81, V.Z82</span> 모두 배전/변압기 성격으로 보고 군집 자체 삭제</li>
+        <li><span class="mono">C4</span>: <span class="mono">H2.T.Z30</span> 제외 후 <span class="mono">H4.Z51-H4.ZE51</span> 2개 군집으로 축소</li>
+        <li><span class="mono">C5</span>: <span class="mono">H2.T.Z32</span> 제외 후 <span class="mono">H2.T.Z31-H2.Z70</span> 2개 군집으로 축소</li>
+        <li><span class="mono">C6</span>: <span class="mono">H2.T.Z33, H2.Z351, H2.Z361</span> 전부 제외되어 삭제</li>
+        <li><span class="mono">C10</span>: <span class="mono">H2.T.Z34</span> 제외 후 <span class="mono">H2.Z61</span> 단독 전환</li>
+        <li><span class="mono">C11</span>: <span class="mono">H2.Z35-H2.Z36</span> 변압기 군집이라 삭제</li>
+        <li><span class="mono">C17</span>: <span class="mono">H3.ZE40-H3.ZE41</span> 디자인 구역 배전으로 보고 제외</li>
+        <li><span class="mono">C18</span>은 <span class="mono">office_dis</span>이지만 현재 하위 계량기 없음 기준으로 유지</li>
+      </ul>
+    </div>
+
+    <h2>소비 군집</h2>
+    <div class="cluster-list">
+      <section class="cluster">
+        <div class="cluster-head">
+          <span class="badge badge-id">C2</span>
+          <span class="badge badge-rep">대표 H2.ZE66</span>
+        </div>
+        <p class="members">구성원: H2.Z66, H2.Z67, H2.ZE66, H2.ZE67</p>
+        <div class="tables">
+          <table>
+            <thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead>
+            <tbody>
+              <tr><td>H2.Z66 - H2.Z67</td><td>0.8188</td></tr>
+              <tr><td>H2.Z66 - H2.ZE66</td><td>0.8578</td></tr>
+              <tr><td>H2.Z66 - H2.ZE67</td><td>0.7657</td></tr>
+              <tr><td>H2.Z67 - H2.ZE66</td><td>0.7602</td></tr>
+              <tr><td>H2.Z67 - H2.ZE67</td><td>0.8453</td></tr>
+              <tr><td>H2.ZE66 - H2.ZE67</td><td>0.8974</td></tr>
+            </tbody>
+          </table>
+          <table>
+            <thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead>
+            <tbody>
+              <tr class="top-row"><td>H2.ZE66</td><td>0.8385</td></tr>
+              <tr><td>H2.ZE67</td><td>0.8361</td></tr>
+              <tr><td>H2.Z66</td><td>0.8141</td></tr>
+              <tr><td>H2.Z67</td><td>0.8081</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="cluster">
+        <div class="cluster-head">
+          <span class="badge badge-id">C3</span>
+          <span class="badge badge-rep">대표 H1.Z12</span>
+        </div>
+        <p class="members">구성원: H1.Z11, H1.Z12, H1.Z17</p>
+        <div class="tables">
+          <table>
+            <thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead>
+            <tbody>
+              <tr><td>H1.Z11 - H1.Z12</td><td>0.9498</td></tr>
+              <tr><td>H1.Z11 - H1.Z17</td><td>0.7041</td></tr>
+              <tr><td>H1.Z12 - H1.Z17</td><td>0.7730</td></tr>
+            </tbody>
+          </table>
+          <table>
+            <thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead>
+            <tbody>
+              <tr class="top-row"><td>H1.Z12</td><td>0.8614</td></tr>
+              <tr><td>H1.Z11</td><td>0.8269</td></tr>
+              <tr><td>H1.Z17</td><td>0.7386</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="cluster">
+        <div class="cluster-head">
+          <span class="badge badge-id">C4*</span>
+          <span class="badge badge-rep">대표 H4.Z51</span>
+          <span class="badge badge-note">H2.T.Z30 제외 후 재계산</span>
+        </div>
+        <p class="members">구성원: H4.Z51, H4.ZE51</p>
+        <div class="tables">
+          <table>
+            <thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead>
+            <tbody><tr><td>H4.Z51 - H4.ZE51</td><td>0.9448</td></tr></tbody>
+          </table>
+          <table>
+            <thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead>
+            <tbody>
+              <tr class="top-row"><td>H4.Z51</td><td>0.9448</td></tr>
+              <tr><td>H4.ZE51</td><td>0.9448</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="cluster">
+        <div class="cluster-head">
+          <span class="badge badge-id">C5*</span>
+          <span class="badge badge-rep">대표 H2.T.Z31</span>
+          <span class="badge badge-note">H2.T.Z32 제외 후 재계산</span>
+        </div>
+        <p class="members">구성원: H2.T.Z31, H2.Z70</p>
+        <div class="tables">
+          <table>
+            <thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead>
+            <tbody><tr><td>H2.T.Z31 - H2.Z70</td><td>0.8211</td></tr></tbody>
+          </table>
+          <table>
+            <thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead>
+            <tbody>
+              <tr class="top-row"><td>H2.T.Z31</td><td>0.8211</td></tr>
+              <tr><td>H2.Z70</td><td>0.8211</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="cluster">
+        <div class="cluster-head"><span class="badge badge-id">C7</span><span class="badge badge-rep">대표 H1.Z13</span></div>
+        <p class="members">구성원: H1.Z13, H1.Z14</p>
+        <div class="tables">
+          <table><thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead><tbody><tr><td>H1.Z13 - H1.Z14</td><td>0.9986</td></tr></tbody></table>
+          <table><thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead><tbody><tr class="top-row"><td>H1.Z13</td><td>0.9986</td></tr><tr><td>H1.Z14</td><td>0.9986</td></tr></tbody></table>
+        </div>
+      </section>
+
+      <section class="cluster">
+        <div class="cluster-head"><span class="badge badge-id">C8</span><span class="badge badge-rep">대표 H1.Z21</span></div>
+        <p class="members">구성원: H1.Z21, H1.Z22</p>
+        <div class="tables">
+          <table><thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead><tbody><tr><td>H1.Z21 - H1.Z22</td><td>0.9704</td></tr></tbody></table>
+          <table><thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead><tbody><tr class="top-row"><td>H1.Z21</td><td>0.9704</td></tr><tr><td>H1.Z22</td><td>0.9704</td></tr></tbody></table>
+        </div>
+      </section>
+
+      <section class="cluster">
+        <div class="cluster-head"><span class="badge badge-id">C9</span><span class="badge badge-rep">대표 H1.Z24</span></div>
+        <p class="members">구성원: H1.Z24, H1.Z25</p>
+        <div class="tables">
+          <table><thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead><tbody><tr><td>H1.Z24 - H1.Z25</td><td>0.9871</td></tr></tbody></table>
+          <table><thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead><tbody><tr class="top-row"><td>H1.Z24</td><td>0.9871</td></tr><tr><td>H1.Z25</td><td>0.9871</td></tr></tbody></table>
+        </div>
+      </section>
+
+      <section class="cluster">
+        <div class="cluster-head"><span class="badge badge-id">C12</span><span class="badge badge-rep">대표 H2.Z62</span></div>
+        <p class="members">구성원: H2.Z62, H2.Z63</p>
+        <div class="tables">
+          <table><thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead><tbody><tr><td>H2.Z62 - H2.Z63</td><td>0.9666</td></tr></tbody></table>
+          <table><thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead><tbody><tr class="top-row"><td>H2.Z62</td><td>0.9666</td></tr><tr><td>H2.Z63</td><td>0.9666</td></tr></tbody></table>
+        </div>
+      </section>
+
+      <section class="cluster">
+        <div class="cluster-head"><span class="badge badge-id">C13</span><span class="badge badge-rep">대표 H2.Z64</span></div>
+        <p class="members">구성원: H2.Z64, H2.ZE64</p>
+        <div class="tables">
+          <table><thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead><tbody><tr><td>H2.Z64 - H2.ZE64</td><td>0.9142</td></tr></tbody></table>
+          <table><thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead><tbody><tr class="top-row"><td>H2.Z64</td><td>0.9142</td></tr><tr><td>H2.ZE64</td><td>0.9142</td></tr></tbody></table>
+        </div>
+      </section>
+
+      <section class="cluster">
+        <div class="cluster-head"><span class="badge badge-id">C14</span><span class="badge badge-rep">대표 H3.Z43</span></div>
+        <p class="members">구성원: H3.Z43, H3.ZE43</p>
+        <div class="tables">
+          <table><thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead><tbody><tr><td>H3.Z43 - H3.ZE43</td><td>0.7379</td></tr></tbody></table>
+          <table><thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead><tbody><tr class="top-row"><td>H3.Z43</td><td>0.7379</td></tr><tr><td>H3.ZE43</td><td>0.7379</td></tr></tbody></table>
+        </div>
+      </section>
+
+      <section class="cluster">
+        <div class="cluster-head"><span class="badge badge-id">C15</span><span class="badge badge-rep">대표 H3.Z44</span></div>
+        <p class="members">구성원: H3.Z44, H3.ZE44</p>
+        <div class="tables">
+          <table><thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead><tbody><tr><td>H3.Z44 - H3.ZE44</td><td>0.7454</td></tr></tbody></table>
+          <table><thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead><tbody><tr class="top-row"><td>H3.Z44</td><td>0.7454</td></tr><tr><td>H3.ZE44</td><td>0.7454</td></tr></tbody></table>
+        </div>
+      </section>
+
+      <section class="cluster">
+        <div class="cluster-head"><span class="badge badge-id">C16</span><span class="badge badge-rep">대표 H3.Z48</span></div>
+        <p class="members">구성원: H3.Z48, H3.Z49</p>
+        <div class="tables">
+          <table><thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead><tbody><tr><td>H3.Z48 - H3.Z49</td><td>0.7014</td></tr></tbody></table>
+          <table><thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead><tbody><tr class="top-row"><td>H3.Z48</td><td>0.7014</td></tr><tr><td>H3.Z49</td><td>0.7014</td></tr></tbody></table>
+        </div>
+      </section>
+
+      <section class="cluster">
+        <div class="cluster-head">
+          <span class="badge badge-id">C18</span>
+          <span class="badge badge-rep">대표 H4.Z50</span>
+          <span class="badge badge-note">하위 계량기 없음 기준으로 유지</span>
+        </div>
+        <p class="members">구성원: H4.Z50, H4.ZE50</p>
+        <div class="tables">
+          <table><thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead><tbody><tr><td>H4.Z50 - H4.ZE50</td><td>0.8498</td></tr></tbody></table>
+          <table><thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead><tbody><tr class="top-row"><td>H4.Z50</td><td>0.8498</td></tr><tr><td>H4.ZE50</td><td>0.8498</td></tr></tbody></table>
+        </div>
+      </section>
+    </div>
+
+    <h2>발전 군집</h2>
+    <div class="cluster-list">
+      <section class="cluster">
+        <div class="cluster-head"><span class="badge badge-id">P1</span><span class="badge badge-rep">대표 V.ZE84</span></div>
+        <p class="members">구성원: H1.Z310, H2.Z311, H3.Z312, V.Z84, V.ZE84</p>
+        <div class="tables">
+          <table>
+            <thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead>
+            <tbody>
+              <tr><td>H1.Z310 - H2.Z311</td><td>0.9305</td></tr>
+              <tr><td>H1.Z310 - H3.Z312</td><td>0.8973</td></tr>
+              <tr><td>H1.Z310 - V.Z84</td><td>0.9728</td></tr>
+              <tr><td>H1.Z310 - V.ZE84</td><td>0.9887</td></tr>
+              <tr><td>H2.Z311 - H3.Z312</td><td>0.9700</td></tr>
+              <tr><td>H2.Z311 - V.Z84</td><td>0.9118</td></tr>
+              <tr><td>H2.Z311 - V.ZE84</td><td>0.9446</td></tr>
+              <tr><td>H3.Z312 - V.Z84</td><td>0.8559</td></tr>
+              <tr><td>H3.Z312 - V.ZE84</td><td>0.9290</td></tr>
+              <tr><td>V.Z84 - V.ZE84</td><td>0.9742</td></tr>
+            </tbody>
+          </table>
+          <table>
+            <thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead>
+            <tbody>
+              <tr class="top-row"><td>V.ZE84</td><td>0.9591</td></tr>
+              <tr><td>H1.Z310</td><td>0.9473</td></tr>
+              <tr><td>H2.Z311</td><td>0.9392</td></tr>
+              <tr><td>V.Z84</td><td>0.9287</td></tr>
+              <tr><td>H3.Z312</td><td>0.9131</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="cluster">
+        <div class="cluster-head"><span class="badge badge-id">P2</span><span class="badge badge-rep">대표 H1.Z20</span></div>
+        <p class="members">구성원: H1.Z20, H1.ZE20</p>
+        <div class="tables">
+          <table><thead><tr><th>Pairwise overall corr</th><th>값</th></tr></thead><tbody><tr><td>H1.Z20 - H1.ZE20</td><td>0.9759</td></tr></tbody></table>
+          <table><thead><tr><th>계량기</th><th>군집 내 평균 overall corr</th></tr></thead><tbody><tr class="top-row"><td>H1.Z20</td><td>0.9759</td></tr><tr><td>H1.ZE20</td><td>0.9759</td></tr></tbody></table>
+        </div>
+      </section>
+    </div>
+  </div>
+</body>
+</html>

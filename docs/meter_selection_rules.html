@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이상치 분석을 위한 계량기 및 변수 선택 기준 — 검증 보고서</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --border: #2a2d3a;
+    --text: #e1e4eb;
+    --text-secondary: #8b8fa3;
+    --accent: #4da6ff;
+    --green: #2ea043;
+    --yellow: #d29922;
+    --red: #f85149;
+    --purple: #a371f7;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 24px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1 { font-size: 1.8rem; margin-bottom: 4px; }
+  .subtitle { color: var(--text-secondary); margin-bottom: 32px; }
+  h2 {
+    font-size: 1.3rem;
+    margin: 32px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  h3 { font-size: 1.1rem; margin: 20px 0 10px; }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .card .label { color: var(--text-secondary); font-size: 0.85rem; }
+  .card .value { font-size: 2rem; font-weight: 700; }
+  .card .value.elec { color: var(--accent); }
+  .card .value.therm { color: var(--green); }
+  .card .value.parent { color: var(--yellow); }
+  .card .value.excl { color: var(--red); }
+
+  .rule-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .rule-box .rule-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+  .rule-box .rule-title.thermal { color: var(--green); }
+  .rule-box ul { list-style: none; padding-left: 0; }
+  .rule-box li { margin-bottom: 6px; font-size: 0.95rem; }
+  .rule-box li::before { content: "▸ "; color: var(--text-secondary); }
+
+  .hierarchy-tree {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: var(--card);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  tr:hover { background: rgba(77,166,255,0.05); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .badge.leaf { background: rgba(46,160,67,0.2); color: var(--green); }
+  .badge.parent { background: rgba(210,153,34,0.2); color: var(--yellow); }
+  .badge.excluded { background: rgba(248,81,73,0.2); color: var(--red); }
+  .badge.pass { background: rgba(46,160,67,0.15); color: var(--green); }
+  .badge.warn { background: rgba(210,153,34,0.15); color: var(--yellow); }
+  .badge.fail { background: rgba(248,81,73,0.15); color: var(--red); }
+
+  .eda-reference {
+    background: var(--card);
+    border-left: 3px solid var(--purple);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .eda-reference .ref-title { color: var(--purple); font-weight: 600; margin-bottom: 8px; }
+
+  .verdict {
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  .verdict.pass { background: rgba(46,160,67,0.1); border: 1px solid rgba(46,160,67,0.3); color: var(--green); }
+  .verdict.review { background: rgba(210,153,34,0.1); border: 1px solid rgba(210,153,34,0.3); color: var(--yellow); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .correction-box {
+    background: rgba(248,81,73,0.08);
+    border: 1px solid rgba(248,81,73,0.3);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .correction-box .corr-title { color: var(--red); font-weight: 600; margin-bottom: 8px; }
+
+  footer {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>📋 이상치 분석을 위한 계량기 및 변수 선택 기준</h1>
+<p class="subtitle">검증 보고서 · 생성일: 2026-05-21 · 근거: Fig 1 계통도 + Fig 2 계통도 + DB + Google Drive EDA</p>
+
+<!-- Summary Cards -->
+<div class="summary-cards">
+  <div class="card">
+    <div class="label">전기 Leaf 계량기</div>
+    <div class="value elec">65</div>
+  </div>
+  <div class="card">
+    <div class="label">전기 Parent (제외)</div>
+    <div class="value parent">6</div>
+  </div>
+  <div class="card">
+    <div class="label">열·냉방 Leaf 계량기</div>
+    <div class="value therm">6</div>
+  </div>
+  <div class="card">
+    <div class="label">열·냉방 Parent (제외)</div>
+    <div class="value excl">3</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- RULE 1 -->
+<!-- ============================================================ -->
+<h2>⚡ Rule 1: 전기 계량기</h2>
+
+<div class="rule-box">
+  <div class="rule-title">Rule 정의</div>
+  <ul>
+    <li>계통도(Fig 1)에서 <strong>가장 최하단 node(leaf)</strong>에 해당하는 전기 계량기만 선택</li>
+    <li>변수: <strong>P (유효전력), U1 (전압), PF (역률)</strong> — 3변수로 이상치 탐지 모형 구성</li>
+    <li>H1.Z29 등 하위 계량기가 존재하는 parent node는 분석에서 제외</li>
+  </ul>
+</div>
+
+<h3>1.1 전기 계층 구조 (Fig 1 기반)</h3>
+<div class="hierarchy-tree">
+H1.Z29 ─┬─ H1.Z17 (leaf, Janitza UMG 96 RM-E)
+        └─ H1.Z28 ─┬─ H1.Z26 (leaf, Janitza UMG 96 RM-E)
+                    └─ H1.Z27 (leaf, Janitza UMG 96 RM-E)
+
+H1.Z15 ─┬─ H1.Z10~Z14, Z16~Z19, Z21~Z25 (14개 leaf, ABB B24 / Janitza)
+        └─ (Emission Lab 분전반)
+
+H2.T.Z30 ─┬─ H2.T.Z31, Z32 (2개 leaf, Office/Ventilation)
+           └─ H2.Z61~Z70 (10개 leaf, Server/Local cooling/Ventilation)
+
+H2.T.Z33 ─── H3.Z40~Z49, Z71 (11개 leaf, Design Studio 분배)
+
+H2.T.Z34 ─── H2.ZE74 (leaf, Workshop)
+
+독립 Leaf ─── H1.Z20, H1.Z310, H1.ZE20, H2.Z311, H2.Z35~Z36 (Grid Tr.), Z351, Z361,
+               H2.ZE64~ZE67, H3.Z312, H3.ZE40~ZE44, H4.Z50~Z51, H4.ZE50~ZE51,
+               V.Z81~Z82, V.Z84, V.ZE84
+</div>
+
+<h3>1.2 Parent Node (분석 제외)</h3>
+<table>
+  <tr><th>계량기 ID</th><th>제조사</th><th>모델</th><th>하위 Leaf 수</th><th>제외 사유</th></tr>
+  <tr><td>H1.Z15</td><td>Janitza</td><td>UMG 96 RM-E</td><td>14</td><td>Emission Lab 분전반 — 하위 14개 계량기 공급</td></tr>
+  <tr><td>H1.Z28</td><td>Janitza</td><td>UMG 96 RM-E</td><td>2</td><td>H1.Z26, Z27 공급</td></tr>
+  <tr><td>H1.Z29</td><td>Janitza</td><td>UMG 96 RM-E</td><td>3</td><td>H1.Z17, H1.Z28 공급 — 최상위</td></tr>
+  <tr><td>H2.T.Z30</td><td>ABB</td><td>B24</td><td>12</td><td>Office/Distribution 공급</td></tr>
+  <tr><td>H2.T.Z33</td><td>ABB</td><td>B24</td><td>11</td><td>Design Studio 전체 공급</td></tr>
+  <tr><td>H2.T.Z34</td><td>ABB</td><td>B24</td><td>1</td><td>Workshop 공급</td></tr>
+</table>
+
+<h3>1.3 변수 선택 검증 (EDA FEATURE_SELECTION.md)</h3>
+<div class="eda-reference">
+  <div class="ref-title">📎 참고: FEATURE_SELECTION.md — 6year 평균 상관계수 Complete Linkage 클러스터링</div>
+  <table>
+    <tr><th>클러스터</th><th>멤버 변수</th><th>대표 변수</th><th>Rule 1 선택</th><th>일치</th></tr>
+    <tr><td>전력/전류</td><td>P, P1, P2, P3, I1, I2, I3, Q</td><td><strong>P</strong></td><td>✅ P</td><td><span class="badge pass">일치</span></td></tr>
+    <tr><td>전압</td><td>U1, U2, U3</td><td><strong>U1</strong></td><td>✅ U1</td><td><span class="badge pass">일치</span></td></tr>
+    <tr><td>역률</td><td>PF, PF1 (PF2/PF3 분리)</td><td><strong>PF</strong></td><td>✅ PF</td><td><span class="badge pass">일치</span></td></tr>
+    <tr><td>주파수</td><td>f (단독)</td><td>f</td><td>❌ 제외</td><td><span class="badge warn">검토</span></td></tr>
+    <tr><td>누적량</td><td>W, W1~W3, WQ 계열</td><td>—</td><td>❌ 제외</td><td><span class="badge pass">일치</span></td></tr>
+    <tr><td>외부 변수</td><td>Ta, Igm</td><td>—</td><td>❌ 제외</td><td><span class="badge pass">일치 (Ta↔P=0.190, Igm↔P=0.211)</span></td></tr>
+  </table>
+</div>
+
+<div class="verdict pass">
+  ✅ Rule 1 적절 — P·U1·PF 3변수 체계는 EDA 클러스터링 결과와 완전히 일치
+</div>
+
+<div class="verdict review">
+  ⚠️ 검토 필요: f (주파수) — 단독 클러스터로 독립적 이상 신호. 47~53Hz 이탈은 심각한 전력 품질 문제 탐지 가능. 모형 복잡도 vs 정보 이득 trade-off 판단 필요
+</div>
+
+<!-- ============================================================ -->
+<!-- RULE 2 -->
+<!-- ============================================================ -->
+<h2>🔥 Rule 2: 열 및 냉방 계량기</h2>
+
+<div class="rule-box">
+  <div class="rule-title thermal">Rule 정의</div>
+  <ul>
+    <li>변수: <strong>P (열량), Tdiff (온도차), qv (유량)</strong> — 3변수로 이상치 탐지 모형 구성</li>
+    <li>P, Tdiff, qv 간 평균 |corr| ≥ 0.7인 계량기가 존재할 경우:
+      <ul>
+        <li><strong>Trigger 발동</strong> → 전기 계량기와 동일하게 <strong>가장 최하단 node(leaf)만 선택</strong></li>
+        <li>해당 계량기와 평균 |corr| ≥ 0.7인 계량기는 <strong>분석에서 제외</strong></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<h3>2.1 열·냉방 계층 구조 (Fig 2 기반)</h3>
+<div class="hierarchy-tree">
+Cooling (냉방):
+  V.K21 ─┬─ H1.K11 ─── H1.K15 (leaf, HVAC 3)   ← H1.K11: parent, H1.K15: leaf
+         ├─ H1.K12 (leaf, HVAC 1/2)
+         ├─ H1.K14 (leaf, Cooling to office)
+         └─ H1.K16 (leaf, Server room O1)
+
+Heating (난방):
+  H1.W11 ─── H1.W12 (leaf, CHP heat generation)  ← H1.W11: parent
+</div>
+
+<h3>2.2 P·Tdiff·qv Internal Correlation (DB 2023년)</h3>
+<table>
+  <tr><th>계량기</th><th>유형</th><th>P-Tdiff</th><th>P-qv</th><th>Tdiff-qv</th><th>mean|corr|</th><th>판정</th></tr>
+  <tr style="background: rgba(248,81,73,0.08)">
+    <td><strong>H1.W12</strong></td><td>CHP Heat</td><td><strong>0.796</strong></td><td><strong>0.895</strong></td><td>0.587</td><td><strong>0.759</strong></td><td><span class="badge fail">Trigger 발동</span></td></tr>
+  <tr><td>H1.K11</td><td>HVAC 3/5</td><td>-0.361</td><td>0.051</td><td>0.550</td><td>0.321</td><td><span class="badge pass">통과</span></td></tr>
+  <tr><td>H1.K12</td><td>HVAC 1/2</td><td>-0.045</td><td>0.330</td><td>0.016</td><td>0.131</td><td><span class="badge pass">통과</span></td></tr>
+  <tr><td>H1.K14</td><td>Cooling→Office</td><td>-0.441</td><td>0.297</td><td>0.325</td><td>0.354</td><td><span class="badge pass">통과</span></td></tr>
+  <tr><td>H1.K15</td><td>HVAC 3</td><td>-0.102</td><td>0.196</td><td>-0.010</td><td>0.103</td><td><span class="badge pass">통과</span></td></tr>
+  <tr><td>H1.K16</td><td>Server O1</td><td>-0.112</td><td>0.041</td><td>0.063</td><td>0.072</td><td><span class="badge pass">통과</span></td></tr>
+  <tr><td>H2.K21</td><td>HVAC Office</td><td>-0.712</td><td>0.672</td><td>-0.348</td><td>0.577</td><td><span class="badge pass">통과</span></td></tr>
+  <tr><td>V.K21</td><td>Main Cooling</td><td>-0.446</td><td>0.272</td><td>0.223</td><td>0.314</td><td><span class="badge pass">통과</span></td></tr>
+</table>
+
+<h3>2.3 Rule 2 적용 순서</h3>
+<table>
+  <tr><th>Step</th><th>내용</th><th>적용</th></tr>
+  <tr>
+    <td>① Trigger</td>
+    <td>H1.W12 internal |corr(P,Tdiff,qv)| = 0.759 ≥ 0.7</td>
+    <td><span class="badge fail">발동</span></td>
+  </tr>
+  <tr>
+    <td>② leaf-only</td>
+    <td>전기 계량기처럼 <strong>최하단 node(leaf)</strong>만 선택</td>
+    <td>H1.W12 = leaf → <span class="badge pass">유지</span><br>H1.W11 = parent → <span class="badge fail">제외</span></td>
+  </tr>
+  <tr>
+    <td>③ cross-corr 제거</td>
+    <td>H1.W12와 평균 |corr| ≥ 0.7인 계량기 제외</td>
+    <td>H1.W11과 cross-corr 확인 필요</td>
+  </tr>
+</table>
+
+<div class="correction-box">
+  <div class="corr-title">🔧 수정 내역 (2026-05-21)</div>
+  <p>초안에서는 "H1.W12 internal corr ≥ 0.7 → H1.W12 자체 제외"로 잘못 적용함.<br>
+  올바른 해석: internal corr ≥ 0.7은 <strong>leaf-only 규칙의 Trigger</strong>일 뿐이며, 제거 대상은 <strong>parent(H1.W11)</strong>이지 leaf(H1.W12)가 아님.</p>
+</div>
+
+<h3>2.4 변수 선택 검증 (EDA FEATURE_SELECTION.md)</h3>
+<div class="eda-reference">
+  <div class="ref-title">📎 참고: FEATURE_SELECTION.md — 열계량기 클러스터링</div>
+  <table>
+    <tr><th>변수</th><th>EDA 결론</th><th>Rule 2 선택</th><th>일치</th></tr>
+    <tr><td>P (열량)</td><td>단독 cluster, 핵심 변수</td><td>✅ P</td><td><span class="badge pass">일치</span></td></tr>
+    <tr><td>Tdiff</td><td>이상탐지 핵심 변수 (냉난방 공통)</td><td>✅ Tdiff</td><td><span class="badge pass">일치</span></td></tr>
+    <tr><td>qv (유량)</td><td>단독 cluster, 유량 센서 고장 탐지</td><td>✅ qv</td><td><span class="badge pass">일치</span></td></tr>
+    <tr><td>Ta (외기온도)</td><td>Cooling: 0.453, Heating: 0.692 → <strong>유지 권장</strong></td><td>❌ 제외</td><td><span class="badge warn">검토</span></td></tr>
+    <tr><td>Tvl, Trl</td><td>Tdiff = Tvl-Trl로 대체 → 제거</td><td>❌ 제외</td><td><span class="badge pass">일치</span></td></tr>
+    <tr><td>W, V (누적)</td><td>누적값, 단조증가 → 제거</td><td>❌ 제외</td><td><span class="badge pass">일치</span></td></tr>
+    <tr><td>Igm</td><td>max 0.33 → 제거</td><td>❌ 제외</td><td><span class="badge pass">일치</span></td></tr>
+  </table>
+</div>
+
+<div class="verdict pass">
+  ✅ Rule 2 적절 — P·Tdiff·qv 3변수 + corr→leaf-only 체계는 EDA 결과와 일치. 수정 후 H1.W12(leaf) 유지, H1.W11(parent) 제외로 계층 논리 정합성 확보
+</div>
+
+<div class="verdict review">
+  ⚠️ 검토 필요: Ta (외기온도) — 난방에서 Ta↔P=0.692로 높은 설명력. 열부하 예측 정확도 향상 가능성. 포함 여부 팀 논의 권장
+</div>
+
+<!-- ============================================================ -->
+<!-- FINAL SUMMARY -->
+<!-- ============================================================ -->
+<h2>📊 최종 선택 목록</h2>
+
+<div class="grid-2">
+<div>
+<h3>⚡ 전기 계량기 (65개 leaf)</h3>
+<div class="rule-box">
+  <div class="rule-title">변수: P, U1, PF (3개)</div>
+  <p style="font-size:0.85rem; color: var(--text-secondary);">
+    H1.Z10~Z27, H1.Z20, H1.Z310, H1.ZE20,<br>
+    H2.T.Z31~Z32, H2.Z35~Z36, Z351, Z361,<br>
+    H2.Z61~Z70, H2.ZE64~ZE67, H2.ZE74,<br>
+    H2.Z311,<br>
+    H3.Z40~Z49, Z71, H3.Z312,<br>
+    H3.ZE40~ZE41, ZE43~ZE44,<br>
+    H4.Z50~Z51, ZE50~ZE51,<br>
+    V.Z81~Z82, V.Z84, V.ZE84
+  </p>
+</div>
+</div>
+
+<div>
+<h3>🔥 열·냉방 계량기 (6개 leaf)</h3>
+<div class="rule-box">
+  <div class="rule-title thermal">변수: P, Tdiff, qv (3개)</div>
+  <p style="font-size:0.85rem; color: var(--text-secondary);">
+    <strong style="color:#d29922">H1.W12 (CHP Heat, Trigger 발동)</strong><br>
+    H1.K12 (HVAC 1/2)<br>
+    H1.K14 (Cooling→Office)<br>
+    H1.K15 (HVAC 3)<br>
+    H1.K16 (Server O1)<br>
+    H2.K21 (HVAC Office)
+  </p>
+</div>
+</div>
+</div>
+
+<h3>❌ 제외 목록</h3>
+<table>
+  <tr><th>계량기</th><th>유형</th><th>제외 사유</th></tr>
+  <tr><td>H1.Z15</td><td>전기 Parent</td><td>Emission Lab 분전반 (하위 14개 leaf)</td></tr>
+  <tr><td>H1.Z28</td><td>전기 Parent</td><td>H1.Z26, Z27 공급</td></tr>
+  <tr><td>H1.Z29</td><td>전기 Parent</td><td>최상위 분전반 (H1.Z17, Z28 공급)</td></tr>
+  <tr><td>H2.T.Z30</td><td>전기 Parent</td><td>Office/Distribution (하위 12개 leaf)</td></tr>
+  <tr><td>H2.T.Z33</td><td>전기 Parent</td><td>Design Studio (하위 11개 leaf)</td></tr>
+  <tr><td>H2.T.Z34</td><td>전기 Parent</td><td>Workshop (하위 1개 leaf)</td></tr>
+  <tr><td>H1.K11</td><td>열 Parent</td><td>HVAC 3/5 분배 — H1.K15 공급</td></tr>
+  <tr style="color:var(--yellow); font-weight:600"><td>H1.W11</td><td>열 Parent</td><td>Total heat — H1.W12 공급. Rule 2 leaf-only 규칙 적용</td></tr>
+  <tr><td>V.K21</td><td>열 Parent</td><td>Main cooling 분배</td></tr>
+</table>
+
+<footer>
+  근거 데이터 출처: Fig 1 전기 계통도 + Fig 2 냉난방 계통도 + DB (ems.meter_definition, 2023년 1시간 데이터) + Google Drive EDA (FEATURE_SELECTION.md, 냉난방 계량기 EDA 종합 분석.md)
+</footer>
+
+</div>
+</body>
+</html>

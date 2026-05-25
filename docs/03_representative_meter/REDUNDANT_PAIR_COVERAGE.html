@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Redundant Pair Coverage</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f1ea;
+      --panel: #fffdfa;
+      --line: #d9cfbf;
+      --text: #231c14;
+      --muted: #6d6256;
+      --accent: #8f5a2a;
+    }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #f7f2ea 0%, #efe3d3 100%);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 1680px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .panel {
+      background: rgba(255, 253, 250, 0.96);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 16px 44px rgba(72, 53, 26, 0.08);
+      padding: 22px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    p {
+      margin: 0 0 10px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .summary {
+      margin: 14px 0 18px;
+      font-size: 14px;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      background: var(--panel);
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f1e4d1;
+      font-weight: 700;
+    }
+    tbody tr:nth-child(even) {
+      background: #fcf8f2;
+    }
+    code {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+    }
+    .note {
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    @media (max-width: 1100px) {
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        min-width: 1200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <h1>Redundant Pair Coverage</h1>
+      <p>
+        `config/meter_metadata.json`의 `redundant_pair` 기준 14쌍을 대상으로,
+        DB `ems.cr_measurement_1h`에서 `measurement='P'` 기준 시작일, 종료일, 시점 수를 정리했습니다.
+      </p>
+      <p>
+        시간은 DB 원본 UTC timestamp 기준입니다. 시점 수는 `COUNT(DISTINCT ts)` 기준입니다.
+      </p>
+      <div class="summary">총 14쌍 / 28개 meter</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Pair</th>
+              <th>Meter A</th>
+              <th>A 시작</th>
+              <th>A 종료</th>
+              <th>A 시점 수</th>
+              <th>Meter B</th>
+              <th>B 시작</th>
+              <th>B 종료</th>
+              <th>B 시점 수</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><code>H1.Z20</code></td><td><code>2017-12-31 23:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>52,584</td><td><code>H1.ZE20</code></td><td><code>2022-11-30 08:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>9,519</td></tr>
+            <tr><td>2</td><td><code>H2.Z35</code></td><td><code>2017-12-31 23:00:00+00:00</code></td><td><code>2020-09-09 11:00:00+00:00</code></td><td>23,581</td><td><code>H2.Z351</code></td><td><code>2020-09-15 10:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>28,861</td></tr>
+            <tr><td>3</td><td><code>H2.Z36</code></td><td><code>2017-12-31 23:00:00+00:00</code></td><td><code>2020-09-09 11:00:00+00:00</code></td><td>23,581</td><td><code>H2.Z361</code></td><td><code>2020-09-15 10:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>28,861</td></tr>
+            <tr><td>4</td><td><code>H2.Z64</code></td><td><code>2017-12-31 23:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>52,584</td><td><code>H2.ZE64</code></td><td><code>2022-03-22 14:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>15,585</td></tr>
+            <tr><td>5</td><td><code>H2.Z65</code></td><td><code>2017-12-31 23:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>52,584</td><td><code>H2.ZE65</code></td><td><code>2022-03-22 14:00:00+00:00</code></td><td><code>2023-12-09 21:00:00+00:00</code></td><td>15,056</td></tr>
+            <tr><td>6</td><td><code>H2.Z66</code></td><td><code>2017-12-31 23:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>52,584</td><td><code>H2.ZE66</code></td><td><code>2022-03-22 14:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>15,585</td></tr>
+            <tr><td>7</td><td><code>H2.Z67</code></td><td><code>2017-12-31 23:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>52,584</td><td><code>H2.ZE67</code></td><td><code>2022-03-22 14:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>15,585</td></tr>
+            <tr><td>8</td><td><code>H3.Z40</code></td><td><code>2018-01-31 23:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>51,840</td><td><code>H3.ZE40</code></td><td><code>2022-03-18 09:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>15,686</td></tr>
+            <tr><td>9</td><td><code>H3.Z41</code></td><td><code>2018-01-31 23:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>51,840</td><td><code>H3.ZE41</code></td><td><code>2022-03-18 09:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>15,686</td></tr>
+            <tr><td>10</td><td><code>H3.Z43</code></td><td><code>2018-01-31 23:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>51,840</td><td><code>H3.ZE43</code></td><td><code>2022-03-18 09:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>15,686</td></tr>
+            <tr><td>11</td><td><code>H3.Z44</code></td><td><code>2018-01-31 23:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>51,840</td><td><code>H3.ZE44</code></td><td><code>2022-03-18 09:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>15,686</td></tr>
+            <tr><td>12</td><td><code>H4.Z50</code></td><td><code>2017-12-31 23:00:00+00:00</code></td><td><code>2023-06-23 13:00:00+00:00</code></td><td>47,991</td><td><code>H4.ZE50</code></td><td><code>2022-03-22 11:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>15,588</td></tr>
+            <tr><td>13</td><td><code>H4.Z51</code></td><td><code>2017-12-31 23:00:00+00:00</code></td><td><code>2023-06-23 13:00:00+00:00</code></td><td>47,991</td><td><code>H4.ZE51</code></td><td><code>2022-03-22 11:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>15,588</td></tr>
+            <tr><td>14</td><td><code>V.Z84</code></td><td><code>2019-06-28 22:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>39,529</td><td><code>V.ZE84</code></td><td><code>2022-11-23 15:00:00+00:00</code></td><td><code>2023-12-31 22:00:00+00:00</code></td><td>9,680</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">
+        해석 메모:
+        `H2.Z64~67`과 `H2.Z66` 계열 메인 meter는 2018~2023 구간을 거의 full로 가지지만,
+        redundant meter(`ZE*`)는 대체로 2022년 이후부터 시작합니다.
+        `H2.Z35/H2.Z36`은 메인과 redundant가 중간 시점에 교체된 형태이고,
+        `H4.Z50/H4.Z51`은 메인 meter 종료가 2023-06-23에서 끊깁니다.
+      </div>
+    </div>
+  </div>
+</body>
+</html>
