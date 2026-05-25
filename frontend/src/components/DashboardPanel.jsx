@@ -63,7 +63,8 @@ export default function DashboardPanel() {
   const [summary,  setSummary]  = useState([])
   const [recent,   setRecent]   = useState([])
   const [loading,  setLoading]  = useState(true)
-  const [forecast, setForecast] = useState(null)   // null=로딩, {}=실패, {models}=성공
+  const [forecast,  setForecast]  = useState(null)   // null=미실행, {}=실패, {models}=성공
+  const [fcLoading, setFcLoading] = useState(false)
 
   useEffect(() => {
     Promise.allSettled([
@@ -77,12 +78,14 @@ export default function DashboardPanel() {
     }).finally(() => setLoading(false))
   }, [])
 
-  // 예측 프리뷰: 별도 로드 (느릴 수 있어 다른 카드 렌더를 막지 않음)
-  useEffect(() => {
+  // 예측 비교는 4개 모델을 돌려 연산이 무거우므로 버튼 클릭 시에만 실행
+  const loadForecast = () => {
+    setFcLoading(true)
     getForecastCompare(24)
       .then(r => setForecast(r.data?.models ?? {}))
       .catch(() => setForecast({}))
-  }, [])
+      .finally(() => setFcLoading(false))
+  }
 
   // 모델별 24시간 예측 → 인덱스 기준 정렬된 차트 데이터
   const fcValid = forecast
@@ -163,16 +166,25 @@ export default function DashboardPanel() {
               <span style={s.fcBadge}>주력 기능</span>
             </div>
 
-            {forecast === null && (
-              <div style={{ ...sk.bar, height: 220, borderRadius: 8, marginTop: 8 }} />
-            )}
-            {forecast !== null && fcValid.length === 0 && (
+            {fcLoading && (
               <div style={s.fcEmpty}>
-                예측 모델을 학습하면 24시간 수요 예측이 여기에 표시됩니다.<br />
-                <span style={{ color: '#58a6ff' }}>🔮 전력 수요 예측</span> 탭에서 "전체 학습"을 실행하세요.
+                예측 모델 실행 중… (4개 모델 비교 · 최대 2~3분 소요)
+                <div style={{ ...sk.bar, height: 180, borderRadius: 8, marginTop: 12 }} />
               </div>
             )}
-            {fcValid.length > 0 && (
+            {!fcLoading && forecast === null && (
+              <div style={s.fcEmpty}>
+                다중 모델 24시간 수요 예측을 실행합니다. (연산이 무거워 클릭 시 실행)<br />
+                <button style={s.fcRunBtn} onClick={loadForecast}>🔮 24시간 예측 실행</button>
+              </div>
+            )}
+            {!fcLoading && forecast !== null && fcValid.length === 0 && (
+              <div style={s.fcEmpty}>
+                학습된 예측 모델이 없습니다.<br />
+                <span style={{ color: '#58a6ff' }}>🔮 전력 수요 예측</span> 탭에서 "전체 학습"을 먼저 실행하세요.
+              </div>
+            )}
+            {!fcLoading && fcValid.length > 0 && (
               <ResponsiveContainer width="100%" height={240}>
                 <LineChart data={fcData} margin={{ top: 8, right: 24, left: -12, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#21262d" />
@@ -362,4 +374,5 @@ const s = {
   fcHeader:   { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 },
   fcBadge:    { fontSize: 11, fontWeight: 700, color: '#a371f7', background: '#a371f722', borderRadius: 4, padding: '3px 10px', flexShrink: 0 },
   fcEmpty:    { padding: '40px 20px', textAlign: 'center', color: '#8b949e', fontSize: 13, lineHeight: 1.8 },
+  fcRunBtn:   { marginTop: 14, background: '#a371f7', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 700, padding: '10px 22px', cursor: 'pointer' },
 }
