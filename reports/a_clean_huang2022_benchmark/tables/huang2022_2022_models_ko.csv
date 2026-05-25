@@ -1,0 +1,5 @@
+﻿대상,모델군,모델명,상세 설정,학습 표본,2022 RMSE,2023 MAE,2023 RMSE,2023 R²
+중앙 냉방,LSTM,LSTM h32,"seq_len=24, hidden_size=32, layer=1, dropout=0, optimizer=AdamW, lr=0.001, batch_size=256, max_epoch=35, early_stop=5","33,240",6963.948572180387,2719.0112385015354,4974.169691761951,0.9115960546218372
+국소 냉방,XGBoost,XGBoost n300_depth5_lr0.06,"n_estimators=300, max_depth=5, learning_rate=0.06, subsample=0.9, colsample_bytree=0.9, tree_method=hist","33,240",1739.8337298984077,872.0807728553096,1922.542645528268,0.9149893681992298
+서버 전원,LSTM,LSTM h32,"seq_len=24, hidden_size=32, layer=1, dropout=0, optimizer=AdamW, lr=0.001, batch_size=256, max_epoch=35, early_stop=5","33,240",1470.418889769201,1256.0318861523033,1921.864305396564,0.9512655640372716
+환기 계통,XGBoost,XGBoost n300_depth5_lr0.06,"n_estimators=300, max_depth=5, learning_rate=0.06, subsample=0.9, colsample_bytree=0.9, tree_method=hist","33,240",3041.6880254839743,2195.178574470849,3957.786559774068,0.9401210531632196

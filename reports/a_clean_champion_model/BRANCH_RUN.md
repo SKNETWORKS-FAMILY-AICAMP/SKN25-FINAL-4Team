@@ -1,4 +1,4 @@
-# A-clean champion model branch run
+# A-clean 프로젝트형 후보군 branch run
 
 ## Branch
 
@@ -21,7 +21,7 @@ Base commit at branch creation:
 
 ## Scope
 
-A-clean 4개 target을 대상으로 논문 자료와 기존 paper-adjacent run을 참고해 champion model 후보를 만들고, RunPod에서 학습/평가한다.
+A-clean 4개 target을 대상으로 논문 자료와 기존 paper-adjacent run을 참고해 프로젝트형 후보군을 만들고, RunPod에서 학습/평가한다. 최종 champion model은 사용자 승인 전까지 미정으로 둔다.
 
 입력 dataset:
 

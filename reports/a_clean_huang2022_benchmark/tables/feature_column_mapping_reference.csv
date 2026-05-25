@@ -1,0 +1,7 @@
+﻿한글 설명,실제 컬럼,비고
+직전 1~24시간 전력값,target_lag_1 ~ target_lag_24,SVR/XGBoost 표 형식 입력
+전력값 표준화 순서 입력,target_scaled,LSTM 입력의 전력 채널
+시간대 순환값,"hour_sin, hour_cos",하루 24시간 주기 표현
+기상 입력,"Ta, Igm",이번 실험에서 제외
+태양광·열병합 발전 전력,"pv_P, chp_P",이번 실험에서 제외
+이동 통계 입력,rolling mean/std/min/max,이번 실험에서 제외

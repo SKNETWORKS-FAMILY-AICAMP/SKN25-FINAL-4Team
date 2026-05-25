@@ -59,6 +59,33 @@ ems:MeterShape a sh:NodeShape ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:hasHardwareModel ;
+        sh:class ems:HardwareModel ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+ems:HardwareModelShape a sh:NodeShape ;
+    sh:targetClass ems:HardwareModel ;
+    sh:property [
+        sh:path ems:hardwareModelCode ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:manufacturer ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ems:modelName ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
     ] .
 
 ems:EquipmentGroupShape a sh:NodeShape ;

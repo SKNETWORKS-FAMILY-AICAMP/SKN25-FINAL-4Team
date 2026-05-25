@@ -1,8 +1,8 @@
-# A-clean champion model 결과 리포트
+# A-clean 프로젝트형 후보군 대표 결과 리포트
 
 ## 1. 작업 범위
 
-사용자 요청에 따라 A-clean 4개 target을 대상으로 champion model 후보를 학습·선정했다. 작업은 실제 git branch에서 진행했다.
+A-clean 4개 target을 대상으로 프로젝트형 후보군을 학습하고 validation 기준 대표 후보를 정리했다. 최종 champion model은 사용자 승인 전까지 미정으로 둔다. 작업은 실제 git branch에서 진행했다.
 
 ```text
 branch: exp/a-clean-champion-models-20260520
@@ -29,16 +29,32 @@ signed/net review target은 포함하지 않았다.
 
 ## 2. 논문 자료 반영 방식
 
-확인한 Nature Scientific Data 논문은 forecast benchmark 모델표를 제공하는 논문이 아니라 dataset descriptor다. 따라서 직접 재현할 모델명이 있는 형태는 아니며, 논문이 제시한 modeling/load prediction 활용 방향과 기존 Huang-style 기록을 바탕으로 다음 원칙을 적용했다.
+확인한 Nature Scientific Data EMS 논문은 forecast benchmark 모델표를 제공하는 논문이 아니라 dataset descriptor다. 따라서 이 프로젝트형 후보군 run은 EMS 논문을 직접 재현한 결과가 아니라, 논문이 제시한 modeling/load prediction 활용 방향과 기존 Huang-style 기록을 바탕으로 구성한 A-clean 예측 benchmark다.
+
+다만 별도 energy forecasting benchmark 논문인 Huang et al. 2022 Applied Sciences 논문에는 LSTM, SVR, XGBoost가 비교군으로 포함된다. 본 프로젝트형 후보군 run은 그 논문을 엄밀히 재현한 코드가 아니므로, 이후 논문 방식에 맞춘 별도 보정 benchmark를 추가했다.
+
+```text
+reports/a_clean_huang2022_benchmark/report.md
+outputs/modeling/a_clean_huang2022_benchmark_1h/
+```
+
+초기 SVR-only 보완 산출물도 남아 있으나, 최종 논문 대응 기준은 위 Huang 2022 benchmark 산출물로 본다.
+
+```text
+reports/a_clean_svr_supplement/report.md
+outputs/modeling/a_clean_svr_supplement_1h/
+```
+
+본 프로젝트형 후보군 run의 원칙:
 
 - next-hour forecasting
 - target별 independent model
 - lag, seasonal lag, rolling statistics 기반 시계열 feature
 - weather lag와 calendar cyclic feature 사용
 - train split 및 non-gateway row 기준 학습
-- validation split 기준 champion 선정
+- validation split 기준 대표 후보 선정
 
-## 3. Champion 후보군
+## 3. 프로젝트형 후보군
 
 실행 script:
 
@@ -74,7 +90,7 @@ thermal proxy: CDD18, CDD22, HDD18
 
 결측 weather 입력은 target 복원 없이 입력 feature에 한해 causal forward-fill 후 train median fallback을 적용했다.
 
-## 4. Champion 선정 규칙
+## 4. 대표 후보 선정 규칙
 
 primary selection metric:
 
@@ -98,7 +114,7 @@ last_value < seasonal < Ridge < HGB < ExtraTrees < RandomForest < MLP
 
 ## 5. Test non-gateway 성능
 
-| target_id | champion | validation MAE | test MAE | test RMSE | test MAPE | best naive MAE | LSTM MAE | naive 대비 MAE |
+| target_id | validation 기준 대표 후보 | validation MAE | test MAE | test RMSE | test MAPE | best naive MAE | LSTM MAE | naive 대비 MAE |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | T1_group__central_cooling__P | hgb_iter_320_lr_0.06 | 3102.40 | 2769.05 | 4811.97 | 34.97 | 3064.09 | 3136.97 | 9.63% 개선 |
 | T1_group__local_cooling__P | ridge_robust_alpha_0.1 | 973.38 | 902.50 | 1913.60 | 11.38 | 926.78 | 1025.70 | 2.62% 개선 |
@@ -107,7 +123,7 @@ last_value < seasonal < Ridge < HGB < ExtraTrees < RandomForest < MLP
 
 ## 6. 해석
 
-이번 champion run에서는 A-clean 4개 target 모두에서 `last_value` baseline 대비 test non-gateway MAE가 개선되었다.
+이번 프로젝트형 후보군 run에서는 A-clean 4개 target 모두에서 `last_value` baseline 대비 test non-gateway MAE가 개선되었다.
 
 개선 폭:
 

@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
-"""Generate EMS RDF/Turtle ontology from archived meter graph notes.
+"""Generate EMS RDF/Turtle ontology artifacts.
 
-Source:
+Default source:
+- PostgreSQL/TimescaleDB approved metadata tables under the `ems` schema.
+
+Optional legacy source:
 - docs/_archive/notes/meter_graph/계량기_*.md frontmatter
 - docs/_archive/notes/meter_graph/그룹_*.md frontmatter
 - docs/specs/계량기_메타데이터.md redundancy table
 
 Output:
 - docs/ontology/ems.ttl
+- docs/ontology/ems_protege.owl
 """
 
 from __future__ import annotations
@@ -53,6 +57,26 @@ GROUP_ANOMALY_PRIORITIES = {
     "cooling_thermal": 3,
     "hvac_thermal": 3,
     "weather_station": 4,
+}
+
+GROUP_PRIMARY_VIEWS = {
+    "central_cooling": "central_cooling_graph",
+    "chp": "building_energy_flow",
+    "chp_heat_generation": "building_energy_flow",
+    "cooling_thermal": "building_energy_flow",
+    "design_studio_distribution": "meter_inventory_graph",
+    "emission_lab": "meter_inventory_graph",
+    "grid_transformer": "building_energy_flow",
+    "heat_generation": "building_energy_flow",
+    "hvac_thermal": "building_energy_flow",
+    "local_cooling": "central_cooling_graph",
+    "office_distribution": "meter_inventory_graph",
+    "pv": "building_energy_flow",
+    "server_power": "meter_inventory_graph",
+    "server_thermal": "building_energy_flow",
+    "ventilation": "meter_inventory_graph",
+    "weather_station": "building_energy_flow",
+    "workshop_test": "meter_inventory_graph",
 }
 
 REDUNDANCY_POLICIES = {
@@ -128,6 +152,20 @@ def load_group_records() -> list[dict[str, object]]:
     return records
 
 
+def build_group_records_from_meters(meter_records: list[dict[str, object]]) -> list[dict[str, object]]:
+    records: list[dict[str, object]] = []
+    for code in sorted({str(rec["equipment_group"]) for rec in meter_records}):
+        count = sum(1 for rec in meter_records if str(rec["equipment_group"]) == code)
+        records.append({
+            "type": "equipment_group",
+            "equipment_group": code,
+            "meter_count": str(count),
+            "primary_view": GROUP_PRIMARY_VIEWS[code],
+            "note_file": f"db:ems.meter_definition/group/{code}",
+        })
+    return records
+
+
 def load_redundancy_records() -> list[dict[str, str]]:
     text = SPEC_PATH.read_text(encoding="utf-8")
     records: list[dict[str, str]] = []
@@ -169,14 +207,24 @@ def add_data_property(graph: Graph, local_name: str, domain, range_, label: str)
     graph.add((EMS[local_name], RDFS.label, Literal(label, lang="ko")))
 
 
-def build_graph() -> Graph:
-    meter_records = load_meter_records()
-    group_records = load_group_records()
-    redundancy_records = load_redundancy_records()
+def build_graph(source: str = "db") -> Graph:
+    hardware_records: list[dict[str, str]] = []
+    if source == "db":
+        from load_metadata_from_db import fetch_db_metadata
+
+        meter_records, redundancy_records, hardware_records = fetch_db_metadata()
+        group_records = build_group_records_from_meters(meter_records)
+    else:
+        meter_records = load_meter_records()
+        redundancy_records = load_redundancy_records()
+        group_records = load_group_records()
     redundancy_group_codes = {rec["equipment_group"] for rec in redundancy_records}
 
     expected = {"meters": 81, "groups": 17, "redundancy_pairs": 12}
     actual = {"meters": len(meter_records), "groups": len(group_records), "redundancy_pairs": len(redundancy_records)}
+    if source == "db":
+        expected["hardware_assignments"] = 81
+        actual["hardware_assignments"] = len(hardware_records)
     if actual != expected:
         raise SystemExit(f"unexpected source counts: expected={expected}, actual={actual}")
 
@@ -211,6 +259,7 @@ def build_graph() -> Graph:
         "AnomalyPriorityLevel": "이상탐지 우선순위 vocabulary",
         "RedundancyPolicy": "중복 계량 처리 정책",
         "FeatureRule": "feature 생성 규칙",
+        "HardwareModel": "계량기 하드웨어 모델",
     }.items():
         add_class(graph, name, label)
 
@@ -234,6 +283,7 @@ def build_graph() -> Graph:
         ("hasAnomalyPriorityLevel", OWL.Thing, EMS.AnomalyPriorityLevel, "이상탐지 우선순위 vocabulary"),
         ("usesRedundancyPolicy", EMS.FeatureRule, EMS.RedundancyPolicy, "feature rule이 사용하는 redundancy policy"),
         ("usesMeterSetRule", EMS.Feature, EMS.FeatureRule, "feature가 사용하는 meter set rule"),
+        ("hasHardwareModel", EMS.Meter, EMS.HardwareModel, "meter의 하드웨어 모델"),
     ]:
         add_object_property(graph, name, domain, range_, label)
     graph.add((EMS.redundantWith, RDF.type, OWL.SymmetricProperty))
@@ -252,6 +302,12 @@ def build_graph() -> Graph:
         ("noteFile", OWL.Thing, XSD.string, "project-relative note path"),
         ("sourcePath", EMS.MetadataDocument, XSD.string, "project-relative source path"),
         ("meterCount", EMS.EquipmentGroup, XSD.integer, "group meter count"),
+        ("hardwareModelCode", OWL.Thing, XSD.string, "계량기 하드웨어 모델 코드"),
+        ("manufacturer", EMS.HardwareModel, XSD.string, "계량기 제조사"),
+        ("modelName", EMS.HardwareModel, XSD.string, "계량기 모델명"),
+        ("sourceName", OWL.Thing, XSD.string, "metadata source name"),
+        ("sourceTable", OWL.Thing, XSD.string, "metadata source table"),
+        ("sourceDescription", OWL.Thing, XSD.string, "metadata source description"),
     ]:
         add_data_property(graph, name, domain, range_, label)
     graph.add((EMS.meterUrn, RDF.type, OWL.FunctionalProperty))
@@ -260,6 +316,7 @@ def build_graph() -> Graph:
         "meter_metadata": "docs/specs/계량기_메타데이터.md",
         "ontology_lite": "docs/_archive/notes/meter_graph/온톨로지_요약.md",
         "ontology_schema": "docs/specs/온톨로지_스키마.md",
+        "nature_scientific_data_2025": "https://doi.org/10.1038/s41597-025-05186-3",
     }.items():
         uri = RES[f"doc_{name}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
@@ -363,6 +420,22 @@ def build_graph() -> Graph:
         if code in redundancy_group_codes:
             graph.add((uri, EMS.visualizedBy, RES.view_focus_redundancy))
 
+    hardware_by_urn = {str(rec["meter_urn"]): rec for rec in hardware_records}
+    hardware_model_records = {
+        str(rec["hardware_model_code"]): rec
+        for rec in hardware_records
+    }
+    for model_code, rec in sorted(hardware_model_records.items()):
+        uri = RES[f"hardware_{slug(model_code)}"]
+        graph.add((uri, RDF.type, OWL.NamedIndividual))
+        graph.add((uri, RDF.type, EMS.HardwareModel))
+        graph.add((uri, RDFS.label, Literal(model_code)))
+        graph.add((uri, EMS.hardwareModelCode, Literal(model_code)))
+        graph.add((uri, EMS.manufacturer, Literal(str(rec.get("manufacturer", "")))))
+        graph.add((uri, EMS.modelName, Literal(str(rec.get("model_name", "")))))
+        graph.add((uri, EMS.meterDomain, Literal(str(rec.get("meter_category", "")))))
+        graph.add((uri, EMS.definedBy, RES.doc_nature_scientific_data_2025))
+
     meter_uri_by_urn = {}
     for rec in meter_records:
         urn = str(rec["meter_urn"])
@@ -395,6 +468,15 @@ def build_graph() -> Graph:
         graph.add((uri, EMS.locatedInBuilding, RES[f"building_{slug(building)}"]))
         graph.add((uri, EMS.hasRole, RES[f"role_{slug(role)}"]))
         graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
+        if urn in hardware_by_urn:
+            hardware = hardware_by_urn[urn]
+            model_code = str(hardware["hardware_model_code"])
+            graph.add((uri, EMS.hasHardwareModel, RES[f"hardware_{slug(model_code)}"]))
+            graph.add((uri, EMS.hardwareModelCode, Literal(model_code)))
+            graph.add((uri, EMS.sourceName, Literal(str(hardware.get("source_name", "")))))
+            graph.add((uri, EMS.sourceTable, Literal(str(hardware.get("source_table", "")))))
+            graph.add((uri, EMS.sourceDescription, Literal(str(hardware.get("source_description", "")))))
+            graph.add((uri, EMS.definedBy, RES.doc_nature_scientific_data_2025))
         graph.add((uri, EMS.visualizedBy, RES.view_ems_meter_system_all))
         if group_code == "central_cooling":
             graph.add((uri, EMS.visualizedBy, RES.view_focus_central_cooling))
@@ -431,7 +513,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--source",
         choices=["markdown", "db"],
-        default="markdown",
+        default="db",
         help="Metadata source. DB source is read-only and requires approved metadata tables.",
     )
     return parser.parse_args(argv)
@@ -439,13 +521,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
-    if args.source == "db":
-        from load_metadata_from_db import ensure_db_metadata_available
-
-        ensure_db_metadata_available()
-        raise SystemExit("DB metadata source generation is not implemented yet; use --source markdown")
-
-    graph = build_graph()
+    graph = build_graph(source=args.source)
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     graph.serialize(destination=str(OUTPUT_PATH), format="turtle")
     graph.serialize(destination=str(PROTEGE_OUTPUT_PATH), format="xml")

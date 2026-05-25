@@ -1,0 +1,23 @@
+target,meter_urn,hardware_model,description,source
+central_cooling,H1.Z11,ABB-B24,Cooling machine 2.1,Nature Scientific Data 2025 Table 3
+central_cooling,H1.Z12,ABB-B24,Cooling machine 2.1,Nature Scientific Data 2025 Table 3
+central_cooling,H1.Z16,ABB-B24,Cooling machine 1,Nature Scientific Data 2025 Table 3
+central_cooling,H1.Z24,ABB-B24,Cooling machine 3.1,Nature Scientific Data 2025 Table 3
+central_cooling,H1.Z25,ABB-B24,Cooling machine 3.2,Nature Scientific Data 2025 Table 3
+local_cooling,H2.Z66,ABB-B24,Local cooling (1),Nature Scientific Data 2025 Table 2
+local_cooling,H2.Z67,ABB-B24,Local cooling (2),Nature Scientific Data 2025 Table 2
+local_cooling,H3.Z45,ABB-B24,Cooling design studio,Nature Scientific Data 2025 Table 3
+server_power,H2.Z61,ABB-B24,Server CIS local cooling,Nature Scientific Data 2025 Table 2
+server_power,H2.Z62,ABB-B24,Server CIS power supply 1,Nature Scientific Data 2025 Table 2
+server_power,H2.Z63,ABB-B24,Server CIS power supply 2,Nature Scientific Data 2025 Table 2
+server_power,H2.Z64,ABB-B24,Server EU power supply 1,Nature Scientific Data 2025 Table 2
+server_power,H2.Z65,ABB-B24,Server EU power supply 2,Nature Scientific Data 2025 Table 2
+server_power,H3.Z43,ABB-B24,Server O4 cooling 1,Nature Scientific Data 2025 Table 2
+server_power,H3.Z44,ABB-B24,Server O4 cooling 2,Nature Scientific Data 2025 Table 2
+server_power,H3.Z46,ABB-B24,Server O4 power supply,Nature Scientific Data 2025 Table 2
+server_power,H3.Z71,ABB-B24,Server O4 power supply,Nature Scientific Data 2025 Table 2
+ventilation,H2.T.Z31,ABB-B24,HVAC office 50/51,Nature Scientific Data 2025 Table 2
+ventilation,H2.Z68,ABB-B24,Ventilation System 17,Nature Scientific Data 2025 Table 2
+ventilation,H2.Z69,ABB-B24,Ventilation System 16,Nature Scientific Data 2025 Table 2
+ventilation,H2.Z70,ABB-B24,Ventilation System 18,Nature Scientific Data 2025 Table 2
+ventilation,H3.Z42,ABB-B24,Ventilation design studio,Nature Scientific Data 2025 Table 2

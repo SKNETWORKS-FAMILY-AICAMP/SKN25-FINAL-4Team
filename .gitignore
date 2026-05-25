@@ -26,10 +26,29 @@ HERMES.md
 data/
 .cache/
 tmp/
+
+# Generated analysis/modeling artifacts
+outputs/modeling/
+outputs/runpod/
+outputs/logs/
+outputs/figures/*
+!outputs/figures/energy_flow/
+!outputs/figures/energy_flow/**
+outputs/tables/*
+!outputs/tables/profiling/
+!outputs/tables/profiling/**
 *.log
+*.zip
+*.joblib
+*.pt
+*.pkl
+*.parquet
 
 # Local preserved history; not shared through Git
 **/_archive/
+
+# Frontend/package-manager caches that may appear inside report drafts
+node_modules/
 
 # OS/editor
 .DS_Store

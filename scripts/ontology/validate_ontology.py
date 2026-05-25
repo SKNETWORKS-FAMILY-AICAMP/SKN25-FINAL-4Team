@@ -31,13 +31,13 @@ EMS = Namespace("https://nousresearch.local/ems/ontology#")
 RES = Namespace("https://nousresearch.local/ems/resource/")
 
 EXPECTED_COUNTS = {
-    "ttl_triples": 2438,
-    "protege_triples": 2438,
+    "ttl_triples": 3006,
+    "protege_triples": 3006,
     "owl_ontology": 1,
-    "owl_named_individual": 147,
-    "classes": 17,
-    "object_properties": 14,
-    "data_properties": 13,
+    "owl_named_individual": 154,
+    "classes": 18,
+    "object_properties": 15,
+    "data_properties": 19,
     "meters": 81,
     "electricity_meters": 71,
     "thermal_meters": 9,
@@ -47,7 +47,9 @@ EXPECTED_COUNTS = {
     "meter_roles": 4,
     "redundancy_pairs": 12,
     "visualization_views": 8,
-    "metadata_documents": 3,
+    "metadata_documents": 4,
+    "hardware_models": 6,
+    "hardware_assignments": 81,
     "server_power_meters": 13,
     "central_cooling_meters": 5,
     "emission_lab_meters": 14,
@@ -67,6 +69,7 @@ EXPECTED_CLASSES = {
     "EquipmentGroup",
     "Feature",
     "FeatureRule",
+    "HardwareModel",
     "MetadataDocument",
     "Meter",
     "MeterRole",
@@ -83,6 +86,7 @@ EXPECTED_OBJECT_PROPERTIES = {
     "belongsToGroup",
     "definedBy",
     "hasGroup",
+    "hasHardwareModel",
     "hasPrimaryMeter",
     "hasRedundantMeter",
     "hasRole",
@@ -102,6 +106,9 @@ EXPECTED_DATA_PROPERTIES = {
     "equipmentGroupCode",
     "equipmentLayer",
     "equipmentName",
+    "hardwareModelCode",
+    "manufacturer",
+    "modelName",
     "meterCount",
     "meterDomain",
     "meterRoleCode",
@@ -109,7 +116,10 @@ EXPECTED_DATA_PROPERTIES = {
     "noteFile",
     "primaryView",
     "signConvention",
+    "sourceDescription",
+    "sourceName",
     "sourcePath",
+    "sourceTable",
 }
 
 EXPECTED_ROLE_SIGN_CONVENTIONS = {
@@ -185,6 +195,8 @@ def validate_counts(ttl_graph: Graph, protege_graph: Graph) -> list[ValidationRe
     check_count(results, "redundancy_pairs", EXPECTED_COUNTS["redundancy_pairs"], len(unique_subjects(ttl_graph, RDF.type, EMS.RedundancyPair)))
     check_count(results, "visualization_views", EXPECTED_COUNTS["visualization_views"], len(unique_subjects(ttl_graph, RDF.type, EMS.VisualizationView)))
     check_count(results, "metadata_documents", EXPECTED_COUNTS["metadata_documents"], len(unique_subjects(ttl_graph, RDF.type, EMS.MetadataDocument)))
+    check_count(results, "hardware_models", EXPECTED_COUNTS["hardware_models"], len(unique_subjects(ttl_graph, RDF.type, EMS.HardwareModel)))
+    check_count(results, "hardware_assignments", EXPECTED_COUNTS["hardware_assignments"], len(list(ttl_graph.triples((None, EMS.hasHardwareModel, None)))))
     return results
 
 
@@ -343,6 +355,9 @@ def validate_analysis_invariants(graph: Graph) -> list[ValidationResult]:
     check_count(results, "h2_z64_has_all_canvas", True, (h2_z64, EMS.visualizedBy, RES.view_ems_meter_system_all) in graph)
     check_count(results, "h2_z64_has_server_canvas", True, (h2_z64, EMS.visualizedBy, RES.view_focus_server_power) in graph)
     check_count(results, "h2_z64_has_redundancy_canvas", True, (h2_z64, EMS.visualizedBy, RES.view_focus_redundancy) in graph)
+    check_count(results, "h2_z64_hardware_model", {"ABB-B24"}, labels(graph, graph.objects(h2_z64, EMS.hasHardwareModel)))
+    check_count(results, "h2_ze64_hardware_model", {"Janitza UMG 96 PA MID+"}, labels(graph, graph.objects(h2_ze64, EMS.hasHardwareModel)))
+    check_count(results, "weather_station_hardware_model", {"Lufft WS501-UMB"}, labels(graph, graph.objects(RES.meter_WeatherStation_Weather, EMS.hasHardwareModel)))
     return results
 
 

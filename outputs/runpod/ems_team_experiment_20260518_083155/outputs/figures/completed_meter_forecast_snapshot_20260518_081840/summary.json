@@ -1,8 +1,0 @@
-{
-  "snapshot_utc": "20260518_081840",
-  "metrics_json_total": 95,
-  "completed_rows_raw": 80,
-  "completed_unique_meters": 63,
-  "full_chunk_completed_unique_meters": 62,
-  "subset_only_completed_unique_meters": 1
-}

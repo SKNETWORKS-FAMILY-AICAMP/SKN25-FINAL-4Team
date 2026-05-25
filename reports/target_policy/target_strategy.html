@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMS 예측 target 정책 및 A 계열 확장 전략</title>
+<style>
+:root {
+  --bg: #f6f7f9;
+  --paper: #ffffff;
+  --ink: #1f2937;
+  --muted: #64748b;
+  --line: #d8dee8;
+  --accent: #1f5f8b;
+  --accent-soft: #e7f0f8;
+  --warn: #8a5a13;
+  --warn-soft: #fff4d8;
+  --ok: #1f6b4a;
+  --ok-soft: #e6f4ed;
+  --radius: 16px;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif; line-height: 1.65; }
+.page { max-width: 1180px; margin: 0 auto; padding: 48px 28px 80px; }
+.hero { background: linear-gradient(135deg, #ffffff 0%, #eef5fb 100%); border: 1px solid var(--line); border-radius: 24px; padding: 40px; }
+h1 { margin: 0 0 14px; font-size: clamp(30px, 4vw, 48px); line-height: 1.15; letter-spacing: -0.04em; }
+h2 { margin: 44px 0 16px; font-size: 26px; letter-spacing: -0.03em; }
+h3 { margin: 28px 0 12px; font-size: 19px; }
+p { margin: 10px 0; }
+.lead { font-size: 18px; color: #334155; max-width: 860px; }
+.meta { color: var(--muted); font-size: 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 20px 0; }
+.metric-card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.metric-card span { color: var(--muted); font-size: 13px; word-break: break-all; }
+.metric-card strong { font-size: 28px; color: var(--accent); }
+section { background: var(--paper); border: 1px solid var(--line); border-radius: 22px; padding: 28px; margin-top: 22px; }
+.callout { border-radius: var(--radius); padding: 16px 18px; background: var(--accent-soft); border: 1px solid #c9dced; }
+.callout.warn { background: var(--warn-soft); border-color: #f0d28b; color: #4f350a; }
+.callout.ok { background: var(--ok-soft); border-color: #b8dfca; color: #113d2a; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0 4px; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--line); padding: 10px 10px; vertical-align: top; text-align: left; }
+th { background: #f8fafc; color: #334155; font-weight: 700; }
+code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; background: #f1f5f9; border-radius: 6px; padding: 2px 5px; }
+ul, ol { padding-left: 22px; }
+.pill-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.pill { display:inline-flex; padding:6px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; font-size:13px; }
+.two-col { display:grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap:18px; }
+@media (max-width: 840px) { .two-col { grid-template-columns: 1fr; } .hero { padding: 28px; } table { font-size: 13px; } }
+@media print { body { background:white; } .page { padding: 0; } section, .hero { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="hero">
+    <div class="meta">갱신일 2026-05-19</div>
+    <h1>EMS 예측 target 정책 및 A 계열 확장 전략</h1>
+    <p class="lead">전력 수요 예측 target을 A/B/C/D 등급으로 분리하고, A 계열에서 champion recipe를 선정한 뒤 grid demand와 versioned target으로 확장하는 기준을 정리한다.</p>
+  </div>
+
+  <section>
+    <h2>현재 target 범위</h2>
+    <div class="callout ok">현재 target catalog는 <code>electricity / consumption / P</code> 범위로 제한되어 있다. production, thermal, weather는 demand target에서 제외한다.</div>
+    <div class="pill-row">
+      <span class="pill">전기 소비 P</span>
+      <span class="pill">redundant endpoint 제외</span>
+      <span class="pill">PV/CHP target 제외</span>
+      <span class="pill">thermal/heating target 제외</span>
+      <span class="pill">weather target 제외</span>
+    </div>
+    <p>냉방 관련 target인 <code>central_cooling_P</code>, <code>local_cooling_P</code>는 냉방 설비의 전기 소비 P이며, 냉방 열량 target과는 구분한다.</p>
+  </section>
+
+  <section>
+    <h2>최종 policy 분포</h2>
+    <div class="grid"><div class="metric-card"><span>A_STRICT_BENCHMARK</span><strong>4</strong></div><div class="metric-card"><span>A_VERSIONED_STRICT_BENCHMARK</span><strong>3</strong></div><div class="metric-card"><span>B_VERSIONED_BENCHMARK</span><strong>1</strong></div><div class="metric-card"><span>B_VERSIONED_BENCHMARK_REVIEW</span><strong>4</strong></div><div class="metric-card"><span>C_PERIOD_LIMITED_VERSIONED_TARGET</span><strong>2</strong></div><div class="metric-card"><span>D_DIAGNOSTIC_VERSIONED_AGGREGATE</span><strong>1</strong></div></div>
+  </section>
+
+  <section>
+    <h2>A 계열 benchmark</h2>
+    <p>A 계열은 champion model 자체보다 champion recipe를 선정하는 기준 집합이다. recipe는 모델 구조, sequence length, feature set, missing-data policy, scaler policy, outage policy, loss, early stopping 규칙을 포함한다.</p>
+    <table><thead><tr><th>target_id</th><th>target_name</th><th>final_policy</th></tr></thead><tbody><tr><td>T2_building__H1__P</td><td>building_H1_consumption_P</td><td>A_STRICT_BENCHMARK</td></tr><tr><td>T2_building__V__P</td><td>building_V_consumption_P</td><td>A_STRICT_BENCHMARK</td></tr><tr><td>T1_group__central_cooling__P</td><td>central_cooling_P</td><td>A_STRICT_BENCHMARK</td></tr><tr><td>T1_group__emission_lab__P</td><td>emission_lab_P</td><td>A_STRICT_BENCHMARK</td></tr><tr><td>T1_group__local_cooling__P</td><td>local_cooling_P</td><td>A_VERSIONED_STRICT_BENCHMARK</td></tr><tr><td>T1_group__server_power__P</td><td>server_power_P</td><td>A_VERSIONED_STRICT_BENCHMARK</td></tr><tr><td>T1_group__ventilation__P</td><td>ventilation_P</td><td>A_VERSIONED_STRICT_BENCHMARK</td></tr></tbody></table>
+  </section>
+
+  <section>
+    <h2>A에서 빠진 target 처리</h2>
+    <table><thead><tr><th>target_id</th><th>level</th><th>target_name</th><th>policy</th><th>처리 방향</th></tr></thead><tbody><tr><td>T1_group__grid_transformer__P</td><td>equipment_group</td><td>grid_transformer_P</td><td>B_VERSIONED_BENCHMARK</td><td>H2 office transformer 교체 전후 component set을 분리하면 pre/post strict coverage가 높다. 142시간 replacement gap은 exclude/flag 처리한다.</td></tr><tr><td>T2_building__H2__P</td><td>building</td><td>building_H2_consumption_P</td><td>B_VERSIONED_BENCHMARK_REVIEW</td><td>H2 transformer replacement와 H2.ZE74 시작이 함께 작용한다. version_id와 replacement gap 처리가 필요하다.</td></tr><tr><td>T2_building__H3__P</td><td>building</td><td>building_H3_consumption_P</td><td>B_VERSIONED_BENCHMARK_REVIEW</td><td>H3 design studio 계량기들이 2020-06-30 이후 시작한다. version별 strict coverage는 높으나 target 의미 변화 검토가 필요하다.</td></tr><tr><td>T1_group__design_studio_distribution__P</td><td>equipment_group</td><td>design_studio_distribution_P</td><td>B_VERSIONED_BENCHMARK_REVIEW</td><td>2020-06-30 전후 component set이 바뀐다. 두 version 모두 strict coverage가 높으나 target 의미 변화 검토가 필요하다.</td></tr><tr><td>T1_group__workshop_test__P</td><td>equipment_group</td><td>workshop_test_P</td><td>B_VERSIONED_BENCHMARK_REVIEW</td><td>H2.ZE74가 2022-03-18 이후 시작한다. version_id 기록과 전후 target 의미 검토가 필요하다.</td></tr><tr><td>T2_building__H4__P</td><td>building</td><td>building_H4_consumption_P</td><td>C_PERIOD_LIMITED_VERSIONED_TARGET</td><td>H4.Z50/H4.Z51이 2023-06-23 이후 중단된다. 2023-06-23 이전 구간 중심으로 사용한다.</td></tr><tr><td>T1_group__office_distribution__P</td><td>equipment_group</td><td>office_distribution_P</td><td>C_PERIOD_LIMITED_VERSIONED_TARGET</td><td>H4.Z50/H4.Z51이 2023-06-23 이후 중단된다. 전기간 benchmark보다 period-limited version target이 적합하다.</td></tr><tr><td>T0_all_consumption_P</td><td>global</td><td>all_electricity_consumption_P</td><td>D_DIAGNOSTIC_VERSIONED_AGGREGATE</td><td>여러 lifecycle event가 누적되어 전기간 단일 target 의미가 흔들린다. 진단용 aggregate 또는 별도 versioned 연구 target으로 둔다.</td></tr></tbody></table>
+  </section>
+
+  <section>
+    <h2>확장 순서</h2>
+    <ol>
+      <li>A 계열에서 champion recipe를 선정한다.</li>
+      <li><code>grid_transformer_P</code>는 <code>grid_demand</code> 실험군으로 별도 확장한다. H2 transformer replacement gap 142시간은 exclude 또는 flag 처리한다.</li>
+      <li>H2, H3, design studio, workshop target은 version별 target 의미를 문서화한 뒤 확장 실험한다.</li>
+      <li>H4, office distribution은 2023-06-23 이전 중심의 period-limited target으로 실험한다.</li>
+      <li>all consumption은 aggregate 검산과 coverage drift 진단에 우선 사용한다.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>예상 문제와 통제 기준</h2>
+    <table>
+      <thead><tr><th>문제</th><th>발생 조건</th><th>통제 기준</th></tr></thead>
+      <tbody>
+        <tr><td>target 간 성능 비교 불공정</td><td>A/B/C/D target을 한 표에서 단순 비교</td><td><code>experiment_group</code>, <code>final_policy</code>, <code>target_version_id</code>, 제외 구간을 성능표에 포함</td></tr>
+        <tr><td>versioned target 의미 변화</td><td>component set이 기간별로 바뀜</td><td>version별 metric과 component set을 별도 보고</td></tr>
+        <tr><td>period-limited target 평가 왜곡</td><td>H4/office가 2023-06-23 이후 중단</td><td>전기간 test와 분리하여 period-limited metric 사용</td></tr>
+        <tr><td>replacement gap 처리에 따른 metric 편향</td><td>H2 transformer 교체 gap 142시간 제외/포함 여부 차이</td><td>clean metric과 flagged metric을 분리</td></tr>
+        <tr><td>all consumption 해석 혼선</td><td>여러 lifecycle event가 aggregate에 누적</td><td>대표 benchmark가 아니라 진단용 aggregate로 제한</td></tr>
+        <tr><td>실험 수 증가</td><td>target × version × model × policy 조합 증가</td><td>manifest와 naming rule 강제</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>진행 판단</h2>
+    <div class="callout warn">A 계열부터 본격적으로 들어가는 방향은 타당하다. 다만 바로 LSTM 재학습으로 들어가기보다 target 정책 산출물 확정, A 계열 target dataset builder, naive baseline을 먼저 통과한 뒤 LSTM 또는 개선 모델을 적용하는 순서가 안전하다.</div>
+  </section>
+</main>
+</body>
+</html>

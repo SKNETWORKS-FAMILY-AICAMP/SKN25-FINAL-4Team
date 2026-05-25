@@ -92,6 +92,19 @@ GROUP BY ?domain ?roleLabel
 ORDER BY ?domain ?roleLabel
 """)
 
+    run_query(graph, "hardware_model_distribution", """
+SELECT ?hardwareLabel ?manufacturer ?modelName (COUNT(?meter) AS ?meter_count)
+WHERE {
+  ?meter a ems:Meter ;
+         ems:hasHardwareModel ?hardware .
+  ?hardware rdfs:label ?hardwareLabel ;
+            ems:manufacturer ?manufacturer ;
+            ems:modelName ?modelName .
+}
+GROUP BY ?hardwareLabel ?manufacturer ?modelName
+ORDER BY DESC(?meter_count) ?hardwareLabel
+""", limit=10)
+
     run_query(graph, "all_redundancy_pairs", """
 SELECT ?groupLabel ?primaryLabel ?redundantLabel ?equipmentName
 WHERE {

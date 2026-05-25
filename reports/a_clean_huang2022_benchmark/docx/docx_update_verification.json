@@ -1,0 +1,71 @@
+[
+  {
+    "template": "/home/viowlet/.hermes/profiles/ems/cache/documents/doc_8c540c49498a_7d933d16d2785cf3.docx",
+    "output": "/home/viowlet/Projects/SKN25-FINAL-4Team/reports/a_clean_huang2022_benchmark/docx/데이터_전처리_결과서_A_clean.docx",
+    "first_page_texts_equal": true,
+    "first_page_texts": [
+      "SK 네트웍스 Family AI 27기 : _____팀데이터 전처리 결과서",
+      "산출물 단계데이터 전처리제출 일자2026. 4. 18.깃허브 경로작성 팀원000"
+    ],
+    "package_before": {
+      "media_count": 2,
+      "header_count": 2,
+      "footer_count": 2,
+      "table_count_xml": 124,
+      "page_break_count": 1
+    },
+    "package_after": {
+      "media_count": 2,
+      "header_count": 2,
+      "footer_count": 2,
+      "table_count_xml": 124,
+      "page_break_count": 1
+    }
+  },
+  {
+    "template": "/home/viowlet/.hermes/profiles/ems/cache/documents/doc_d9b2cee6144d_a032490aaf9434c7.docx",
+    "output": "/home/viowlet/Projects/SKN25-FINAL-4Team/reports/a_clean_huang2022_benchmark/docx/머신러닝_딥러닝_학습_결과서_A_clean.docx",
+    "first_page_texts_equal": true,
+    "first_page_texts": [
+      "SK 네트웍스 Family AI 00기 : _____팀 머신러닝 / 딥러닝 학습 결과서",
+      "산출물 단계데이터 전처리제출 일자2026. 4. 18.깃허브 경로작성 팀원000"
+    ],
+    "package_before": {
+      "media_count": 2,
+      "header_count": 2,
+      "footer_count": 2,
+      "table_count_xml": 126,
+      "page_break_count": 1
+    },
+    "package_after": {
+      "media_count": 2,
+      "header_count": 2,
+      "footer_count": 2,
+      "table_count_xml": 126,
+      "page_break_count": 1
+    }
+  },
+  {
+    "template": "/home/viowlet/.hermes/profiles/ems/cache/documents/doc_88beb1f5dff9_ML_DL_.docx",
+    "output": "/home/viowlet/Projects/SKN25-FINAL-4Team/reports/a_clean_huang2022_benchmark/docx/학습한_ML_DL_모델_A_clean.docx",
+    "first_page_texts_equal": true,
+    "first_page_texts": [
+      "SK 네트웍스 Family AI 27기 : _____팀 학습한 ML / DL 모델",
+      "산출물 단계데이터 전처리제출 일자2026. 4. 18.깃허브 경로작성 팀원000"
+    ],
+    "package_before": {
+      "media_count": 2,
+      "header_count": 2,
+      "footer_count": 2,
+      "table_count_xml": 123,
+      "page_break_count": 2
+    },
+    "package_after": {
+      "media_count": 2,
+      "header_count": 2,
+      "footer_count": 2,
+      "table_count_xml": 123,
+      "page_break_count": 2
+    }
+  }
+]

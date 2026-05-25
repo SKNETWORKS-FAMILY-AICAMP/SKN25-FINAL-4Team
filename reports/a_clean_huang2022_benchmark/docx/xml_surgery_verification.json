@@ -1,0 +1,98 @@
+[
+  {
+    "original": "/home/viowlet/.hermes/profiles/ems/cache/documents/doc_8c540c49498a_7d933d16d2785cf3.docx",
+    "output": "/home/viowlet/Projects/SKN25-FINAL-4Team/reports/a_clean_huang2022_benchmark/docx/데이터_전처리_결과서_A_clean.docx",
+    "first_page_prefix_c14n_equal": true,
+    "body_child_count_equal": true,
+    "modified_blocks_after_first_page": 19,
+    "counts_original": {
+      "media": 2,
+      "header": 2,
+      "footer": 2,
+      "tables": 124,
+      "page_breaks": 1
+    },
+    "counts_output": {
+      "media": 2,
+      "header": 2,
+      "footer": 2,
+      "tables": 124,
+      "page_breaks": 1
+    },
+    "non_document_xml_package_files_identical": true,
+    "present_checks": {
+      "EMS A-clean 1시간 전력 예측 실험": true,
+      "A-clean target 4종": true,
+      "STRICT 또는 VERSIONED 정책": true
+    },
+    "absent_checks": {
+      "멀티 에이전트·RAG": true,
+      "doc_id": true,
+      "업무 문서": true
+    }
+  },
+  {
+    "original": "/home/viowlet/.hermes/profiles/ems/cache/documents/doc_d9b2cee6144d_a032490aaf9434c7.docx",
+    "output": "/home/viowlet/Projects/SKN25-FINAL-4Team/reports/a_clean_huang2022_benchmark/docx/머신러닝_딥러닝_학습_결과서_A_clean.docx",
+    "first_page_prefix_c14n_equal": true,
+    "body_child_count_equal": true,
+    "modified_blocks_after_first_page": 19,
+    "counts_original": {
+      "media": 2,
+      "header": 2,
+      "footer": 2,
+      "tables": 126,
+      "page_breaks": 1
+    },
+    "counts_output": {
+      "media": 2,
+      "header": 2,
+      "footer": 2,
+      "tables": 126,
+      "page_breaks": 1
+    },
+    "non_document_xml_package_files_identical": true,
+    "present_checks": {
+      "LSTM, SVR, XGBoost 모델군": true,
+      "2022 RMSE": true,
+      "서버 전원": true
+    },
+    "absent_checks": {
+      "업무 유형·의도 분류": true,
+      "BERT-base-ko": true,
+      "사내 업무 문서": true
+    }
+  },
+  {
+    "original": "/home/viowlet/.hermes/profiles/ems/cache/documents/doc_88beb1f5dff9_ML_DL_.docx",
+    "output": "/home/viowlet/Projects/SKN25-FINAL-4Team/reports/a_clean_huang2022_benchmark/docx/학습한_ML_DL_모델_A_clean.docx",
+    "first_page_prefix_c14n_equal": true,
+    "body_child_count_equal": true,
+    "modified_blocks_after_first_page": 20,
+    "counts_original": {
+      "media": 2,
+      "header": 2,
+      "footer": 2,
+      "tables": 123,
+      "page_breaks": 2
+    },
+    "counts_output": {
+      "media": 2,
+      "header": 2,
+      "footer": 2,
+      "tables": 123,
+      "page_breaks": 2
+    },
+    "non_document_xml_package_files_identical": true,
+    "present_checks": {
+      "A-clean 1시간 전력 예측용": true,
+      "huang2022_best_model": true,
+      "중앙 냉방": true
+    },
+    "absent_checks": {
+      "BERT-base-ko": true,
+      "sentence-BERT": true,
+      "RAG 기반": true
+    }
+  }
+]

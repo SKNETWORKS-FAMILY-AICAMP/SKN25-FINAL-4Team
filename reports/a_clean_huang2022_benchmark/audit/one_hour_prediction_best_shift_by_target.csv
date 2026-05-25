@@ -1,0 +1,5 @@
+target_label,target_id,shift_hours_actual_relative_to_prediction,corr_pred_vs_actual_shift
+국소 냉방,T1_group__local_cooling__P,-1,0.9844382520330979
+서버 전원,T1_group__server_power__P,-2,0.9944696901764124
+중앙 냉방,T1_group__central_cooling__P,-1,0.9828567570819712
+환기 계통,T1_group__ventilation__P,0,0.9695988377401673

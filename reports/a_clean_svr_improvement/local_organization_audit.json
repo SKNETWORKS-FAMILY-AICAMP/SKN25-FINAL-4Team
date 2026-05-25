@@ -1,0 +1,127 @@
+{
+  "move_log": [
+    {
+      "from": "outputs/modeling/a_clean_svr_improvement_1h",
+      "to": "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520"
+    },
+    {
+      "from": "outputs/modeling/a_clean_svr_improvement_1h_runpod",
+      "to": "outputs/modeling/a_clean_svr_improvement_1h"
+    },
+    {
+      "from": "outputs/modeling/a_clean_svr_improvement_1h_smoke",
+      "to": "outputs/modeling/_archive/a_clean_svr_improvement_1h_smoke_20260520"
+    },
+    {
+      "from": "outputs/modeling/a_clean_svr_improvement_1h_run.log",
+      "to": "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_run_20260520.log"
+    },
+    {
+      "from": "reports/a_clean_svr_improvement/local_runpod_repro_check.csv",
+      "to": "reports/a_clean_svr_improvement/tables/local_runpod_repro_check.csv"
+    },
+    {
+      "from": "reports/a_clean_svr_improvement/svr_improvement_comparison.csv",
+      "to": "reports/a_clean_svr_improvement/tables/svr_improvement_comparison.csv"
+    },
+    {
+      "from": "reports/a_clean_svr_improvement/svr_improvement_comparison_local_runpod.csv",
+      "to": "reports/a_clean_svr_improvement/tables/svr_improvement_comparison_local_runpod.csv"
+    },
+    {
+      "from": "reports/a_clean_svr_improvement/svr_improvement_comparison_runpod.csv",
+      "to": "reports/a_clean_svr_improvement/tables/svr_improvement_comparison_runpod.csv"
+    },
+    {
+      "from": "reports/a_clean_svr_improvement/LOCAL_ARTIFACT_MANIFEST.json",
+      "to": "reports/a_clean_svr_improvement/local_artifact_manifest.json"
+    },
+    {
+      "from": "reports/a_clean_huang2022_benchmark/INDEX.md",
+      "to": "reports/a_clean_huang2022_benchmark/index.md"
+    },
+    {
+      "from": "reports/a_clean_huang2022_benchmark/LOCAL_REPORT_MANIFEST.json",
+      "to": "reports/a_clean_huang2022_benchmark/local_report_manifest.json"
+    },
+    {
+      "from": "reports/a_clean_huang2022_benchmark/figures/06_yearly_prediction_T1_group_central_cooling_P.png",
+      "to": "reports/a_clean_huang2022_benchmark/figures/06_yearly_prediction_t1_group_central_cooling_p.png"
+    },
+    {
+      "from": "reports/a_clean_huang2022_benchmark/figures/06_yearly_prediction_T1_group_local_cooling_P.png",
+      "to": "reports/a_clean_huang2022_benchmark/figures/06_yearly_prediction_t1_group_local_cooling_p.png"
+    },
+    {
+      "from": "reports/a_clean_huang2022_benchmark/figures/06_yearly_prediction_T1_group_server_power_P.png",
+      "to": "reports/a_clean_huang2022_benchmark/figures/06_yearly_prediction_t1_group_server_power_p.png"
+    },
+    {
+      "from": "reports/a_clean_huang2022_benchmark/figures/06_yearly_prediction_T1_group_ventilation_P.png",
+      "to": "reports/a_clean_huang2022_benchmark/figures/06_yearly_prediction_t1_group_ventilation_p.png"
+    },
+    {
+      "from": "reports/a_clean_huang2022_benchmark/tables/huang2022_selected_candidates_ko.csv",
+      "to": "reports/a_clean_huang2022_benchmark/tables/_archive/huang2022_selected_candidates_ko.csv"
+    },
+    {
+      "from": "reports/a_clean_huang2022_benchmark/tables/huang2022_2022_selected_models_ko.csv",
+      "to": "reports/a_clean_huang2022_benchmark/tables/_archive/huang2022_2022_selected_models_ko.csv"
+    },
+    {
+      "from": "reports/a_clean_huang2022_benchmark/tables/huang2022_vs_internal_baseline_summary.csv",
+      "to": "reports/a_clean_huang2022_benchmark/tables/_archive/huang2022_vs_internal_baseline_summary.csv"
+    },
+    {
+      "from": "reports/a_clean_huang2022_benchmark/tables/huang2022_vs_internal_baseline_summary_ko.csv",
+      "to": "reports/a_clean_huang2022_benchmark/tables/_archive/huang2022_vs_internal_baseline_summary_ko.csv"
+    }
+  ],
+  "benchmark_zip_bad_file": null,
+  "svr_zip_bad_file": null,
+  "remaining_non_snake_case_candidates": [
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__server_power__P/svr_improvement_manifest.json",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__server_power__P/svr_improvement_best_predictions.parquet",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__server_power__P/svr_improvement_candidate_metrics.csv",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__server_power__P/svr_improvement_best_model.joblib",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__central_cooling__P/svr_improvement_manifest.json",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__central_cooling__P/svr_improvement_best_predictions.parquet",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__central_cooling__P/svr_improvement_candidate_metrics.csv",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__central_cooling__P/svr_improvement_best_model.joblib",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__local_cooling__P/svr_improvement_manifest.json",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__local_cooling__P/svr_improvement_best_predictions.parquet",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__local_cooling__P/svr_improvement_candidate_metrics.csv",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__local_cooling__P/svr_improvement_best_model.joblib",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__ventilation__P/svr_improvement_manifest.json",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__ventilation__P/svr_improvement_best_predictions.parquet",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__ventilation__P/svr_improvement_candidate_metrics.csv",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520/T1_group__ventilation__P/svr_improvement_best_model.joblib",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_smoke_20260520/T1_group__server_power__P/svr_improvement_manifest.json",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_smoke_20260520/T1_group__server_power__P/svr_improvement_best_predictions.parquet",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_smoke_20260520/T1_group__server_power__P/svr_improvement_candidate_metrics.csv",
+    "outputs/modeling/_archive/a_clean_svr_improvement_1h_smoke_20260520/T1_group__server_power__P/svr_improvement_best_model.joblib"
+  ],
+  "cleanup_candidates": [
+    {
+      "path": "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_duplicate_20260520",
+      "reason": "RunPod 결과와 요약·지표가 동일한 로컬 중복 실행 산출물"
+    },
+    {
+      "path": "outputs/modeling/_archive/a_clean_svr_improvement_1h_smoke_20260520",
+      "reason": "server_power 단일 target 스모크 테스트 산출물"
+    },
+    {
+      "path": "outputs/modeling/_archive/a_clean_svr_improvement_1h_local_run_20260520.log",
+      "reason": "로컬 중복 실행 로그"
+    }
+  ],
+  "key_files": {
+    "benchmark_html": "reports/a_clean_huang2022_benchmark/report.html",
+    "benchmark_plotly": "reports/a_clean_huang2022_benchmark/report_plotly.html",
+    "benchmark_package": "reports/a_clean_huang2022_benchmark_package.zip",
+    "svr_report": "reports/a_clean_svr_improvement/report.md",
+    "svr_tables": "reports/a_clean_svr_improvement/tables",
+    "svr_package": "reports/a_clean_svr_improvement/a_clean_svr_improvement_runpod_package.zip",
+    "final_svr_outputs": "outputs/modeling/a_clean_svr_improvement_1h"
+  }
+}
