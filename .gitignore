@@ -51,3 +51,6 @@ tmp_*.txt
 eda_summary.txt
 CLAUDE.md
 claude.md
+
+# Process / deliverables (local only)
+process/

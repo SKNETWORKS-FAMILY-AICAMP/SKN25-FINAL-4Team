@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>EMS 프로젝트 분석 가이드</title>
+    <style>
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans+Mono&display=swap');
+
+@page {
+    size: A4;
+    margin: 2cm 1.8cm;
+    @bottom-center {
+        content: counter(page) " / " counter(pages);
+        font-size: 9pt;
+        color: #888;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+    @top-right {
+        content: "EMS 프로젝트 분석 가이드";
+        font-size: 8pt;
+        color: #aaa;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.7;
+    color: #1a1a1a;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+h1 {
+    font-size: 22pt;
+    font-weight: 700;
+    color: #1565C0;
+    border-bottom: 3px solid #1565C0;
+    padding-bottom: 8px;
+    margin-top: 0;
+    margin-bottom: 16px;
+    page-break-after: avoid;
+}
+
+h2 {
+    font-size: 15pt;
+    font-weight: 700;
+    color: #1976D2;
+    border-bottom: 2px solid #E3F2FD;
+    padding-bottom: 5px;
+    margin-top: 28px;
+    margin-bottom: 12px;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-size: 12pt;
+    font-weight: 600;
+    color: #2196F3;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+}
+
+h4 {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #42A5F5;
+    margin-top: 16px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+}
+
+p {
+    margin: 6px 0;
+    orphans: 3;
+    widows: 3;
+}
+
+blockquote {
+    border-left: 4px solid #42A5F5;
+    background: #E3F2FD;
+    margin: 12px 0;
+    padding: 10px 16px;
+    color: #1565C0;
+    font-size: 10pt;
+    border-radius: 0 6px 6px 0;
+}
+
+blockquote > blockquote {
+    border-left-color: #90CAF9;
+    background: #BBDEFB;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 16px 0;
+    font-size: 9.5pt;
+    page-break-inside: auto;
+}
+
+thead {
+    display: table-header-group;
+}
+
+tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+}
+
+th {
+    background: #1976D2;
+    color: white;
+    font-weight: 600;
+    text-align: left;
+    padding: 7px 10px;
+    border: 1px solid #1565C0;
+}
+
+td {
+    padding: 6px 10px;
+    border: 1px solid #E0E0E0;
+    vertical-align: top;
+}
+
+tr:nth-child(even) td {
+    background: #F5F5F5;
+}
+
+tr:hover td {
+    background: #E3F2FD;
+}
+
+code {
+    font-family: 'Noto Sans Mono', 'SF Mono', 'Consolas', monospace;
+    background: #F5F5F5;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9pt;
+    color: #D32F2F;
+    border: 1px solid #E0E0E0;
+}
+
+pre {
+    background: #263238;
+    color: #ECEFF1;
+    padding: 14px 18px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 8.5pt;
+    line-height: 1.5;
+    margin: 10px 0;
+    page-break-inside: avoid;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+pre code {
+    background: none;
+    color: #ECEFF1;
+    padding: 0;
+    border: none;
+    font-size: 8.5pt;
+}
+
+hr {
+    border: none;
+    border-top: 2px solid #E0E0E0;
+    margin: 24px 0;
+}
+
+strong {
+    font-weight: 700;
+    color: #1565C0;
+}
+
+em {
+    color: #555;
+}
+
+ul, ol {
+    margin: 6px 0;
+    padding-left: 24px;
+}
+
+li {
+    margin: 3px 0;
+}
+
+a {
+    color: #1976D2;
+    text-decoration: none;
+}
+
+    </style>
+</head>
+<body>
+<h1 id="ems">🏢 EMS 프로젝트 완전 분석 가이드</h1>
+<blockquote>
+<p>이 문서는 프로젝트의 모든 것을 <strong>비전공자도 이해할 수 있도록</strong> 쉽게 풀어 설명합니다.</p>
+</blockquote>
+<hr />
+<h2 id="1">1. 프로젝트를 한 줄로 요약하면?</h2>
+<blockquote>
+<p><strong>"독일에 있는 Honda 연구소 건물의 6년치 전기·난방·냉방 데이터를 분석해서, AI가 자동으로 에너지를 관리해주는 플랫폼을 만드는 프로젝트"</strong></p>
+</blockquote>
+<p>비유하자면, 건물 전체에 <strong>81개의 전기 요금 측정기(계량기)</strong> 를 붙여놓고 6년 동안 15분 단위로 모든 에너지 사용량을 기록한 "건물의 건강기록부"를 분석하는 것입니다.</p>
+<hr />
+<h2 id="2">2. 이 프로젝트는 왜 하나요? (비즈니스 목표)</h2>
+<table>
+<thead>
+<tr>
+<th>목표</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>대상 고객</strong></td>
+<td>데이터 분석 역량이 부족한 <strong>중소 제조공장</strong></td>
+</tr>
+<tr>
+<td><strong>핵심 가치</strong></td>
+<td>공장 관리자가 "이번 달 전기 왜 이렇게 많이 나왔어?" 같은 <strong>자연어 질문</strong>을 하면 AI가 자동 분석·답변</td>
+</tr>
+<tr>
+<td><strong>최종 목표</strong></td>
+<td>에너지 이상 감지, 비용 절감 제안, 자동 보고서 생성까지 해주는 <strong>AI 챗봇 플랫폼</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3">3. 프로젝트 전체 구조 (빅 픽처)</h2>
+<h3 id="_1">전체 흐름도</h3>
+<div class="highlight"><pre><span></span><code>[🏭 Honda R&amp;D 건물]           [🗄️ TimescaleDB]
+ 81개 계량기 × 6년  ──────▶   시계열 데이터 저장소
+                                     │
+                    ┌────────────────┼────────────────┐
+                    ▼                ▼                ▼
+          [📊 Phase 0-1]    [🤖 Phase 2-5]    [📈 ML 모델]
+           데이터 분석        AI 플랫폼(예정)    LightGBM + LSTM
+                │                   │
+         ┌──────┴──────┐     ┌──────┴──────┐
+         ▼             ▼     ▼             ▼
+   품질진단 CSV    차트 6개  Text-to-SQL  이상탐지
+     (7개)        (PNG)     에이전트     에이전트
+</code></pre></div>
+
+<hr />
+<h2 id="4">4. 데이터는 어떻게 흘러가나요? (데이터 파이프라인)</h2>
+<h3 id="41">4.1 데이터의 정제 단계</h3>
+<p>원본 데이터가 최종 분석용 데이터가 되기까지 <strong>4단계</strong> 를 거칩니다.</p>
+<div class="highlight"><pre><span></span><code>🔴 Raw           🟡 Corrected          🟢 Corrected Resampled      🔵 Reduced
+가공 전 원시  ──▶  오류 보정 완료  ──▶   시간 간격 통일          ──▶  81개→4범주
+데이터                                 (15분 / 1시간)               압축 합산
+</code></pre></div>
+
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>비유</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Raw</strong></td>
+<td>환자의 심전도 원본 기록</td>
+<td>센서가 그대로 기록한 값. 노이즈, 오류 포함</td>
+</tr>
+<tr>
+<td><strong>Corrected</strong></td>
+<td>의사가 잡음을 걸러낸 기록</td>
+<td>부호(+/-) 통일, 결측 보정, 시간 오차 정렬</td>
+</tr>
+<tr>
+<td><strong>Corrected Resampled</strong></td>
+<td>15분/1시간 간격으로 정리한 기록</td>
+<td>이 프로젝트의 <strong>주 분석 대상</strong></td>
+</tr>
+<tr>
+<td><strong>Reduced</strong></td>
+<td>건강 요약 리포트</td>
+<td>81개 계량기를 전기·난방·냉방·기상 <strong>4개로 요약</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="42">4.2 데이터베이스 구조</h3>
+<div class="highlight"><pre><span></span><code>TimescaleDB (PostgreSQL 확장)
+├── ems.full_meter                    ← 81개 계량기의 &quot;프로필 카드&quot;
+├── ems.cr_measurement_15min          ← 15분 간격 측정값 (원본 마트)
+├── ems.cr_measurement_1h             ← 1시간 간격 측정값 (원본 마트)
+├── ems.reduced_measurement_15min     ← 4대 범주 합산 뷰 (15분)
+└── ems.reduced_measurement_1h        ← 4대 범주 합산 뷰 (1시간) ★ ML 학습용
+</code></pre></div>
+
+<blockquote>
+<p><strong>[참고] TimescaleDB</strong>란?<br />
+PostgreSQL(관계형 DB)에 <strong>시계열 데이터 전용 기능</strong>(빠른 시간순 조회, 자동 파티셔닝)을 추가한 확장입니다. 쉽게 말해 "시간 데이터에 특화된 SQL 데이터베이스"입니다.</p>
+</blockquote>
+<h3 id="43-reduced-view-4">4.3 Reduced View의 4대 범주</h3>
+<p>81개 계량기를 <strong>건물 전체 관점</strong>에서 4개 카테고리로 묶은 것입니다.</p>
+<table>
+<thead>
+<tr>
+<th>범주</th>
+<th>Subcategory</th>
+<th>뜻</th>
+<th>포함 계량기</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>electricity</strong></td>
+<td>total</td>
+<td>건물 전체 전기 소비</td>
+<td>V.Z81, V.Z82 등 변압기 계량기 6개</td>
+</tr>
+<tr>
+<td></td>
+<td>pv</td>
+<td>태양광 발전량</td>
+<td>V.Z84 등 PV 계량기 4개</td>
+</tr>
+<tr>
+<td></td>
+<td>chp</td>
+<td>열병합발전 전기 출력</td>
+<td>H1.Z20 (또는 H1.ZE20)</td>
+</tr>
+<tr>
+<td><strong>heating</strong></td>
+<td>total</td>
+<td>총 난방열</td>
+<td>H1.W11 (가스보일러)</td>
+</tr>
+<tr>
+<td></td>
+<td>chp_heat</td>
+<td>CHP에서 나온 열</td>
+<td>H1.W12</td>
+</tr>
+<tr>
+<td><strong>cooling</strong></td>
+<td>total</td>
+<td>총 냉방열</td>
+<td>V.K21</td>
+</tr>
+<tr>
+<td></td>
+<td>cool_elec</td>
+<td>냉각 설비 전기 소비</td>
+<td>H1.Z16 등 5개</td>
+</tr>
+<tr>
+<td><strong>weather</strong></td>
+<td>Ta / Igm</td>
+<td>외기온 / 일사량</td>
+<td>WeatherStation.Weather</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5">5. 프로젝트의 핵심 발견</h2>
+<h3 id="51">5.1 데이터 품질</h3>
+<table>
+<thead>
+<tr>
+<th>발견</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>에너지 미터 결측률 <strong>0.03%</strong></td>
+<td>거의 완벽한 데이터. 다만 결측이 0%인 이유는 <strong>장애 구간을 과거 데이터 복사</strong>로 채웠기 때문</td>
+</tr>
+<tr>
+<td>기상 데이터 결측률 <strong>2.35%</strong></td>
+<td>특히 2018년에 7.11% 집중. DWD(독일기상청) 데이터로 보완 필요</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-regime">5.2 설비 변경 이벤트 (Regime)</h3>
+<p>6년 동안 건물 설비가 <strong>6번 크게 바뀌었습니다.</strong> 이 때마다 에너지 사용 패턴이 달라지기 때문에, 데이터를 구간별로 나눠서 분석해야 합니다.</p>
+<table>
+<thead>
+<tr>
+<th>시기</th>
+<th>이벤트</th>
+<th>비유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2019-02</td>
+<td>CHP 제어 방식 변경</td>
+<td>보일러를 껐다 켰다 → 세기 조절로 변경</td>
+</tr>
+<tr>
+<td>2019-06</td>
+<td>PV(태양광) 1차 설치</td>
+<td>지붕에 태양광 패널 소규모 설치</td>
+</tr>
+<tr>
+<td>2020-03</td>
+<td>COVID-19</td>
+<td>재택근무 시작 → 건물 전력 소비 급감</td>
+</tr>
+<tr>
+<td>2020-06</td>
+<td>PV 2차 증설 (749kWp)</td>
+<td>태양광을 풀 규모로 확장</td>
+</tr>
+<tr>
+<td>2020-09</td>
+<td>계량기 교체</td>
+<td>핵심 전기 미터 2개 교체 (H2.Z35→Z351)</td>
+</tr>
+<tr>
+<td>2023-06</td>
+<td>난방 현대화</td>
+<td>난방 시스템 업그레이드</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>⚠️ 중요:</strong> 모델 학습 권장 구간은 <strong>Regime 5 (2020-09 ~ 2023-06)</strong> 입니다.<br />
+설비 교체가 완료되고 안정적으로 운영된 약 2.75년 구간입니다.</p>
+</blockquote>
+<h3 id="53-regime">5.3 Regime 구간 분할 상세</h3>
+<table>
+<thead>
+<tr>
+<th>구간</th>
+<th>기간</th>
+<th>주요 특성</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regime 0</td>
+<td>2018.01 ~ 2019.02</td>
+<td>PV 없음, CHP On/Off 방식</td>
+</tr>
+<tr>
+<td>Regime 1</td>
+<td>2019.02 ~ 2019.06</td>
+<td>CHP 연속 모듈레이션</td>
+</tr>
+<tr>
+<td>Regime 2</td>
+<td>2019.06 ~ 2020.03</td>
+<td>PV Phase1 가동</td>
+</tr>
+<tr>
+<td>Regime 3</td>
+<td>2020.03 ~ 2020.06</td>
+<td>COVID 영향 (부하 급감)</td>
+</tr>
+<tr>
+<td>Regime 4</td>
+<td>2020.06 ~ 2020.09</td>
+<td>PV Phase2 풀 용량</td>
+</tr>
+<tr>
+<td><strong>Regime 5</strong></td>
+<td><strong>2020.09 ~ 2023.06</strong></td>
+<td><strong>계량기 교체 완료, 안정 운영 → 모델 학습 권장</strong></td>
+</tr>
+<tr>
+<td>Regime 6</td>
+<td>2023.06 ~ 2024.01</td>
+<td>난방 현대화 (CHP 하절기 가동)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="54">5.4 게이트웨이 장애 (인공 보정 구간)</h3>
+<p>데이터 수집 장치가 고장난 <strong>4개 구간(총 144일)</strong> 동안의 데이터는 실제 측정값이 아니라 <strong>과거 데이터를 복사</strong>해서 채운 "가짜 데이터"입니다.</p>
+<table>
+<thead>
+<tr>
+<th>장애명</th>
+<th>기간</th>
+<th>일수</th>
+<th>위험성</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workshop #1</td>
+<td>2020-02-13 ~ 03-06</td>
+<td>22일</td>
+<td>모델이 가짜 데이터를 "정상"으로 학습할 수 있음</td>
+</tr>
+<tr>
+<td>Emission Lab</td>
+<td>2020-08-20 ~ 09-17</td>
+<td>28일</td>
+<td>상동</td>
+</tr>
+<tr>
+<td>Distribution</td>
+<td>2021-11-15 ~ 12-10</td>
+<td>25일</td>
+<td>상동</td>
+</tr>
+<tr>
+<td>Workshop #2</td>
+<td>2022-05-06 ~ 07-14</td>
+<td><strong>69일</strong></td>
+<td>가장 긴 장애. 이 구간은 반드시 제외 필요</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6">6. 코드는 무엇을 하나요? (스크립트 상세)</h2>
+<h3 id="61-scriptsprofiling">6.1 프로파일링 스크립트 (<code>scripts/profiling/</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>역할</th>
+<th>산출물</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>meter_profiling.py</code></td>
+<td>81개 계량기 전수 품질 진단</td>
+<td>7개 CSV (<code>outputs/profiling/</code>)</td>
+</tr>
+<tr>
+<td><code>visualize_energy_flow.py</code></td>
+<td>6년 에너지 흐름 차트 6개</td>
+<td>PNG (<code>outputs/figures/energy_flow/</code>)</td>
+</tr>
+<tr>
+<td><code>meter_detailed_analysis.py</code></td>
+<td>개별/그룹 계량기 심층 분석</td>
+<td>Word 보고서</td>
+</tr>
+<tr>
+<td><code>generate_report_html.py</code></td>
+<td>마크다운 → HTML 보고서 변환</td>
+<td>HTML 보고서</td>
+</tr>
+</tbody>
+</table>
+<h4 id="meter_profilingpy-6">meter_profiling.py가 하는 일 (6단계)</h4>
+<div class="highlight"><pre><span></span><code>[1] 미터 레지스트리 조회 (81개 메타정보)
+ ↓
+[2] CR Mart 커버리지 (미터별 시간 범위·결측률)
+ ↓
+[3] Measurement 상세 (미터별 측정 항목 목록)
+ ↓
+[4] Source File 적재 상태 (원본 CSV 파일 로드 현황)
+ ↓
+[5] 연도별 결측률 (연도×미터 결측 분포)
+ ↓
+[6] 게이트웨이 장애 영향 (장애 기간 결측 분석)
+</code></pre></div>
+
+<h3 id="62-scriptsingest">6.2 데이터 적재 스크립트 (<code>scripts/ingest/</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sql/reduced_view.sql</code></td>
+<td>81개 계량기 → 4대 범주 합산 뷰 DDL</td>
+</tr>
+<tr>
+<td><code>dwd_weather_ingest.py</code></td>
+<td>독일 기상청(DWD) 데이터에서 기온/일사량 보완</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-ml-scriptsml">6.3 ML 학습 스크립트 (<code>scripts/ml/</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>역할</th>
+<th>모델</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>train_lgbm.py</code></td>
+<td>LightGBM 기반 1시간 후 전력 예측</td>
+<td>Gradient Boosting</td>
+</tr>
+<tr>
+<td><code>train_lstm.py</code></td>
+<td>LSTM 기반 1시간 후 전력 예측</td>
+<td>딥러닝 시계열 모델</td>
+</tr>
+<tr>
+<td><code>export_data.py</code></td>
+<td>학습 데이터 CSV 내보내기</td>
+<td>RunPod 클라우드 GPU용</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-ml">7. ML 모델 학습 결과</h2>
+<h3 id="71">7.1 두 모델이 예측하는 것</h3>
+<blockquote>
+<p><strong>"다음 1시간 뒤에 이 건물이 전력망(Grid)에서 얼마나 전기를 가져올 것인가?"</strong> 를 예측합니다.</p>
+</blockquote>
+<h3 id="72-19">7.2 사용한 피처(입력 변수) 19개</h3>
+<table>
+<thead>
+<tr>
+<th>종류</th>
+<th>피처</th>
+<th>쉬운 설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>달력</strong></td>
+<td>hour, dayofweek, month, is_weekend</td>
+<td>지금 몇 시? 무슨 요일? 주말?</td>
+</tr>
+<tr>
+<td><strong>주기 인코딩</strong></td>
+<td>hour_sin/cos, month_sin/cos</td>
+<td>"23시와 0시는 가깝다"를 AI가 이해하게 변환</td>
+</tr>
+<tr>
+<td><strong>기상</strong></td>
+<td>temp_c, solar_wm2</td>
+<td>바깥 기온, 햇빛 세기</td>
+</tr>
+<tr>
+<td><strong>Lag(과거값)</strong></td>
+<td>lag_1h ~ lag_168h</td>
+<td>1시간 전 / 2시간 전 / ... / 1주일 전 소비량</td>
+</tr>
+<tr>
+<td><strong>Rolling(이동평균)</strong></td>
+<td>roll_mean_24h, roll_std_24h, roll_mean_168h</td>
+<td>최근 24시간/1주일 평균 소비 추세</td>
+</tr>
+</tbody>
+</table>
+<h3 id="73">7.3 성능 비교</h3>
+<table>
+<thead>
+<tr>
+<th>지표</th>
+<th style="text-align: right;">LightGBM</th>
+<th style="text-align: right;">LSTM</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MAE</strong></td>
+<td style="text-align: right;"><strong>38.78 kW</strong></td>
+<td style="text-align: right;">43.06 kW</td>
+<td>평균적으로 38~43kW 정도 오차 (피크 600kW 대비 약 8%)</td>
+</tr>
+<tr>
+<td><strong>RMSE</strong></td>
+<td style="text-align: right;"><strong>60.12 kW</strong></td>
+<td style="text-align: right;">64.58 kW</td>
+<td>큰 오차에 더 가중치를 둔 지표</td>
+</tr>
+<tr>
+<td><strong>MAPE</strong></td>
+<td style="text-align: right;"><strong>59.87%</strong></td>
+<td style="text-align: right;">63.56%</td>
+<td>야간 저소비 구간 때문에 수치가 왜곡됨</td>
+</tr>
+<tr>
+<td>학습 시간</td>
+<td style="text-align: right;">~10초</td>
+<td style="text-align: right;">~5분</td>
+<td>LightGBM이 훨씬 빠름</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>💡 참고:</strong> MAPE가 60%로 높아 보이지만, 이는 야간에 전력이 3kW까지 떨어지는 구간에서 분모가 너무 작아지기 때문입니다. 실질적으로 <strong>MAE 38kW는 피크 대비 약 8~10% 오차</strong>로, 에너지 관리 목적으로는 실용적인 수준입니다.</p>
+</blockquote>
+<h3 id="74-lightgbm-top-10">7.4 LightGBM 피처 중요도 Top 10</h3>
+<table>
+<thead>
+<tr>
+<th>순위</th>
+<th>피처</th>
+<th style="text-align: right;">중요도</th>
+<th>해석</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>solar_wm2 (일사량)</td>
+<td style="text-align: right;">1,069</td>
+<td>냉방 부하와 밀접</td>
+</tr>
+<tr>
+<td>2</td>
+<td>temp_c (기온)</td>
+<td style="text-align: right;">923</td>
+<td>난방/냉방 결정 요인</td>
+</tr>
+<tr>
+<td>3</td>
+<td>lag_1h</td>
+<td style="text-align: right;">767</td>
+<td>1시간 전 소비의 관성</td>
+</tr>
+<tr>
+<td>4</td>
+<td>lag_2h</td>
+<td style="text-align: right;">476</td>
+<td>2시간 전 소비 패턴</td>
+</tr>
+<tr>
+<td>5</td>
+<td>dayofweek</td>
+<td style="text-align: right;">443</td>
+<td>요일별 패턴 (주말 급감)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>lag_24h</td>
+<td style="text-align: right;">351</td>
+<td>전일 같은 시각 패턴</td>
+</tr>
+<tr>
+<td>7</td>
+<td>roll_mean_24h</td>
+<td style="text-align: right;">351</td>
+<td>최근 24시간 추세</td>
+</tr>
+<tr>
+<td>8</td>
+<td>hour</td>
+<td style="text-align: right;">334</td>
+<td>시간대별 패턴</td>
+</tr>
+<tr>
+<td>9</td>
+<td>roll_mean_168h</td>
+<td style="text-align: right;">290</td>
+<td>최근 1주일 추세</td>
+</tr>
+<tr>
+<td>10</td>
+<td>lag_168h</td>
+<td style="text-align: right;">284</td>
+<td>전주 같은 시각 패턴</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8">8. 프로젝트 진행 현황</h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>작업</th>
+<th>상태</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Phase 0</strong></td>
+<td>데이터 프로파일링 (81개 미터 전수)</td>
+<td>✅ 완료</td>
+</tr>
+<tr>
+<td><strong>Phase 1</strong></td>
+<td>Reduced 합산 뷰 생성</td>
+<td>✅ 완료</td>
+</tr>
+<tr>
+<td><strong>Phase 1</strong></td>
+<td>에너지 흐름 시각화 검증 (6개 차트)</td>
+<td>✅ 완료</td>
+</tr>
+<tr>
+<td><strong>Phase 1</strong></td>
+<td>DWD 기상 데이터 보완 스크립트</td>
+<td>✅ 완료</td>
+</tr>
+<tr>
+<td><strong>ML</strong></td>
+<td>LightGBM + LSTM 모델 학습</td>
+<td>✅ 완료</td>
+</tr>
+<tr>
+<td><strong>Phase 2</strong></td>
+<td>Text-to-SQL 에이전트 개발</td>
+<td>🔜 예정</td>
+</tr>
+<tr>
+<td><strong>Phase 3</strong></td>
+<td>역률/비용 최적화</td>
+<td>🔜 예정</td>
+</tr>
+<tr>
+<td><strong>Phase 4</strong></td>
+<td>이상 탐지 모델링</td>
+<td>🔜 예정</td>
+</tr>
+<tr>
+<td><strong>Phase 5</strong></td>
+<td>자동 리포팅</td>
+<td>🔜 예정</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9">9. 프로젝트 파일 구조</h2>
+<div class="highlight"><pre><span></span><code>EMS/
+├── README.md                              ← 프로젝트 소개
+├── CLAUDE.md                              ← AI 어시스턴트용 컨텍스트
+├── .env                                   ← DB 접속 비밀번호 (비공개)
+│
+├── docs/                                  ← 문서 모음
+│   ├── paper.pdf                          ← 기준 논문
+│   ├── 기획서.md                          ← AI 플랫폼 기획서
+│   ├── 06_계량기별_상세_분석.docx         ← 계량기 심층 분석
+│   ├── 07_81개_계량기_개별_분석.docx      ← 81개 전체 미터 보고서
+│   └── 분석_기획/                         ← 분석 기획 문서 7종 + HTML 보고서
+│
+├── scripts/                               ← 실행 코드
+│   ├── profiling/                         ← 데이터 품질 분석 (5개 스크립트)
+│   ├── ingest/                            ← 데이터 적재/보완
+│   │   ├── dwd_weather_ingest.py
+│   │   └── sql/reduced_view.sql
+│   └── ml/                                ← 머신러닝 코드
+│       ├── train_lgbm.py
+│       ├── train_lstm.py
+│       └── export_data.py
+│
+├── outputs/                               ← 산출물
+│   ├── profiling/                         ← 프로파일링 CSV 7개
+│   ├── figures/energy_flow/               ← 시각화 차트 PNG 6개
+│   └── models/                            ← 학습된 모델 파일
+│
+└── process/                               ← 프로젝트 관리 산출물
+    ├── 1주차-기획/                        ← 기획서, 요구사항, WBS
+    ├── 2주차-데이터 수집 및 저장/         ← DB 설계 문서
+    └── 3주차-데이터 전처리/              ← 전처리 결과서, ML 학습결과서
+</code></pre></div>
+
+<hr />
+<h2 id="10">10. 핵심 용어 사전</h2>
+<h3 id="101">10.1 에너지 / 전기 용어</h3>
+<table>
+<thead>
+<tr>
+<th>용어</th>
+<th>쉬운 설명</th>
+<th>비유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>계량기 (Meter)</strong></td>
+<td>에너지 사용량을 측정하는 기기</td>
+<td>집에 있는 전기 계량기와 같음</td>
+</tr>
+<tr>
+<td><strong>유효전력 (P)</strong></td>
+<td>실제로 일을 하는 전력 (W)</td>
+<td>물을 끓이는 데 실제 쓰인 열</td>
+</tr>
+<tr>
+<td><strong>무효전력 (Q)</strong></td>
+<td>자기장 유지용으로 왔다 갔다 하는 전력 (var)</td>
+<td>물을 끓이진 않지만 냄비를 흔들어대는 힘</td>
+</tr>
+<tr>
+<td><strong>역률 (PF)</strong></td>
+<td>전력을 얼마나 효율적으로 쓰는지 (0~1)</td>
+<td>1이면 100% 효율. 0.8이면 20%가 낭비</td>
+</tr>
+<tr>
+<td><strong>유효전력량 (W)</strong></td>
+<td>시간 동안 쌓인 유효전력 (kWh)</td>
+<td>전기요금의 기본 단위</td>
+</tr>
+<tr>
+<td><strong>무효전력량 (WQ)</strong></td>
+<td>시간 동안 쌓인 무효전력 (kvarh)</td>
+<td>역률이 나쁘면 전력회사가 과태료를 매기는 기준</td>
+</tr>
+<tr>
+<td><strong>Grid (전력망)</strong></td>
+<td>한전 같은 외부 전력망</td>
+<td>수도꼭지에서 나오는 물 = 외부 전기</td>
+</tr>
+<tr>
+<td><strong>PV (Photovoltaic)</strong></td>
+<td>태양광 발전 시스템</td>
+<td>지붕의 태양광 패널</td>
+</tr>
+<tr>
+<td><strong>CHP</strong></td>
+<td>열병합발전. 가스로 전기+열 동시 생산</td>
+<td>하나의 엔진으로 전기도 만들고 난방도 하는 시스템</td>
+</tr>
+<tr>
+<td><strong>kWp</strong></td>
+<td>태양광 패널의 최대 발전 용량</td>
+<td>749kWp = 가장 좋은 조건에서 749kW 생산 가능</td>
+</tr>
+<tr>
+<td><strong>지상 부하</strong></td>
+<td>모터 등 무효전력을 소비하는 기기</td>
+<td>역률을 깎아먹는 쪽</td>
+</tr>
+<tr>
+<td><strong>진상 부하</strong></td>
+<td>콘덴서 등 무효전력을 보상하는 기기</td>
+<td>역률을 올려주는 "해독제"</td>
+</tr>
+</tbody>
+</table>
+<h3 id="102-db">10.2 데이터 / DB 용어</h3>
+<table>
+<thead>
+<tr>
+<th>용어</th>
+<th>쉬운 설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>시계열 데이터</strong></td>
+<td>시간 순서대로 나열된 데이터. 주가, 온도, 전력 같은 것</td>
+</tr>
+<tr>
+<td><strong>해상도 (Resolution)</strong></td>
+<td>데이터를 얼마나 자주 기록하는지. 15min = 15분마다</td>
+</tr>
+<tr>
+<td><strong>결측 (Missing/Null)</strong></td>
+<td>데이터가 빠져 있는 구간. 센서 고장이나 통신 장애로 발생</td>
+</tr>
+<tr>
+<td><strong>뷰 (View)</strong></td>
+<td>DB에서 복잡한 쿼리를 이름 붙여 저장한 "가상 테이블"</td>
+</tr>
+<tr>
+<td><strong>DDL</strong></td>
+<td>테이블이나 뷰를 만드는 SQL 명령어 (CREATE, ALTER 등)</td>
+</tr>
+<tr>
+<td><strong>멱등성</strong></td>
+<td>같은 작업을 여러 번 실행해도 결과가 같다는 뜻</td>
+</tr>
+<tr>
+<td><strong>Hypertable</strong></td>
+<td>TimescaleDB의 시간별 자동 파티션 테이블</td>
+</tr>
+<tr>
+<td><strong>Gateway</strong></td>
+<td>여러 센서의 데이터를 수집해서 서버로 보내는 장치</td>
+</tr>
+<tr>
+<td><strong>Gap Filling</strong></td>
+<td>결측 구간을 채우는 것. 이 프로젝트에서는 과거 데이터 복사 방식</td>
+</tr>
+</tbody>
+</table>
+<h3 id="103-ml-ai">10.3 ML / AI 용어</h3>
+<table>
+<thead>
+<tr>
+<th>용어</th>
+<th>쉬운 설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LightGBM</strong></td>
+<td>MS가 만든 트리 기반 ML 모델. 표 데이터에 매우 강력하고 빠름</td>
+</tr>
+<tr>
+<td><strong>LSTM</strong></td>
+<td>시계열의 과거 패턴을 "기억"하는 딥러닝 모델</td>
+</tr>
+<tr>
+<td><strong>피처 (Feature)</strong></td>
+<td>모델에 넣는 입력 변수. "힌트"라고 생각하면 됨</td>
+</tr>
+<tr>
+<td><strong>타겟 (Target)</strong></td>
+<td>모델이 예측해야 할 정답. 여기서는 "다음 1시간 Grid 전력"</td>
+</tr>
+<tr>
+<td><strong>Lag 피처</strong></td>
+<td>과거 시점의 값을 현재 입력으로 넣는 것</td>
+</tr>
+<tr>
+<td><strong>Rolling 피처</strong></td>
+<td>최근 N시간의 평균/표준편차. 추세 파악용</td>
+</tr>
+<tr>
+<td><strong>MAE</strong></td>
+<td>예측값과 실제값의 평균 오차. 38kW = 평균 38kW 빗나감</td>
+</tr>
+<tr>
+<td><strong>RMSE</strong></td>
+<td>큰 오차에 더 벌점을 주는 지표</td>
+</tr>
+<tr>
+<td><strong>MAPE</strong></td>
+<td>오차의 백분율 평균. 실제값이 0에 가까우면 왜곡됨</td>
+</tr>
+<tr>
+<td><strong>Early Stopping</strong></td>
+<td>과적합 방지를 위해 검증 성능이 나빠지면 학습 중단</td>
+</tr>
+<tr>
+<td><strong>과적합</strong></td>
+<td>학습 데이터만 잘 맞추고 새 데이터에서 성능 저하</td>
+</tr>
+<tr>
+<td><strong>MinMaxScaler</strong></td>
+<td>모든 값을 0~1 범위로 변환. 단위가 다른 피처 통일</td>
+</tr>
+<tr>
+<td><strong>Huber Loss</strong></td>
+<td>MSE와 MAE의 중간. 이상치에 덜 민감한 손실 함수</td>
+</tr>
+<tr>
+<td><strong>Sliding Window</strong></td>
+<td>24시간치를 한 묶음으로 넣어 다음 1시간 예측</td>
+</tr>
+<tr>
+<td><strong>MLflow</strong></td>
+<td>ML 실험 추적 도구. 어떤 설정이 최선인지 기록</td>
+</tr>
+<tr>
+<td><strong>Text-to-SQL</strong></td>
+<td>자연어 → SQL 자동 변환. "전기 사용량?" → SELECT SUM(...)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="104">10.4 기상 용어</h3>
+<table>
+<thead>
+<tr>
+<th>용어</th>
+<th>쉬운 설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DWD</strong></td>
+<td>독일 기상청. 공개 기상 데이터 제공</td>
+</tr>
+<tr>
+<td><strong>Ta</strong></td>
+<td>외기온. 바깥 공기 온도 (°C)</td>
+</tr>
+<tr>
+<td><strong>Igm</strong></td>
+<td>수평면 전일사량. 태양 세기 (W/m²)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="105">10.5 프로젝트 관리 용어</h3>
+<table>
+<thead>
+<tr>
+<th>용어</th>
+<th>쉬운 설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Regime</strong></td>
+<td>설비 변경으로 구분되는 "시대". 같은 Regime 안에서는 패턴이 비슷</td>
+</tr>
+<tr>
+<td><strong>EDA</strong></td>
+<td>탐색적 데이터 분석. 모델링 전 데이터를 그래프·통계로 파악</td>
+</tr>
+<tr>
+<td><strong>WBS</strong></td>
+<td>프로젝트 작업을 계층적으로 나눈 계획표</td>
+</tr>
+<tr>
+<td><strong>uv</strong></td>
+<td>Python 패키지 매니저. pip보다 빠름</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11">11. 핵심 기술 스택 정리</h2>
+<table>
+<thead>
+<tr>
+<th>영역</th>
+<th>기술</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>언어</strong></td>
+<td>Python 3.11+</td>
+<td>분석·학습·적재 스크립트 전체</td>
+</tr>
+<tr>
+<td><strong>DB</strong></td>
+<td>TimescaleDB (PostgreSQL)</td>
+<td>시계열 데이터 저장·조회</td>
+</tr>
+<tr>
+<td><strong>패키지 매니저</strong></td>
+<td>uv</td>
+<td>Python 의존성 관리 및 스크립트 실행</td>
+</tr>
+<tr>
+<td><strong>데이터 분석</strong></td>
+<td>pandas, numpy</td>
+<td>데이터 조작 및 수치 연산</td>
+</tr>
+<tr>
+<td><strong>시각화</strong></td>
+<td>matplotlib</td>
+<td>에너지 흐름 차트 생성</td>
+</tr>
+<tr>
+<td><strong>ML</strong></td>
+<td>LightGBM, PyTorch (LSTM)</td>
+<td>전력 예측 모델 학습</td>
+</tr>
+<tr>
+<td><strong>전처리</strong></td>
+<td>scikit-learn (MinMaxScaler)</td>
+<td>데이터 정규화</td>
+</tr>
+<tr>
+<td><strong>실험 추적</strong></td>
+<td>MLflow</td>
+<td>모델 하이퍼파라미터·성능 기록</td>
+</tr>
+<tr>
+<td><strong>DB 드라이버</strong></td>
+<td>psycopg (v3)</td>
+<td>Python에서 PostgreSQL 접속</td>
+</tr>
+<tr>
+<td><strong>환경 관리</strong></td>
+<td>python-dotenv</td>
+<td>.env 파일로 비밀번호 관리</td>
+</tr>
+<tr>
+<td><strong>컨테이너</strong></td>
+<td>Docker</td>
+<td>TimescaleDB 컨테이너 실행</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<blockquote>
+<p>💡 궁금한 부분이 있거나, 특정 스크립트나 개념에 대해 더 자세한 설명이 필요하면 편하게 질문해주세요!</p>
+</blockquote>
+<hr />
+<p><em>작성일: 2026-05-20 | SKN25-FINAL-4Team | EMS 프로젝트</em></p>
+</body>
+</html>
