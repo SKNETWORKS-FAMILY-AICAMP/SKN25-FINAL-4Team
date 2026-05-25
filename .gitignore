@@ -43,6 +43,10 @@ outputs/tables/*
 *.pt
 *.pkl
 *.parquet
+*.[Dd][Oo][Cc][Xx]
+*.[Pp][Dd][Ff]
+*.[Hh][Tt][Mm][Ll]
+*.[Xx][Ll][Ss][Xx]
 
 # Local preserved history; not shared through Git
 **/_archive/
