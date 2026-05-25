@@ -1,5 +1,6 @@
+import json
 import sys
-from datetime import timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -164,3 +165,299 @@ async def get_report(months: int = Query(3, ge=1, le=84)):
         pass  # 데이터 없을 시 빈 배열 반환
 
     return {"items": items, "cooling_vs_temp": cooling_vs_temp}
+
+
+# ══════════════════════════════════════════════════════════════════
+#  일일 보고서 (Daily Report)
+# ══════════════════════════════════════════════════════════════════
+
+def _ensure_daily_table(conn):
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS daily_report (
+            date                  DATE PRIMARY KEY,
+            total_consumption_kwh FLOAT,
+            self_sufficiency_pct  FLOAT,
+            avg_cop               FLOAT,
+            anomaly_count         INT,
+            grid_dependency_pct   FLOAT,
+            pv_kwh                FLOAT,
+            chp_kwh               FLOAT,
+            peak_hour             INT,
+            peak_kw               FLOAT,
+            hourly_profile        JSONB,
+            ai_summary            TEXT,
+            generated_by          TEXT DEFAULT 'manual',
+            updated_at            TIMESTAMPTZ DEFAULT NOW()
+        );
+    """)
+    conn.commit()
+
+
+def latest_data_date() -> str | None:
+    """ems 데이터에 존재하는 가장 최근 '완전한' 날짜(YYYY-MM-DD)를 반환."""
+    try:
+        from data.loader import get_data_range
+        _, end_dt = get_data_range()
+        if end_dt is None:
+            return None
+        # 마지막 시각이 자정이면 그 전날이 마지막 완전한 하루
+        d = end_dt.date()
+        if end_dt.hour == 0 and end_dt.minute == 0:
+            d = d - timedelta(days=1)
+        return d.isoformat()
+    except Exception:
+        return None
+
+
+def _aggregate_day(date_str: str) -> dict | None:
+    """하루치(24시간) 데이터를 집계해 KPI + 시간대별 프로파일 dict 반환."""
+    from data.loader import load_range
+
+    day      = datetime.fromisoformat(date_str).date()
+    next_day = (day + timedelta(days=1)).isoformat()
+    df = load_range(day.isoformat(), next_day, freq="1h")
+    if df.empty:
+        return None
+
+    df["ts"]   = pd.to_datetime(df["ts"])
+    df["hour"] = df["ts"].dt.hour
+
+    def _sum_kwh(col):  # 시간당 평균 W를 24시간 합산 → Wh → kWh
+        return float(df[col].sum(skipna=True)) / 1000
+
+    grid_kwh = _sum_kwh("grid_P")
+    pv_kwh   = _sum_kwh("pv_P")
+    chp_kwh  = _sum_kwh("chp_P")
+    total    = grid_kwh + pv_kwh + chp_kwh
+    local    = pv_kwh + chp_kwh
+
+    # 시간대별 프로파일
+    hourly = []
+    for h in range(24):
+        row = df[df["hour"] == h]
+        if row.empty:
+            hourly.append({"hour": h, "grid_kw": None, "pv_kw": None,
+                           "chp_kw": None, "total_kw": None, "cop": None})
+            continue
+        g = float(row["grid_P"].mean(skipna=True)) / 1000
+        p = float(row["pv_P"].mean(skipna=True)) / 1000
+        c = float(row["chp_P"].mean(skipna=True)) / 1000
+        cop_v = row["cop"].mean(skipna=True)
+        hourly.append({
+            "hour": h,
+            "grid_kw":  round(g, 2) if pd.notna(row["grid_P"].mean(skipna=True)) else None,
+            "pv_kw":    round(p, 2) if pd.notna(row["pv_P"].mean(skipna=True)) else None,
+            "chp_kw":   round(c, 2) if pd.notna(row["chp_P"].mean(skipna=True)) else None,
+            "total_kw": round(g + p + c, 2),
+            "cop":      round(float(cop_v), 2) if pd.notna(cop_v) else None,
+        })
+
+    # 피크 시간
+    valid_hours = [h for h in hourly if h["total_kw"] is not None]
+    peak = max(valid_hours, key=lambda x: x["total_kw"]) if valid_hours else None
+
+    return {
+        "date":                  date_str,
+        "total_consumption_kwh": round(total, 1),
+        "self_sufficiency_pct":  round(local / total * 100, 1) if total > 0 else None,
+        "avg_cop":               round(float(df["cop"].mean(skipna=True)), 2) if pd.notna(df["cop"].mean(skipna=True)) else None,
+        "grid_dependency_pct":   round(grid_kwh / total * 100, 1) if total > 0 else None,
+        "pv_kwh":                round(pv_kwh, 1),
+        "chp_kwh":               round(chp_kwh, 1),
+        "peak_hour":             peak["hour"] if peak else None,
+        "peak_kw":               peak["total_kw"] if peak else None,
+        "hourly_profile":        hourly,
+    }
+
+
+def _daily_anomaly_count(conn, date_str: str) -> int:
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT COUNT(*) FROM anomaly_results WHERE DATE(timestamp) = %s;",
+            (date_str,),
+        )
+        return int(cur.fetchone()[0])
+    except Exception:
+        return 0
+
+
+def _generate_daily_summary(kpi: dict) -> str:
+    """일일 KPI를 바탕으로 짧은 AI 요약 생성."""
+    try:
+        from agents.llm_client import chat as llm_chat
+    except Exception:
+        return ""
+
+    peak_str = (
+        f"{kpi['peak_hour']}시 {kpi['peak_kw']:.0f}kW"
+        if kpi.get("peak_hour") is not None else "N/A"
+    )
+    prompt = f"""당신은 에너지 관리 일일 보고서 작성자입니다.
+시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력망: 독일 공공 전력망.
+전력 용어는 "계통 전력"만 사용 (한전·수전량 등 한국 용어 금지).
+
+## {kpi['date']} 일일 KPI
+- 총 소비: {kpi['total_consumption_kwh']:,.0f} kWh
+- 자급률: {kpi.get('self_sufficiency_pct')}%
+- 평균 COP: {kpi.get('avg_cop')}
+- 그리드 의존도: {kpi.get('grid_dependency_pct')}%
+- PV 발전: {kpi['pv_kwh']:,.0f} kWh | CHP 발전: {kpi['chp_kwh']:,.0f} kWh
+- 피크: {peak_str}
+- 이상탐지: {kpi.get('anomaly_count', 0)}건
+
+위 데이터로 3~4문장의 간결한 일일 요약을 작성하세요.
+특이사항(피크 시간대, 자급률·COP의 평소 대비 높낮음, 이상탐지)을 짚어주세요.
+참고 기준: 자급률 6년평균 39.6%, COP 중앙값 2.06."""
+    try:
+        return llm_chat([{"role": "user", "content": prompt}], max_tokens=400).strip()
+    except Exception:
+        return ""
+
+
+def build_daily_report(date_str: str, generated_by: str = "manual") -> dict | None:
+    """하루치 집계 + 이상탐지 건수 + AI 요약 → daily_report 테이블 upsert 후 반환."""
+    kpi = _aggregate_day(date_str)
+    if kpi is None:
+        return None
+
+    with _db_conn() as conn:
+        _ensure_daily_table(conn)
+        kpi["anomaly_count"] = _daily_anomaly_count(conn, date_str)
+        kpi["ai_summary"]    = _generate_daily_summary(kpi)
+
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO daily_report
+                (date, total_consumption_kwh, self_sufficiency_pct, avg_cop,
+                 anomaly_count, grid_dependency_pct, pv_kwh, chp_kwh,
+                 peak_hour, peak_kw, hourly_profile, ai_summary, generated_by)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s::jsonb,%s,%s)
+            ON CONFLICT (date) DO UPDATE SET
+                total_consumption_kwh = EXCLUDED.total_consumption_kwh,
+                self_sufficiency_pct  = EXCLUDED.self_sufficiency_pct,
+                avg_cop               = EXCLUDED.avg_cop,
+                anomaly_count         = EXCLUDED.anomaly_count,
+                grid_dependency_pct   = EXCLUDED.grid_dependency_pct,
+                pv_kwh                = EXCLUDED.pv_kwh,
+                chp_kwh               = EXCLUDED.chp_kwh,
+                peak_hour             = EXCLUDED.peak_hour,
+                peak_kw               = EXCLUDED.peak_kw,
+                hourly_profile        = EXCLUDED.hourly_profile,
+                ai_summary            = EXCLUDED.ai_summary,
+                generated_by          = EXCLUDED.generated_by,
+                updated_at            = NOW();
+        """, (
+            kpi["date"], kpi["total_consumption_kwh"], kpi["self_sufficiency_pct"],
+            kpi["avg_cop"], kpi["anomaly_count"], kpi["grid_dependency_pct"],
+            kpi["pv_kwh"], kpi["chp_kwh"], kpi["peak_hour"], kpi["peak_kw"],
+            json.dumps(kpi["hourly_profile"]), kpi["ai_summary"], generated_by,
+        ))
+        conn.commit()
+
+    return kpi
+
+
+def _fetch_daily(conn, date_str: str) -> dict | None:
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT date, total_consumption_kwh, self_sufficiency_pct, avg_cop,
+               anomaly_count, grid_dependency_pct, pv_kwh, chp_kwh,
+               peak_hour, peak_kw, hourly_profile, ai_summary, generated_by, updated_at
+        FROM daily_report WHERE date = %s;
+    """, (date_str,))
+    r = cur.fetchone()
+    if not r:
+        return None
+    return {
+        "date": r[0].isoformat(), "total_consumption_kwh": r[1],
+        "self_sufficiency_pct": r[2], "avg_cop": r[3], "anomaly_count": r[4],
+        "grid_dependency_pct": r[5], "pv_kwh": r[6], "chp_kwh": r[7],
+        "peak_hour": r[8], "peak_kw": r[9], "hourly_profile": r[10],
+        "ai_summary": r[11], "generated_by": r[12],
+        "updated_at": r[13].isoformat() if r[13] else None,
+    }
+
+
+# ── 일일 보고서 엔드포인트 ────────────────────────────────────────
+
+@router.get("/daily/latest-data-date")
+async def get_latest_data_date():
+    """ems 데이터에 존재하는 가장 최근 완전한 날짜 반환 (UI 기본값·스케줄러 기준)."""
+    return {"date": latest_data_date()}
+
+
+@router.get("/daily/list")
+async def list_daily_reports(limit: int = Query(30, ge=1, le=365)):
+    """저장된 일일 보고서 목록 (최근순, 요약 KPI만)."""
+    try:
+        with _db_conn() as conn:
+            _ensure_daily_table(conn)
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT date, total_consumption_kwh, self_sufficiency_pct, avg_cop,
+                       anomaly_count, peak_hour, peak_kw, generated_by
+                FROM daily_report ORDER BY date DESC LIMIT %s;
+            """, (limit,))
+            rows = cur.fetchall()
+    except Exception as e:
+        return {"error": str(e), "items": []}
+
+    cols = ["date", "total_consumption_kwh", "self_sufficiency_pct", "avg_cop",
+            "anomaly_count", "peak_hour", "peak_kw", "generated_by"]
+    items = [
+        {**dict(zip(cols, r)), "date": r[0].isoformat()}
+        for r in rows
+    ]
+    return {"items": items}
+
+
+@router.get("/daily")
+async def get_daily_report(
+    date: str = Query(..., description="YYYY-MM-DD"),
+    regenerate: bool = Query(False, description="true면 저장본 무시하고 재생성"),
+):
+    """일일 보고서 조회. 저장본이 없으면 즉시 집계·생성."""
+    if not regenerate:
+        try:
+            with _db_conn() as conn:
+                _ensure_daily_table(conn)
+                cached = _fetch_daily(conn, date)
+            if cached:
+                return cached
+        except Exception as e:
+            return {"error": str(e)}
+
+    result = build_daily_report(date, generated_by="manual")
+    if result is None:
+        return {"error": f"{date} 데이터 없음", "date": date}
+    return result
+
+
+@router.post("/daily/aggregate")
+async def aggregate_daily(date: str = Query(..., description="YYYY-MM-DD")):
+    """특정 날짜 일일 보고서를 강제 재생성."""
+    result = build_daily_report(date, generated_by="manual")
+    if result is None:
+        return {"error": f"{date} 데이터 없음", "date": date}
+    return result
+
+
+@router.get("/daily/scheduler")
+async def get_scheduler_status():
+    """일일 보고서 스케줄러 상태 (활성 여부·다음 실행·마지막 실행)."""
+    from api.scheduler import scheduler_status
+    return scheduler_status()
+
+
+@router.post("/daily/scheduler/run")
+async def trigger_scheduler_now():
+    """스케줄러 작업을 즉시 1회 실행 (최신 데이터 날짜 기준)."""
+    target = latest_data_date()
+    if not target:
+        return {"error": "데이터 날짜 확인 불가"}
+    result = build_daily_report(target, generated_by="scheduler")
+    if result is None:
+        return {"error": f"{target} 데이터 없음", "date": target}
+    return result

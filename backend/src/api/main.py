@@ -5,6 +5,7 @@ FastAPI 진입점.
 
 import os
 import sys
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -16,10 +17,20 @@ load_dotenv()
 
 from api.routers import chat, anomalies, report, forecast
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    from api.scheduler import start_scheduler, stop_scheduler
+    start_scheduler()
+    yield
+    stop_scheduler()
+
+
 app = FastAPI(
     title="EMS AI Agent API",
     description="에너지 관리 시스템 대화형 분석 에이전트",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(

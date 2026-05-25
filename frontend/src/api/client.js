@@ -16,6 +16,16 @@ export const getAnomalyEvents   = (severity, year, month, gapHours = 2, excludeG
   api.get('/anomalies/events', { params: { ...(severity && { severity }), ...(year && { year }), ...(month && { month }), gap_hours: gapHours, exclude_gf: excludeGf } })
 export const getAnomalyContext  = (id, hours = 24) => api.get(`/anomalies/${id}/context`, { params: { hours } })
 export const getReport          = (months = 12) => api.get('/report', { params: { months } })
+
+// 일일 보고서
+export const getDailyReport      = (date, regenerate = false) =>
+  api.get('/report/daily', { params: { date, regenerate }, timeout: 60000 })
+export const aggregateDailyReport = (date) =>
+  api.post('/report/daily/aggregate', null, { params: { date }, timeout: 60000 })
+export const getDailyReportList  = (limit = 30) => api.get('/report/daily/list', { params: { limit } })
+export const getLatestDataDate   = () => api.get('/report/daily/latest-data-date')
+export const getSchedulerStatus  = () => api.get('/report/daily/scheduler')
+export const runSchedulerNow     = () => api.post('/report/daily/scheduler/run', null, { timeout: 60000 })
 export const runDetection       = (start, end) => api.post('/anomalies/run', null, { params: { start, end } })
 export const getDetectionStatus = (jobId) => api.get(`/anomalies/run/status/${jobId}`)
 

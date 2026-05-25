@@ -3,6 +3,7 @@ import DashboardPanel  from './components/DashboardPanel'
 import ChatPanel       from './components/ChatPanel'
 import AnomalyPanel    from './components/AnomalyPanel'
 import ReportPanel     from './components/ReportPanel'
+import DailyReportPanel from './components/DailyReportPanel'
 import ForecastPanel   from './components/ForecastPanel'
 import TopologyPanel   from './components/TopologyPanel'
 
@@ -12,6 +13,7 @@ const TABS = [
   { id: 'forecast',  label: '🔮 예측' },
   { id: 'anomaly',   label: '⚠️ 이상탐지' },
   { id: 'report',    label: '📊 보고서' },
+  { id: 'daily',     label: '📅 일일 보고서' },
   { id: 'topology',  label: '🔌 계량기' },
 ]
 
@@ -20,6 +22,7 @@ const PANELS = {
   chat:      ChatPanel,
   anomaly:   AnomalyPanel,
   report:    ReportPanel,
+  daily:     DailyReportPanel,
   forecast:  ForecastPanel,
   topology:  TopologyPanel,
 }

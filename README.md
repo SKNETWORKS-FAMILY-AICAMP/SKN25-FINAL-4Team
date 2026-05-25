@@ -16,6 +16,7 @@ SK Networks AI Family 25기 4팀 파이널 프로젝트.
 | 🚨 **이상탐지** | Isolation Forest + VMD-LSTM Residual 앙상블 (HIGH / MEDIUM / LOW) |
 | 📈 **전력 예측** | Prophet · XGBoost · LSTM · VMD-LSTM 모델 비교 및 백테스트 |
 | 📄 **KPI 보고서** | 월간 에너지 KPI 자동 생성 + PDF 출력 · 냉방-외기온 상관 차트 |
+| 📅 **일일 보고서** | 하루 단위 KPI + 시간대별 전력 프로파일 + AI 요약 · 매일 자동 생성 스케줄러 |
 | 🔌 **계량기 토폴로지** | 81개 미터 에너지 흐름 시각화 · 전력 집계 구조도 (건물별 탭) |
 
 ---
@@ -163,8 +164,17 @@ npm run dev                      # http://localhost:5173
 ### 보고서
 | 메서드 | 경로 | 설명 |
 |--------|------|------|
-| GET | `/report` | KPI 보고서 조회 + PDF 생성 (cooling_vs_temp 포함) |
-| POST | `/report/aggregate` | 보고서 데이터 재집계 |
+| GET | `/report` | 월간 KPI 보고서 조회 + PDF 생성 (cooling_vs_temp 포함) |
+| POST | `/report/aggregate` | 월간 보고서 데이터 재집계 |
+| GET | `/report/daily` | 일일 보고서 조회 (저장본 없으면 즉시 생성, regenerate로 강제 재생성) |
+| POST | `/report/daily/aggregate` | 특정 날짜 일일 보고서 강제 재생성 |
+| GET | `/report/daily/list` | 저장된 일일 보고서 목록 |
+| GET | `/report/daily/latest-data-date` | 데이터에 존재하는 가장 최근 완전한 날짜 |
+| GET | `/report/daily/scheduler` | 자동 생성 스케줄러 상태 (다음 실행·마지막 실행) |
+| POST | `/report/daily/scheduler/run` | 스케줄러 작업 즉시 1회 실행 |
+
+> **일일 보고서 자동 생성**: 매일 `DAILY_REPORT_HOUR` 시각(기본 06:00, Europe/Berlin)에  
+> 가장 최근 데이터 날짜의 보고서를 자동 생성합니다. `.env`의 `DAILY_REPORT_ENABLED=false`로 끌 수 있습니다.
 
 ---
 
@@ -205,8 +215,9 @@ SKN25-FINAL-4Team/
 │       │   ├── rag_agent.py              # 프롬프트 주입형 RAG
 │       │   └── state.py                  # 공유 AgentState
 │       ├── api/
-│       │   ├── main.py                   # FastAPI 진입점
+│       │   ├── main.py                   # FastAPI 진입점 (lifespan에서 스케줄러 기동)
 │       │   ├── db.py                     # psycopg2 커넥션 풀
+│       │   ├── scheduler.py              # 일일 보고서 자동 생성 (APScheduler)
 │       │   └── routers/                  # chat / anomalies / forecast / report
 │       ├── data/
 │       │   └── loader.py                 # DB 데이터 로더
@@ -233,6 +244,7 @@ SKN25-FINAL-4Team/
 │       │   ├── AnomalyPanel.jsx          # 이상탐지 결과 + 이벤트 뷰
 │       │   ├── ForecastPanel.jsx         # 모델 비교 예측 차트
 │       │   ├── ReportPanel.jsx           # 월간 KPI + 냉방-외기온 차트
+│       │   ├── DailyReportPanel.jsx      # 일일 KPI + 시간대별 프로파일 + AI 요약
 │       │   └── TopologyPanel.jsx         # 에너지 흐름 시각화 + 전력 집계 구조도
 │       ├── data/
 │       │   └── meterCatalog.js           # 계량기 메타데이터 (Gruner et al. 2025)
