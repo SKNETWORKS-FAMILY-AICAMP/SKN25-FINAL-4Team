@@ -283,8 +283,11 @@ source_file → full_measurement → cr_measurement_1h / cr_measurement_15min �
 
 | 이름 | 역할 |
 |---|---|
-| 여해준 | 프로젝트 기획, DB 설계, 데이터 수집·적재 |
+| 이근혁 | PM, 프로젝트 총괄, 일정 관리, LLM Agent 설계·개발 |
+| 여해준 | DB 설계, 데이터 수집·적재, 백엔드(FastAPI) 개발 |
 | 최원준 | 데이터 전처리, ML/DL 모델 학습 및 실험 |
+| 전운열 | 데이터 분석·EDA, 이상 탐지 모델 개발 |
+| 신문수 | 프론트엔드(React) 개발, 대시보드 시각화 |
 
 ---
 
