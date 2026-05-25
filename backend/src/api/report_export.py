@@ -61,6 +61,26 @@ def _hourly_rows(r: dict) -> list[list[str]]:
 
 _HOURLY_HEADER = ["시간", "계통(kW)", "태양광(kW)", "CHP(kW)", "합계(kW)", "COP"]
 
+_TYPE_LABEL = {
+    "COPDrop": "COP 급락", "CHPOutage": "CHP 정지", "PowerSpike": "전력 급등",
+    "NightConsumption": "야간 소비", "PVNightNonZero": "PV 야간 비정상",
+}
+_EVENT_HEADER = ["시각", "유형", "심각도", "계측기", "설명"]
+
+
+def _event_rows(r: dict) -> list[list[str]]:
+    rows = []
+    for e in (r.get("anomaly_events") or []):
+        ts = (e.get("timestamp") or "")[11:16]  # HH:MM
+        rows.append([
+            ts,
+            _TYPE_LABEL.get(e.get("anomaly_type"), e.get("anomaly_type") or "—"),
+            e.get("severity") or "—",
+            e.get("meter_id") or "—",
+            (e.get("description") or "—")[:60],
+        ])
+    return rows
+
 
 # ── PDF (reportlab) ──────────────────────────────────────────────
 
@@ -119,6 +139,26 @@ def build_pdf(r: dict) -> bytes:
             story.append(Paragraph(line.strip() or "&nbsp;", body_s))
         story.append(Spacer(1, 5*mm))
 
+    events = _event_rows(r)
+    story += [Paragraph(f"당일 이상 이벤트 ({len(events)}건)", head_s)]
+    if events:
+        e_tbl = Table([_EVENT_HEADER] + events, repeatRows=1,
+                      colWidths=[18*mm, 26*mm, 20*mm, 28*mm, 68*mm])
+        e_tbl.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#8b1a1a")),
+            ("TEXTCOLOR",  (0, 0), (-1, 0), colors.white),
+            ("FONTNAME",   (0, 0), (-1, -1), font),
+            ("FONTSIZE",   (0, 0), (-1, -1), 8),
+            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fbf0f0")]),
+            ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#d0d7de")),
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("TOPPADDING", (0, 0), (-1, -1), 2), ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+        ]))
+        story.append(e_tbl)
+    else:
+        story.append(Paragraph("탐지된 이상 없음", body_s))
+    story.append(Spacer(1, 5*mm))
+
     hourly = _hourly_rows(r)
     if hourly:
         story += [Paragraph("시간대별 전력 프로파일", head_s)]
@@ -162,6 +202,20 @@ def build_docx(r: dict) -> bytes:
     if r.get("ai_summary"):
         doc.add_heading("AI 요약", level=2)
         doc.add_paragraph(r["ai_summary"])
+
+    events = _event_rows(r)
+    doc.add_heading(f"당일 이상 이벤트 ({len(events)}건)", level=2)
+    if events:
+        et = doc.add_table(rows=1, cols=len(_EVENT_HEADER))
+        et.style = "Light Grid Accent 2"
+        for i, h in enumerate(_EVENT_HEADER):
+            et.rows[0].cells[i].text = h
+        for row in events:
+            cells = et.add_row().cells
+            for i, v in enumerate(row):
+                cells[i].text = v
+    else:
+        doc.add_paragraph("탐지된 이상 없음")
 
     hourly = _hourly_rows(r)
     if hourly:
@@ -320,6 +374,16 @@ def _section_xml(r: dict) -> str:
         for line in r["ai_summary"].split("\n"):
             if line.strip():
                 paras.append(_para("  " + line.strip()))
+
+    events = _event_rows(r)
+    paras.append(_para(""))
+    paras.append(_para(f"[ 당일 이상 이벤트 ({len(events)}건) ]"))
+    if events:
+        paras.append(_para("  " + " | ".join(_EVENT_HEADER)))
+        for row in events:
+            paras.append(_para("  " + " | ".join(row)))
+    else:
+        paras.append(_para("  탐지된 이상 없음"))
 
     hourly = _hourly_rows(r)
     if hourly:

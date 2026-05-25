@@ -14,12 +14,17 @@ const tt = {
   itemStyle: { color: '#8b949e' },
 }
 
-function KpiCard({ label, value, sub, color = '#58a6ff' }) {
+const SEV_COLOR  = { HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#58a6ff' }
+const TYPE_LABEL = {
+  COPDrop: 'COP 급락', CHPOutage: 'CHP 정지', PowerSpike: '전력 급등',
+  NightConsumption: '야간 소비', PVNightNonZero: 'PV 야간 비정상', Unknown: '기타',
+}
+
+function Metric({ label, value, color = '#e6edf3' }) {
   return (
-    <div style={s.kpiCard}>
-      <div style={{ fontSize: 24, fontWeight: 700, color }}>{value ?? '–'}</div>
-      <div style={{ fontSize: 11, color: '#8b949e', marginTop: 2 }}>{sub}</div>
-      <div style={{ fontSize: 13, color: '#e6edf3', marginTop: 6 }}>{label}</div>
+    <div style={s.metric}>
+      <div style={{ fontSize: 11, color: '#8b949e' }}>{label}</div>
+      <div style={{ fontSize: 16, fontWeight: 700, color, marginTop: 2 }}>{value ?? '–'}</div>
     </div>
   )
 }
@@ -137,27 +142,26 @@ export default function DailyReportPanel() {
               </div>
             </div>
 
-            {/* KPI 카드 */}
-            <div style={s.kpiRow}>
-              <KpiCard label="총 소비량"     value={`${report.total_consumption_kwh?.toLocaleString()} kWh`} sub="Daily Consumption" color="#58a6ff" />
-              <KpiCard label="자급률"        value={report.self_sufficiency_pct != null ? `${report.self_sufficiency_pct}%` : '–'} sub="Self-Sufficiency" color="#3fb950" />
-              <KpiCard label="평균 COP"      value={report.avg_cop ?? '–'} sub="냉방 성능계수" color="#a371f7" />
-              <KpiCard label="그리드 의존도" value={report.grid_dependency_pct != null ? `${report.grid_dependency_pct}%` : '–'} sub="Grid Dependency" color="#d29922" />
-              <KpiCard label="피크"          value={report.peak_hour != null ? `${report.peak_hour}시` : '–'} sub={report.peak_kw != null ? `${report.peak_kw?.toLocaleString()} kW` : ''} color="#f85149" />
-              <KpiCard label="이상탐지"      value={`${report.anomaly_count ?? 0}건`} sub="당일 탐지" color={report.anomaly_count > 0 ? '#f85149' : '#3fb950'} />
-            </div>
-
-            {/* AI 요약 */}
+            {/* AI 일일 브리핑 (전면) */}
             {report.ai_summary && (
               <div style={s.summaryBox}>
-                <div style={s.summaryTitle}>🤖 AI 일일 요약</div>
+                <div style={s.summaryTitle}>🤖 AI 일일 브리핑</div>
                 <div style={s.summaryText}>{report.ai_summary}</div>
               </div>
             )}
 
-            {/* 시간대별 프로파일 */}
+            {/* 컴팩트 KPI 스트립 */}
+            <div style={s.kpiStrip}>
+              <Metric label="총 소비량"     value={`${report.total_consumption_kwh?.toLocaleString()} kWh`} color="#58a6ff" />
+              <Metric label="자급률"        value={report.self_sufficiency_pct != null ? `${report.self_sufficiency_pct}%` : '–'} color="#3fb950" />
+              <Metric label="평균 COP"      value={report.avg_cop ?? '–'} color="#a371f7" />
+              <Metric label="그리드 의존도" value={report.grid_dependency_pct != null ? `${report.grid_dependency_pct}%` : '–'} color="#d29922" />
+              <Metric label="피크"          value={report.peak_hour != null ? `${report.peak_hour}시 · ${report.peak_kw?.toLocaleString()}kW` : '–'} color="#f85149" />
+            </div>
+
+            {/* 시간대별 프로파일 (핵심) */}
             <div style={s.chartBox}>
-              <div style={s.chartTitle}>시간대별 전력 프로파일 (kW) · COP</div>
+              <div style={s.chartTitle}>⏱ 시간대별 전력 프로파일 (kW) · COP</div>
               <ResponsiveContainer width="100%" height={300}>
                 <ComposedChart data={hourly} margin={{ top: 8, right: 16, left: -8, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#21262d" />
@@ -181,6 +185,44 @@ export default function DailyReportPanel() {
                     dot={false} connectNulls />
                 </ComposedChart>
               </ResponsiveContainer>
+            </div>
+
+            {/* 당일 이상 이벤트 */}
+            <div style={s.chartBox}>
+              <div style={s.chartTitle}>
+                🚨 당일 이상 이벤트
+                <span style={{ fontSize: 12, color: '#8b949e', fontWeight: 400, marginLeft: 8 }}>
+                  {report.anomaly_events?.length ?? report.anomaly_count ?? 0}건
+                </span>
+              </div>
+              {(report.anomaly_events?.length ?? 0) === 0
+                ? <div style={{ color: '#6e7681', fontSize: 13, padding: '16px 0', textAlign: 'center' }}>
+                    탐지된 이상 없음
+                  </div>
+                : (
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    {report.anomaly_events.map(ev => (
+                      <div key={ev.id} style={s.eventRow}>
+                        <span style={{ fontFamily: 'monospace', fontSize: 12, color: '#8b949e', minWidth: 46 }}>
+                          {ev.timestamp?.slice(11, 16)}
+                        </span>
+                        <span style={{ ...s.sevPill, background: (SEV_COLOR[ev.severity] ?? '#6e7681') + '22', color: SEV_COLOR[ev.severity] ?? '#8b949e' }}>
+                          {ev.severity}
+                        </span>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: '#e6edf3', minWidth: 90 }}>
+                          {TYPE_LABEL[ev.anomaly_type] ?? ev.anomaly_type}
+                        </span>
+                        <span style={{ fontFamily: 'monospace', fontSize: 11, color: '#58a6ff', minWidth: 70 }}>
+                          {ev.meter_id}
+                        </span>
+                        <span style={{ fontSize: 12, color: '#8b949e', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {ev.description}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )
+              }
             </div>
           </>
         )}
@@ -228,13 +270,15 @@ const s = {
   dlBtn:       { background: 'transparent', border: '1px solid #30363d', borderRadius: 6, color: '#58a6ff', fontSize: 12, fontWeight: 600, padding: '5px 12px', cursor: 'pointer' },
   badge:       { fontSize: 11, fontWeight: 600, color: '#a371f7', background: '#a371f722', borderRadius: 4, padding: '2px 8px' },
   badgeSm:     { fontSize: 10, fontWeight: 600, color: '#a371f7', background: '#a371f722', borderRadius: 3, padding: '1px 6px', marginLeft: 'auto' },
-  kpiRow:      { display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 },
-  kpiCard:     { background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '14px 16px' },
-  summaryBox:  { background: '#161b22', border: '1px solid #a371f733', borderRadius: 10, padding: '14px 18px' },
-  summaryTitle:{ fontSize: 13, fontWeight: 600, color: '#a371f7', marginBottom: 8 },
-  summaryText: { fontSize: 13, color: '#c9d1d9', lineHeight: 1.7, whiteSpace: 'pre-wrap' },
+  kpiStrip:    { display: 'flex', gap: 8, flexWrap: 'wrap', background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '12px 16px' },
+  metric:      { flex: 1, minWidth: 120, paddingRight: 12, borderRight: '1px solid #21262d' },
+  summaryBox:  { background: 'linear-gradient(135deg, #a371f714, #161b22)', border: '1px solid #a371f744', borderRadius: 10, padding: '16px 20px' },
+  summaryTitle:{ fontSize: 14, fontWeight: 700, color: '#a371f7', marginBottom: 8 },
+  summaryText: { fontSize: 14, color: '#e6edf3', lineHeight: 1.75, whiteSpace: 'pre-wrap' },
   chartBox:    { background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '16px 18px' },
   chartTitle:  { fontSize: 13, fontWeight: 600, color: '#e6edf3', marginBottom: 12 },
+  eventRow:    { display: 'flex', alignItems: 'center', gap: 12, padding: '8px 4px', borderBottom: '1px solid #21262d' },
+  sevPill:     { fontSize: 10, fontWeight: 700, borderRadius: 4, padding: '2px 8px', minWidth: 54, textAlign: 'center' },
   listRow:     { display: 'flex', alignItems: 'center', gap: 16, padding: '9px 10px', borderBottom: '1px solid #21262d', cursor: 'pointer', borderRadius: 6 },
   listRowActive:{ background: '#1f6feb18' },
 }

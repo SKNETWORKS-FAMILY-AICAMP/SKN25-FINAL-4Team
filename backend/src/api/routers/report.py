@@ -284,6 +284,39 @@ def _daily_anomaly_count(conn, date_str: str) -> int:
         return 0
 
 
+def _daily_anomaly_events(conn, date_str: str, limit: int = 50) -> list[dict]:
+    """해당 날짜에 발생한 이상 이벤트 목록 (시간순)."""
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT id, timestamp, meter_id, anomaly_type, severity, description
+            FROM anomaly_results
+            WHERE DATE(timestamp) = %s
+            ORDER BY timestamp ASC
+            LIMIT %s;
+        """, (date_str, limit))
+        rows = cur.fetchall()
+    except Exception:
+        return []
+    cols = ["id", "timestamp", "meter_id", "anomaly_type", "severity", "description"]
+    return [
+        {**dict(zip(cols, r)), "timestamp": r[1].isoformat() if r[1] else None}
+        for r in rows
+    ]
+
+
+def _enrich_events(report: dict) -> dict:
+    """보고서 dict에 당일 이상 이벤트 목록을 추가 (조회 시점 기준 최신)."""
+    if not report or not report.get("date"):
+        return report
+    try:
+        with _db_conn() as conn:
+            report["anomaly_events"] = _daily_anomaly_events(conn, report["date"])
+    except Exception:
+        report["anomaly_events"] = []
+    return report
+
+
 def _generate_daily_summary(kpi: dict) -> str:
     """일일 KPI를 바탕으로 짧은 AI 요약 생성."""
     try:
@@ -426,14 +459,14 @@ async def get_daily_report(
                 _ensure_daily_table(conn)
                 cached = _fetch_daily(conn, date)
             if cached:
-                return cached
+                return _enrich_events(cached)
         except Exception as e:
             return {"error": str(e)}
 
     result = build_daily_report(date, generated_by="manual")
     if result is None:
         return {"error": f"{date} 데이터 없음", "date": date}
-    return result
+    return _enrich_events(result)
 
 
 @router.post("/daily/aggregate")
@@ -466,6 +499,7 @@ async def download_daily_report(
         report = build_daily_report(date, generated_by="manual")
     if report is None:
         return {"error": f"{date} 데이터 없음", "date": date}
+    report = _enrich_events(report)
 
     try:
         data, media, filename = report_export.render(report, format)
