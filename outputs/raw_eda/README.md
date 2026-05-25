@@ -6,6 +6,8 @@
 
 - `correlation/`
   - 상관계수 분석 결과
+- `sliding_window/`
+  - 구간 통계 및 시계열 창 기반 탐색 결과
 - `stl/`
   - STL 분해 및 이상치 탐색 결과
 
@@ -22,9 +24,26 @@
   - 통합 interactive dashboard
   - `electric_correlation_dashboard.html`
   - `thermal_correlation_dashboard.html`
+- `correlation/analysis/`
+  - 관계 해석용 개별 분석 dashboard
+  - 예: `thermal_meter_relationship_dashboard.html`
 
 개별 correlation HTML은 유지하지 않는다.
 통합 dashboard에서 동일 내용을 확인한다.
+
+## sliding_window
+
+- `sliding_window/png/`
+  - 계량기별 sliding window 정적 PNG
+  - `electric/{meter_urn}/`
+  - `thermal/{meter_urn}/`
+- `sliding_window/csv/`
+  - sliding window 집계 CSV
+  - `electric/`, `thermal/`
+- `sliding_window/plotly/`
+  - 통합 interactive sliding window dashboard
+  - `electric_sliding_dashboard.html`
+  - `thermal_sliding_dashboard.html`
 
 ## stl
 
@@ -40,6 +59,10 @@
   - 통합 interactive STL dashboard
   - `electric_stl_dashboard.html`
   - `thermal_stl_dashboard.html`
+  - 등분산성 점검 dashboard
+    - `stl_homoscedasticity_dashboard.html`
+    - `stl_homoscedasticity_manifest.json`
+    - `homoscedasticity/{meter_urn}/{col}.js`
   - dashboard가 읽는 payload:
     - `electric/{meter_urn}/{col}.js`
     - `thermal/{meter_urn}/{col}.js`
