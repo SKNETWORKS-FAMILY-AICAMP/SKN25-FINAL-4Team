@@ -17,7 +17,7 @@ SK Networks AI Family 25기 4팀 파이널 프로젝트.
 | 💬 **대화형 질의** | 자연어로 예측·에너지 데이터 질문 → LLM 답변 (OpenAI / Anthropic / Gemini 선택 가능) |
 | 📄 **월간 보고서** | 장기 추세 분석 — 연·계절·월 비교, 냉방-외기온 상관, 전월 대비(MoM) · PDF 출력 |
 | 📅 **일일 보고서** | 당일 운영 브리핑 — AI 요약 + 시간대별 전력 프로파일·피크 + 당일 이상 이벤트 · 매일 자동 생성 · PDF/DOCX/HWPX 다운로드 |
-| 🚨 **이상탐지** *(보조)* | 예측 잔차(VMD-LSTM) + Isolation Forest 앙상블 기반 이상 진단 (HIGH / MEDIUM / LOW) |
+| 🚨 **이상탐지** *(보조)* | 2경로 — ① VMD-LSTM 예측 잔차 + Isolation Forest(주력) ② 통계·IF·LSTM-AE 3단계 투표 앙상블(폴백) · HIGH / MEDIUM / LOW |
 | 🔌 **계량기 토폴로지** | 81개 미터 에너지 흐름 시각화 · 전력 집계 구조도 (건물별 탭) |
 
 ---
@@ -153,6 +153,11 @@ npm run dev                      # http://localhost:5173
 | POST | `/anomalies/run` | 백그라운드 이상탐지 실행 |
 | GET | `/anomalies/run/status/{job_id}` | 실행 상태 조회 |
 
+> **탐지 방식 (2경로)** — `/anomalies/run` 실행 시 모델 파일 유무로 자동 분기:
+> - **주력**: VMD-LSTM으로 수요를 예측한 뒤 **잔차(\|실제−예측\|)** 가 임계치를 넘는지 + IsolationForest 이상 여부를 합산. 둘 다 탐지=HIGH, 잔차 임계치 1.5배 초과=MEDIUM, 한쪽만=LOW.
+> - **폴백**(잔차 모델 파일 없을 때): 통계(Z-score·IQR·STL) + IsolationForest + LSTM-AE **3단계 투표**. 2표 이상=HIGH, 1표=MEDIUM.
+> - 공통: 피처값으로 유형(COPDrop·CHPOutage·NightConsumption·PVNightNonZero·PowerSpike) 분류 후 `anomaly_results`에 저장.
+
 ### 예측
 | 메서드 | 경로 | 설명 |
 |--------|------|------|
@@ -230,8 +235,11 @@ SKN25-FINAL-4Team/
 │       │   └── meter_metadata.json       # 81개 미터 및 설비 그룹 정보
 │       └── models/
 │           ├── anomaly/
-│           │   ├── ensemble.py           # Isolation Forest + Residual 앙상블
-│           │   └── residual_model.py     # VMD-LSTM 잔차 기반 이상탐지
+│           │   ├── residual_model.py     # 주력: VMD-LSTM 잔차 + IsolationForest
+│           │   ├── ensemble.py           # 폴백: 3단계 투표 앙상블 오케스트레이션
+│           │   ├── statistical.py        #   1단계: Z-score·IQR·STL (hour×month 맥락)
+│           │   ├── isolation.py          #   2단계: IsolationForest (다변량)
+│           │   └── lstm_ae.py            #   3단계: LSTM AutoEncoder (재구성 오차)
 │           └── forecasting/
 │               ├── prophet_model.py
 │               ├── xgboost_model.py
