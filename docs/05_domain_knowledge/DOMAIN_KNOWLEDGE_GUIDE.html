@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Energy Platform Domain Knowledge Guide</title>
+  <style>
+    :root {
+      --bg: #f7f5ef;
+      --paper: #fffdf8;
+      --ink: #1f2933;
+      --muted: #52606d;
+      --line: #d9d4c7;
+      --accent: #8b5e34;
+      --accent-soft: #f3e7d7;
+      --good: #1f7a4d;
+      --warn: #a15c17;
+      --bad: #9b2226;
+      --code: #f5f1e8;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #f2eee4 0%, var(--bg) 100%);
+      line-height: 1.65;
+    }
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 40px 24px 64px;
+    }
+    .hero {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 32px 32px 24px;
+      box-shadow: 0 18px 40px rgba(53, 47, 38, 0.08);
+    }
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3 { margin: 0 0 12px; line-height: 1.25; }
+    h1 { font-size: 34px; }
+    h2 {
+      font-size: 26px;
+      margin-top: 40px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--line);
+    }
+    h3 { font-size: 20px; margin-top: 28px; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 16px 20px; padding: 0; }
+    li { margin-bottom: 8px; }
+    code {
+      background: var(--code);
+      border-radius: 6px;
+      padding: 1px 6px;
+      font-family: "D2Coding", "Consolas", monospace;
+      font-size: 0.95em;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin: 20px 0 28px;
+    }
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px 18px 14px;
+    }
+    .card h3 { margin-top: 0; font-size: 18px; }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 18px 0 26px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 820px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f4efe4;
+      font-weight: 700;
+      color: #3d3121;
+    }
+    tr:last-child td { border-bottom: none; }
+    .note, .warn, .good, .bad {
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin: 16px 0;
+    }
+    .note { background: #f6f3ea; border: 1px solid #e2dbc9; }
+    .good { background: #eaf6ef; border: 1px solid #bfdfca; }
+    .warn { background: #fff4e5; border: 1px solid #ebcfaa; }
+    .bad { background: #fdecec; border: 1px solid #efc4c6; }
+    .muted { color: var(--muted); }
+    .footer {
+      margin-top: 48px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <span class="eyebrow">Domain Knowledge</span>
+      <h1>Energy Metering Domain Knowledge Guide</h1>
+      <p>
+        이 문서는 본 프로젝트에서 전기/열량 계량 데이터를 해석할 때 필요한 기본 도메인 지식을 정리한 문서입니다.
+        목적은 <strong>feature 의미를 이해하고</strong>, <strong>계량기가 무엇을 직접 측정하고 무엇을 계산하는지 구분</strong>하며,
+        <strong>이상치가 설비 문제인지 계량 문제인지 해석하는 기준</strong>을 갖추는 것입니다.
+      </p>
+      <div class="grid">
+        <div class="card">
+          <h3>핵심 질문 1</h3>
+          <p>계량기는 단순히 값을 “출력”하는가, 아니면 내부에서 일부 값을 “계산”하는가?</p>
+        </div>
+        <div class="card">
+          <h3>핵심 질문 2</h3>
+          <p>이상치가 보였을 때 그것이 설비 문제인지, 계량 채널 문제인지 어떻게 구분할 것인가?</p>
+        </div>
+        <div class="card">
+          <h3>핵심 질문 3</h3>
+          <p>프로젝트에서 어떤 유형의 이상을 NaN 처리/flag 처리 대상으로 볼 것인가?</p>
+        </div>
+      </div>
+    </section>
+
+    <h2>1. 계량기는 무엇을 하는 장치인가</h2>
+    <p>
+      계량기는 단순히 설비 옆에 붙어 있는 “표시기”가 아니라, 여러 센서 입력을 받아서 일부 물리량은 직접 읽고,
+      일부 물리량은 내부 로직으로 계산하여 저장 또는 전송하는 장치입니다.
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>직접 측정에 가까운 값</h3>
+        <ul>
+          <li>전압 <code>U1, U2, U3</code></li>
+          <li>전류 <code>I1, I2, I3</code></li>
+          <li>주파수 <code>f</code></li>
+          <li>외기온 <code>Ta</code></li>
+          <li>유량 <code>qv</code></li>
+          <li>공급/환수 온도 <code>Tvl, Trl</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>계산/파생에 가까운 값</h3>
+        <ul>
+          <li>유효전력 <code>P</code></li>
+          <li>무효전력 <code>Q</code></li>
+          <li>역률 <code>PF, PF1, PF2, PF3</code></li>
+          <li>누적 전력량 <code>W</code></li>
+          <li>온도차 <code>Tdiff = Tvl - Trl</code></li>
+          <li>열량계 power <code>P</code> 또는 유사한 열부하 지표</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>중요:</strong> DB에 저장된 값이 모두 “원시 센서값(raw sensor voltage/current signal)”은 아닙니다.
+      특히 <code>P</code>, <code>Q</code>, <code>PF</code>, <code>W</code>는 보통 계량기 내부 계산이나 장비 firmware 계산을 거친 값입니다.
+    </div>
+
+    <h3>전기 계량기 예시</h3>
+    <p>
+      전기 계량기는 보통 각 상의 전압, 전류, 위상 정보를 읽은 뒤 이를 조합해
+      <code>P</code>, <code>Q</code>, <code>PF</code>, <code>W</code> 같은 값을 계산합니다.
+      따라서 센서 자체가 정상이어도, 내부 계산이나 채널 매핑이 꼬이면 파생 feature가 비정상적으로 튈 수 있습니다.
+    </p>
+
+    <h3>열량계 예시</h3>
+    <p>
+      열량계는 유량과 공급/환수 온도차를 기반으로 열부하를 계산하는 경우가 많습니다.
+      따라서 <code>qv</code>, <code>Tvl</code>, <code>Trl</code> 중 하나라도 깨지면 <code>Tdiff</code>나 열 관련 <code>P</code>가 비정상적으로 나올 수 있습니다.
+    </p>
+
+    <h2>2. 주요 feature 설명</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>의미</th>
+            <th>대략적 성격</th>
+            <th>직접 측정 / 계산</th>
+            <th>이상 해석 포인트</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>P</code></td>
+            <td>유효전력 또는 열부하 power</td>
+            <td>실제 소비/전달되는 에너지율</td>
+            <td>계산 성격 강함</td>
+            <td>운전 패턴, 부하 크기, 설비 사용량과 직접 연결</td>
+          </tr>
+          <tr>
+            <td><code>Q</code></td>
+            <td>무효전력</td>
+            <td>위상 차이와 관련된 전력 성분</td>
+            <td>계산</td>
+            <td><code>P</code>와 다르게 움직일 수 있음, PF와 함께 해석</td>
+          </tr>
+          <tr>
+            <td><code>PF</code></td>
+            <td>역률</td>
+            <td>전압-전류 위상 관계 및 효율 지표</td>
+            <td>계산</td>
+            <td><code>|PF| &gt; 1</code>은 물리적으로 비정상, 채널/계산 문제 의심</td>
+          </tr>
+          <tr>
+            <td><code>U1~U3</code></td>
+            <td>상별 전압</td>
+            <td>공급 전압 상태</td>
+            <td>직접 측정 가까움</td>
+            <td>0 또는 급락/급등이면 센서/통신 또는 실제 전원 문제 구분 필요</td>
+          </tr>
+          <tr>
+            <td><code>I1~I3</code></td>
+            <td>상별 전류</td>
+            <td>부하 흐름</td>
+            <td>직접 측정 가까움</td>
+            <td><code>P</code>와 함께 보면 부하 원인 파악에 도움</td>
+          </tr>
+          <tr>
+            <td><code>f</code></td>
+            <td>주파수</td>
+            <td>전력계통 안정성</td>
+            <td>측정</td>
+            <td>대체로 변화폭이 작아, 급변 시 품질 이슈 의심</td>
+          </tr>
+          <tr>
+            <td><code>W</code>, <code>W_in</code></td>
+            <td>누적 전력량</td>
+            <td>적산값</td>
+            <td>계산/누적</td>
+            <td>단기 이상탐지보단 장기 consumption 추적에 유리</td>
+          </tr>
+          <tr>
+            <td><code>Ta</code></td>
+            <td>외기온</td>
+            <td>기상 변수</td>
+            <td>직접 측정</td>
+            <td>설비 부하와의 외생 관계 파악용</td>
+          </tr>
+          <tr>
+            <td><code>Igm</code></td>
+            <td>일사량 등 기상 관련 입력</td>
+            <td>외생 변수</td>
+            <td>측정</td>
+            <td>PV/태양복사 영향 해석에 사용 가능</td>
+          </tr>
+          <tr>
+            <td><code>qv</code></td>
+            <td>유량</td>
+            <td>유체 흐름</td>
+            <td>측정</td>
+            <td>열량계에서 가장 기본적인 flow 지표</td>
+          </tr>
+          <tr>
+            <td><code>Tvl</code>, <code>Trl</code></td>
+            <td>공급/환수 온도</td>
+            <td>열 회수/전달 상태</td>
+            <td>측정</td>
+            <td>개별 값보다 차이값 <code>Tdiff</code>가 해석에 더 직접적</td>
+          </tr>
+          <tr>
+            <td><code>Tdiff</code></td>
+            <td>온도차</td>
+            <td>열교환 강도</td>
+            <td>계산</td>
+            <td>냉난방 동작 여부, 비정상 열교환 감지에 중요</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>3. 왜 PF가 11 같은 값을 가질 수 있는가</h2>
+    <p>
+      역률 <code>PF</code>는 정상적으로는 대체로 <code>-1 ~ 1</code> 범위에 있어야 합니다.
+      따라서 <code>PF = 11.33</code> 같은 값은 물리적으로 해석 가능한 설비 상태가 아닙니다.
+    </p>
+
+    <div class="bad">
+      <strong>물리적으로 불가능한 예:</strong>
+      <ul>
+        <li><code>|PF| &gt; 1</code></li>
+        <li>전압 <code>&lt;= 0</code></li>
+        <li>주파수 <code>&lt;= 0</code></li>
+        <li>소비형 설비의 음수 <code>P</code>가 지속</li>
+        <li>음수 유량, 음수 온도차가 물리 구조상 불가능한 구간</li>
+      </ul>
+    </div>
+
+    <p>이런 값이 생기는 원인은 보통 다음 중 하나입니다.</p>
+    <ul>
+      <li>센서 입력 이상</li>
+      <li>상별 채널 매핑 오류</li>
+      <li>분모가 매우 작아지는 계산 불안정</li>
+      <li>firmware/계량기 내부 계산 오류</li>
+      <li>통신/저장 과정의 잘못된 값 삽입</li>
+    </ul>
+
+    <h2>4. 이상의 종류: 설비 문제 vs 계량 문제 vs 데이터 품질 문제</h2>
+    <p>프로젝트에서 실무적으로는 이상을 최소 세 가지로 나누는 편이 좋습니다.</p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>1. 설비/운전 이상</h3>
+        <p>계량기는 정상인데, 실제 설비 운전 상태가 비정상인 경우</p>
+        <ul>
+          <li>부하가 비정상적으로 지속 증가</li>
+          <li>야간/주말에도 꺼지지 않는 소비</li>
+          <li>냉난방 계절과 맞지 않는 동작</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>2. 계량 채널/센서 이상</h3>
+        <p>설비는 정상일 수 있으나 센서, meter channel, 내부 계산이 잘못된 경우</p>
+        <ul>
+          <li><code>|PF| &gt; 1</code></li>
+          <li>갑작스런 단발 spike</li>
+          <li>redundant pair 간 불일치</li>
+          <li>한 feature만 비정상이고 나머지는 정상</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>3. 데이터 수집/저장 품질 문제</h3>
+        <p>실제 meter 값 이전에 DB/통신/집계 단계에서 깨지는 경우</p>
+        <ul>
+          <li>결측(gap)</li>
+          <li>중복 timestamp</li>
+          <li>갑작스런 0 입력</li>
+          <li>시간축 밀림</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>프로젝트에서 자주 보는 패턴</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>패턴</th>
+            <th>가능성 높은 원인</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>여러 관련 feature가 같이 변함</td>
+            <td>설비/운전 이상</td>
+            <td><code>P</code>, <code>I</code>, <code>qv</code>, <code>Tdiff</code>가 함께 움직이면 실제 운전 변화일 가능성이 큼</td>
+          </tr>
+          <tr>
+            <td>한 feature만 단발적으로 물리 범위를 벗어남</td>
+            <td>계량/계산 이상</td>
+            <td><code>PF</code>만 11로 튀고 <code>P</code>, <code>U</code>, <code>I</code>는 정상이라면 설비 이상보다 meter 채널 문제에 가까움</td>
+          </tr>
+          <tr>
+            <td>같은 위치 redundant pair 중 한쪽만 이상</td>
+            <td>계량 채널 이상</td>
+            <td>설비는 하나인데 meter 출력이 갈리므로 sensor/meter path 문제 가능성 증가</td>
+          </tr>
+          <tr>
+            <td>긴 결측 후 갑작스런 비정상값</td>
+            <td>통신/저장 품질 문제</td>
+            <td>gap과 recovery 과정에서 잘못 기록된 값일 수 있음</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>5. 단발성 이상치(single-point spike)는 어떻게 해석해야 하는가</h2>
+    <p>
+      사용자가 질문한 핵심은 “정상값이 쭉 나오다가 어느 한 시점에만 갑자기 <code>PF=11</code>이 튀는 경우를 어떻게 해석할 것인가”입니다.
+    </p>
+
+    <div class="warn">
+      <strong>실무 해석:</strong> 이런 패턴은 대체로 설비 고장의 전조라기보다
+      <strong>순간적 measurement fault</strong>, <strong>계량기 내부 계산 오류</strong>, <strong>통신/저장 오류</strong>로 해석하는 편이 더 타당합니다.
+    </div>
+
+    <h3>왜 설비 문제로 보기 어려운가</h3>
+    <ul>
+      <li>전조 없이 단발적으로 튄다.</li>
+      <li>지속성 있는 regime change가 없다.</li>
+      <li>관련 feature들이 함께 이상을 보이지 않을 수 있다.</li>
+      <li>물리적으로 불가능한 값 자체가 핵심이다.</li>
+    </ul>
+
+    <h3>왜 “순간적 계산/계량 오류”라고 보는가</h3>
+    <ul>
+      <li>계량기는 일부 값을 내부에서 계산한다.</li>
+      <li>특정 시점의 입력 조합이 깨지면 파생 feature만 튈 수 있다.</li>
+      <li>센서가 완전히 죽은 것이 아니라도 순간 misread가 가능하다.</li>
+      <li>한 시점 또는 하루 단위로만 튄다면 persistent hardware failure보다 transient fault에 가깝다.</li>
+    </ul>
+
+    <div class="good">
+      <strong>따라서 권장 표현:</strong><br />
+      “이상치는 설비 고장의 징후라기보다, 해당 시점의 계량/계산 경로에서 발생한 순간적 measurement fault로 해석하는 것이 더 타당하다.”
+    </div>
+
+    <h2>6. H2.Z66 / H2.ZE66 같은 redundant pair는 어떻게 봐야 하는가</h2>
+    <p>
+      redundant pair는 이론적으로 같은 위치 또는 같은 전력 흐름을 중복 계량하는 쌍이므로,
+      큰 추세는 비슷해야 합니다. 하지만 실제로는 두 계량기가 완전히 같은 패턴을 보장하지는 않습니다.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>상황</th>
+            <th>해석</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>두 meter 모두 비슷하게 움직임</td>
+            <td>정상적인 redundant pair 가능성 높음</td>
+          </tr>
+          <tr>
+            <td>한쪽만 <code>|PF| &gt; 1</code></td>
+            <td>설비보다 해당 계량 채널/계산 경로 문제 가능성 높음</td>
+          </tr>
+          <tr>
+            <td>한쪽은 full coverage, 다른 쪽은 후반기만 존재</td>
+            <td>교체/추가 계량기 가능성, 기간 비교 해석 주의</td>
+          </tr>
+          <tr>
+            <td>한쪽만 결측/0/stuck이 많음</td>
+            <td>하드웨어/통신 경로 불량 가능성</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      본 프로젝트에서는 <code>H2.Z66</code>는 main representative pattern용으로, <code>H2.ZE66</code>는 redundant pair 불일치 및 PF 이상치 사례용으로 쓰는 것이 자연스럽습니다.
+    </p>
+
+    <h2>7. 발표용으로 어떤 그림이 어떤 메시지에 적합한가</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>그림 종류</th>
+            <th>적합한 메시지</th>
+            <th>주의점</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Correlation row (<code>P</code> vs all features)</td>
+            <td><code>P</code>와 어떤 feature가 같이 움직이는지 설명</td>
+            <td>상관관계는 인과관계가 아님</td>
+          </tr>
+          <tr>
+            <td>STL (<code>P</code>)</td>
+            <td>계절성, 추세, residual 구조 설명</td>
+            <td>단발성 이상치 설명에는 약할 수 있음</td>
+          </tr>
+          <tr>
+            <td>Sliding monthly overlay</td>
+            <td>연도별 패턴 유사성/차이 설명</td>
+            <td>단발 extreme spike는 median에 묻힐 수 있음</td>
+          </tr>
+          <tr>
+            <td>Event zoom</td>
+            <td>정상 구간 중 갑작스러운 spike 강조</td>
+            <td>전체 빈도나 날짜 분포는 약함</td>
+          </tr>
+          <tr>
+            <td>Daily max PF</td>
+            <td>“특정 날짜에만 튄다”는 점 강조</td>
+            <td>시간대 정보는 압축됨</td>
+          </tr>
+          <tr>
+            <td>Daily outlier count</td>
+            <td>이상치가 몰린 날짜 수와 분포 설명</td>
+            <td>값의 크기보다는 발생 빈도 중심</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>8. 본 프로젝트 전처리/해석 기준에 연결하면</h2>
+    <ul>
+      <li><code>|PF| &gt; 1</code>은 물리적 이상치로 보고 NaN 또는 flag 대상</li>
+      <li>음수 전류, 음수 소비전력, 0 이하 전압/주파수도 물리적 이상치로 우선 처리</li>
+      <li>설비 이상 탐지는 “물리적으로 가능한 값이지만 비정상 패턴”을 대상으로 별도 해석</li>
+      <li>single-point impossible spike는 설비 fault보다 data quality / metering fault로 우선 분류</li>
+      <li>redundant pair 불일치는 설비 fault 판단보다 meter quality check에 먼저 사용</li>
+    </ul>
+
+    <h2>9. 요약</h2>
+    <div class="good">
+      <ul>
+        <li>계량기는 일부 값을 직접 측정하고, 일부 값을 내부에서 계산한다.</li>
+        <li><code>P</code>, <code>PF</code>, <code>Q</code>, <code>W</code>는 계산 성격이 강하다.</li>
+        <li><code>|PF| &gt; 1</code>은 물리적으로 불가능하므로 설비 상태보다 meter/calculation fault를 우선 의심한다.</li>
+        <li>단발 spike는 persistent hardware failure보다 transient measurement fault에 가깝다.</li>
+        <li>월별 overlay는 패턴용, event zoom과 daily max/count는 이상치 강조용이다.</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      작성 목적: 프로젝트 내 EDA, 전처리, 이상탐지 해석을 위한 내부 도메인 정리 문서
+    </div>
+  </div>
+</body>
+</html>

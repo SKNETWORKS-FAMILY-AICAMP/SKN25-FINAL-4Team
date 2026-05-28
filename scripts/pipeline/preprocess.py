@@ -55,18 +55,9 @@ def apply_confirmed_physical_nan_rules(df: pd.DataFrame, metadata: dict[str, Any
         if column in cleaned.columns:
             cleaned.loc[cleaned[column].abs() > 1, column] = pd.NA
 
-    if metadata.get("meter_type") == "electric" and metadata.get("energy_type") == "consumption":
-        for column in ["P", "P1", "P2", "P3"]:
-            if column in cleaned.columns:
-                cleaned.loc[cleaned[column] < 0, column] = pd.NA
-
-    for column in ["I1", "I2", "I3"]:
+    for column in ["Ta", "Tvl", "Trl"]:
         if column in cleaned.columns:
-            cleaned.loc[cleaned[column] < 0, column] = pd.NA
-
-    for column in ["W", "W_in", "W_out"]:
-        if column in cleaned.columns:
-            cleaned.loc[cleaned[column] < 0, column] = pd.NA
+            cleaned.loc[cleaned[column] < -273.15, column] = pd.NA
 
     for column in ["U1", "U2", "U3"]:
         if column in cleaned.columns:

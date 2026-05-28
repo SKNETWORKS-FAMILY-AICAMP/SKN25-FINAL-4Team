@@ -4,7 +4,7 @@
 
 | 파일 | 내용 |
 |---|---|
-| `METER_DESCRIPTION_TABLE.md` | 계량기 ID, 명칭, 위치, 유형(소비/발전/냉방/난방) 정리 (V1) |
-| `METER_DESCRIPTION_TABLE_V2.md` | 배전 여부, anomaly_priority, 설비 역할 등 확장 (V2) |
-| `meter_description_table.csv` | V1 CSV 원본 |
-| `meter_description_table_v2.csv` | V2 CSV 원본 |
+| `METER_DESCRIPTION_TABLE.md` | 현재 기준 문서. 계량기 ID, 명칭, 계통 역할, 상위/하위 관계, 운영 해석 포인트, 모델링 권장사항 통합 정리 |
+| `METER_DESCRIPTION_TABLE_V2.md` | 예전 V2 파일명에 대한 호환용 안내 문서 |
+| `meter_description_table.csv` | 초기 CSV 원본 |
+| `meter_description_table_v2.csv` | 확장 컬럼 포함 CSV 원본 |
