@@ -19,4 +19,5 @@ class AgentState(TypedDict):
     critic_feedback: str                 # Critic Agent 피드백
     final_answer: str                    # 사용자에게 전달할 최종 답변
     pdf_path: str                        # 생성된 PDF 경로 (Reporting Agent)
+    context: dict                        # 현재 화면/설비 컨텍스트 (예: {"equipment_id": "cooling"})
     messages: Annotated[list, add_messages]  # 대화 히스토리

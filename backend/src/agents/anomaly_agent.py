@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent.parent / "knowledge"))
-from domain_knowledge import ANOMALY_DOMAIN_PROMPT
+from domain_knowledge import ANOMALY_DOMAIN_PROMPT, ANOMALY_RECOMMENDATION_PROMPT
 
 DB_URL    = os.getenv("DATABASE_URL")
 
@@ -163,6 +163,15 @@ def _fetch_anomalies(limit: int = 20,
             conds.append("timestamp <  %s"); params.append(end)
         if exclude_gateway:
             conds.append("(gateway_failure IS NULL OR gateway_failure = FALSE)")
+        # 시뮬 활성 시: sim_now 이후 데이터는 챗봇에서도 안 보이게
+        try:
+            from api.routers.simulator import clock, SIM_START_DEFAULT
+            sim_now = clock.now
+            if sim_now > SIM_START_DEFAULT:
+                conds.append("timestamp <= %s")
+                params.append(sim_now.strftime("%Y-%m-%d %H:%M:%S"))
+        except Exception:
+            pass
 
         where = "WHERE " + " AND ".join(conds)
         cur.execute(f"""
@@ -305,7 +314,7 @@ def run(state: dict) -> dict:
         history_lines.append(f"{role}: {m.content}")
     history_block = ("\n## 이전 대화\n" + "\n".join(history_lines)) if history_lines else ""
 
-    prompt = f"""당신은 에너지 시설 이상탐지 전문 분석가입니다.
+    prompt = f"""당신은 EMS Agent — 에너지 시설 이상을 감지하고 운영자에게 조치를 안내하는 AI입니다.
 시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력망: 독일 공공 전력망.
 전력 용어: "계통 전력" 또는 "외부 계통 전력"만 사용 (한전·수전량 등 한국 용어 사용 금지).
 {history_block}
@@ -313,11 +322,11 @@ def run(state: dict) -> dict:
 ## 시설 이벤트 참조
 {_REGIME_EVENTS}
 {_GATEWAY_FAILURES}
-※ 게이트웨이 장애 구간의 이상은 인공 보정 데이터 특성일 수 있으므로 반드시 명시하세요.
+※ 게이트웨이 장애 구간의 이상은 인공 보정 데이터이므로 반드시 명시하세요.
 
 ## 조회 기간: {period_str}  (출처: {source_str})
 ## 이상탐지 결과 ({len(recent)}건)
-각 항목 아래 "센서:" 줄이 있으면 해당 시각의 실측값입니다. 이를 근거로 원인을 분석하세요.
+각 항목 아래 "센서:" 줄이 있으면 해당 시각의 실측값입니다. 수치를 직접 인용하여 원인을 분석하세요.
 {anomaly_block}
 
 {ANOMALY_DOMAIN_PROMPT}
@@ -325,12 +334,7 @@ def run(state: dict) -> dict:
 ## 사용자 질문
 {question}
 
-답변 지침:
-1. 센서값이 제공된 이상은 수치를 직접 인용하여 원인을 설명하세요 (예: "CHP가 0kW로 정지한 상태에서 계통 의존도가 평소 대비 NN% 상승").
-2. 유형별로 묶어서 설명하고, 심각도 HIGH 항목을 우선 분석하세요.
-3. 권장 조치를 구체적으로 제시하세요.
-4. 불확실한 내용은 "추정"임을 명시하세요.
-5. 이상이 없으면 "해당 기간에 주요 이상 탐지 없음"을 먼저 명시하세요."""
+{ANOMALY_RECOMMENDATION_PROMPT}"""
 
     answer = llm_chat([{"role": "user", "content": prompt}], max_tokens=1024)
 

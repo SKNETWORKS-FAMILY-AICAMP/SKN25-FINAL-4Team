@@ -17,8 +17,8 @@
 }
 
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: #f4f6fa;
+  color: #1b2433;
   font-family: var(--font);
   font-size: 14px;
   line-height: 1.6;
@@ -28,11 +28,11 @@ body {
 
 #root { height: 100vh; display: flex; flex-direction: column; }
 
-/* 스크롤바 */
-::-webkit-scrollbar { width: 6px; }
+/* 스크롤바 (라이트) */
+::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+::-webkit-scrollbar-thumb { background: #cdd5e0; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #b3bdca; }
 
 /* 스켈레톤 */
 @keyframes skeleton-pulse {
@@ -82,4 +82,27 @@ body {
 .btn-glow:hover {
   filter: brightness(1.15);
   box-shadow: 0 0 12px rgba(88, 166, 255, 0.2);
+}
+
+/* 토스트 슬라이드 인 */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 시뮬레이터 라이브 닷 */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(1.3); }
+}
+
+/* 채팅 상태 메시지 페이드 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 로딩 스피너 */
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

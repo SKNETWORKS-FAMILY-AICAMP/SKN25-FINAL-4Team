@@ -16,13 +16,29 @@ router = APIRouter(prefix="/anomalies", tags=["anomalies"])
 from api.db import get_conn as _db_conn  # noqa: E402
 
 
+def _sim_cutoff() -> str | None:
+    """
+    시뮬레이터가 시작된 적이 있으면 sim_now timestamp 반환 (조회 cutoff).
+    아니면 None — 전체 데이터 조회 가능.
+    """
+    try:
+        from api.routers.simulator import clock, SIM_START_DEFAULT
+        sim_now = clock.now
+        if sim_now > SIM_START_DEFAULT:
+            return sim_now.strftime("%Y-%m-%d %H:%M:%S")
+    except Exception:
+        pass
+    return None
+
+
 @router.get("")
-async def list_anomalies(
+def list_anomalies(
     limit:       int           = Query(50, ge=1, le=500),
     offset:      int           = Query(0, ge=0),
     severity:    Optional[str] = Query(None, description="HIGH / MEDIUM / LOW"),
     year:        Optional[int] = Query(None, description="연도 필터 예: 2022"),
     month:       Optional[int] = Query(None, description="월 필터 예: 7"),
+    anomaly_type: Optional[str] = Query(None, description="이상 유형 필터 (콤마 구분 다중 가능)"),
     exclude_gf:  bool          = Query(True, description="게이트웨이 장애 구간 제외"),
 ):
     """이상탐지 결과 조회 (필터·페이지네이션 지원)."""
@@ -35,12 +51,19 @@ async def list_anomalies(
                     conds.append("severity IN ('HIGH', 'MEDIUM')")
                 else:
                     conds.append("severity = %s"); params.append(severity.upper())
+            if anomaly_type:
+                type_list = [t.strip() for t in anomaly_type.split(",") if t.strip()]
+                if type_list:
+                    conds.append("anomaly_type = ANY(%s)"); params.append(type_list)
             if year:
                 conds.append("EXTRACT(YEAR  FROM timestamp) = %s"); params.append(year)
             if month:
                 conds.append("EXTRACT(MONTH FROM timestamp) = %s"); params.append(month)
             if exclude_gf:
                 conds.append("(gateway_failure IS NULL OR gateway_failure = FALSE)")
+            cutoff = _sim_cutoff()
+            if cutoff:
+                conds.append("timestamp <= %s"); params.append(cutoff)
             where = ("WHERE " + " AND ".join(conds)) if conds else ""
 
             cur.execute(f"SELECT COUNT(*) FROM anomaly_results {where}", params)
@@ -70,17 +93,20 @@ async def list_anomalies(
 
 
 @router.get("/summary")
-async def anomaly_summary():
+def anomaly_summary():
     """심각도별 건수 요약."""
     try:
         with _db_conn() as conn:
             cur = conn.cursor()
-            cur.execute("""
+            cutoff = _sim_cutoff()
+            where  = "WHERE timestamp <= %s" if cutoff else ""
+            params = [cutoff] if cutoff else []
+            cur.execute(f"""
                 SELECT severity, COUNT(*) as cnt
-                FROM anomaly_results
+                FROM anomaly_results {where}
                 GROUP BY severity
                 ORDER BY cnt DESC;
-            """)
+            """, params)
             rows = cur.fetchall()
         return {"summary": [{"severity": r[0], "count": r[1]} for r in rows]}
     except Exception as e:
@@ -88,18 +114,21 @@ async def anomaly_summary():
 
 
 @router.get("/timeline")
-async def anomaly_timeline():
+def anomaly_timeline():
     """월별 이상탐지 건수 (차트용)."""
     try:
         with _db_conn() as conn:
             cur = conn.cursor()
-            cur.execute("""
+            cutoff = _sim_cutoff()
+            where  = "WHERE timestamp <= %s" if cutoff else ""
+            params = [cutoff] if cutoff else []
+            cur.execute(f"""
                 SELECT TO_CHAR(timestamp, 'YYYY-MM') AS month,
                        severity, COUNT(*) AS cnt
-                FROM anomaly_results
+                FROM anomaly_results {where}
                 GROUP BY 1, 2
                 ORDER BY 1;
-            """)
+            """, params)
             rows = cur.fetchall()
         result = {}
         for month, severity, cnt in rows:
@@ -112,7 +141,7 @@ async def anomaly_timeline():
 
 
 @router.get("/events")
-async def anomaly_events(
+def anomaly_events(
     severity:   Optional[str] = Query(None, description="HIGH / MEDIUM / LOW"),
     year:       Optional[int] = Query(None),
     month:      Optional[int] = Query(None),
@@ -132,6 +161,9 @@ async def anomaly_events(
                 conds.append("EXTRACT(MONTH FROM timestamp) = %s"); params.append(month)
             if exclude_gf:
                 conds.append("(gateway_failure IS NULL OR gateway_failure = FALSE)")
+            cutoff = _sim_cutoff()
+            if cutoff:
+                conds.append("timestamp <= %s"); params.append(cutoff)
             where = ("WHERE " + " AND ".join(conds)) if conds else ""
             cur.execute(f"""
                 SELECT timestamp, meter_id, anomaly_type, severity,
@@ -208,17 +240,20 @@ async def anomaly_events(
 
 
 @router.get("/types")
-async def anomaly_types():
+def anomaly_types():
     """이상 유형별 건수 요약 (파이차트용)."""
     try:
         with _db_conn() as conn:
             cur = conn.cursor()
-            cur.execute("""
+            cutoff = _sim_cutoff()
+            where  = "WHERE timestamp <= %s" if cutoff else ""
+            params = [cutoff] if cutoff else []
+            cur.execute(f"""
                 SELECT anomaly_type, COUNT(*) AS cnt
-                FROM anomaly_results
+                FROM anomaly_results {where}
                 GROUP BY anomaly_type
                 ORDER BY cnt DESC;
-            """)
+            """, params)
             rows = cur.fetchall()
         return {"types": [{"type": r[0], "count": r[1]} for r in rows]}
     except Exception as e:
@@ -226,7 +261,7 @@ async def anomaly_types():
 
 
 @router.get("/{anomaly_id}/context")
-async def anomaly_context(anomaly_id: int, hours: int = Query(24, ge=6, le=72)):
+def anomaly_context(anomaly_id: int, hours: int = Query(24, ge=6, le=72)):
     """이상 항목 전후 시계열 + 메타 반환 (차트·AI 분석용)."""
     try:
         with _db_conn() as conn:
@@ -339,8 +374,13 @@ def _classify_type_residual(row) -> str:
     return "Unknown"
 
 
+_schema_migrated = False
+
 def _migrate_schema(conn) -> None:
     """anomaly_results 테이블에 신 모델용 컬럼 추가 (없으면)."""
+    global _schema_migrated
+    if _schema_migrated:
+        return
     cur = conn.cursor()
     for col, dtype in [("actual_w", "FLOAT"), ("predicted_w", "FLOAT"),
                        ("residual_w", "FLOAT"), ("source", "TEXT"), ("gateway_failure", "BOOLEAN")]:
@@ -349,6 +389,7 @@ def _migrate_schema(conn) -> None:
             ADD COLUMN IF NOT EXISTS {col} {dtype};
         """)
     conn.commit()
+    _schema_migrated = True
 
 
 def _save_residual_results(anomalies, job_id: str) -> int:
@@ -393,7 +434,7 @@ def _save_residual_results(anomalies, job_id: str) -> int:
         return 0
 
 
-def _do_detection(job_id: str, start: str, end: str) -> None:
+def _do_detection(job_id: str, start: str, end: str, loop=None) -> None:
     """VMD-LSTM 잔차+IF 백그라운드 이상탐지."""
     import pandas as pd
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -444,6 +485,19 @@ def _do_detection(job_id: str, start: str, end: str) -> None:
             "status": "done", "total": inserted,
             "counts": counts, "model": "vmd-lstm-residual",
         })
+
+        if loop and ("CRITICAL" in counts or "HIGH" in counts):
+            import asyncio
+            from api.routers.notifications import manager as notification_manager
+            high_count = counts.get('HIGH', 0) + counts.get('CRITICAL', 0)
+            asyncio.run_coroutine_threadsafe(
+                notification_manager.broadcast({
+                    "type": "alert",
+                    "level": "HIGH",
+                    "message": f"🚨 [긴급 알림] 백그라운드 탐지 결과, {high_count}건의 심각한 이상 징후가 감지되었습니다. 상세 원인을 분석할까요?"
+                }),
+                loop
+            )
     except Exception as e:
         _run_status[job_id].update({"status": "error", "error": str(e)})
 
@@ -457,11 +511,14 @@ async def run_detection(
     """VMD-LSTM 잔차+IF 이상탐지 백그라운드 실행. /run/status/{job_id}로 완료 확인."""
     job_id = f"{start}_{end}_{datetime.now().strftime('%H%M%S')}"
     _run_status[job_id] = {"status": "queued", "period": f"{start} ~ {end}"}
-    background_tasks.add_task(_do_detection, job_id, start, end)
+    
+    import asyncio
+    loop = asyncio.get_running_loop()
+    background_tasks.add_task(_do_detection, job_id, start, end, loop)
     return {"job_id": job_id, "status": "queued", "period": f"{start} ~ {end}"}
 
 
 @router.get("/run/status/{job_id}")
-async def run_status(job_id: str):
+def run_status(job_id: str):
     """이상탐지 실행 상태 조회."""
     return _run_status.get(job_id, {"status": "not_found"})

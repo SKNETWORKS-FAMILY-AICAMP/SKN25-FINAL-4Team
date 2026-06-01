@@ -1,7 +1,13 @@
-# EMS Agent — 전력 수요 예측 AI 플랫폼
+# EMS Agent — 공장 에너지 AI 코파일럿
 
-SK Networks AI Family 25기 4팀 파이널 프로젝트.  
-공장 운영자를 위한 **전력 수요 예측** 중심의 에너지 분석 시스템.  
+SK Networks AI Family 25기 4팀 파이널 프로젝트.
+
+> **포지셔닝** — 기존 FEMS가 "데이터를 보여주는" 시스템이라면,
+> EMS Agent는 **"결정을 도와주는"** AI 코파일럿이다.
+> 전력 수요 예측(주력) → 이상탐지 → 일일 브리핑 → 자연어 질의가 하나의 LangGraph Agent로 묶이고,
+> 예측 수치를 바로 운영 권고로 변환해 운영자가 지금 무엇을 할지 알 수 있게 한다.
+> 자세한 방향성은 [docs/VISION.md](docs/VISION.md) 참고.
+
 다중 모델(Prophet·XGBoost·LSTM·VMD-LSTM)로 수요를 예측하고, 이를 기준으로 이상탐지·KPI 보고서를 보조 산출하며, 자연어 질의로 결과를 해석한다.
 
 - **데이터**: Honda R&D Europe GmbH (독일 오펜바흐) — 81개 계량기, 2018~2024년

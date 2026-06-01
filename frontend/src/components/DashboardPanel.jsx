@@ -1,84 +1,423 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { Factory, Wrench } from 'lucide-react'
+import { EquipIcon } from '../EquipIcon'
 import {
-  BarChart, Bar, LineChart, Line,
+  BarChart, Bar, LineChart, Line, AreaChart, Area, ComposedChart,
   XAxis, YAxis, Tooltip, ResponsiveContainer,
   CartesianGrid, Legend, ReferenceLine,
 } from 'recharts'
-import { getReport, getAnomalySummary, getAnomalies, getForecastCompare } from '../api/client'
+import {
+  getReport, getAnomalySummary, getAnomalies, getForecastCompare,
+  getDailyReport, getLatestDataDate, getSimulatorStatus, dailyDownloadUrl,
+  getBilling, getLearningStats, getEquipmentStatus, getWorkOrderStats,
+} from '../api/client'
 
 const FC_MODELS = [
   { key: 'vmd-lstm', label: 'VMD-LSTM', color: '#a371f7' },
-  { key: 'lstm',     label: 'LSTM',     color: '#58a6ff' },
-  { key: 'xgboost',  label: 'XGBoost',  color: '#d29922' },
-  { key: 'prophet',  label: 'Prophet',  color: '#3fb950' },
+  { key: 'xgboost',  label: 'XGBoost',  color: '#3fb950' },
 ]
 
-const SEV_COLOR  = { HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#58a6ff' }
+const SEV_COLOR  = { HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#2563eb' }
 const TYPE_LABEL = {
   COPDrop: 'COP 급락', CHPOutage: 'CHP 정지', PowerSpike: '전력 급등',
   NightConsumption: '야간 소비', PVNightNonZero: 'PV 야간 비정상', Unknown: '기타',
 }
 
 const tt = {
-  contentStyle: { background: '#161b22', border: '1px solid #30363d', borderRadius: 8, fontSize: 12 },
-  labelStyle: { color: '#e6edf3' },
-  itemStyle: { color: '#8b949e' },
+  contentStyle: { background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 8, fontSize: 11, padding: '6px 10px' },
+  labelStyle: { color: '#1b2433', marginBottom: 4 },
+  itemStyle: { color: '#5a6675', padding: 0 },
 }
 
-function KpiCard({ label, value, sub, color = '#58a6ff', trend }) {
+function KpiCard({ label, value, unit, sub, color = '#2563eb', trend, gaugePct, sparkline }) {
   return (
     <div style={s.kpiCard}>
-      <div style={{ fontSize: 26, fontWeight: 700, color }}>{value ?? '–'}</div>
-      <div style={{ fontSize: 11, color: '#8b949e', marginTop: 2 }}>{sub}</div>
-      <div style={{ fontSize: 13, color: '#e6edf3', marginTop: 6 }}>{label}</div>
-      {trend !== undefined && (
-        <div style={{ fontSize: 11, color: trend >= 0 ? '#3fb950' : '#f85149', marginTop: 4 }}>
-          {trend >= 0 ? '▲' : '▼'} {Math.abs(trend).toFixed(1)}%p (전월 대비)
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ fontSize: 11, color: '#5a6675', fontWeight: 500 }}>{label}</div>
+        {trend !== undefined && (
+          <div style={{ fontSize: 10, color: trend >= 0 ? '#3fb950' : '#f85149', fontWeight: 700, padding: '1px 6px', background: (trend >= 0 ? '#3fb950' : '#f85149') + '22', borderRadius: 3 }}>
+            {trend >= 0 ? '▲' : '▼'} {Math.abs(trend).toFixed(1)}%p
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 8 }}>
+        <span style={{ fontSize: 32, fontWeight: 700, color, lineHeight: 1, letterSpacing: -1 }}>{value ?? '–'}</span>
+        {unit && <span style={{ fontSize: 14, color: '#5a6675', fontWeight: 500 }}>{unit}</span>}
+      </div>
+
+      {gaugePct != null && <MiniGauge pct={gaugePct} color={color} />}
+      {sparkline && sparkline.length > 1 && (
+        <div style={{ marginTop: 8, height: 28 }}>
+          <ResponsiveContainer width="100%" height={28}>
+            <LineChart data={sparkline.map((y, x) => ({ x, y }))}>
+              <Line type="monotone" dataKey="y" stroke={color} strokeWidth={1.5} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      <div style={{ fontSize: 10, color: '#909aa8', marginTop: gaugePct != null || sparkline ? 4 : 8 }}>{sub}</div>
+    </div>
+  )
+}
+
+function LearningCard({ learning }) {
+  if (!learning) {
+    return (
+      <div style={s.chartBox}>
+        <div style={s.chartTitle}>🧠 AI 학습 이력</div>
+        <div style={{ ...s.chartContent, justifyContent: 'center', alignItems: 'center', color: '#909aa8', fontSize: 11 }}>
+          데이터 로딩 중
+        </div>
+      </div>
+    )
+  }
+  const { total_decided, approved, success, failure, kw_saved_total, recent } = learning
+  const successRate = approved > 0 ? Math.round(success / approved * 100) : 0
+
+  return (
+    <div style={s.chartBox}>
+      <div style={s.chartTitle}>🧠 AI 학습 이력</div>
+      <div style={{ ...s.chartContent, padding: '0 4px', overflow: 'hidden' }}>
+        {/* 통계 */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
+          <div>
+            <div style={{ fontSize: 9, color: '#909aa8', textTransform: 'uppercase' }}>처리 권고</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#1b2433' }}>{total_decided}건</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 9, color: '#909aa8', textTransform: 'uppercase' }}>성공률</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#3fb950' }}>{successRate}%</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 9, color: '#909aa8', textTransform: 'uppercase' }}>성공/실패</div>
+            <div style={{ fontSize: 13, color: '#1b2433', fontWeight: 600 }}>
+              <span style={{ color: '#3fb950' }}>{success}</span> / <span style={{ color: '#f85149' }}>{failure}</span>
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 9, color: '#909aa8', textTransform: 'uppercase' }}>누적 피크 절감</div>
+            <div style={{ fontSize: 13, color: '#a371f7', fontWeight: 600 }}>
+              {kw_saved_total > 0 ? `-${kw_saved_total.toFixed(0)} kW` : '–'}
+            </div>
+          </div>
+        </div>
+
+        {/* 최근 학습 결과 */}
+        <div style={{ borderTop: '1px solid #e7ebf1', paddingTop: 8, flex: 1, overflow: 'hidden' }}>
+          <div style={{ fontSize: 9, color: '#909aa8', textTransform: 'uppercase', marginBottom: 6 }}>최근 결과</div>
+          {(recent ?? []).length === 0 ? (
+            <div style={{ fontSize: 10, color: '#909aa8', textAlign: 'center', paddingTop: 12 }}>
+              평가된 권고가 없습니다.<br/>시뮬을 진행하면 자동 학습이 시작됩니다.
+            </div>
+          ) : (
+            recent.map((r, i) => (
+              <div key={i} style={{ fontSize: 10, marginBottom: 4, color: '#33404f' }}>
+                <span style={{
+                  fontSize: 9, padding: '1px 5px', borderRadius: 3, marginRight: 4, fontWeight: 700,
+                  background: r.label === '성공' ? '#3fb95022' : r.label === '실패' ? '#f8514922' : '#e7ebf1',
+                  color:      r.label === '성공' ? '#3fb950' : r.label === '실패' ? '#f85149' : '#5a6675',
+                }}>{r.label}</span>
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', maxWidth: 'calc(100% - 50px)', whiteSpace: 'nowrap', verticalAlign: 'middle' }}>
+                  {r.title}
+                </span>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function BillingMiniCard({ billing }) {
+  if (!billing) {
+    return (
+      <div style={s.kpiCard}>
+        <div style={{ fontSize: 11, color: '#5a6675' }}>금월 전기 비용</div>
+        <div style={{ fontSize: 32, fontWeight: 700, color: '#909aa8', marginTop: 8 }}>–</div>
+        <div style={{ fontSize: 10, color: '#909aa8', marginTop: 8 }}>데이터 로딩 중</div>
+      </div>
+    )
+  }
+  const overPct = billing.target_eur > 0 ? (billing.projected_eur - billing.target_eur) / billing.target_eur * 100 : 0
+  const usedPct = billing.target_eur > 0 ? Math.min(100, billing.actual_eur / billing.target_eur * 100) : 0
+  const statusColor = billing.status === '정상' ? '#3fb950' : billing.status === '주의' ? '#d29922' : '#f85149'
+
+  return (
+    <div style={s.kpiCard}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ fontSize: 11, color: '#5a6675', fontWeight: 500 }}>
+          {billing.period} 전기 비용
+        </div>
+        <div style={{ fontSize: 10, color: statusColor, fontWeight: 700, padding: '1px 6px', background: statusColor + '22', borderRadius: 3 }}>
+          {billing.status}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 8 }}>
+        <span style={{ fontSize: 32, fontWeight: 700, color: '#1b2433', lineHeight: 1, letterSpacing: -1 }}>
+          € {Math.round(billing.actual_eur).toLocaleString()}
+        </span>
+      </div>
+
+      <div style={{ marginTop: 8, height: 4, background: '#e7ebf1', borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
+        <div style={{ width: `${usedPct}%`, height: '100%', background: '#3fb950', transition: 'width 0.5s' }} />
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#909aa8', marginTop: 4 }}>
+        <span>예상 €{Math.round(billing.projected_eur).toLocaleString()}</span>
+        <span style={{ color: overPct > 0 ? '#f85149' : '#3fb950', fontWeight: 600 }}>
+          {overPct >= 0 ? '+' : ''}{overPct.toFixed(1)}% 목표
+        </span>
+      </div>
+    </div>
+  )
+}
+
+function MiniGauge({ pct, color }) {
+  const p = Math.max(0, Math.min(100, pct ?? 0))
+  return (
+    <div style={{ marginTop: 8, height: 4, background: '#e7ebf1', borderRadius: 2, overflow: 'hidden' }}>
+      <div style={{ width: `${p}%`, height: '100%', background: color, transition: 'width 0.5s ease' }} />
+    </div>
+  )
+}
+
+function BriefingCard({ briefing, onRegenerate }) {
+  const [regenerating, setRegenerating] = useState(false)
+
+  const hourly = (briefing?.hourly_profile ?? []).map(h => ({
+    ...h, hourLabel: String(h.hour).padStart(2, '0'),
+  }))
+  const hasAi = !!(briefing?.ai_summary || briefing?.today_actions)
+
+  const handleDownload = (fmt) => {
+    if (!briefing?.date) return
+    const a = document.createElement('a')
+    a.href = dailyDownloadUrl(briefing.date, fmt)
+    a.target = '_blank'
+    a.rel = 'noopener'
+    document.body.appendChild(a); a.click(); a.remove()
+  }
+
+  const handleRegen = async () => {
+    if (regenerating) return
+    setRegenerating(true)
+    try { await onRegenerate?.() } finally { setRegenerating(false) }
+  }
+
+  return (
+    <div style={s.briefingCard}>
+      <div style={s.briefingHeader}>
+        <span style={{ fontSize: 14 }}>🤖</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: '#2563eb' }}>AI 운영 브리핑</span>
+        <span style={{ fontSize: 11, color: '#5a6675', marginLeft: 8 }}>{briefing?.date || '오늘'}</span>
+        {briefing?.anomaly_count > 0 && (
+          <span style={{ fontSize: 10, color: '#f85149', background: '#f8514922', padding: '2px 8px', borderRadius: 4, marginLeft: 8, fontWeight: 600 }}>
+            이상 {briefing.anomaly_count}건
+          </span>
+        )}
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+          {briefing?.date && !hasAi && (
+            <button style={{ ...s.dlBtn, color: '#a371f7', borderColor: '#a371f755' }}
+              onClick={handleRegen} disabled={regenerating} title="LLM으로 AI 요약·할 일 생성 (1회 호출)">
+              {regenerating ? '생성 중...' : '🪄 AI 요약 생성'}
+            </button>
+          )}
+          {briefing?.date && (
+            <>
+              <span style={{ fontSize: 10, color: '#909aa8', marginRight: 4 }}>일일 보고서 다운로드:</span>
+              <button style={s.dlBtn} onClick={() => handleDownload('pdf')}  title={`${briefing.date} 일일 보고서 PDF로 다운로드`}>📄 PDF</button>
+              <button style={s.dlBtn} onClick={() => handleDownload('docx')} title={`${briefing.date} 일일 보고서 Word로 다운로드`}>📝 DOCX</button>
+              <button style={s.dlBtn} onClick={() => handleDownload('hwpx')} title={`${briefing.date} 일일 보고서 한글(HWPX)로 다운로드`}>📄 HWPX</button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {!briefing && (
+        <div style={{ padding: '16px 14px', color: '#5a6675', fontSize: 12 }}>
+          오늘의 브리핑이 아직 생성되지 않았습니다.
+        </div>
+      )}
+
+      {briefing && (
+        <div style={s.briefingGrid}>
+          {/* 좌측: 텍스트 (요약 + 할 일) */}
+          <div style={s.briefingText}>
+            {briefing.ai_summary
+              ? <div style={s.briefingSummary}>{briefing.ai_summary}</div>
+              : <div style={{ fontSize: 12, color: '#909aa8', fontStyle: 'italic', padding: '4px 0' }}>
+                  KPI/프로파일 데이터는 자동 수집되었습니다.
+                  AI 요약·권고가 필요하면 우측 상단 "🪄 AI 요약 생성" 버튼을 눌러주세요.
+                </div>
+            }
+            {briefing.today_actions && (
+              <div style={s.actionsBlock}>
+                <div style={s.actionsBlockTitle}>✅ 오늘 할 일</div>
+                <div style={s.actionsBlockText}>{briefing.today_actions}</div>
+              </div>
+            )}
+          </div>
+
+          {/* 우측: 시간대별 프로파일 */}
+          <div style={s.briefingChart}>
+            <div style={{ fontSize: 11, color: '#5a6675', marginBottom: 4 }}>
+              ⏱ 시간대별 전력 프로파일 · COP
+            </div>
+            {hourly.length === 0 ? (
+              <div style={{ color: '#909aa8', fontSize: 11, textAlign: 'center', padding: '40px 0' }}>
+                프로파일 데이터 없음
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={168}>
+                <ComposedChart data={hourly} margin={{ top: 4, right: 8, left: -24, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e7ebf1" vertical={false} />
+                  <XAxis dataKey="hourLabel" tick={{ fontSize: 9, fill: '#5a6675' }} tickLine={false}
+                    interval={2} />
+                  <YAxis yAxisId="kw" tick={{ fontSize: 9, fill: '#5a6675' }} tickLine={false} axisLine={false} />
+                  <YAxis yAxisId="cop" orientation="right" tick={{ fontSize: 9, fill: '#a371f7' }} tickLine={false} axisLine={false} domain={[0, 'auto']} />
+                  <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 6, fontSize: 11, padding: '6px 10px' }}
+                    labelStyle={{ color: '#1b2433', marginBottom: 4 }} itemStyle={{ color: '#5a6675', padding: 0 }} />
+                  {briefing.peak_hour != null && (
+                    <ReferenceLine yAxisId="kw" x={String(briefing.peak_hour).padStart(2, '0')}
+                      stroke="#f85149" strokeDasharray="4 2" />
+                  )}
+                  <Bar yAxisId="kw" dataKey="grid_kw" stackId="a" name="계통"   fill="#d29922" />
+                  <Bar yAxisId="kw" dataKey="pv_kw"   stackId="a" name="태양광" fill="#3fb950" />
+                  <Bar yAxisId="kw" dataKey="chp_kw"  stackId="a" name="CHP"   fill="#2563eb" radius={[2, 2, 0, 0]} />
+                  <Line yAxisId="cop" type="monotone" dataKey="cop" name="COP" stroke="#a371f7" strokeWidth={2} dot={false} connectNulls />
+                </ComposedChart>
+              </ResponsiveContainer>
+            )}
+          </div>
         </div>
       )}
     </div>
   )
 }
 
-function MiniBar({ label, kwh, total, color }) {
-  const pct = total > 0 ? (kwh / total) * 100 : 0
+const EQ_STATUS_COLOR = { 정상: '#3fb950', 주의: '#d29922', 경고: '#f85149' }
+
+function CmsSummary({ equipment, woStats, onNavigate }) {
+  const openWO = (woStats?.open ?? 0) + (woStats?.in_progress ?? 0)
+  const worst  = [...(equipment ?? [])].sort((a, b) => a.health_score - b.health_score)[0]
   return (
-    <div style={{ marginBottom: 10 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-        <span style={{ color: '#8b949e' }}>{label}</span>
-        <span style={{ color, fontWeight: 600 }}>
-          {(kwh / 1000).toFixed(0)} MWh
-          <span style={{ color: '#6e7681', fontWeight: 400, marginLeft: 6 }}>({pct.toFixed(1)}%)</span>
-        </span>
+    <div style={s.cmsRow}>
+      {/* 설비 헬스 요약 */}
+      <div style={{ ...s.cmsCard, flex: 3, cursor: 'pointer' }} onClick={() => onNavigate?.('equipment')}>
+        <div style={s.cmsHead}>
+          <span style={s.cmsTitle}><Factory size={15} color="#0d9488" /> 설비 상태</span>
+          <span style={s.cmsLink}>설비 상태 감시 →</span>
+        </div>
+        <div style={s.eqChips}>
+          {(equipment ?? []).length === 0 && <span style={{ fontSize: 12, color: '#909aa8' }}>데이터 로딩 중…</span>}
+          {(equipment ?? []).map(eq => {
+            const col = EQ_STATUS_COLOR[eq.status] ?? '#5a6675'
+            return (
+              <div key={eq.id} style={s.eqChip}>
+                <EquipIcon id={eq.id} size={18} />
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 11, color: '#5a6675', whiteSpace: 'nowrap' }}>{eq.name}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: col }} />
+                    <span style={{ fontSize: 16, fontWeight: 700, color: '#1b2433' }}>{eq.health_score}</span>
+                    <span style={{ fontSize: 10, color: col, fontWeight: 600 }}>{eq.status}</span>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
-      <div style={{ background: '#21262d', borderRadius: 4, height: 7, overflow: 'hidden' }}>
-        <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 4, transition: 'width .5s' }}/>
+
+      {/* 미해결 작업지시 */}
+      <div style={{ ...s.cmsCard, flex: 1, cursor: 'pointer' }} onClick={() => onNavigate?.('maintenance')}>
+        <div style={s.cmsHead}>
+          <span style={s.cmsTitle}><Wrench size={15} color="#0d9488" /> 작업지시</span>
+          <span style={s.cmsLink}>정비 →</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 6 }}>
+          <span style={{ fontSize: 30, fontWeight: 700, color: openWO > 0 ? '#d29922' : '#3fb950', lineHeight: 1 }}>{openWO}</span>
+          <span style={{ fontSize: 12, color: '#5a6675' }}>미해결</span>
+        </div>
+        <div style={{ fontSize: 10, color: '#909aa8', marginTop: 6 }}>
+          완료 {woStats?.done ?? 0} · 전체 {woStats?.total ?? 0}
+          {worst && worst.status !== '정상' && <> · 최저 {worst.name}({worst.health_score})</>}
+        </div>
       </div>
     </div>
   )
 }
 
-export default function DashboardPanel() {
+export default function DashboardPanel({ onNavigate } = {}) {
   const [report,   setReport]   = useState([])
   const [summary,  setSummary]  = useState([])
   const [recent,   setRecent]   = useState([])
   const [loading,  setLoading]  = useState(true)
   const [forecast,  setForecast]  = useState(null)   // null=미실행, {}=실패, {models}=성공
   const [fcLoading, setFcLoading] = useState(false)
+  const [briefing,  setBriefing]  = useState(null)
+  const [billing,   setBilling]   = useState(null)
+  const [learning,  setLearning]  = useState(null)
+  const [equipment, setEquipment] = useState([])     // CMS 설비 헬스 요약
+  const [woStats,   setWoStats]   = useState(null)    // 작업지시 요약
+
+  const lastBriefDate = useRef(null)
 
   useEffect(() => {
     Promise.allSettled([
       getReport(24),
       getAnomalySummary(),
       getAnomalies(5, 'HIGH'),
-    ]).then(([r, s, a]) => {
-      if (r.status === 'fulfilled') setReport((r.value.data.items ?? []).reverse())
+      getEquipmentStatus(30),
+      getWorkOrderStats(),
+    ]).then(([r, s, a, eq, wo]) => {
+      if (r.status === 'fulfilled') setReport(r.value.data.items ?? [])  // 백엔드가 이미 오래된→최신 순
       if (s.status === 'fulfilled') setSummary(s.value.data.summary ?? [])
       if (a.status === 'fulfilled') setRecent(a.value.data.items ?? [])
+      if (eq.status === 'fulfilled') setEquipment(eq.value.data.items ?? [])
+      if (wo.status === 'fulfilled' && !wo.value.data.error) setWoStats(wo.value.data)
     }).finally(() => setLoading(false))
+
+    // 브리핑 + 비용 로드 — 시뮬 시각의 어제로 자동 추적
+    const loadBrief = async () => {
+      try {
+        const latest = await getLatestDataDate()
+        const date   = latest.data?.date
+        if (!date || date === lastBriefDate.current) return
+        lastBriefDate.current = date
+        const [brief, bill, ls] = await Promise.allSettled([
+          getDailyReport(date),
+          getBilling(),
+          getLearningStats(),
+        ])
+        if (brief.status === 'fulfilled' && brief.value?.data) setBriefing(brief.value.data)
+        if (bill.status  === 'fulfilled' && bill.value?.data && !bill.value.data.error) setBilling(bill.value.data)
+        if (ls.status    === 'fulfilled' && ls.value?.data && !ls.value.data.error) setLearning(ls.value.data)
+      } catch {}
+    }
+    loadBrief()
+
+    // 시뮬레이터 실행 중일 때만 추적: 시뮬 시각의 '날짜'가 바뀌면 brief 재로드
+    let lastSimDate = null
+    const poll = async () => {
+      try {
+        const r = await getSimulatorStatus()
+        if (!r.data?.running) return
+        const simDate = r.data.now?.slice(0, 10)
+        if (simDate && simDate !== lastSimDate) {
+          lastSimDate = simDate
+          loadBrief()
+        }
+      } catch {}
+    }
+    const id = setInterval(poll, 30000)
+    return () => clearInterval(id)
   }, [])
 
-  // 예측 비교는 4개 모델을 돌려 연산이 무거우므로 버튼 클릭 시에만 실행
   const loadForecast = () => {
     setFcLoading(true)
     getForecastCompare(24)
@@ -87,7 +426,6 @@ export default function DashboardPanel() {
       .finally(() => setFcLoading(false))
   }
 
-  // 모델별 24시간 예측 → 인덱스 기준 정렬된 차트 데이터
   const fcValid = forecast
     ? FC_MODELS.filter(m => Array.isArray(forecast[m.key]) && forecast[m.key].length)
     : []
@@ -107,7 +445,6 @@ export default function DashboardPanel() {
   const prev   = report[report.length - 2]
   const totalAnomalies = summary.reduce((a, b) => a + b.count, 0)
 
-  // 에너지 믹스 — Grid kWh 역산
   const mixData = report.slice(-12).map(r => {
     const grid = Math.max(0, (r.total_consumption_kwh ?? 0) - (r.pv_kwh ?? 0) - (r.chp_kwh ?? 0))
     return {
@@ -122,257 +459,239 @@ export default function DashboardPanel() {
     <div style={s.wrap}>
       <div style={s.header}>
         <div>
-          <div style={s.title}>대시보드</div>
-          <div style={s.sub}>Honda R&D Europe · 독일 오펜바흐 · 실시간 현황</div>
+          <div style={s.title}>대시보드 종합현황</div>
+          <div style={s.sub}>Honda R&D Europe · Command Center</div>
         </div>
         {latest && (
-          <div style={{ fontSize: 13, color: '#8b949e' }}>
-            최근 보고: <span style={{ color: '#e6edf3', fontWeight: 600 }}>{latest.period}</span>
+          <div style={{ fontSize: 12, color: '#5a6675', display: 'flex', gap: 12, alignItems: 'center' }}>
+            <span>최근 보고: <strong style={{ color: '#1b2433' }}>{latest.period}</strong></span>
+            <button style={s.btnGhost} onClick={() => window.location.reload()}>새로고침</button>
           </div>
         )}
       </div>
 
-      {loading && (
+      {loading ? (
+        <div style={s.loading}>데이터를 불러오는 중입니다...</div>
+      ) : (
         <div style={s.body}>
-          <div style={s.kpiRow}>
-            {[1,2,3,4].map(i => (
-              <div key={i} style={s.kpiCard}>
-                <div style={sk.bar} />
-                <div style={{ ...sk.bar, width: '80%', marginTop: 8 }} />
-                <div style={{ ...sk.bar, width: '50%', marginTop: 8 }} />
-              </div>
-            ))}
-          </div>
-          <div style={s.chartGrid}>
-            {[1,2,3,4].map(i => (
-              <div key={i} style={s.chartBox}>
-                <div style={{ ...sk.bar, width: '40%', marginBottom: 12 }}/>
-                <div style={{ ...sk.bar, height: 200, borderRadius: 8 }}/>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+          {/* ================= ROW 0: CMS 설비 상태 요약 ================= */}
+          <CmsSummary equipment={equipment} woStats={woStats} onNavigate={onNavigate} />
 
-      {!loading && (
-        <div style={s.body}>
-          {/* ── 전력 수요 예측 (주력) ── */}
-          <div style={{ ...s.chartBox, border: '1px solid #a371f733', marginBottom: 20 }}>
-            <div style={s.fcHeader}>
-              <div>
-                <div style={{ ...s.chartTitle, marginBottom: 2 }}>🔮 전력 수요 예측 — 향후 24시간</div>
-                <div style={{ fontSize: 11, color: '#8b949e' }}>다중 모델 비교 (Prophet · XGBoost · LSTM · VMD-LSTM)</div>
+          {/* ================= ROW 1: KPI 4개 ================= */}
+          <div style={s.row1}>
+            <KpiCard
+              label="자급률"
+              value={latest?.self_sufficiency_pct?.toFixed(1) ?? '–'}
+              unit="%"
+              sub="태양광 + CHP 비중"
+              color="#3fb950"
+              gaugePct={latest?.self_sufficiency_pct}
+              trend={prev ? latest?.self_sufficiency_pct - prev.self_sufficiency_pct : undefined}
+              sparkline={report.slice(-12).map(r => r.self_sufficiency_pct).filter(v => v != null)}
+            />
+            <KpiCard
+              label="평균 COP"
+              value={latest?.avg_cop?.toFixed(2) ?? '–'}
+              unit=""
+              sub="냉방 성능계수 (기준 2.06)"
+              color="#2563eb"
+              gaugePct={latest?.avg_cop ? Math.min(100, (latest.avg_cop / 4) * 100) : 0}
+              trend={prev ? latest?.avg_cop - prev.avg_cop : undefined}
+              sparkline={report.slice(-12).map(r => r.avg_cop).filter(v => v != null)}
+            />
+            <KpiCard
+              label="그리드 의존도"
+              value={latest?.grid_dependency_pct?.toFixed(1) ?? '–'}
+              unit="%"
+              sub="외부 계통 의존성"
+              color="#d29922"
+              gaugePct={latest?.grid_dependency_pct}
+              trend={prev ? -(latest?.grid_dependency_pct - prev.grid_dependency_pct) : undefined}
+              sparkline={report.slice(-12).map(r => r.grid_dependency_pct).filter(v => v != null)}
+            />
+            <BillingMiniCard billing={billing} />
+          </div>
+
+          {/* ================= ROW 1.5: AI 브리핑 (풀폭) + 시간대 프로파일 ================= */}
+          <BriefingCard
+            briefing={briefing}
+            onRegenerate={async () => {
+              if (!briefing?.date) return
+              try {
+                const r = await getDailyReport(briefing.date, true)   // regenerate=true
+                if (r?.data) setBriefing(r.data)
+              } catch {}
+            }}
+          />
+
+          {/* ================= ROW 2 ================= */}
+          <div style={s.row2}>
+            {/* 전력 수요 예측 (24시간) */}
+            <div style={s.chartBox}>
+              <div style={s.chartHeader}>
+                <div style={s.chartTitle}>🔮 전력 수요 예측 트렌드 (24시간)</div>
+                {!fcLoading && forecast === null && (
+                  <button style={s.btnMicro} onClick={loadForecast}>예측 실행</button>
+                )}
               </div>
-              <span style={s.fcBadge}>주력 기능</span>
+              <div style={s.chartContent}>
+                {fcLoading && <div style={s.emptyMsg}>예측 모델 연산 중...</div>}
+                {!fcLoading && forecast !== null && fcValid.length === 0 && <div style={s.emptyMsg}>학습된 예측 모델이 없습니다.</div>}
+                {!fcLoading && fcValid.length > 0 && (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={fcData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <defs>
+                        {fcValid.map(m => (
+                          <linearGradient key={m.key} id={`color${m.key}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor={m.color} stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor={m.color} stopOpacity={0}/>
+                          </linearGradient>
+                        ))}
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e7ebf1" vertical={false} />
+                      <XAxis dataKey="h" tick={{ fontSize: 9, fill: '#5a6675' }} tickLine={false} interval="preserveStartEnd" />
+                      <YAxis tick={{ fontSize: 9, fill: '#5a6675' }} tickLine={false} axisLine={false}
+                        tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
+                      <Tooltip {...tt} formatter={(v, n) => [`${Number(v).toLocaleString()} kW`, n]} />
+                      <Legend wrapperStyle={{ fontSize: 10, paddingTop: 4 }} iconSize={8} />
+                      {fcValid.map(m => (
+                        <Area key={m.key} type="monotone" dataKey={m.key} name={m.label}
+                          stroke={m.color} fillOpacity={1} fill={`url(#color${m.key})`} strokeWidth={2} dot={false} />
+                      ))}
+                    </AreaChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
             </div>
 
-            {fcLoading && (
-              <div style={s.fcEmpty}>
-                예측 모델 실행 중… (4개 모델 비교 · 최대 2~3분 소요)
-                <div style={{ ...sk.bar, height: 180, borderRadius: 8, marginTop: 12 }} />
-              </div>
-            )}
-            {!fcLoading && forecast === null && (
-              <div style={s.fcEmpty}>
-                다중 모델 24시간 수요 예측을 실행합니다. (연산이 무거워 클릭 시 실행)<br />
-                <button style={s.fcRunBtn} onClick={loadForecast}>🔮 24시간 예측 실행</button>
-              </div>
-            )}
-            {!fcLoading && forecast !== null && fcValid.length === 0 && (
-              <div style={s.fcEmpty}>
-                학습된 예측 모델이 없습니다.<br />
-                <span style={{ color: '#58a6ff' }}>🔮 전력 수요 예측</span> 탭에서 "전체 학습"을 먼저 실행하세요.
-              </div>
-            )}
-            {!fcLoading && fcValid.length > 0 && (
-              <ResponsiveContainer width="100%" height={240}>
-                <LineChart data={fcData} margin={{ top: 8, right: 24, left: -12, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#21262d" />
-                  <XAxis dataKey="h" tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false} interval={2} />
-                  <YAxis tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false} axisLine={false}
-                    tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
-                  <Tooltip {...tt} formatter={(v, n) => [`${Number(v).toLocaleString()} kW`, n]} />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
-                  {fcValid.map(m => (
-                    <Line key={m.key} type="monotone" dataKey={m.key} name={m.label}
-                      stroke={m.color} strokeWidth={2} dot={false} connectNulls />
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-
-          {/* KPI 카드 */}
-          {latest && <>
-          <div style={s.kpiRow}>
-            <KpiCard
-              label="자급률" value={`${latest.self_sufficiency_pct?.toFixed(1)}%`}
-              sub="Self-Sufficiency" color="#3fb950"
-              trend={prev ? latest.self_sufficiency_pct - prev.self_sufficiency_pct : undefined}
-            />
-            <KpiCard
-              label="평균 COP" value={latest.avg_cop?.toFixed(2)}
-              sub="냉방 성능계수" color="#58a6ff"
-              trend={prev ? latest.avg_cop - prev.avg_cop : undefined}
-            />
-            <KpiCard
-              label="그리드 의존도" value={`${latest.grid_dependency_pct?.toFixed(1)}%`}
-              sub="Grid Dependency" color="#d29922"
-              trend={prev ? -(latest.grid_dependency_pct - prev.grid_dependency_pct) : undefined}
-            />
-            <KpiCard
-              label="누적 이상탐지" value={totalAnomalies.toLocaleString()}
-              sub="전체 기간" color="#f85149"
-            />
-          </div>
-
-          <div style={s.chartGrid}>
             {/* 에너지 소스 믹스 */}
             <div style={s.chartBox}>
               <div style={s.chartTitle}>월별 에너지 소스 믹스 (MWh)</div>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={mixData} margin={{ top: 4, right: 12, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#21262d"/>
-                  <XAxis dataKey="period" tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false}
-                    tickFormatter={v => v?.slice(2)}/>
-                  <YAxis tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false} axisLine={false}
-                    tickFormatter={v => `${v}M`}/>
-                  <Tooltip {...tt} formatter={(v, n) => [`${v} MWh`, n]}/>
-                  <Legend wrapperStyle={{ fontSize: 11 }}/>
-                  <Bar dataKey="PV"   stackId="a" fill="#3fb950" name="태양광 (PV)"/>
-                  <Bar dataKey="CHP"  stackId="a" fill="#58a6ff" name="열병합 (CHP)"/>
-                  <Bar dataKey="Grid" stackId="a" fill="#d29922" name="외부 계통"
-                    radius={[3, 3, 0, 0]}/>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* 최근 이상탐지 */}
-            <div style={s.chartBox}>
-              <div style={s.chartTitle}>최근 HIGH 이상탐지</div>
-              {recent.length === 0
-                ? <div style={{ color: '#8b949e', fontSize: 13, paddingTop: 40, textAlign: 'center' }}>탐지된 HIGH 이상 없음</div>
-                : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
-                    {recent.map(item => (
-                      <div key={item.id} style={s.anomalyRow}>
-                        <span style={{ ...s.sevDot, background: SEV_COLOR[item.severity] }}/>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 12, fontWeight: 600, color: '#e6edf3', display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                              {TYPE_LABEL[item.anomaly_type] ?? item.anomaly_type}
-                            </span>
-                            <span style={{ fontSize: 11, color: '#6e7681', flexShrink: 0, marginLeft: 8 }}>
-                              {item.timestamp?.slice(0, 10)}
-                            </span>
-                          </div>
-                          <div style={{ fontSize: 11, color: '#6e7681', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {item.description}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )
-              }
-            </div>
-
-            {/* 월별 소비량 */}
-            <div style={s.chartBox}>
-              <div style={s.chartTitle}>월별 총 소비량 (kWh)</div>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={report.slice(-12)} margin={{ top: 4, right: 12, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#21262d"/>
-                  <XAxis dataKey="period" tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false}
-                    tickFormatter={v => v?.slice(2)}/>
-                  <YAxis tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false} axisLine={false}
-                    tickFormatter={v => `${(v/1000).toFixed(0)}k`}/>
-                  <Tooltip {...tt} formatter={v => [`${v.toLocaleString()} kWh`]}/>
-                  <Bar dataKey="total_consumption_kwh" name="소비량" fill="#1f6feb" radius={[3,3,0,0]}/>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* COP 추이 (전체 너비) */}
-            <div style={{ ...s.chartBox, gridColumn: '1 / -1' }}>
-              <div style={s.chartTitle}>월별 평균 COP 추이 (냉방 성능계수)</div>
-              <ResponsiveContainer width="100%" height={160}>
-                <LineChart data={report.slice(-12)} margin={{ top: 4, right: 24, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#21262d"/>
-                  <XAxis dataKey="period" tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false}
-                    tickFormatter={v => v?.slice(2)}/>
-                  <YAxis tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false} axisLine={false}
-                    domain={['auto', 'auto']}/>
-                  <ReferenceLine y={2.06} stroke="#30363d" strokeDasharray="4 2"
-                    label={{ value: '중앙값 2.06', position: 'right', fontSize: 10, fill: '#6e7681' }}/>
-                  <Tooltip {...tt} formatter={v => [v?.toFixed(3), 'COP']}/>
-                  <Line type="monotone" dataKey="avg_cop" name="COP" stroke="#58a6ff" strokeWidth={2}
-                    dot={{ fill: '#58a6ff', r: 3 }} activeDot={{ r: 5 }}/>
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* 이번 달 에너지 현황 */}
-            <div style={s.chartBox}>
-              <div style={s.chartTitle}>이번 달 에너지 현황 — {latest.period}</div>
-              <div style={{ marginTop: 16 }}>
-                <MiniBar
-                  label="태양광 (PV)"
-                  kwh={latest.pv_kwh ?? 0}
-                  total={latest.total_consumption_kwh ?? 1}
-                  color="#3fb950"
-                />
-                <MiniBar
-                  label="열병합 (CHP)"
-                  kwh={latest.chp_kwh ?? 0}
-                  total={latest.total_consumption_kwh ?? 1}
-                  color="#58a6ff"
-                />
-                <MiniBar
-                  label="외부 계통 (Grid)"
-                  kwh={Math.max(0, (latest.total_consumption_kwh ?? 0) - (latest.pv_kwh ?? 0) - (latest.chp_kwh ?? 0))}
-                  total={latest.total_consumption_kwh ?? 1}
-                  color="#d29922"
-                />
-                <div style={{ borderTop: '1px solid #21262d', marginTop: 12, paddingTop: 12, display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
-                  <span style={{ color: '#8b949e' }}>총 소비량</span>
-                  <span style={{ color: '#e6edf3', fontWeight: 600 }}>
-                    {((latest.total_consumption_kwh ?? 0) / 1000).toFixed(0)} MWh
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginTop: 6 }}>
-                  <span style={{ color: '#8b949e' }}>이상탐지</span>
-                  <span style={{ color: (latest.anomaly_count ?? 0) > 50 ? '#f85149' : '#3fb950', fontWeight: 600 }}>
-                    {latest.anomaly_count ?? 0}건
-                  </span>
-                </div>
+              <div style={s.chartContent}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={mixData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e7ebf1" vertical={false} />
+                    <XAxis dataKey="period" tick={{ fontSize: 9, fill: '#5a6675' }} tickLine={false}
+                      tickFormatter={v => v?.slice(2)}/>
+                    <YAxis tick={{ fontSize: 9, fill: '#5a6675' }} tickLine={false} axisLine={false}
+                      tickFormatter={v => `${v}M`}/>
+                    <Tooltip {...tt} formatter={(v, n) => [`${v} MWh`, n]}/>
+                    <Legend wrapperStyle={{ fontSize: 10, paddingTop: 4 }} iconSize={8} />
+                    <Bar dataKey="PV"   stackId="a" fill="#3fb950" name="태양광"/>
+                    <Bar dataKey="CHP"  stackId="a" fill="#2563eb" name="열병합"/>
+                    <Bar dataKey="Grid" stackId="a" fill="#d29922" name="수전력" radius={[2, 2, 0, 0]}/>
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </div>
           </div>
-          </>}
+
+          {/* ================= ROW 3 ================= */}
+          <div style={s.row3}>
+            {/* 최근 이상탐지 테이블 */}
+            <div style={s.chartBox}>
+              <div style={s.chartTitle}>주요 이벤트 로그 (HIGH 이상탐지)</div>
+              <div style={{ ...s.chartContent, overflowY: 'auto' }}>
+                {recent.length === 0 ? (
+                  <div style={s.emptyMsg}>탐지된 이상 없음</div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    {recent.map(item => (
+                      <div key={item.id} style={s.anomalyRow}>
+                        <span style={{ ...s.sevDot, background: SEV_COLOR[item.severity] }}/>
+                        <span style={{ fontSize: 10, color: '#909aa8', width: 65, flexShrink: 0 }}>
+                          {item.timestamp?.slice(5, 16).replace('T', ' ')}
+                        </span>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: '#1b2433', width: 70, flexShrink: 0 }}>
+                          {TYPE_LABEL[item.anomaly_type] ?? item.anomaly_type}
+                        </span>
+                        <span style={{ fontSize: 11, color: '#5a6675', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {item.description}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 월별 COP 추이 */}
+            <div style={s.chartBox}>
+              <div style={s.chartTitle}>월별 평균 COP (설비 효율)</div>
+              <div style={s.chartContent}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={report.slice(-12)} margin={{ top: 10, right: 10, left: -24, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e7ebf1" vertical={false} />
+                    <XAxis dataKey="period" tick={{ fontSize: 9, fill: '#5a6675' }} tickLine={false} tickFormatter={v => v?.slice(2)}/>
+                    <YAxis tick={{ fontSize: 9, fill: '#5a6675' }} tickLine={false} axisLine={false} domain={['auto', 'auto']}/>
+                    <ReferenceLine y={2.06} stroke="#e2e7ef" strokeDasharray="4 2" />
+                    <Tooltip {...tt} formatter={v => [v?.toFixed(2), 'COP']}/>
+                    <Line type="monotone" dataKey="avg_cop" name="COP" stroke="#2563eb" strokeWidth={2} dot={{ fill: '#2563eb', r: 2 }} activeDot={{ r: 4 }}/>
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* AI 학습 이력 */}
+            <LearningCard learning={learning} />
+          </div>
         </div>
       )}
     </div>
   )
 }
 
-const sk = { bar: { background: '#21262d', borderRadius: 4, height: 14, width: '60%' } }
-
 const s = {
-  wrap:       { display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' },
-  header:     { padding: '16px 24px 12px', borderBottom: '1px solid #21262d', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 },
-  title:      { fontWeight: 700, fontSize: 16, color: '#e6edf3' },
-  sub:        { fontSize: 12, color: '#8b949e', marginTop: 3 },
-  body:       { flex: 1, overflowY: 'auto', padding: '20px 24px' },
-  kpiRow:     { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 },
-  kpiCard:    { background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '16px 18px' },
-  chartGrid:  { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 },
-  chartBox:   { background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '16px 18px' },
-  chartTitle: { fontSize: 13, fontWeight: 600, color: '#e6edf3', marginBottom: 12 },
-  anomalyRow: { display: 'flex', alignItems: 'flex-start', gap: 8, padding: '7px 0', borderBottom: '1px solid #21262d' },
-  sevDot:     { width: 8, height: 8, borderRadius: '50%', flexShrink: 0, marginTop: 3 },
-  fcHeader:   { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 },
-  fcBadge:    { fontSize: 11, fontWeight: 700, color: '#a371f7', background: '#a371f722', borderRadius: 4, padding: '3px 10px', flexShrink: 0 },
-  fcEmpty:    { padding: '40px 20px', textAlign: 'center', color: '#8b949e', fontSize: 13, lineHeight: 1.8 },
-  fcRunBtn:   { marginTop: 14, background: '#a371f7', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 700, padding: '10px 22px', cursor: 'pointer' },
+  wrap:       { display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', background: '#f4f6fa' },
+  header:     { padding: '12px 20px', borderBottom: '1px solid #e7ebf1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, background: '#ffffff' },
+  title:      { fontWeight: 700, fontSize: 15, color: '#1b2433' },
+  sub:        { fontSize: 11, color: '#5a6675', marginTop: 2 },
+  btnGhost:   { background: 'transparent', border: '1px solid #e2e7ef', borderRadius: 4, color: '#5a6675', fontSize: 11, padding: '4px 10px', cursor: 'pointer' },
+  btnMicro:   { background: '#a371f722', border: '1px solid #a371f744', borderRadius: 4, color: '#a371f7', fontSize: 10, padding: '2px 8px', cursor: 'pointer', fontWeight: 600 },
+  
+  loading:    { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5a6675', fontSize: 13 },
+  
+  body:       {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 12,
+    padding: '12px 20px',
+    overflowY: 'auto',   // 한 화면 강제 채우기 대신 스크롤 — 차트가 항상 실제 높이를 받음
+  },
+
+  cmsRow:     { display: 'flex', gap: 12, flexShrink: 0 },
+  cmsCard:    { background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 10, padding: '12px 16px', minWidth: 0 },
+  cmsHead:    { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+  cmsTitle:   { fontSize: 12, fontWeight: 700, color: '#1b2433', display: 'flex', alignItems: 'center', gap: 6 },
+  cmsLink:    { fontSize: 10, color: '#2563eb', fontWeight: 600 },
+  eqChips:    { display: 'flex', gap: 18, marginTop: 10, flexWrap: 'wrap' },
+  eqChip:     { display: 'flex', alignItems: 'center', gap: 8 },
+
+  row1:       { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, flexShrink: 0 },
+  row2:       { display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, height: 300, flexShrink: 0 },
+  row3:       { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, height: 260, flexShrink: 0 },
+
+  kpiCard:    { background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 10, padding: '16px 18px', display: 'flex', flexDirection: 'column', minHeight: 130 },
+  
+  briefingCard:    { background: 'linear-gradient(135deg, #2563eb0a, #a371f70a)', border: '1px solid #2563eb33', borderRadius: 10, overflow: 'hidden', display: 'flex', flexDirection: 'column' },
+  briefingHeader:  { padding: '10px 14px', background: '#2563eb11', borderBottom: '1px solid #2563eb22', display: 'flex', alignItems: 'center', gap: 6 },
+  briefingGrid:    { display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 0 },
+  briefingText:    { padding: '12px 14px', borderRight: '1px solid #2563eb22', display: 'flex', flexDirection: 'column', gap: 10, overflow: 'hidden' },
+  briefingSummary: { fontSize: 12, color: '#33404f', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'keep-all' },
+  briefingChart:   { padding: '10px 12px', display: 'flex', flexDirection: 'column' },
+  actionsBlock:    { background: '#3fb95011', border: '1px solid #3fb95033', borderRadius: 6, padding: '8px 10px' },
+  actionsBlockTitle:{ fontSize: 11, fontWeight: 700, color: '#3fb950', marginBottom: 4 },
+  actionsBlockText: { fontSize: 11, color: '#33404f', lineHeight: 1.7, whiteSpace: 'pre-wrap' },
+  dlBtn:           { padding: '3px 9px', background: '#e7ebf1', border: '1px solid #e2e7ef', borderRadius: 4, color: '#5a6675', fontSize: 10, cursor: 'pointer', fontWeight: 600 },
+
+  chartBox:   { background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 8, padding: '12px 14px', display: 'flex', flexDirection: 'column', minHeight: 0 },
+  chartHeader:{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  chartTitle: { fontSize: 12, fontWeight: 600, color: '#1b2433', marginBottom: 8 },
+  chartContent:{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }, // minHeight 0 is crucial for Recharts in CSS Grid
+
+  emptyMsg:   { margin: 'auto', color: '#909aa8', fontSize: 11 },
+  
+  anomalyRow: { display: 'flex', alignItems: 'center', gap: 8, padding: '6px 4px', borderBottom: '1px solid #e7ebf1' },
+  sevDot:     { width: 6, height: 6, borderRadius: '50%', flexShrink: 0 },
 }

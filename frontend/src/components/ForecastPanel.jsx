@@ -5,20 +5,24 @@ import {
 } from 'recharts'
 import { getForecastModels, getForecastStatus, trainModel, getForecastCompare, getForecastBacktest } from '../api/client'
 
-const DATA_END    = '2024-01-01'
-const DATA_START  = '2023-01-01'
+// 데이터 분할 (4/1/1):
+//   학습: 2018-01-01 ~ 2021-12-31 (4년)
+//   검증: 2022-01-01 ~ 2022-12-31 (1년) — 백테스트 대상
+//   시뮬: 2023-01-01 ~ 2023-12-31 (1년) — 실시간 모사
+const DATA_END    = '2023-01-01'   // 컨텍스트 끝(검증 끝 직후) — sim 시각이 있으면 자동 덮어씀
+const DATA_START  = '2022-10-01'   // 최근 컨텍스트 (3개월)
 const TRAIN_START = '2018-01-01'
-const TRAIN_END   = '2024-01-01'
+const TRAIN_END   = '2021-12-31'   // 학습은 4년치만
 
 const tooltip = {
-  contentStyle: { background: '#161b22', border: '1px solid #30363d', borderRadius: 8, fontSize: 12 },
-  labelStyle: { color: '#e6edf3' },
+  contentStyle: { background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 8, fontSize: 12 },
+  labelStyle: { color: '#1b2433' },
 }
 
 function StatusBadge({ status }) {
   const isRunning  = status === 'running' || status?.startsWith('running:')
   const epochMatch = status?.match(/running: epoch (\d+)\/(\d+)/)
-  const color = status === 'done' ? '#3fb950' : isRunning ? '#d29922' : status?.startsWith('error') ? '#f85149' : '#6e7681'
+  const color = status === 'done' ? '#3fb950' : isRunning ? '#d29922' : status?.startsWith('error') ? '#f85149' : '#909aa8'
   const label = status === 'done' ? '학습 완료'
     : epochMatch ? `학습 중 ${epochMatch[1]}/${epochMatch[2]} 에폭`
     : isRunning   ? '학습 중...'
@@ -82,7 +86,7 @@ export default function ForecastPanel() {
   useEffect(() => {
     const poll = () => getForecastStatus().then(r => setStatus(r.data.status ?? {})).catch(() => {})
     poll()
-    const id = setInterval(poll, 3000)
+    const id = setInterval(poll, 10000)
     return () => clearInterval(id)
   }, [])
 
@@ -171,12 +175,11 @@ export default function ForecastPanel() {
         {/* ── 백테스트 탭 ── */}
         {tab === 'backtest' && (<>
           <div style={s.btDesc}>
-            <b style={{ color: '#e6edf3' }}>2018~2020 학습 → 2021~2023 예측</b>하여 실제값과 비교합니다.
-            XGBoost는 백테스트 전용으로 재학습, LSTM은 저장된 모델로 rolling 예측을 수행합니다.{' '}
-            <span style={{ color: '#d29922' }}>Prophet은 단기(≤7일) 전용으로 장기 백테스트에서 제외됩니다.</span>
+            <b style={{ color: '#1b2433' }}>2018~2021 학습 → 2022 검증</b>하여 실제 전력 수요와 비교합니다.
+            (2023년은 실시간 시뮬레이션 전용 구간 — 학습/검증에서 제외).
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 12, color: '#8b949e' }}>집계 단위:</span>
+            <span style={{ fontSize: 12, color: '#5a6675' }}>집계 단위:</span>
             {[['D', '일별'], ['W', '주별'], ['ME', '월별']].map(([v, l]) => (
               <button key={v} style={{ ...s.hBtn, ...(btFreq === v ? s.hBtnActive : {}) }}
                 onClick={() => setBtFreq(v)}>{l}</button>
@@ -191,21 +194,13 @@ export default function ForecastPanel() {
             <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', flexWrap: 'wrap' }}>
               {Object.entries(btData.mae_kw).map(([m, mae]) => (
                 <div key={m} style={s.maeCard}>
-                  <div style={{ fontSize: 11, color: '#8b949e' }}>{modelLabel[m] ?? m} MAE</div>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: modelColor[m] ?? '#e6edf3' }}>
+                  <div style={{ fontSize: 11, color: '#5a6675' }}>{modelLabel[m] ?? m} MAE</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: modelColor[m] ?? '#1b2433' }}>
                     {mae} <span style={{ fontSize: 12 }}>kW</span>
                   </div>
-                  <div style={{ fontSize: 11, color: '#6e7681' }}>평균 절대 오차</div>
+                  <div style={{ fontSize: 11, color: '#909aa8' }}>평균 절대 오차</div>
                 </div>
               ))}
-              {/* prophet은 단기 전용이라 백테스트 MAE 없음 */}
-              {modelDefs.find(m => m.name === 'prophet') && (
-                <div style={{ ...s.maeCard, borderColor: '#d2922244' }}>
-                  <div style={{ fontSize: 11, color: '#8b949e' }}>Prophet</div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#d29922', marginTop: 4 }}>단기 전용</div>
-                  <div style={{ fontSize: 11, color: '#6e7681', marginTop: 2 }}>≤72h 예측에 사용</div>
-                </div>
-              )}
             </div>
           )}
 
@@ -216,22 +211,22 @@ export default function ForecastPanel() {
               </div>
               <ResponsiveContainer width="100%" height={320}>
                 <LineChart data={btData.data} margin={{ top: 8, right: 20, left: -10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#21262d"/>
-                  <XAxis dataKey="ts" tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false}
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e7ebf1"/>
+                  <XAxis dataKey="ts" tick={{ fontSize: 10, fill: '#5a6675' }} tickLine={false}
                     interval={Math.floor(btData.data.length / 10)}
                     tickFormatter={v => v?.slice(2, 10)}/>
-                  <YAxis tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false} axisLine={false}
+                  <YAxis tick={{ fontSize: 10, fill: '#5a6675' }} tickLine={false} axisLine={false}
                     tickFormatter={v => `${v}kW`}/>
                   <Tooltip {...tooltip}
                     formatter={(v, n) => [`${v} kW`, n === 'actual' ? '실제값' : modelLabel[n] ?? n]}/>
                   <Legend wrapperStyle={{ fontSize: 12 }}
                     formatter={v => v === 'actual'
-                      ? <span style={{ color: '#e6edf3' }}>실제값</span>
-                      : <span style={{ color: modelColor[v] ?? '#8b949e' }}>{modelLabel[v] ?? v}</span>}/>
-                  <Line type="monotone" dataKey="actual" stroke="#e6edf3" strokeWidth={2} dot={false} connectNulls/>
+                      ? <span style={{ color: '#1b2433' }}>실제값</span>
+                      : <span style={{ color: modelColor[v] ?? '#5a6675' }}>{modelLabel[v] ?? v}</span>}/>
+                  <Line type="monotone" dataKey="actual" stroke="#1b2433" strokeWidth={2} dot={false} connectNulls/>
                   {Object.keys(btData.mae_kw ?? {}).map((m, i) => (
                     <Line key={m} type="monotone" dataKey={m}
-                      stroke={modelColor[m] ?? '#8b949e'} strokeWidth={1.5} dot={false}
+                      stroke={modelColor[m] ?? '#5a6675'} strokeWidth={1.5} dot={false}
                       strokeDasharray={i % 2 === 0 ? '4 2' : '2 3'} connectNulls/>
                   ))}
                 </LineChart>
@@ -259,7 +254,7 @@ export default function ForecastPanel() {
                     <span style={{ fontSize: 13, fontWeight: 600, color: m.color }}>{m.label}</span>
                     <StatusBadge status={status[m.name] ?? m.status}/>
                   </div>
-                  <div style={{ fontSize: 11, color: '#6e7681' }}>{m.description}</div>
+                  <div style={{ fontSize: 11, color: '#909aa8' }}>{m.description}</div>
                   <div style={{ display: 'flex', gap: 4, marginTop: 6, flexWrap: 'wrap' }}>
                     {(m.badges ?? []).map(b => (
                       <span key={b.text} style={{ fontSize: 10, color: b.color, background: b.bg, borderRadius: 4, padding: '2px 6px' }}>
@@ -275,7 +270,7 @@ export default function ForecastPanel() {
           {/* 컨트롤 */}
           <div style={s.controls}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 12, color: '#8b949e' }}>예측 시간:</span>
+              <span style={{ fontSize: 12, color: '#5a6675' }}>예측 시간:</span>
               {[24, 48, 72, 168].map(h => (
                 <button key={h} style={{ ...s.hBtn, ...(hours === h ? s.hBtnActive : {}) }}
                   onClick={() => setHours(h)}>
@@ -298,7 +293,7 @@ export default function ForecastPanel() {
           {trainMsg && (
             <div style={{ fontSize: 12, padding: '8px 12px', borderRadius: 8,
               ...(trainMsg.includes('실패') || trainMsg.includes('오류')
-                ? { background: '#2d1517', border: '1px solid #f85149', color: '#f85149' }
+                ? { background: '#fee2e2', border: '1px solid #f85149', color: '#f85149' }
                 : { background: '#0f2d1a', border: '1px solid #3fb950', color: '#3fb950' }) }}>
               {trainMsg}
             </div>
@@ -313,7 +308,7 @@ export default function ForecastPanel() {
                   <input type="checkbox" checked={models[m.name] ?? true} disabled={disabled}
                     onChange={e => setModels(p => ({ ...p, [m.name]: e.target.checked }))}/>
                   <span style={{ color: m.color }}>{m.label}</span>
-                  {disabled && <span style={{ fontSize: 10, color: '#8b949e' }}>(단기 전용)</span>}
+                  {disabled && <span style={{ fontSize: 10, color: '#5a6675' }}>(단기 전용)</span>}
                 </label>
               )
             })}
@@ -327,19 +322,19 @@ export default function ForecastPanel() {
               <div style={s.chartTitle}>계통 전력 소비 예측 — 향후 {hours >= 168 ? '7일' : `${hours}시간`} (kW)</div>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={forecast.data} margin={{ top: 8, right: 20, left: -10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#21262d"/>
-                  <XAxis dataKey="ts" tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false}
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e7ebf1"/>
+                  <XAxis dataKey="ts" tick={{ fontSize: 10, fill: '#5a6675' }} tickLine={false}
                     tickFormatter={v => v?.slice(5, 16)}
                     interval={Math.floor(forecast.data.length / 8)}/>
-                  <YAxis tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false} axisLine={false}
+                  <YAxis tick={{ fontSize: 10, fill: '#5a6675' }} tickLine={false} axisLine={false}
                     tickFormatter={v => `${v}kW`}/>
                   <Tooltip {...tooltip} labelFormatter={v => v?.slice(0, 16)}
                     formatter={(v, n) => [`${v} kW`, modelLabel[n] ?? n]}/>
                   <Legend wrapperStyle={{ fontSize: 12 }}
-                    formatter={v => <span style={{ color: modelColor[v] ?? '#8b949e' }}>{modelLabel[v] ?? v}</span>}/>
+                    formatter={v => <span style={{ color: modelColor[v] ?? '#5a6675' }}>{modelLabel[v] ?? v}</span>}/>
                   {activeModels.map(m => (
                     <Line key={m} type="monotone" dataKey={m} name={m}
-                      stroke={modelColor[m] ?? '#8b949e'} strokeWidth={2} dot={false} connectNulls/>
+                      stroke={modelColor[m] ?? '#5a6675'} strokeWidth={2} dot={false} connectNulls/>
                   ))}
                 </LineChart>
               </ResponsiveContainer>
@@ -357,9 +352,9 @@ export default function ForecastPanel() {
           {!allDone && !forecast && modelDefs.length > 0 && (
             <div style={s.guide}>
               <div style={{ fontSize: 32, marginBottom: 10 }}>🤖</div>
-              <div style={{ fontSize: 14, color: '#e6edf3', marginBottom: 6 }}>모델 학습이 필요합니다</div>
-              <div style={{ fontSize: 12, color: '#8b949e' }}>
-                {trainableNames.map(m => modelLabel[m]).join(' · ')} {trainableNames.length}개 모델을 6년(2018~2023) 데이터로 학습합니다.<br/>
+              <div style={{ fontSize: 14, color: '#1b2433', marginBottom: 6 }}>모델 학습이 필요합니다</div>
+              <div style={{ fontSize: 12, color: '#5a6675' }}>
+                {trainableNames.map(m => modelLabel[m]).join(' · ')} {trainableNames.length}개 모델을 4년(2018~2021) 데이터로 학습합니다.<br/>
                 Prophet·XGBoost는 수 분, LSTM은 약 10~20분 소요됩니다.
               </div>
             </div>
@@ -372,24 +367,24 @@ export default function ForecastPanel() {
 
 const s = {
   wrap:       { display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' },
-  header:     { padding: '16px 24px 12px', borderBottom: '1px solid #21262d', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 },
-  title:      { fontWeight: 700, fontSize: 15, color: '#e6edf3' },
-  sub:        { fontSize: 12, color: '#8b949e' },
-  tabRow:     { display: 'flex', gap: 4, padding: '8px 24px 0', borderBottom: '1px solid #21262d', flexShrink: 0 },
-  tabBtn:     { padding: '7px 16px', background: 'none', border: 'none', borderBottom: '2px solid transparent', color: '#8b949e', fontSize: 13, cursor: 'pointer' },
-  tabActive:  { color: '#58a6ff', borderBottomColor: '#58a6ff', fontWeight: 600 },
+  header:     { padding: '16px 24px 12px', borderBottom: '1px solid #e7ebf1', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 },
+  title:      { fontWeight: 700, fontSize: 15, color: '#1b2433' },
+  sub:        { fontSize: 12, color: '#5a6675' },
+  tabRow:     { display: 'flex', gap: 4, padding: '8px 24px 0', borderBottom: '1px solid #e7ebf1', flexShrink: 0 },
+  tabBtn:     { padding: '7px 16px', background: 'none', border: 'none', borderBottom: '2px solid transparent', color: '#5a6675', fontSize: 13, cursor: 'pointer' },
+  tabActive:  { color: '#2563eb', borderBottomColor: '#2563eb', fontWeight: 600 },
   body:       { flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 },
-  btDesc:     { fontSize: 13, color: '#8b949e', background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '10px 14px' },
-  maeCard:    { background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '12px 16px', minWidth: 140 },
+  btDesc:     { fontSize: 13, color: '#5a6675', background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 8, padding: '10px 14px' },
+  maeCard:    { background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 10, padding: '12px 16px', minWidth: 140 },
   cards:      { display: 'grid', gap: 12 },
-  card:       { background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '14px 16px' },
+  card:       { background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 10, padding: '14px 16px' },
   controls:   { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 },
-  hBtn:       { padding: '4px 12px', background: '#161b22', border: '1px solid #30363d', borderRadius: 6, color: '#8b949e', fontSize: 12, cursor: 'pointer' },
-  hBtnActive: { borderColor: '#58a6ff', color: '#58a6ff', background: '#1f6feb22' },
-  trainBtn:   { padding: '7px 16px', background: '#21262d', border: '1px solid #30363d', borderRadius: 8, color: '#e6edf3', fontWeight: 600, cursor: 'pointer', fontSize: 13 },
-  predictBtn: { padding: '7px 20px', background: '#1f6feb', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 13 },
-  chartBox:   { background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '16px 18px' },
-  chartTitle: { fontSize: 13, fontWeight: 600, color: '#e6edf3', marginBottom: 12 },
-  errBox:     { background: '#2d1517', border: '1px solid #f85149', borderRadius: 8, padding: '10px 14px', fontSize: 12, color: '#f85149' },
+  hBtn:       { padding: '4px 12px', background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 6, color: '#5a6675', fontSize: 12, cursor: 'pointer' },
+  hBtnActive: { borderColor: '#2563eb', color: '#2563eb', background: '#2563eb22' },
+  trainBtn:   { padding: '7px 16px', background: '#e7ebf1', border: '1px solid #e2e7ef', borderRadius: 8, color: '#1b2433', fontWeight: 600, cursor: 'pointer', fontSize: 13 },
+  predictBtn: { padding: '7px 20px', background: '#2563eb', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 13 },
+  chartBox:   { background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 10, padding: '16px 18px' },
+  chartTitle: { fontSize: 13, fontWeight: 600, color: '#1b2433', marginBottom: 12 },
+  errBox:     { background: '#fee2e2', border: '1px solid #f85149', borderRadius: 8, padding: '10px 14px', fontSize: 12, color: '#f85149' },
   guide:      { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 40, textAlign: 'center' },
 }

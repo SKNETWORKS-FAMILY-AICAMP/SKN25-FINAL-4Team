@@ -19,6 +19,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent / "knowledge"))
+
+from domain_knowledge import KFEMS_STANDARD_TERMS, FORECAST_RECOMMENDATION_PROMPT
 
 
 # ── 날짜 파싱 ─────────────────────────────────────────────────────
@@ -131,29 +134,19 @@ def _run_vmd_lstm_future(df: pd.DataFrame, hours: int) -> dict:
 
 
 def _run_future_fallback(df: pd.DataFrame, hours: int) -> dict:
-    """XGBoost → Prophet 순으로 미래 예측 시도."""
-    for model_name in ("xgboost", "prophet"):
-        try:
-            if model_name == "xgboost":
-                from models.forecasting.xgboost_model import predict
-                fc = predict(df, hours=hours)
-                records = [
-                    {"ts": str(r["ts"])[:16], "yhat_kw": round(float(r["yhat"]) / 1000, 1)}
-                    for _, r in fc.iterrows()
-                ]
-            else:
-                from models.forecasting.prophet_model import predict
-                fc = predict(df, hours=hours)
-                records = [
-                    {"ts": str(r["ts"])[:16], "yhat_kw": round(float(r["yhat"]), 1)}
-                    for _, r in fc.iterrows()
-                ]
-            return {"error": None, "model": model_name, "records": records}
-        except FileNotFoundError:
-            continue
-        except Exception:
-            continue
-    return {"error": "저장된 예측 모델 없음 (POST /forecast/train 먼저 실행)", "model": None, "records": []}
+    """XGBoost 폴백 예측."""
+    try:
+        from models.forecasting.xgboost_model import predict
+        fc = predict(df, hours=hours)
+        records = [
+            {"ts": str(r["ts"])[:16], "yhat_kw": round(float(r["yhat"]) / 1000, 1)}
+            for _, r in fc.iterrows()
+        ]
+        return {"error": None, "model": "xgboost", "records": records}
+    except FileNotFoundError:
+        return {"error": "XGBoost 모델 파일 없음 (POST /forecast/train/xgboost 먼저 실행)", "model": None, "records": []}
+    except Exception as e:
+        return {"error": str(e), "model": None, "records": []}
 
 
 # ── 요약 ────────────────────────────────────────────────────────
@@ -171,6 +164,78 @@ def _summarize_future(records: list[dict], hours: int, model: str) -> str:
         f"- 최저: {low:.1f} kW\n"
         f"- 예측 시작: {records[0]['ts']} / 종료: {records[-1]['ts']}"
     )
+
+
+def _compute_future_hints(records: list[dict]) -> str:
+    """미래 예측 시계열에서 결정론적 운영 힌트를 추출."""
+    if not records:
+        return "(힌트 없음)"
+    vals = [r["yhat_kw"] for r in records]
+    avg, peak, low = sum(vals) / len(vals), max(vals), min(vals)
+    peak_idx = vals.index(peak)
+    peak_ts = records[peak_idx]["ts"]
+    peak_ratio = peak / avg if avg > 0 else 0
+
+    lines = [f"- 피크/평균 비율: {peak_ratio:.2f}배 (피크 시각: {peak_ts})"]
+
+    # 피크 직전 램프(상승) 구간 — 피크 3시간 전부터 증가량
+    if peak_idx >= 3:
+        ramp_start = records[peak_idx - 3]
+        ramp_delta = peak - ramp_start["yhat_kw"]
+        if ramp_delta > 0:
+            lines.append(
+                f"- 피크 직전 램프: {ramp_start['ts']} → {peak_ts}, +{ramp_delta:.1f} kW 상승"
+            )
+
+    # 야간 시간대(00~05시) 평균 vs 주간(08~18시) 평균
+    night, day = [], []
+    for r in records:
+        try:
+            hour = int(str(r["ts"])[11:13])
+        except (ValueError, IndexError):
+            continue
+        if 0 <= hour <= 5:
+            night.append(r["yhat_kw"])
+        elif 8 <= hour <= 18:
+            day.append(r["yhat_kw"])
+    if night and day:
+        ratio = sum(night) / len(night) / (sum(day) / len(day))
+        if ratio > 0.7:
+            lines.append(
+                f"- 야간/주간 비율: {ratio:.2f} (야간 부하가 주간 대비 70% 이상 → 대기전력 점검 권고)"
+            )
+
+    # 최저 시간대 — ESS 충전 / 부하 시프트 후보
+    low_ts = records[vals.index(low)]["ts"]
+    lines.append(f"- 최저 부하 시각: {low_ts} ({low:.1f} kW) — 부하 시프트·ESS 충전 후보 구간")
+
+    return "\n".join(lines)
+
+
+def _compute_historical_hints(records: list[dict]) -> str:
+    """과거 예측 vs 실측 비교에서 운영 힌트를 추출."""
+    if not records:
+        return "(힌트 없음)"
+    errors_abs = [(abs(r["error_kw"]), r) for r in records]
+    errors_abs.sort(key=lambda x: -x[0])
+    top_err = errors_abs[:3]
+
+    lines = ["오차 상위 3구간 (모델 재학습 또는 미터 점검 후보):"]
+    for err, r in top_err:
+        sign = "과소예측" if r["error_kw"] > 0 else "과대예측"
+        lines.append(
+            f"- {r['ts']}: 실측 {r['actual_kw']:.1f} / 예측 {r['predicted_kw']:.1f} kW "
+            f"({sign} {err:.1f} kW)"
+        )
+
+    # MAPE 비슷한 척도 (실측 평균 대비 MAE 비율)
+    actual_avg = sum(r["actual_kw"] for r in records) / len(records)
+    mae = sum(abs(r["error_kw"]) for r in records) / len(records)
+    if actual_avg > 0:
+        lines.append(
+            f"- 평균 오차율: {mae/actual_avg*100:.1f}% (실측 평균 {actual_avg:.1f} kW 대비 MAE {mae:.1f} kW)"
+        )
+    return "\n".join(lines)
 
 
 def _summarize_historical(records: list[dict], start: str, end: str, model: str) -> str:
@@ -205,7 +270,13 @@ def run(state: dict) -> dict:
     history_block = ("\n## 이전 대화\n" + "\n".join(history_lines)) if history_lines else ""
 
     # 데이터 로드 (최근 3개월 + 336h lag 여유분)
-    end_dt   = pd.Timestamp.now(tz="UTC").normalize()
+    # 시뮬레이터가 활성이면 sim_now를 '지금'으로 사용 (data leakage 방지)
+    try:
+        from api.routers.simulator import effective_now
+        now_dt = pd.Timestamp(effective_now()).tz_localize("UTC")
+    except Exception:
+        now_dt = pd.Timestamp.now(tz="UTC")
+    end_dt   = now_dt.normalize()
     start_dt = end_dt - pd.DateOffset(months=3) - pd.Timedelta(hours=336)
     try:
         from data.loader import load_range
@@ -252,35 +323,53 @@ def run(state: dict) -> dict:
 
 def _make_response(state, question, history_block, forecast_block, result):
     mode = result.get("mode", "future")
-    if mode == "historical":
-        task_instruction = """예측 수치와 실측값을 비교하여 다음을 설명하세요:
-1. 예측 정확도 (MAE, 주요 오차 구간)
-2. 실측 피크와 예측 피크 비교
-3. 오차가 큰 시간대의 특징 및 가능한 원인
-4. 실제 운영에 유용한 시사점"""
-    else:
-        task_instruction = """예측 수치를 기반으로 다음을 설명하세요:
-1. 예측 기간 평균·피크 소비량 요약
-2. 피크 시간대 및 주의사항
-3. 실제 운영에 유용한 권고사항 (설비 가동 일정 조정 등)
-모델이 없으면 학습 방법을 안내하세요."""
+    records = result.get("records") or []
 
-    prompt = f"""당신은 에너지 소비 예측 전문 AI입니다.
+    if mode == "historical":
+        hints_block = _compute_historical_hints(records)
+        scenario_note = (
+            "과거 기간 예측-실측 비교입니다. 오차 분석을 통해 모델 신뢰도와 "
+            "설비 운영 패턴 변화를 진단하세요."
+        )
+    else:
+        hints_block = _compute_future_hints(records) if records else "(힌트 없음)"
+        scenario_note = (
+            "미래 예측 시계열입니다. 운영자가 오늘/내일 바로 행동할 수 있는 "
+            "에너지 최적화 운전 관점의 권고를 작성하세요."
+        )
+
+    prompt = f"""당신은 EMS Agent — 공장 에너지 운영을 돕는 AI 코파일럿입니다.
 시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력망: 독일 공공 전력망.
 용어: "계통 전력" 사용 (한전·수전량 등 한국 용어 사용 금지).
+
+{KFEMS_STANDARD_TERMS}
 {history_block}
 
-## 예측 결과
+## 예측 결과 요약
 {forecast_block}
+
+## 운영 힌트 (결정론적 계산값 — 답변에 반드시 인용)
+{hints_block}
 
 ## 사용자 질문
 {question}
 
-{task_instruction}"""
+## 시나리오
+{scenario_note}
+
+{FORECAST_RECOMMENDATION_PROMPT}
+
+마지막 줄에는 모델이 없다는 결과가 들어오면 학습 API(POST /forecast/train/xgboost)를 안내하세요."""
+
+    rag_ans = llm_chat([{"role": "user", "content": prompt}], max_tokens=1200)
+    
+    # 시연용: 프론트엔드 동적 렌더링을 위한 마크다운 태그 주입
+    if not result.get("error"):
+        rag_ans += "\n\n[CHART:FORECAST]"
 
     return {
         **state,
-        "rag_answer":      llm_chat([{"role": "user", "content": prompt}], max_tokens=1024),
+        "rag_answer":      rag_ans,
         "forecast_result": result,
     }
 

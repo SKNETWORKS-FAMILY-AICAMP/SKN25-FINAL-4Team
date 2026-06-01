@@ -32,6 +32,7 @@ import rag_agent
 import anomaly_agent
 import reporting_agent
 import forecast_agent
+import cms_agent
 
 
 # ── 노드 1: 의도 분류 (키워드 룰 → LLM 폴백) ───────────────────
@@ -39,13 +40,15 @@ import forecast_agent
 _KW_ANOMALY  = re.compile(r"이상|비정상|스파이크|급등|급락|오류|센서|탐지|경보|알람|fault|anomal")
 _KW_REPORT   = re.compile(r"보고서|리포트|report|kpi|월간|요약|통계|실적|집계|월별\s*현황")
 _KW_FORECAST = re.compile(r"예측|전망|앞으로|내일|다음\s*주|장기|예상|forecast|미래|될\s*것")
+_KW_CMS      = re.compile(r"설비|헬스|진단|작업\s*지시|정비|수리|예지보전|상태\s*감시|계통|열병합|냉방|태양광|시뮬|시뮬레이터|시연")
 
 INTENT_PROMPT = """사용자 질문을 읽고 아래 중 하나로만 답하세요. 다른 말은 하지 마세요.
 
-- anomaly  : 이상탐지, 이상, 비정상, 스파이크, 급등, 급락, 오류, 센서 관련
+- cms      : 설비 상태, 설비 헬스, 설비 진단, 작업지시, 정비, 예지보전, 특정 설비(계통/열병합/냉방/태양광) 상태
+- anomaly  : 이상탐지 결과, 이상 목록, 스파이크, 급등, 급락 통계 관련
 - report   : 보고서, 리포트, KPI, 월간, 요약, 통계, 실적 관련
 - forecast : 예측, 전망, 앞으로, 내일, 다음주, 장기, ~할 것 같아, 예상
-- rag      : 개념 설명, 원인 분석, 방법, 권장사항, 그 외 모든 질문
+- rag      : 개념 설명, 방법, 권장사항, 그 외 모든 질문
 
 질문: {question}"""
 
@@ -57,6 +60,7 @@ def _rule_classify(question: str) -> str | None:
         "anomaly":  len(_KW_ANOMALY.findall(q)),
         "report":   len(_KW_REPORT.findall(q)),
         "forecast": len(_KW_FORECAST.findall(q)),
+        "cms":      len(_KW_CMS.findall(q)),
     }
     best, count = max(scores.items(), key=lambda x: x[1])
     if count >= 1:
@@ -80,7 +84,7 @@ def classify_intent(state: AgentState) -> AgentState:
         [{"role": "user", "content": INTENT_PROMPT.format(question=question)}],
         max_tokens=10,
     ).strip().lower()
-    intent = raw if raw in ("anomaly", "report", "rag", "forecast") else "rag"
+    intent = raw if raw in ("anomaly", "report", "rag", "forecast", "cms") else "rag"
     print(f"[Orchestrator] 의도 분류 (LLM): '{question}' → {intent}")
     return {**state, "intent": intent}
 
@@ -109,6 +113,11 @@ def report_node(state: AgentState) -> AgentState:
 def forecast_node(state: AgentState) -> AgentState:
     print("[Forecast Agent] 실행 중...")
     return forecast_agent.langgraph_node(state)
+
+
+def cms_node(state: AgentState) -> AgentState:
+    print("[CMS Agent] 실행 중...")
+    return cms_agent.langgraph_node(state)
 
 
 # ── 노드 6: Critic (LLM 제거 — 문자열 치환으로 대체) ─────────────
@@ -164,6 +173,7 @@ def build_graph():
     g.add_node("anomaly",   anomaly_node)
     g.add_node("report",    report_node)
     g.add_node("forecast",  forecast_node)
+    g.add_node("cms",       cms_node)
     g.add_node("critic",    critic_node)
 
     g.set_entry_point("classify")
@@ -173,12 +183,14 @@ def build_graph():
         "anomaly":  "anomaly",
         "report":   "report",
         "forecast": "forecast",
+        "cms":      "cms",
     })
 
     g.add_edge("rag",      "critic")
     g.add_edge("anomaly",  "critic")
     g.add_edge("report",   "critic")
     g.add_edge("forecast", "critic")
+    g.add_edge("cms",      "critic")
     g.add_edge("critic",   END)
 
     _graph = g.compile()

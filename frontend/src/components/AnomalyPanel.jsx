@@ -7,14 +7,14 @@ import {
 import { getAnomalies, getAnomalySummary, getAnomalyTimeline, getAnomalyTypes,
          getAnomalyContext, getAnomalyEvents, sendChat, runDetection, getDetectionStatus } from '../api/client'
 
-const SEV_COLOR  = { HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#58a6ff' }
+const SEV_COLOR  = { HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#2563eb' }
 const TYPE_LABEL = {
   COPDrop: 'COP 급락', CHPOutage: 'CHP 정지', PowerSpike: '전력 급등',
   NightConsumption: '야간 소비', PVNightNonZero: 'PV 야간 비정상', Unknown: '기타',
 }
 const tooltip = {
-  contentStyle: { background: '#161b22', border: '1px solid #30363d', borderRadius: 8, fontSize: 11 },
-  labelStyle: { color: '#e6edf3' },
+  contentStyle: { background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 8, fontSize: 11 },
+  labelStyle: { color: '#1b2433' },
 }
 
 // 게이트웨이 장애 구간 (인공 보정 데이터 → 이상 오판 가능)
@@ -32,14 +32,14 @@ function getGatewayFailure(timestamp) {
 }
 
 const TYPE_METRICS = {
-  COPDrop:          [{ key: 'cop',    name: 'COP',          color: '#58a6ff', unit: '' }],
+  COPDrop:          [{ key: 'cop',    name: 'COP',          color: '#2563eb', unit: '' }],
   CHPOutage:        [{ key: 'chp_P',  name: 'CHP (kW)',     color: '#3fb950', unit: 'kW' }],
   PowerSpike:       [{ key: 'grid_P', name: '계통 전력 (kW)', color: '#f85149', unit: 'kW' }],
   NightConsumption: [{ key: 'grid_P', name: '계통 전력 (kW)', color: '#f85149', unit: 'kW' }],
   PVNightNonZero:   [{ key: 'pv_P',  name: 'PV (kW)',      color: '#d29922', unit: 'kW' }],
   Unknown: [
     { key: 'grid_P', name: '계통 전력 (kW)', color: '#f85149', unit: 'kW' },
-    { key: 'cop',    name: 'COP',            color: '#58a6ff', unit: '' },
+    { key: 'cop',    name: 'COP',            color: '#2563eb', unit: '' },
   ],
 }
 
@@ -79,7 +79,7 @@ function DetailPanel({ item, onClose }) {
           <span style={{ ...s.sevBadge, background: SEV_COLOR[item.severity] ?? '#555' }}>{item.severity}</span>
           <span style={s.detailType}>{TYPE_LABEL[item.anomaly_type] ?? item.anomaly_type}</span>
           {isNewModel && (
-            <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: '#1e1034', color: '#a371f7', border: '1px solid #a371f744' }}>
+            <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: '#ede9fe', color: '#7c3aed', border: '1px solid #a371f744' }}>
               VMD-LSTM
             </span>
           )}
@@ -110,7 +110,7 @@ function DetailPanel({ item, onClose }) {
           <span style={{ ...s.scoreChip, color: '#f85149' }}>
             잔차 {item.residual_w != null ? (item.residual_w / 1000).toFixed(1) + ' kW' : '–'}
           </span>
-          <span style={{ ...s.scoreChip, background: '#21262d', color: SEV_COLOR[item.severity] }}>
+          <span style={{ ...s.scoreChip, background: '#e7ebf1', color: SEV_COLOR[item.severity] }}>
             {item.vote_count}개 모델 동의
           </span>
         </div>
@@ -119,7 +119,7 @@ function DetailPanel({ item, onClose }) {
           <span style={s.scoreChip}>통계 {item.score_stat?.toFixed(1) ?? '–'}</span>
           <span style={s.scoreChip}>IsoForest {item.score_iso?.toFixed(3) ?? '–'}</span>
           <span style={s.scoreChip}>LSTM-AE {typeof item.score_lstm === 'number' ? item.score_lstm.toFixed(3) : '–'}</span>
-          <span style={{ ...s.scoreChip, background: '#21262d', color: SEV_COLOR[item.severity] }}>
+          <span style={{ ...s.scoreChip, background: '#e7ebf1', color: SEV_COLOR[item.severity] }}>
             {item.vote_count}개 모델 동의
           </span>
         </div>
@@ -134,9 +134,9 @@ function DetailPanel({ item, onClose }) {
             <div style={s.miniChartTitle}>{m.name}</div>
             <ResponsiveContainer width="100%" height={120}>
               <LineChart data={ctx.timeseries} margin={{ top: 4, right: 8, left: -28, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#21262d"/>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e7ebf1"/>
                 <XAxis dataKey="ts" tick={false} tickLine={false}/>
-                <YAxis tick={{ fontSize: 9, fill: '#6e7681' }} tickLine={false} axisLine={false}/>
+                <YAxis tick={{ fontSize: 9, fill: '#909aa8' }} tickLine={false} axisLine={false}/>
                 <Tooltip {...tooltip} formatter={v => [v != null ? `${v}${m.unit}` : '–', m.name]}
                   labelFormatter={l => l?.slice(11,16)}/>
                 {anomalyTs && (
@@ -200,7 +200,7 @@ function RunDetectionPanel({ onDone }) {
 
   const statusColor = status?.status === 'done' ? '#3fb950'
     : status?.status === 'error' ? '#f85149'
-    : status?.status === 'running' ? '#d29922' : '#8b949e'
+    : status?.status === 'running' ? '#d29922' : '#5a6675'
 
   return (
     <div style={s.runPanel}>
@@ -210,9 +210,9 @@ function RunDetectionPanel({ onDone }) {
       {open && (
         <div style={s.runForm}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 12, color: '#8b949e' }}>기간:</span>
+            <span style={{ fontSize: 12, color: '#5a6675' }}>기간:</span>
             <input type="date" style={s.dateInput} value={start} onChange={e => setStart(e.target.value)}/>
-            <span style={{ fontSize: 12, color: '#6e7681' }}>~</span>
+            <span style={{ fontSize: 12, color: '#909aa8' }}>~</span>
             <input type="date" style={s.dateInput} value={end} onChange={e => setEnd(e.target.value)}/>
             <button style={{ ...s.runBtn, opacity: status?.status === 'running' || status?.status === 'queued' ? 0.5 : 1 }}
               onClick={startJob}
@@ -229,7 +229,7 @@ function RunDetectionPanel({ onDone }) {
               {status.model && <span style={{ color: '#a371f7', marginLeft: 8 }}>[{status.model}]</span>}
             </div>
           )}
-          <div style={{ fontSize: 11, color: '#6e7681', marginTop: 4 }}>
+          <div style={{ fontSize: 11, color: '#909aa8', marginTop: 4 }}>
             VMD-LSTM 잔차 + Isolation Forest 앙상블로 재탐지 후 DB에 저장합니다.
           </div>
         </div>
@@ -239,17 +239,17 @@ function RunDetectionPanel({ onDone }) {
 }
 
 const TYPE_COLORS = {
-  COPDrop: '#58a6ff', CHPOutage: '#3fb950', PowerSpike: '#f85149',
-  NightConsumption: '#d29922', PVNightNonZero: '#a371f7', Unknown: '#6e7681',
+  COPDrop: '#2563eb', CHPOutage: '#3fb950', PowerSpike: '#f85149',
+  NightConsumption: '#d29922', PVNightNonZero: '#a371f7', Unknown: '#909aa8',
 }
 
 const CAUSE_COLORS = {
-  '효율 저하':     { bg: '#0d1b2a', border: '#58a6ff', text: '#58a6ff' },
+  '효율 저하':     { bg: '#0d1b2a', border: '#2563eb', text: '#2563eb' },
   'CHP 정지':      { bg: '#0d1f12', border: '#3fb950', text: '#3fb950' },
   '전력 급등':     { bg: '#2d0d0d', border: '#f85149', text: '#f85149' },
   '야간 과소비':   { bg: '#2d1f00', border: '#d29922', text: '#d29922' },
   'PV 야간 비정상':{ bg: '#1e0f2e', border: '#a371f7', text: '#a371f7' },
-  '미분류':        { bg: '#1c1f24', border: '#6e7681', text: '#6e7681' },
+  '미분류':        { bg: '#1c1f24', border: '#909aa8', text: '#909aa8' },
 }
 
 function CauseBadge({ label }) {
@@ -278,41 +278,41 @@ function EventsView({ severity, year, month, excludeGf }) {
   if (loading) return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '12px 0' }}>
       {[1,2,3,4].map(i => (
-        <div key={i} style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '12px 16px' }}>
-          <div style={{ height: 14, width: '50%', background: '#21262d', borderRadius: 4, marginBottom: 8 }}/>
-          <div style={{ height: 12, width: '80%', background: '#21262d', borderRadius: 4 }}/>
+        <div key={i} style={{ background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 8, padding: '12px 16px' }}>
+          <div style={{ height: 14, width: '50%', background: '#e7ebf1', borderRadius: 4, marginBottom: 8 }}/>
+          <div style={{ height: 12, width: '80%', background: '#e7ebf1', borderRadius: 4 }}/>
         </div>
       ))}
     </div>
   )
 
   if (events.length === 0) return (
-    <div style={{ textAlign: 'center', color: '#8b949e', paddingTop: 40 }}>이벤트 없음</div>
+    <div style={{ textAlign: 'center', color: '#5a6675', paddingTop: 40 }}>이벤트 없음</div>
   )
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div style={{ fontSize: 12, color: '#8b949e', marginBottom: 4 }}>
-        총 <b style={{ color: '#e6edf3' }}>{events.length}</b>개 이벤트
+      <div style={{ fontSize: 12, color: '#5a6675', marginBottom: 4 }}>
+        총 <b style={{ color: '#1b2433' }}>{events.length}</b>개 이벤트
         <span style={{ marginLeft: 8, color: '#484f58' }}>(연속 이상 포인트를 하나의 이벤트로 통합)</span>
       </div>
       {events.map((ev, i) => (
         <div key={i} style={{
-          background: '#161b22', border: `1px solid ${SEV_COLOR[ev.severity] ?? '#30363d'}22`,
-          borderLeft: `3px solid ${SEV_COLOR[ev.severity] ?? '#30363d'}`,
+          background: '#ffffff', border: `1px solid ${SEV_COLOR[ev.severity] ?? '#e2e7ef'}22`,
+          borderLeft: `3px solid ${SEV_COLOR[ev.severity] ?? '#e2e7ef'}`,
           borderRadius: 8, padding: '10px 14px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, flexWrap: 'wrap' }}>
             <span style={{ ...s.sevBadge, background: SEV_COLOR[ev.severity] }}>{ev.severity}</span>
             <CauseBadge label={ev.cause_label} />
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#e6edf3' }}>{ev.meter_id}</span>
-            <span style={{ marginLeft: 'auto', fontSize: 11, color: '#6e7681' }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#1b2433' }}>{ev.meter_id}</span>
+            <span style={{ marginLeft: 'auto', fontSize: 11, color: '#909aa8' }}>
               {ev.point_count}포인트 · {ev.duration_h}시간
             </span>
           </div>
-          <div style={{ display: 'flex', gap: 16, fontSize: 11, color: '#8b949e', flexWrap: 'wrap' }}>
-            <span>시작 <b style={{ color: '#e6edf3' }}>{ev.start?.slice(0,16).replace('T',' ')}</b></span>
-            <span>종료 <b style={{ color: '#e6edf3' }}>{ev.end?.slice(0,16).replace('T',' ')}</b></span>
+          <div style={{ display: 'flex', gap: 16, fontSize: 11, color: '#5a6675', flexWrap: 'wrap' }}>
+            <span>시작 <b style={{ color: '#1b2433' }}>{ev.start?.slice(0,16).replace('T',' ')}</b></span>
+            <span>종료 <b style={{ color: '#1b2433' }}>{ev.end?.slice(0,16).replace('T',' ')}</b></span>
             {ev.peak_residual_w != null && (
               <span>최대 잔차 <b style={{ color: '#f85149' }}>{(ev.peak_residual_w/1000).toFixed(1)} kW</b></span>
             )}
@@ -323,7 +323,7 @@ function EventsView({ severity, year, month, excludeGf }) {
   )
 }
 
-export default function AnomalyPanel() {
+export default function AnomalyPanel({ equipmentFilter } = {}) {
   const [items,   setItems]   = useState([])
   const [summary, setSummary] = useState([])
   const [timeline,setTimeline]= useState([])
@@ -337,14 +337,16 @@ export default function AnomalyPanel() {
   const [selected,setSelected]= useState(null)
   const [excludeGf, setExcludeGf] = useState(true)
   const [viewMode, setViewMode] = useState('points')  // 'points' | 'events'
+  const [eqFilter, setEqFilter] = useState(null)       // { name, types } — 설비 드릴다운
   const PAGE = 50
 
   const loadList = () => {
     setLoading(true)
+    const typeParam = eqFilter?.types?.length ? eqFilter.types.join(',') : undefined
     Promise.all([
       getAnomalySummary(),
       getAnomalyTimeline(),
-      getAnomalies(PAGE, severity || undefined, year || undefined, month || undefined, offset, excludeGf),
+      getAnomalies(PAGE, severity || undefined, year || undefined, month || undefined, offset, excludeGf, typeParam),
     ]).then(([sv, t, a]) => {
       setSummary(sv.data.summary ?? [])
       setTimeline(t.data.timeline ?? [])
@@ -357,7 +359,17 @@ export default function AnomalyPanel() {
     getAnomalyTypes().then(r => setTypes(r.data.types ?? [])).catch(() => {})
   }, [])
 
-  useEffect(() => { loadList() }, [severity, year, month, offset, excludeGf]) // eslint-disable-line
+  // 설비 상태 감시 → "이상 내역" 드릴다운: 해당 설비 유형으로 필터
+  useEffect(() => {
+    if (equipmentFilter?.types?.length) {
+      setEqFilter(equipmentFilter)
+      setViewMode('points')
+      setOffset(0)
+      setSelected(null)
+    }
+  }, [equipmentFilter])
+
+  useEffect(() => { loadList() }, [severity, year, month, offset, excludeGf, eqFilter]) // eslint-disable-line
 
   return (
     <div style={s.wrap}>
@@ -365,12 +377,12 @@ export default function AnomalyPanel() {
       <div style={s.header}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={s.title}>이상탐지 결과</span>
-          <div style={{ display: 'flex', background: '#21262d', borderRadius: 6, padding: 2, gap: 2 }}>
+          <div style={{ display: 'flex', background: '#e7ebf1', borderRadius: 6, padding: 2, gap: 2 }}>
             {[['points','포인트 목록'],['events','이벤트 통합']].map(([mode, label]) => (
               <button key={mode} onClick={() => setViewMode(mode)} style={{
                 padding: '3px 10px', borderRadius: 4, border: 'none', cursor: 'pointer', fontSize: 12,
-                background: viewMode === mode ? '#1f6feb' : 'transparent',
-                color: viewMode === mode ? '#fff' : '#8b949e', fontWeight: viewMode === mode ? 600 : 400,
+                background: viewMode === mode ? '#2563eb' : 'transparent',
+                color: viewMode === mode ? '#fff' : '#5a6675', fontWeight: viewMode === mode ? 600 : 400,
               }}>{label}</button>
             ))}
           </div>
@@ -391,16 +403,36 @@ export default function AnomalyPanel() {
             <option value="LOW">LOW만</option>
             <option value="">전체 (LOW 포함)</option>
           </select>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#8b949e', cursor: 'pointer', userSelect: 'none' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#5a6675', cursor: 'pointer', userSelect: 'none' }}>
             <input type="checkbox" checked={excludeGf}
               onChange={e => { setExcludeGf(e.target.checked); setOffset(0); setSelected(null) }}/>
             장애구간 제외
           </label>
+          <button
+            onClick={loadList}
+            disabled={loading}
+            style={{ padding: '4px 12px', background: '#e7ebf1', border: '1px solid #e2e7ef', borderRadius: 4, color: '#1b2433', fontSize: 11, cursor: 'pointer', fontWeight: 500 }}
+            title="이상탐지 데이터 새로고침"
+          >
+            {loading ? '...' : '🔄 새로고침'}
+          </button>
         </div>
       </div>
 
       {/* 새 탐지 실행 패널 */}
       <RunDetectionPanel onDone={() => { setOffset(0); loadList() }} />
+
+      {/* 설비 드릴다운 필터 배너 */}
+      {eqFilter && (
+        <div style={s.filterBanner}>
+          <span>🏭 <strong>{eqFilter.name}</strong> 관련 이상만 표시 중
+            <span style={{ color: '#5a6675', marginLeft: 6 }}>
+              ({(eqFilter.types ?? []).map(t => TYPE_LABEL[t] ?? t).join(', ')})
+            </span>
+          </span>
+          <button onClick={() => { setEqFilter(null); setOffset(0) }} style={s.filterClear}>✕ 필터 해제</button>
+        </div>
+      )}
 
       {viewMode === 'events' && (
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px 20px 20px' }}>
@@ -414,16 +446,16 @@ export default function AnomalyPanel() {
           {/* 요약 카드 */}
           <div style={s.cards}>
             {summary.map(sv => (
-              <div key={sv.severity} style={{ ...s.card, borderColor: SEV_COLOR[sv.severity] ?? '#30363d' }}>
+              <div key={sv.severity} style={{ ...s.card, borderColor: SEV_COLOR[sv.severity] ?? '#e2e7ef' }}>
                 <div style={{ fontSize: 22, fontWeight: 700, color: SEV_COLOR[sv.severity] }}>{sv.count}</div>
-                <div style={{ fontSize: 11, color: '#8b949e', marginTop: 4 }}>{sv.severity}</div>
+                <div style={{ fontSize: 11, color: '#5a6675', marginTop: 4 }}>{sv.severity}</div>
               </div>
             ))}
-            <div style={{ ...s.card, borderColor: '#30363d', flex: 2 }}>
-              <div style={{ fontSize: 22, fontWeight: 700, color: '#e6edf3' }}>
+            <div style={{ ...s.card, borderColor: '#e2e7ef', flex: 2 }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: '#1b2433' }}>
                 {summary.reduce((a, b) => a + b.count, 0)}
               </div>
-              <div style={{ fontSize: 11, color: '#8b949e', marginTop: 4 }}>전체</div>
+              <div style={{ fontSize: 11, color: '#5a6675', marginTop: 4 }}>전체</div>
             </div>
           </div>
 
@@ -434,7 +466,7 @@ export default function AnomalyPanel() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <PieChart width={130} height={130}>
                   <Pie data={types} dataKey="count" nameKey="type" cx="50%" cy="50%" outerRadius={55} innerRadius={28}>
-                    {types.map(t => <Cell key={t.type} fill={TYPE_COLORS[t.type] ?? '#6e7681'}/>)}
+                    {types.map(t => <Cell key={t.type} fill={TYPE_COLORS[t.type] ?? '#909aa8'}/>)}
                   </Pie>
                   <Tooltip {...tooltip} formatter={(v, n) => [v + '건', TYPE_LABEL[n] ?? n]}/>
                 </PieChart>
@@ -444,10 +476,10 @@ export default function AnomalyPanel() {
                     const pct = tc ? ((t.count / tc) * 100).toFixed(1) : 0
                     return (
                       <div key={t.type} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11 }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: TYPE_COLORS[t.type] ?? '#6e7681', flexShrink: 0 }}/>
-                        <span style={{ color: '#e6edf3', flex: 1 }}>{TYPE_LABEL[t.type] ?? t.type}</span>
-                        <span style={{ color: '#8b949e' }}>{t.count}건</span>
-                        <span style={{ color: '#6e7681' }}>({pct}%)</span>
+                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: TYPE_COLORS[t.type] ?? '#909aa8', flexShrink: 0 }}/>
+                        <span style={{ color: '#1b2433', flex: 1 }}>{TYPE_LABEL[t.type] ?? t.type}</span>
+                        <span style={{ color: '#5a6675' }}>{t.count}건</span>
+                        <span style={{ color: '#909aa8' }}>({pct}%)</span>
                       </div>
                     )
                   })}
@@ -462,11 +494,11 @@ export default function AnomalyPanel() {
               <div style={s.chartTitle}>월별 이상탐지 현황</div>
               <ResponsiveContainer width="100%" height={160}>
                 <BarChart data={timeline} margin={{ top: 4, right: 12, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#21262d"/>
-                  <XAxis dataKey="month" tick={{ fontSize: 9, fill: '#8b949e' }} tickLine={false}/>
-                  <YAxis tick={{ fontSize: 10, fill: '#8b949e' }} tickLine={false} axisLine={false}/>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e7ebf1"/>
+                  <XAxis dataKey="month" tick={{ fontSize: 9, fill: '#5a6675' }} tickLine={false}/>
+                  <YAxis tick={{ fontSize: 10, fill: '#5a6675' }} tickLine={false} axisLine={false}/>
                   <Tooltip {...tooltip}/>
-                  <Legend wrapperStyle={{ fontSize: 11, color: '#8b949e' }}/>
+                  <Legend wrapperStyle={{ fontSize: 11, color: '#5a6675' }}/>
                   <Bar dataKey="HIGH"   name="HIGH"   stackId="a" fill={SEV_COLOR.HIGH}/>
                   <Bar dataKey="MEDIUM" name="MEDIUM" stackId="a" fill={SEV_COLOR.MEDIUM}/>
                   <Bar dataKey="LOW"    name="LOW"    stackId="a" fill={SEV_COLOR.LOW} fillOpacity={0.35} radius={[3,3,0,0]}/>
@@ -477,7 +509,7 @@ export default function AnomalyPanel() {
 
           {/* 목록 헤더 */}
           {!loading && total > 0 && (
-            <div style={{ fontSize: 12, color: '#8b949e', display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ fontSize: 12, color: '#5a6675', display: 'flex', justifyContent: 'space-between' }}>
               <span>총 {total.toLocaleString()}건</span>
               <span>{offset + 1}–{Math.min(offset + PAGE, total)} 표시</span>
             </div>
@@ -487,8 +519,8 @@ export default function AnomalyPanel() {
           <div style={s.list}>
             {loading && [1,2,3,4,5].map(i => (
               <div key={i} style={{ ...s.item, cursor: 'default' }}>
-                <div style={{ height: 18, width: '40%', marginBottom: 8, background: '#21262d', borderRadius: 4 }}/>
-                <div style={{ height: 13, width: '80%', background: '#21262d', borderRadius: 4 }}/>
+                <div style={{ height: 18, width: '40%', marginBottom: 8, background: '#e7ebf1', borderRadius: 4 }}/>
+                <div style={{ height: 13, width: '80%', background: '#e7ebf1', borderRadius: 4 }}/>
               </div>
             ))}
             {!loading && items.length === 0 && <div style={s.empty}>탐지된 이상 없음</div>}
@@ -506,7 +538,7 @@ export default function AnomalyPanel() {
                     </span>
                     <span style={s.typeLabel}>{TYPE_LABEL[item.anomaly_type] ?? item.anomaly_type}</span>
                     {isNew && (
-                      <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#1e1034', color: '#a371f7', border: '1px solid #a371f733' }}>
+                      <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#ede9fe', color: '#7c3aed', border: '1px solid #a371f733' }}>
                         VMD
                       </span>
                     )}
@@ -539,7 +571,7 @@ export default function AnomalyPanel() {
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center', paddingTop: 4 }}>
               <button style={s.pageBtn} disabled={offset === 0}
                 onClick={() => { setOffset(Math.max(0, offset - PAGE)); setSelected(null) }}>← 이전</button>
-              <span style={{ fontSize: 12, color: '#8b949e', alignSelf: 'center' }}>
+              <span style={{ fontSize: 12, color: '#5a6675', alignSelf: 'center' }}>
                 {Math.floor(offset/PAGE)+1} / {Math.ceil(total/PAGE)}
               </span>
               <button style={s.pageBtn} disabled={offset + PAGE >= total}
@@ -561,51 +593,53 @@ export default function AnomalyPanel() {
 
 const s = {
   wrap:       { display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' },
-  header:     { padding: '14px 20px 10px', borderBottom: '1px solid #21262d', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 },
-  title:      { fontWeight: 600, fontSize: 15, color: '#e6edf3' },
-  select:     { background: '#161b22', border: '1px solid #30363d', borderRadius: 6, color: '#e6edf3', padding: '4px 8px', fontSize: 13, cursor: 'pointer' },
+  filterBanner: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '8px 20px', background: '#2563eb18', borderBottom: '1px solid #2563eb44', fontSize: 12, color: '#33404f', flexShrink: 0 },
+  filterClear:  { padding: '3px 10px', background: '#e7ebf1', border: '1px solid #e2e7ef', borderRadius: 4, color: '#5a6675', fontSize: 11, cursor: 'pointer', fontWeight: 600, flexShrink: 0 },
+  header:     { padding: '14px 20px 10px', borderBottom: '1px solid #e7ebf1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 },
+  title:      { fontWeight: 600, fontSize: 15, color: '#1b2433' },
+  select:     { background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 6, color: '#1b2433', padding: '4px 8px', fontSize: 13, cursor: 'pointer' },
   body:       { flex: 1, overflow: 'hidden', display: 'flex', gap: 0 },
-  left:       { overflowY: 'auto', padding: '12px 20px 20px', display: 'flex', flexDirection: 'column', gap: 12, transition: 'width .2s', borderRight: '1px solid #21262d' },
+  left:       { overflowY: 'auto', padding: '12px 20px 20px', display: 'flex', flexDirection: 'column', gap: 12, transition: 'width .2s', borderRight: '1px solid #e7ebf1' },
   right:      { flex: 1, overflowY: 'auto', padding: '16px 20px' },
   cards:      { display: 'flex', gap: 10, flexShrink: 0 },
-  card:       { flex: 1, background: '#161b22', border: '1px solid', borderRadius: 8, padding: '10px 14px', textAlign: 'center' },
-  chartBox:   { background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '14px 16px', flexShrink: 0 },
-  chartTitle: { fontSize: 12, fontWeight: 600, color: '#8b949e', marginBottom: 10 },
+  card:       { flex: 1, background: '#ffffff', border: '1px solid', borderRadius: 8, padding: '10px 14px', textAlign: 'center' },
+  chartBox:   { background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 8, padding: '14px 16px', flexShrink: 0 },
+  chartTitle: { fontSize: 12, fontWeight: 600, color: '#5a6675', marginBottom: 10 },
   list:       { display: 'flex', flexDirection: 'column', gap: 8 },
-  empty:      { textAlign: 'center', color: '#8b949e', paddingTop: 20 },
-  item:       { background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '10px 14px', cursor: 'pointer', transition: 'border-color .15s' },
-  itemActive: { borderColor: '#58a6ff', background: '#1f2937' },
+  empty:      { textAlign: 'center', color: '#5a6675', paddingTop: 20 },
+  item:       { background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 8, padding: '10px 14px', cursor: 'pointer', transition: 'border-color .15s' },
+  itemActive: { borderColor: '#2563eb', background: '#1f2937' },
   itemTop:    { display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 },
-  sevBadge:   { fontSize: 11, padding: '1px 6px', borderRadius: 4, color: '#0d1117', fontWeight: 700, flexShrink: 0 },
-  typeLabel:  { fontSize: 13, fontWeight: 600, color: '#e6edf3' },
-  ts:         { marginLeft: 'auto', fontSize: 11, color: '#8b949e', fontVariantNumeric: 'tabular-nums' },
-  desc:       { fontSize: 12, color: '#8b949e', marginBottom: 4 },
-  scores:     { fontSize: 11, color: '#6e7681' },
-  pageBtn:    { padding: '5px 12px', background: '#161b22', border: '1px solid #30363d', borderRadius: 6, color: '#e6edf3', fontSize: 12, cursor: 'pointer' },
+  sevBadge:   { fontSize: 11, padding: '1px 6px', borderRadius: 4, color: '#f4f6fa', fontWeight: 700, flexShrink: 0 },
+  typeLabel:  { fontSize: 13, fontWeight: 600, color: '#1b2433' },
+  ts:         { marginLeft: 'auto', fontSize: 11, color: '#5a6675', fontVariantNumeric: 'tabular-nums' },
+  desc:       { fontSize: 12, color: '#5a6675', marginBottom: 4 },
+  scores:     { fontSize: 11, color: '#909aa8' },
+  pageBtn:    { padding: '5px 12px', background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 6, color: '#1b2433', fontSize: 12, cursor: 'pointer' },
 
   // 새 탐지 실행 패널
-  runPanel:   { borderBottom: '1px solid #21262d', flexShrink: 0, background: '#0d1117' },
-  runToggle:  { width: '100%', padding: '8px 20px', background: 'none', border: 'none', color: '#8b949e', fontSize: 12, textAlign: 'left', cursor: 'pointer' },
+  runPanel:   { borderBottom: '1px solid #e7ebf1', flexShrink: 0, background: '#f4f6fa' },
+  runToggle:  { width: '100%', padding: '8px 20px', background: 'none', border: 'none', color: '#5a6675', fontSize: 12, textAlign: 'left', cursor: 'pointer' },
   runForm:    { padding: '8px 20px 12px', display: 'flex', flexDirection: 'column', gap: 4 },
-  dateInput:  { background: '#161b22', border: '1px solid #30363d', borderRadius: 6, color: '#e6edf3', padding: '4px 8px', fontSize: 13 },
-  runBtn:     { padding: '5px 14px', background: '#1f6feb', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 13 },
+  dateInput:  { background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 6, color: '#1b2433', padding: '4px 8px', fontSize: 13 },
+  runBtn:     { padding: '5px 14px', background: '#2563eb', border: 'none', borderRadius: 6, color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 13 },
   gwAlert:    { fontSize: 12, color: '#d29922', background: '#2d1f00', border: '1px solid #d2992244', borderRadius: 8, padding: '8px 12px', lineHeight: 1.7 },
 
   // 상세 패널
   detail:       { display: 'flex', flexDirection: 'column', gap: 12 },
   detailHeader: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
-  detailType:   { fontSize: 15, fontWeight: 600, color: '#e6edf3' },
-  detailTs:     { fontSize: 12, color: '#8b949e' },
-  detailDesc:   { fontSize: 13, color: '#e6edf3', lineHeight: 1.6, background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '10px 14px' },
+  detailType:   { fontSize: 15, fontWeight: 600, color: '#1b2433' },
+  detailTs:     { fontSize: 12, color: '#5a6675' },
+  detailDesc:   { fontSize: 13, color: '#1b2433', lineHeight: 1.6, background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 8, padding: '10px 14px' },
   scoreRow:     { display: 'flex', flexWrap: 'wrap', gap: 6 },
-  scoreChip:    { fontSize: 11, padding: '3px 8px', borderRadius: 4, background: '#161b22', border: '1px solid #30363d', color: '#8b949e' },
+  scoreChip:    { fontSize: 11, padding: '3px 8px', borderRadius: 4, background: '#ffffff', border: '1px solid #e2e7ef', color: '#5a6675' },
   chartSection: { display: 'flex', flexDirection: 'column', gap: 10 },
-  sectionTitle: { fontSize: 12, fontWeight: 600, color: '#8b949e', marginBottom: 4 },
-  chartEmpty:   { color: '#8b949e', fontSize: 13, paddingTop: 20, textAlign: 'center' },
-  miniChart:    { background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '10px 14px' },
-  miniChartTitle: { fontSize: 11, color: '#8b949e', marginBottom: 6 },
-  closeBtn:     { background: 'none', border: 'none', color: '#6e7681', cursor: 'pointer', fontSize: 16, padding: '2px 6px' },
+  sectionTitle: { fontSize: 12, fontWeight: 600, color: '#5a6675', marginBottom: 4 },
+  chartEmpty:   { color: '#5a6675', fontSize: 13, paddingTop: 20, textAlign: 'center' },
+  miniChart:    { background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 8, padding: '10px 14px' },
+  miniChartTitle: { fontSize: 11, color: '#5a6675', marginBottom: 6 },
+  closeBtn:     { background: 'none', border: 'none', color: '#909aa8', cursor: 'pointer', fontSize: 16, padding: '2px 6px' },
   aiSection:    { display: 'flex', flexDirection: 'column', gap: 8 },
-  aiBtn:        { padding: '9px 16px', background: '#1f6feb', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 13, width: '100%' },
-  aiText:       { fontSize: 13, color: '#e6edf3', lineHeight: 1.7, background: '#161b22', border: '1px solid #30363d', borderRadius: 8, padding: '12px 14px', whiteSpace: 'pre-wrap' },
+  aiBtn:        { padding: '9px 16px', background: '#2563eb', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 13, width: '100%' },
+  aiText:       { fontSize: 13, color: '#1b2433', lineHeight: 1.7, background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 8, padding: '12px 14px', whiteSpace: 'pre-wrap' },
 }
