@@ -16,7 +16,7 @@ import BillingPanel    from './components/BillingPanel'
 import {
   LayoutDashboard, Factory, Wrench, AlertTriangle, SlidersHorizontal,
   TrendingUp, Wallet, FileText, MessageSquare, Network, Settings, Users,
-  Bot, Zap, X,
+  Bot, Zap, X, Sun, Moon,
 } from 'lucide-react'
 import { T } from './theme'
 
@@ -66,6 +66,12 @@ export default function App() {
   const [anomalyFilter, setAnomalyFilter] = useState(null)  // 설비 → 이상 내역 드릴다운 필터
   const [chatContext, setChatContext] = useState(null)      // 플로팅 챗봇이 인지할 현재 설비 {equipmentId, equipmentName}
   const [chatSeed, setChatSeed] = useState(null)            // 알림 "AI 분석" 클릭 시 자동 전송할 질문
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light')
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    localStorage.setItem('theme', theme)
+  }, [theme])
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const dragRef = useRef({ isDragging: false, startX: 0, startY: 0, initialX: 0, initialY: 0, moved: false })
   const [toasts, setToasts] = useState([])
@@ -200,6 +206,13 @@ export default function App() {
           <span style={{ fontSize: 12, color: T.textMuted }}>
             {apiOk === null ? 'API 확인 중' : apiOk ? 'API 연결됨' : 'API 오프라인'}
           </span>
+          <button
+            onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
+            style={styles.themeBtn}
+            title={theme === 'dark' ? '라이트 모드로' : '다크 모드로'}
+          >
+            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
         </div>
       </aside>
 
@@ -341,7 +354,8 @@ const styles = {
   navBtn:       { display: 'flex', alignItems: 'center', gap: 11, width: '100%', padding: '9px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: T.textMuted, fontSize: 13, fontWeight: 500, textAlign: 'left', cursor: 'pointer', transition: 'all .15s ease' },
   navActive:    { background: T.brandSoft, color: T.brandStrong, fontWeight: 700 },
   sidebarFooter:{ padding: '13px 16px', borderTop: `1px solid ${T.border}`, display: 'flex', alignItems: 'center', gap: 8 },
-  footerDot:    { width: 7, height: 7, borderRadius: '50%' },
+  footerDot:    { width: 7, height: 7, borderRadius: '50%', flexShrink: 0 },
+  themeBtn:     { marginLeft: 'auto', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: `1px solid ${T.border}`, borderRadius: 7, color: T.textMuted, cursor: 'pointer', flexShrink: 0 },
 
   main:         { flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' },
   simBar:       { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 20px', background: T.surface, borderBottom: `1px solid ${T.border}`, flexShrink: 0, gap: 16 },

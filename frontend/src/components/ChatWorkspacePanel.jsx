@@ -122,8 +122,8 @@ export default function ChatWorkspacePanel() {
                 {sess.last_intent && (
                   <span style={{
                     marginLeft: 'auto', fontSize: 9, padding: '1px 5px', borderRadius: 3,
-                    background: (INTENT_COLOR[sess.last_intent] ?? '#909aa8') + '22',
-                    color: INTENT_COLOR[sess.last_intent] ?? '#909aa8', fontWeight: 600,
+                    background: (INTENT_COLOR[sess.last_intent] ?? 'var(--text4)') + '22',
+                    color: INTENT_COLOR[sess.last_intent] ?? 'var(--text4)', fontWeight: 600,
                   }}>{INTENT_LABEL[sess.last_intent] ?? sess.last_intent}</span>
                 )}
               </div>
@@ -147,19 +147,19 @@ export default function ChatWorkspacePanel() {
 }
 
 const s = {
-  wrap:    { display: 'flex', height: '100%', overflow: 'hidden', background: '#f4f6fa' },
-  sidebar: { width: 240, borderRight: '1px solid #e7ebf1', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#ffffff', flexShrink: 0 },
+  wrap:    { display: 'flex', height: '100%', overflow: 'hidden', background: 'var(--bg)' },
+  sidebar: { width: 240, borderRight: '1px solid var(--line)', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--surface)', flexShrink: 0 },
   sidebarHead: { display: 'flex', gap: 8, padding: '12px 12px 0' },
   newBtn:  { flex: 1, padding: '9px 12px', background: '#2563eb', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' },
-  clearAllBtn: { padding: '9px 11px', background: '#e7ebf1', border: '1px solid #f8514944', borderRadius: 8, color: '#f85149', fontSize: 12, cursor: 'pointer' },
-  search:  { margin: '10px 12px', padding: '8px 12px', background: '#f4f6fa', border: '1px solid #e2e7ef', color: '#1b2433', borderRadius: 6, fontSize: 12, outline: 'none' },
+  clearAllBtn: { padding: '9px 11px', background: 'var(--line)', border: '1px solid #f8514944', borderRadius: 8, color: '#f85149', fontSize: 12, cursor: 'pointer' },
+  search:  { margin: '10px 12px', padding: '8px 12px', background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: 6, fontSize: 12, outline: 'none' },
   sessionList: { flex: 1, overflowY: 'auto', padding: '0 8px 8px' },
-  empty:   { padding: 20, textAlign: 'center', color: '#5a6675', fontSize: 12, lineHeight: 1.7, whiteSpace: 'pre-line' },
+  empty:   { padding: 20, textAlign: 'center', color: 'var(--text3)', fontSize: 12, lineHeight: 1.7, whiteSpace: 'pre-line' },
   sessionItem: { padding: '10px 12px', borderRadius: 6, cursor: 'pointer', marginBottom: 4, position: 'relative', border: '1px solid transparent' },
   sessionItemActive: { background: '#2563eb15', border: '1px solid #2563eb55' },
-  sessionTitle: { fontSize: 13, color: '#1b2433', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: 20 },
-  sessionMeta: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#909aa8', marginTop: 4 },
-  deleteBtn: { position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', color: '#909aa8', fontSize: 12, cursor: 'pointer', padding: '2px 6px', borderRadius: 4 },
+  sessionTitle: { fontSize: 13, color: 'var(--text)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: 20 },
+  sessionMeta: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: 'var(--text4)', marginTop: 4 },
+  deleteBtn: { position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', color: 'var(--text4)', fontSize: 12, cursor: 'pointer', padding: '2px 6px', borderRadius: 4 },
 
   chatArea: { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' },
 }

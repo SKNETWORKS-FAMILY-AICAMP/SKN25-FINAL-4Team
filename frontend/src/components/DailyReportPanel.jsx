@@ -9,9 +9,9 @@ import {
 } from '../api/client'
 
 const tt = {
-  contentStyle: { background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 8, fontSize: 12 },
-  labelStyle: { color: '#1b2433' },
-  itemStyle: { color: '#5a6675' },
+  contentStyle: { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 },
+  labelStyle: { color: 'var(--text)' },
+  itemStyle: { color: 'var(--text3)' },
 }
 
 const SEV_COLOR  = { HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#2563eb' }
@@ -20,10 +20,10 @@ const TYPE_LABEL = {
   NightConsumption: '야간 소비', PVNightNonZero: 'PV 야간 비정상', Unknown: '기타',
 }
 
-function Metric({ label, value, color = '#1b2433' }) {
+function Metric({ label, value, color = 'var(--text)' }) {
   return (
     <div style={s.metric}>
-      <div style={{ fontSize: 11, color: '#5a6675' }}>{label}</div>
+      <div style={{ fontSize: 11, color: 'var(--text3)' }}>{label}</div>
       <div style={{ fontSize: 16, fontWeight: 700, color, marginTop: 2 }}>{value ?? '–'}</div>
     </div>
   )
@@ -113,11 +113,11 @@ export default function DailyReportPanel() {
         {sched && (
           <div style={s.schedBar}>
             <span style={{ ...s.dot, background: sched.enabled ? '#3fb950' : '#f85149' }} />
-            <span style={{ color: '#1b2433', fontWeight: 600 }}>
+            <span style={{ color: 'var(--text)', fontWeight: 600 }}>
               자동 생성 스케줄러 {sched.enabled ? '활성' : '비활성'}
             </span>
-            <span style={{ color: '#5a6675' }}>다음 실행: {fmtDateTime(sched.next_run)}</span>
-            <span style={{ color: '#5a6675' }}>
+            <span style={{ color: 'var(--text3)' }}>다음 실행: {fmtDateTime(sched.next_run)}</span>
+            <span style={{ color: 'var(--text3)' }}>
               마지막: {sched.last_run?.date ?? '–'} ({sched.last_run?.status ?? '대기 중'})
             </span>
             <button style={{ ...s.btnGhost, marginLeft: 'auto' }} onClick={handleRunScheduler} disabled={loading}>
@@ -135,7 +135,7 @@ export default function DailyReportPanel() {
               {report.date}
               {report.generated_by === 'scheduler' && <span style={s.badge}>자동 생성</span>}
               <div style={s.dlGroup}>
-                <span style={{ fontSize: 12, color: '#909aa8' }}>다운로드:</span>
+                <span style={{ fontSize: 12, color: 'var(--text4)' }}>다운로드:</span>
                 <button style={s.dlBtn} onClick={() => handleDownload('pdf')}>PDF</button>
                 <button style={s.dlBtn} onClick={() => handleDownload('docx')}>DOCX</button>
                 <button style={s.dlBtn} onClick={() => handleDownload('hwpx')}>HWPX</button>
@@ -199,31 +199,31 @@ export default function DailyReportPanel() {
             <div style={s.chartBox}>
               <div style={s.chartTitle}>
                 🚨 당일 이상 이벤트
-                <span style={{ fontSize: 12, color: '#5a6675', fontWeight: 400, marginLeft: 8 }}>
+                <span style={{ fontSize: 12, color: 'var(--text3)', fontWeight: 400, marginLeft: 8 }}>
                   {report.anomaly_events?.length ?? report.anomaly_count ?? 0}건
                 </span>
               </div>
               {(report.anomaly_events?.length ?? 0) === 0
-                ? <div style={{ color: '#909aa8', fontSize: 13, padding: '16px 0', textAlign: 'center' }}>
+                ? <div style={{ color: 'var(--text4)', fontSize: 13, padding: '16px 0', textAlign: 'center' }}>
                     탐지된 이상 없음
                   </div>
                 : (
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     {report.anomaly_events.map(ev => (
                       <div key={ev.id} style={s.eventRow}>
-                        <span style={{ fontFamily: 'monospace', fontSize: 12, color: '#5a6675', minWidth: 46 }}>
+                        <span style={{ fontFamily: 'monospace', fontSize: 12, color: 'var(--text3)', minWidth: 46 }}>
                           {ev.timestamp?.slice(11, 16)}
                         </span>
-                        <span style={{ ...s.sevPill, background: (SEV_COLOR[ev.severity] ?? '#909aa8') + '22', color: SEV_COLOR[ev.severity] ?? '#5a6675' }}>
+                        <span style={{ ...s.sevPill, background: (SEV_COLOR[ev.severity] ?? 'var(--text4)') + '22', color: SEV_COLOR[ev.severity] ?? 'var(--text3)' }}>
                           {ev.severity}
                         </span>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: '#1b2433', minWidth: 90 }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', minWidth: 90 }}>
                           {TYPE_LABEL[ev.anomaly_type] ?? ev.anomaly_type}
                         </span>
                         <span style={{ fontFamily: 'monospace', fontSize: 11, color: '#2563eb', minWidth: 70 }}>
                           {ev.meter_id}
                         </span>
-                        <span style={{ fontSize: 12, color: '#5a6675', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontSize: 12, color: 'var(--text3)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {ev.description}
                         </span>
                       </div>
@@ -244,11 +244,11 @@ export default function DailyReportPanel() {
                 <div key={item.date}
                   onClick={() => { setDate(item.date); loadReport(item.date) }}
                   style={{ ...s.listRow, ...(item.date === report?.date ? s.listRowActive : {}) }}>
-                  <span style={{ fontWeight: 600, color: '#1b2433', minWidth: 100 }}>{item.date}</span>
-                  <span style={{ color: '#5a6675', fontSize: 12 }}>소비 {item.total_consumption_kwh?.toLocaleString()} kWh</span>
+                  <span style={{ fontWeight: 600, color: 'var(--text)', minWidth: 100 }}>{item.date}</span>
+                  <span style={{ color: 'var(--text3)', fontSize: 12 }}>소비 {item.total_consumption_kwh?.toLocaleString()} kWh</span>
                   <span style={{ color: '#3fb950', fontSize: 12 }}>자급 {item.self_sufficiency_pct ?? '–'}%</span>
                   <span style={{ color: '#a371f7', fontSize: 12 }}>COP {item.avg_cop ?? '–'}</span>
-                  <span style={{ color: item.anomaly_count > 0 ? '#f85149' : '#909aa8', fontSize: 12 }}>이상 {item.anomaly_count ?? 0}</span>
+                  <span style={{ color: item.anomaly_count > 0 ? '#f85149' : 'var(--text4)', fontSize: 12 }}>이상 {item.anomaly_count ?? 0}</span>
                   {item.generated_by === 'scheduler' && <span style={s.badgeSm}>자동</span>}
                 </div>
               ))}
@@ -262,34 +262,34 @@ export default function DailyReportPanel() {
 
 const s = {
   wrap:        { display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' },
-  header:      { padding: '16px 24px 12px', borderBottom: '1px solid #e7ebf1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, flexWrap: 'wrap', gap: 12 },
-  title:       { fontWeight: 700, fontSize: 16, color: '#1b2433' },
-  sub:         { fontSize: 12, color: '#5a6675', marginTop: 3 },
+  header:      { padding: '16px 24px 12px', borderBottom: '1px solid var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, flexWrap: 'wrap', gap: 12 },
+  title:       { fontWeight: 700, fontSize: 16, color: 'var(--text)' },
+  sub:         { fontSize: 12, color: 'var(--text3)', marginTop: 3 },
   controls:    { display: 'flex', gap: 8, alignItems: 'center' },
-  dateInput:   { background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 6, color: '#1b2433', fontSize: 13, padding: '6px 10px', colorScheme: 'light' },
+  dateInput:   { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text)', fontSize: 13, padding: '6px 10px', colorScheme: 'light' },
   btn:         { background: '#2563eb', border: 'none', borderRadius: 6, color: '#fff', fontSize: 13, fontWeight: 600, padding: '7px 16px', cursor: 'pointer' },
-  btnGhost:    { background: 'transparent', border: '1px solid #e2e7ef', borderRadius: 6, color: '#5a6675', fontSize: 13, padding: '7px 14px', cursor: 'pointer' },
+  btnGhost:    { background: 'transparent', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text3)', fontSize: 13, padding: '7px 14px', cursor: 'pointer' },
   body:        { flex: 1, overflowY: 'auto', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 16 },
-  schedBar:    { display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 10, padding: '10px 16px', fontSize: 12 },
+  schedBar:    { display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 10, padding: '10px 16px', fontSize: 12 },
   dot:         { width: 8, height: 8, borderRadius: '50%', flexShrink: 0 },
-  placeholder: { padding: '40px', textAlign: 'center', color: '#5a6675', fontSize: 14 },
-  reportDate:  { fontSize: 20, fontWeight: 700, color: '#1b2433', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' },
+  placeholder: { padding: '40px', textAlign: 'center', color: 'var(--text3)', fontSize: 14 },
+  reportDate:  { fontSize: 20, fontWeight: 700, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' },
   dlGroup:     { display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto' },
-  dlBtn:       { background: 'transparent', border: '1px solid #e2e7ef', borderRadius: 6, color: '#2563eb', fontSize: 12, fontWeight: 600, padding: '5px 12px', cursor: 'pointer' },
+  dlBtn:       { background: 'transparent', border: '1px solid var(--border)', borderRadius: 6, color: '#2563eb', fontSize: 12, fontWeight: 600, padding: '5px 12px', cursor: 'pointer' },
   badge:       { fontSize: 11, fontWeight: 600, color: '#a371f7', background: '#a371f722', borderRadius: 4, padding: '2px 8px' },
   badgeSm:     { fontSize: 10, fontWeight: 600, color: '#a371f7', background: '#a371f722', borderRadius: 3, padding: '1px 6px', marginLeft: 'auto' },
-  kpiStrip:    { display: 'flex', gap: 8, flexWrap: 'wrap', background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 10, padding: '12px 16px' },
-  metric:      { flex: 1, minWidth: 120, paddingRight: 12, borderRight: '1px solid #e7ebf1' },
-  summaryBox:  { background: 'linear-gradient(135deg, #a371f714, #ffffff)', border: '1px solid #a371f744', borderRadius: 10, padding: '16px 20px' },
+  kpiStrip:    { display: 'flex', gap: 8, flexWrap: 'wrap', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 10, padding: '12px 16px' },
+  metric:      { flex: 1, minWidth: 120, paddingRight: 12, borderRight: '1px solid var(--line)' },
+  summaryBox:  { background: 'linear-gradient(135deg, #a371f714, var(--surface))', border: '1px solid #a371f744', borderRadius: 10, padding: '16px 20px' },
   summaryTitle:{ fontSize: 14, fontWeight: 700, color: '#a371f7', marginBottom: 8 },
-  summaryText: { fontSize: 14, color: '#1b2433', lineHeight: 1.75, whiteSpace: 'pre-wrap' },
-  actionsBox:  { background: 'linear-gradient(135deg, #3fb95014, #ffffff)', border: '1px solid #3fb95044', borderRadius: 10, padding: '16px 20px' },
+  summaryText: { fontSize: 14, color: 'var(--text)', lineHeight: 1.75, whiteSpace: 'pre-wrap' },
+  actionsBox:  { background: 'linear-gradient(135deg, #3fb95014, var(--surface))', border: '1px solid #3fb95044', borderRadius: 10, padding: '16px 20px' },
   actionsTitle:{ fontSize: 14, fontWeight: 700, color: '#3fb950', marginBottom: 8 },
-  actionsText: { fontSize: 14, color: '#1b2433', lineHeight: 1.75, whiteSpace: 'pre-wrap' },
-  chartBox:    { background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 10, padding: '16px 18px' },
-  chartTitle:  { fontSize: 13, fontWeight: 600, color: '#1b2433', marginBottom: 12 },
-  eventRow:    { display: 'flex', alignItems: 'center', gap: 12, padding: '8px 4px', borderBottom: '1px solid #e7ebf1' },
+  actionsText: { fontSize: 14, color: 'var(--text)', lineHeight: 1.75, whiteSpace: 'pre-wrap' },
+  chartBox:    { background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 10, padding: '16px 18px' },
+  chartTitle:  { fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 },
+  eventRow:    { display: 'flex', alignItems: 'center', gap: 12, padding: '8px 4px', borderBottom: '1px solid var(--line)' },
   sevPill:     { fontSize: 10, fontWeight: 700, borderRadius: 4, padding: '2px 8px', minWidth: 54, textAlign: 'center' },
-  listRow:     { display: 'flex', alignItems: 'center', gap: 16, padding: '9px 10px', borderBottom: '1px solid #e7ebf1', cursor: 'pointer', borderRadius: 6 },
+  listRow:     { display: 'flex', alignItems: 'center', gap: 16, padding: '9px 10px', borderBottom: '1px solid var(--line)', cursor: 'pointer', borderRadius: 6 },
   listRowActive:{ background: '#2563eb18' },
 }

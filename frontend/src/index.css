@@ -1,25 +1,49 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:        #0d1117;
-  --bg2:       #161b22;
-  --bg3:       #21262d;
-  --border:    #30363d;
-  --text:      #e6edf3;
-  --muted:     #8b949e;
-  --accent:    #58a6ff;
-  --accent2:   #3fb950;
-  --danger:    #f85149;
-  --warning:   #d29922;
-  --font:      'Inter', 'Segoe UI', system-ui, sans-serif;
-  --glass-bg:  rgba(22, 27, 34, 0.6);
-  --glass-border: rgba(48, 54, 61, 0.5);
+  /* 라이트 (기본) */
+  --bg:          #f4f6fa;
+  --surface:     #ffffff;
+  --surface2:    #eef1f6;
+  --line:        #e7ebf1;
+  --border:      #e2e7ef;
+  --text:        #1b2433;
+  --text-strong: #0f1620;
+  --text2:       #33404f;
+  --text3:       #5a6675;
+  --text4:       #909aa8;
+  --code:        #0550ae;
+  --brand:       #0d9488;
+  --brand-strong:#0f766e;
+  --brand-soft:  #d3f3ee;
+  --font:        'Inter', 'Pretendard', 'Segoe UI', system-ui, sans-serif;
+  /* 호환용 */
+  --bg2: var(--surface); --bg3: var(--surface2); --muted: var(--text3);
+  --glass-bg: var(--surface); --glass-border: var(--border);
+}
+
+[data-theme="dark"] {
+  --bg:          #0d1117;
+  --surface:     #161b22;
+  --surface2:    #1c2230;
+  --line:        #21262d;
+  --border:      #30363d;
+  --text:        #e6edf3;
+  --text-strong: #f0f6fc;
+  --text2:       #c9d1d9;
+  --text3:       #8b949e;
+  --text4:       #6e7681;
+  --code:        #79c0ff;
+  --brand:       #2dd4bf;
+  --brand-strong:#5eead4;
+  --brand-soft:  #0f3d38;
 }
 
 body {
-  background: #f4f6fa;
-  color: #1b2433;
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font);
+  transition: background .2s ease, color .2s ease;
   font-size: 14px;
   line-height: 1.6;
   height: 100vh;
@@ -28,11 +52,19 @@ body {
 
 #root { height: 100vh; display: flex; flex-direction: column; }
 
-/* 스크롤바 (라이트) */
+/* 스크롤바 */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cdd5e0; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #b3bdca; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text4); }
+
+/* 차트(recharts) 테마 — CSS가 SVG 속성을 덮어써 다크/라이트 자동 대응 */
+.recharts-cartesian-grid line { stroke: var(--line); }
+.recharts-cartesian-axis line,
+.recharts-cartesian-axis-tick line { stroke: var(--border); }
+.recharts-cartesian-axis-tick-value { fill: var(--text4); }
+.recharts-legend-item-text { color: var(--text3) !important; }
+.recharts-reference-line line { stroke: var(--border); }
 
 /* 스켈레톤 */
 @keyframes skeleton-pulse {

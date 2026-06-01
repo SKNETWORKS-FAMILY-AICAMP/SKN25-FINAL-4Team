@@ -8,8 +8,8 @@ import {
 import { getReport, getBalanceReport, getEnergyIntensity } from '../api/client'
 
 const tooltip = {
-  contentStyle: { background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 8, fontSize: 12 },
-  labelStyle: { color: '#1b2433' },
+  contentStyle: { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 },
+  labelStyle: { color: 'var(--text)' },
 }
 
 // ── 집계 유틸 ──────────────────────────────────────────────────────
@@ -98,7 +98,7 @@ function AiSection({ color, title, text, loading, onGenerate, compact = false })
     <div style={{ ...box, borderColor: color + '22', borderStyle: 'dashed' }}>
       <div style={titleStyle}>{title}</div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-        <span style={{ fontSize: 11, color: '#909aa8', fontStyle: 'italic' }}>
+        <span style={{ fontSize: 11, color: 'var(--text4)', fontStyle: 'italic' }}>
           데이터·차트는 아래 자동 표시됩니다. AI 분석문이 필요하면 우측 버튼을 눌러주세요. (LLM 1회 호출)
         </span>
         <button onClick={onGenerate} disabled={loading}
@@ -115,7 +115,7 @@ function YoyBadge({ pct, unit = '%' }) {
   if (pct == null) return null
   const up   = pct > 0
   const zero = pct === 0
-  const color = zero ? '#5a6675' : up ? '#f85149' : '#3fb950'
+  const color = zero ? 'var(--text3)' : up ? '#f85149' : '#3fb950'
   const arrow = zero ? '─' : up ? '▲' : '▼'
   return (
     <span style={{ fontSize: 10, color, background: color + '18', borderRadius: 4, padding: '1px 6px', marginLeft: 6, fontWeight: 600 }}>
@@ -131,15 +131,15 @@ function KpiCard({ label, value, unit, color = '#2563eb', yoy, yoyUnit }) {
         <span style={{ fontSize: 22, fontWeight: 700, color }}>{value ?? '–'}</span>
         <YoyBadge pct={yoy} unit={yoyUnit} />
       </div>
-      <div style={{ fontSize: 11, color: '#5a6675', marginTop: 2 }}>{unit}</div>
-      <div style={{ fontSize: 12, color: '#909aa8', marginTop: 4 }}>{label}</div>
+      <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{unit}</div>
+      <div style={{ fontSize: 12, color: 'var(--text4)', marginTop: 4 }}>{label}</div>
     </div>
   )
 }
 
 function MiniProgressBar({ pct, color }) {
   return (
-    <div style={{ background: '#e7ebf1', borderRadius: 4, height: 5, overflow: 'hidden', marginTop: 3 }}>
+    <div style={{ background: 'var(--line)', borderRadius: 4, height: 5, overflow: 'hidden', marginTop: 3 }}>
       <div style={{ width: `${Math.min(100, pct ?? 0)}%`, height: '100%', background: color, borderRadius: 4, transition: 'width .4s' }}/>
     </div>
   )
@@ -267,8 +267,8 @@ export default function ReportPanel() {
           <div style={s.loadingBanner}>
             <div style={s.loadingSpinner} />
             <div>
-              <div style={{ fontSize: 13, color: '#1b2433', fontWeight: 600 }}>📊 보고서 데이터 집계 중…</div>
-              <div style={{ fontSize: 11, color: '#5a6675', marginTop: 3 }}>
+              <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>📊 보고서 데이터 집계 중…</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 3 }}>
                 월간 KPI · 데이터 품질 · 외기온 정규화 EI를 동시에 조회하고 있습니다 (수 초 소요)
               </div>
             </div>
@@ -306,8 +306,8 @@ export default function ReportPanel() {
           />
 
           {/* KPI 카드 — 최신 기간 기준 */}
-          <div style={{ fontSize: 11, color: '#909aa8', marginBottom: 8, marginTop: 12 }}>
-            최신: <b style={{ color: '#1b2433' }}>{latest.period}</b> 기준
+          <div style={{ fontSize: 11, color: 'var(--text4)', marginBottom: 8, marginTop: 12 }}>
+            최신: <b style={{ color: 'var(--text)' }}>{latest.period}</b> 기준
           </div>
           <div style={s.kpiRow}>
             <KpiCard label="자급률"        value={`${latest.self_sufficiency_pct?.toFixed(1)}%`} unit="Self-Sufficiency" color="#3fb950"
@@ -392,7 +392,7 @@ export default function ReportPanel() {
                       const d = payload[0].payload
                       return (
                         <div style={{ ...tooltip.contentStyle, padding: '8px 12px' }}>
-                          <div style={{ color: '#1b2433', marginBottom: 4, fontWeight: 600 }}>{d.period}</div>
+                          <div style={{ color: 'var(--text)', marginBottom: 4, fontWeight: 600 }}>{d.period}</div>
                           <div style={{ color: '#f85149' }}>외기온: {d.avg_ta}°C</div>
                           <div style={{ color: '#2563eb' }}>냉방 부하: {d.avg_cool_kw} kW</div>
                         </div>
@@ -448,7 +448,7 @@ export default function ReportPanel() {
                       <td style={{ ...s.td, fontWeight: 600 }}>
                         {sColor
                           ? <span style={{ color: sColor }}>{row.period}</span>
-                          : <span style={{ color: '#1b2433' }}>{row.period}</span>
+                          : <span style={{ color: 'var(--text)' }}>{row.period}</span>
                         }
                       </td>
                       <td style={s.td}>{row.total_consumption_kwh?.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}</td>
@@ -461,7 +461,7 @@ export default function ReportPanel() {
                         <span style={{ color: '#d29922' }}>{row.grid_dependency_pct?.toFixed(1)}%</span>
                         <MiniProgressBar pct={row.grid_dependency_pct} color="#d29922"/>
                       </td>
-                      <td style={{ ...s.td, color: (row.anomaly_count ?? 0) > 0 ? '#f85149' : '#909aa8' }}>
+                      <td style={{ ...s.td, color: (row.anomaly_count ?? 0) > 0 ? '#f85149' : 'var(--text4)' }}>
                         {row.anomaly_count}건
                       </td>
                     </tr>
@@ -471,7 +471,7 @@ export default function ReportPanel() {
             </table>
           </div>
 
-          <div style={{ fontSize: 11, color: '#909aa8', textAlign: 'right' }}>
+          <div style={{ fontSize: 11, color: 'var(--text4)', textAlign: 'right' }}>
             {viewLabel[view]} · 총 {items.length}개 행 · {months}개월 원본 기준
           </div>
 
@@ -513,8 +513,8 @@ export default function ReportPanel() {
                   <YAxis tick={{ fontSize: 10, fill: '#5a6675' }} tickLine={false} axisLine={false}
                     tickFormatter={v => `${v}`}/>
                   <Tooltip
-                    contentStyle={{ background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 8, fontSize: 12 }}
-                    labelStyle={{ color: '#1b2433' }}
+                    contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+                    labelStyle={{ color: 'var(--text)' }}
                     formatter={(v, name) => [
                       `${v} kWh/DD`,
                       name === 'ei_total' ? '정규화 EI' : name,
@@ -573,7 +573,7 @@ export default function ReportPanel() {
                   )
                 })}
               </div>
-              <div style={{ fontSize: 10, color: '#909aa8', marginTop: 6 }}>
+              <div style={{ fontSize: 10, color: 'var(--text4)', marginTop: 6 }}>
                 셀에 마우스를 올리면 품질 이슈 상세 확인 · 게이트웨이 장애 구간은 자동 표시
               </div>
             </div>
@@ -584,57 +584,57 @@ export default function ReportPanel() {
   )
 }
 
-const sk = { background: '#e7ebf1', borderRadius: 4, height: 14, width: '60%' }
+const sk = { background: 'var(--line)', borderRadius: 4, height: 14, width: '60%' }
 
 const s = {
   wrap:      { display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' },
-  header:    { padding: '14px 20px 10px', borderBottom: '1px solid #e7ebf1', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0, flexWrap: 'wrap' },
-  title:     { fontWeight: 600, fontSize: 15, color: '#1b2433', display: 'inline-flex', alignItems: 'center', gap: 8 },
-  empty:     { textAlign: 'center', color: '#5a6675', paddingTop: 60 },
+  header:    { padding: '14px 20px 10px', borderBottom: '1px solid var(--line)', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0, flexWrap: 'wrap' },
+  title:     { fontWeight: 600, fontSize: 15, color: 'var(--text)', display: 'inline-flex', alignItems: 'center', gap: 8 },
+  empty:     { textAlign: 'center', color: 'var(--text3)', paddingTop: 60 },
   body:      { flex: 1, overflowY: 'auto', padding: '16px 20px 24px', display: 'flex', flexDirection: 'column', gap: 14 },
   kpiRow:    { display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 },
-  kpiCard:   { background: '#f4f6fa', border: '1px solid #e7ebf1', borderRadius: 8, padding: '12px 16px' },
+  kpiCard:   { background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 8, padding: '12px 16px' },
   charts:    { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 },
-  chartBox:  { background: '#f4f6fa', border: '1px solid #e7ebf1', borderRadius: 8, padding: '14px 16px' },
-  chartTitle:{ fontSize: 12, fontWeight: 600, color: '#5a6675', marginBottom: 10 },
+  chartBox:  { background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 8, padding: '14px 16px' },
+  chartTitle:{ fontSize: 12, fontWeight: 600, color: 'var(--text3)', marginBottom: 10 },
   tableWrap: { overflowX: 'auto' },
   table:     { width: '100%', borderCollapse: 'collapse' },
-  th:        { textAlign: 'left', padding: '8px 12px', fontSize: 12, color: '#5a6675', borderBottom: '1px solid #e7ebf1', fontWeight: 500, whiteSpace: 'nowrap' },
-  tr:        { borderBottom: '1px solid #ffffff' },
-  td:        { padding: '9px 12px', fontSize: 13, color: '#5a6675', verticalAlign: 'middle' },
-  segGroup:  { display: 'flex', background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 6, overflow: 'hidden' },
-  seg:       { padding: '4px 12px', background: 'none', border: 'none', color: '#5a6675', fontSize: 12, cursor: 'pointer' },
+  th:        { textAlign: 'left', padding: '8px 12px', fontSize: 12, color: 'var(--text3)', borderBottom: '1px solid var(--line)', fontWeight: 500, whiteSpace: 'nowrap' },
+  tr:        { borderBottom: '1px solid var(--surface)' },
+  td:        { padding: '9px 12px', fontSize: 13, color: 'var(--text3)', verticalAlign: 'middle' },
+  segGroup:  { display: 'flex', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' },
+  seg:       { padding: '4px 12px', background: 'none', border: 'none', color: 'var(--text3)', fontSize: 12, cursor: 'pointer' },
   segActive: { background: '#2563eb33', color: '#2563eb', fontWeight: 600 },
-  csvBtn:       { padding: '5px 12px', background: '#e7ebf1', border: '1px solid #e2e7ef', borderRadius: 6, color: '#1b2433', fontSize: 12, cursor: 'pointer', fontWeight: 500 },
-  loadingBanner:   { display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', background: 'linear-gradient(135deg, #2563eb15, #ffffff)', border: '1px solid #2563eb44', borderRadius: 10, marginBottom: 12 },
-  loadingSpinner:  { width: 22, height: 22, borderRadius: '50%', border: '2px solid #e2e7ef', borderTopColor: '#2563eb', animation: 'spin 0.8s linear infinite', flexShrink: 0 },
+  csvBtn:       { padding: '5px 12px', background: 'var(--line)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text)', fontSize: 12, cursor: 'pointer', fontWeight: 500 },
+  loadingBanner:   { display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', background: 'linear-gradient(135deg, #2563eb15, var(--surface))', border: '1px solid #2563eb44', borderRadius: 10, marginBottom: 12 },
+  loadingSpinner:  { width: 22, height: 22, borderRadius: '50%', border: '2px solid var(--border)', borderTopColor: '#2563eb', animation: 'spin 0.8s linear infinite', flexShrink: 0 },
 
-  narrativeBox:    { background: 'linear-gradient(135deg, #a371f710, #ffffff)', border: '1px solid #a371f744', borderRadius: 10, padding: '14px 18px', marginBottom: 4 },
+  narrativeBox:    { background: 'linear-gradient(135deg, #a371f710, var(--surface))', border: '1px solid #a371f744', borderRadius: 10, padding: '14px 18px', marginBottom: 4 },
   narrativeTitle:  { fontSize: 13, fontWeight: 700, color: '#a371f7', marginBottom: 8 },
-  narrativeText:   { fontSize: 13, color: '#33404f', lineHeight: 1.75, whiteSpace: 'pre-wrap' },
+  narrativeText:   { fontSize: 13, color: 'var(--text2)', lineHeight: 1.75, whiteSpace: 'pre-wrap' },
 
   // AI 섹션 (생성 버튼 또는 결과)
-  aiBox:           { background: 'linear-gradient(135deg, rgba(163,113,247,0.05), #ffffff)', border: '1px solid', borderRadius: 10, padding: '12px 16px', marginBottom: 4 },
+  aiBox:           { background: 'linear-gradient(135deg, rgba(163,113,247,0.05), var(--surface))', border: '1px solid', borderRadius: 10, padding: '12px 16px', marginBottom: 4 },
   aiBoxCompact:    { background: 'rgba(255,255,255,0.02)', border: '1px solid', borderRadius: 8, padding: '10px 12px', marginBottom: 8 },
   aiTitle:         { fontSize: 12, fontWeight: 700, marginBottom: 6 },
-  aiText:          { fontSize: 13, color: '#33404f', lineHeight: 1.75, whiteSpace: 'pre-wrap' },
-  aiTextCompact:   { fontSize: 12, color: '#33404f', lineHeight: 1.65, whiteSpace: 'pre-wrap' },
+  aiText:          { fontSize: 13, color: 'var(--text2)', lineHeight: 1.75, whiteSpace: 'pre-wrap' },
+  aiTextCompact:   { fontSize: 12, color: 'var(--text2)', lineHeight: 1.65, whiteSpace: 'pre-wrap' },
 
   // EI 섹션
-  eiBox:       { background: '#f4f6fa', border: '1px solid #e7ebf1', borderRadius: 10, padding: '14px 16px' },
+  eiBox:       { background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 10, padding: '14px 16px' },
   eiHeader:    { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, flexWrap: 'wrap', gap: 8 },
   eiTitle:     { fontSize: 13, fontWeight: 700, color: '#d29922' },
   eiAvgBadge:  { fontSize: 11, color: '#2563eb', background: '#2563eb18', borderRadius: 4, padding: '2px 8px' },
-  eiDesc:      { fontSize: 11, color: '#909aa8', marginBottom: 8 },
-  eiNarrative: { fontSize: 12, color: '#5a6675', lineHeight: 1.7, marginBottom: 12, whiteSpace: 'pre-wrap',
+  eiDesc:      { fontSize: 11, color: 'var(--text4)', marginBottom: 8 },
+  eiNarrative: { fontSize: 12, color: 'var(--text3)', lineHeight: 1.7, marginBottom: 12, whiteSpace: 'pre-wrap',
                  borderLeft: '3px solid #d2992244', paddingLeft: 10 },
 
   // 데이터 품질 섹션
-  balanceBox:      { background: '#f4f6fa', border: '1px solid #e7ebf1', borderRadius: 10, padding: '14px 16px' },
+  balanceBox:      { background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 10, padding: '14px 16px' },
   balanceHeader:   { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 8 },
   balanceTitle:    { fontSize: 13, fontWeight: 700, color: '#2563eb' },
   balanceSummary:  { fontSize: 12 },
-  balanceNarrative:{ fontSize: 12, color: '#5a6675', lineHeight: 1.7, marginBottom: 12, whiteSpace: 'pre-wrap' },
+  balanceNarrative:{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.7, marginBottom: 12, whiteSpace: 'pre-wrap' },
   qualityGrid:     { display: 'flex', flexWrap: 'wrap', gap: 4 },
   qualityCell:     { borderRadius: 4, padding: '4px 6px', textAlign: 'center', minWidth: 36, cursor: 'default' },
 }

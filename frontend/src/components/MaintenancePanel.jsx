@@ -17,12 +17,12 @@ const ORDER = ['open', 'in_progress', 'done']
 
 const MD = {
   h3: ({ children }) => <div style={{ fontSize: 11, fontWeight: 700, color: '#2563eb', marginTop: 8, marginBottom: 3 }}>{children}</div>,
-  p:  ({ children }) => <p style={{ margin: '0 0 4px', fontSize: 11, lineHeight: 1.6, color: '#5a6675' }}>{children}</p>,
-  ul: ({ children }) => <ul style={{ margin: '2px 0 4px', paddingLeft: 16, color: '#5a6675' }}>{children}</ul>,
-  ol: ({ children }) => <ol style={{ margin: '2px 0 4px', paddingLeft: 16, color: '#5a6675' }}>{children}</ol>,
+  p:  ({ children }) => <p style={{ margin: '0 0 4px', fontSize: 11, lineHeight: 1.6, color: 'var(--text3)' }}>{children}</p>,
+  ul: ({ children }) => <ul style={{ margin: '2px 0 4px', paddingLeft: 16, color: 'var(--text3)' }}>{children}</ul>,
+  ol: ({ children }) => <ol style={{ margin: '2px 0 4px', paddingLeft: 16, color: 'var(--text3)' }}>{children}</ol>,
   li: ({ children }) => <li style={{ marginBottom: 2, fontSize: 11, lineHeight: 1.5 }}>{children}</li>,
-  strong: ({ children }) => <strong style={{ color: '#33404f' }}>{children}</strong>,
-  em: ({ children }) => <em style={{ color: '#909aa8' }}>{children}</em>,
+  strong: ({ children }) => <strong style={{ color: 'var(--text2)' }}>{children}</strong>,
+  em: ({ children }) => <em style={{ color: 'var(--text4)' }}>{children}</em>,
 }
 
 function relTime(iso) {
@@ -141,8 +141,8 @@ export default function MaintenancePanel({ refreshSignal } = {}) {
         {!loading && !error && items.length === 0 && (
           <div style={s.center}>
             <div style={{ fontSize: 32, marginBottom: 10 }}>📭</div>
-            <div style={{ fontSize: 14, color: '#1b2433', fontWeight: 600 }}>작업지시가 없습니다</div>
-            <div style={{ fontSize: 12, color: '#5a6675', marginTop: 6 }}>
+            <div style={{ fontSize: 14, color: 'var(--text)', fontWeight: 600 }}>작업지시가 없습니다</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 6 }}>
               설비 상태 감시 → 카드 클릭 → AI 진단에서 "작업지시 생성"으로 추가하세요.
             </div>
           </div>
@@ -152,7 +152,7 @@ export default function MaintenancePanel({ refreshSignal } = {}) {
             {groups.map(({ st, list }) => (
               <div key={st} style={s.column}>
                 <div style={{ ...s.colHead, color: STATUS[st].color }}>
-                  {STATUS[st].icon} {STATUS[st].label} <span style={{ color: '#909aa8' }}>({list.length})</span>
+                  {STATUS[st].icon} {STATUS[st].label} <span style={{ color: 'var(--text4)' }}>({list.length})</span>
                 </div>
                 <div style={s.colBody}>
                   {list.length === 0
@@ -171,31 +171,31 @@ export default function MaintenancePanel({ refreshSignal } = {}) {
 }
 
 const s = {
-  wrap:   { display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', background: '#f4f6fa' },
-  header: { padding: '14px 24px', borderBottom: '1px solid #e7ebf1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, background: '#ffffff' },
-  h1:     { fontWeight: 700, fontSize: 16, color: '#1b2433', display: 'flex', alignItems: 'center', gap: 8 },
-  sub:    { fontSize: 11, color: '#5a6675', marginTop: 3 },
+  wrap:   { display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', background: 'var(--bg)' },
+  header: { padding: '14px 24px', borderBottom: '1px solid var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, background: 'var(--surface)' },
+  h1:     { fontWeight: 700, fontSize: 16, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8 },
+  sub:    { fontSize: 11, color: 'var(--text3)', marginTop: 3 },
   summary:{ display: 'flex', gap: 12, fontSize: 12, fontWeight: 700 },
-  refreshBtn: { padding: '7px 14px', background: '#e7ebf1', border: '1px solid #e2e7ef', borderRadius: 6, color: '#1b2433', fontSize: 12, cursor: 'pointer', fontWeight: 600 },
+  refreshBtn: { padding: '7px 14px', background: 'var(--line)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text)', fontSize: 12, cursor: 'pointer', fontWeight: 600 },
 
   body:   { flex: 1, overflow: 'hidden', padding: 20 },
-  center: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 60, color: '#5a6675', fontSize: 13, height: '100%' },
+  center: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 60, color: 'var(--text3)', fontSize: 13, height: '100%' },
   errorBox: { padding: 20, background: '#fee2e2', border: '1px solid #f85149', borderRadius: 8, color: '#f85149' },
 
   columns: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, height: '100%' },
-  column:  { display: 'flex', flexDirection: 'column', minHeight: 0, background: '#f4f6fa', border: '1px solid #e7ebf1', borderRadius: 10, overflow: 'hidden' },
-  colHead: { padding: '10px 14px', fontSize: 13, fontWeight: 700, borderBottom: '1px solid #e7ebf1', background: '#ffffff', flexShrink: 0 },
+  column:  { display: 'flex', flexDirection: 'column', minHeight: 0, background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 10, overflow: 'hidden' },
+  colHead: { padding: '10px 14px', fontSize: 13, fontWeight: 700, borderBottom: '1px solid var(--line)', background: 'var(--surface)', flexShrink: 0 },
   colBody: { flex: 1, overflowY: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 10 },
-  colEmpty:{ color: '#909aa8', fontSize: 11, textAlign: 'center', padding: 16 },
+  colEmpty:{ color: 'var(--text4)', fontSize: 11, textAlign: 'center', padding: 16 },
 
-  card:    { background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 10, padding: 14 },
+  card:    { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: 14 },
   cardHead:{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 },
-  eq:      { fontSize: 11, color: '#5a6675', marginBottom: 2 },
-  title:   { fontSize: 13, fontWeight: 700, color: '#1b2433' },
+  eq:      { fontSize: 11, color: 'var(--text3)', marginBottom: 2 },
+  title:   { fontSize: 13, fontWeight: 700, color: 'var(--text)' },
   priBadge:{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, flexShrink: 0, whiteSpace: 'nowrap' },
-  cause:   { fontSize: 11, color: '#33404f', marginTop: 8, lineHeight: 1.5 },
-  actionBox: { marginTop: 8, maxHeight: 150, overflowY: 'auto', background: '#f4f6fa', border: '1px solid #e7ebf1', borderRadius: 6, padding: '6px 10px' },
-  metaRow: { display: 'flex', gap: 6, flexWrap: 'wrap', fontSize: 10, color: '#909aa8', marginTop: 8 },
+  cause:   { fontSize: 11, color: 'var(--text2)', marginTop: 8, lineHeight: 1.5 },
+  actionBox: { marginTop: 8, maxHeight: 150, overflowY: 'auto', background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 6, padding: '6px 10px' },
+  metaRow: { display: 'flex', gap: 6, flexWrap: 'wrap', fontSize: 10, color: 'var(--text4)', marginTop: 8 },
   outcome: { marginTop: 8, fontSize: 11, color: '#3fb950', background: '#3fb95011', border: '1px solid #3fb95033', borderRadius: 6, padding: '6px 10px' },
   actions: { marginTop: 10, display: 'flex', gap: 8 },
   startBtn:{ flex: 1, padding: '7px 10px', background: '#2563eb', border: 'none', borderRadius: 6, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' },

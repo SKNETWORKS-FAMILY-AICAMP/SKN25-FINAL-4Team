@@ -35,19 +35,19 @@ function PredictiveSection({ items }) {
   if (!items || items.length === 0) return null
   return (
     <div style={s.predWrap}>
-      <div style={s.predTitle}>🔮 예지보전 — 추세 기반 위험 예측 <span style={{ fontSize: 10, color: '#909aa8', fontWeight: 400 }}>(현 추세 외삽 · 참고용)</span></div>
+      <div style={s.predTitle}>🔮 예지보전 — 추세 기반 위험 예측 <span style={{ fontSize: 10, color: 'var(--text4)', fontWeight: 400 }}>(현 추세 외삽 · 참고용)</span></div>
       <div style={s.predList}>
         {items.map(it => {
           const rk = RISK_STYLE[it.risk] ?? RISK_STYLE.낮음
           return (
             <div key={it.id} style={s.predRow}>
               <span style={{ width: 22, display: 'inline-flex', justifyContent: 'center' }}><EquipIcon id={it.id} size={18} /></span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#1b2433', width: 88 }}>{it.name}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', width: 88 }}>{it.name}</span>
               <span style={{ ...s.riskBadge, color: rk.color, background: rk.bg, border: `1px solid ${rk.color}55` }}>
                 {DIR_MARK[it.direction] ?? ''} 위험 {it.risk}
               </span>
               <Sparkline series={it.series} color={rk.color} />
-              <span style={{ fontSize: 11, color: it.projection ? '#f0b429' : '#5a6675', flex: 1, minWidth: 0 }}>
+              <span style={{ fontSize: 11, color: it.projection ? '#f0b429' : 'var(--text3)', flex: 1, minWidth: 0 }}>
                 {it.note}
               </span>
             </div>
@@ -61,12 +61,12 @@ function PredictiveSection({ items }) {
 // 진단 텍스트(마크다운) 렌더 스타일 — 모달 내부용
 const MD = {
   h3: ({ children }) => <div style={{ fontSize: 13, fontWeight: 700, color: '#2563eb', marginTop: 14, marginBottom: 6 }}>{children}</div>,
-  p:  ({ children }) => <p style={{ margin: '0 0 8px', fontSize: 13, lineHeight: 1.7, color: '#33404f' }}>{children}</p>,
-  ul: ({ children }) => <ul style={{ margin: '4px 0 8px', paddingLeft: 18, color: '#33404f' }}>{children}</ul>,
-  ol: ({ children }) => <ol style={{ margin: '4px 0 8px', paddingLeft: 18, color: '#33404f' }}>{children}</ol>,
+  p:  ({ children }) => <p style={{ margin: '0 0 8px', fontSize: 13, lineHeight: 1.7, color: 'var(--text2)' }}>{children}</p>,
+  ul: ({ children }) => <ul style={{ margin: '4px 0 8px', paddingLeft: 18, color: 'var(--text2)' }}>{children}</ul>,
+  ol: ({ children }) => <ol style={{ margin: '4px 0 8px', paddingLeft: 18, color: 'var(--text2)' }}>{children}</ol>,
   li: ({ children }) => <li style={{ marginBottom: 4, fontSize: 13, lineHeight: 1.6 }}>{children}</li>,
-  strong: ({ children }) => <strong style={{ fontWeight: 700, color: '#0f1620' }}>{children}</strong>,
-  em: ({ children }) => <em style={{ color: '#5a6675' }}>{children}</em>,
+  strong: ({ children }) => <strong style={{ fontWeight: 700, color: 'var(--text-strong)' }}>{children}</strong>,
+  em: ({ children }) => <em style={{ color: 'var(--text3)' }}>{children}</em>,
 }
 
 const STATUS_STYLE = {
@@ -92,15 +92,15 @@ function Ring({ score, color }) {
   const off = c * (1 - Math.max(0, Math.min(100, score)) / 100)
   return (
     <svg width="84" height="84" style={{ flexShrink: 0 }}>
-      <circle cx="42" cy="42" r={r} fill="none" stroke="#e7ebf1" strokeWidth="7" />
+      <circle cx="42" cy="42" r={r} fill="none" strokeWidth="7" style={{ stroke: 'var(--line)' }} />
       <circle
         cx="42" cy="42" r={r} fill="none" stroke={color} strokeWidth="7"
         strokeLinecap="round" strokeDasharray={c} strokeDashoffset={off}
         transform="rotate(-90 42 42)"
         style={{ transition: 'stroke-dashoffset .6s cubic-bezier(0.4,0,0.2,1)' }}
       />
-      <text x="42" y="40" textAnchor="middle" fontSize="22" fontWeight="700" fill="#1b2433">{score}</text>
-      <text x="42" y="55" textAnchor="middle" fontSize="9" fill="#5a6675">/ 100</text>
+      <text x="42" y="40" textAnchor="middle" fontSize="22" fontWeight="700" style={{ fill: 'var(--text)' }}>{score}</text>
+      <text x="42" y="55" textAnchor="middle" fontSize="9" style={{ fill: 'var(--text3)' }}>/ 100</text>
     </svg>
   )
 }
@@ -138,8 +138,8 @@ function EquipmentCard({ item, onClick }) {
 
       <div style={s.anomalyRow}>
         <div style={s.anomalyLeft}>
-          <span style={{ fontSize: 11, color: '#5a6675' }}>최근 30일 이상</span>
-          <span style={{ fontSize: 11, color: '#909aa8' }}>· 마지막 {relTime(item.last_anomaly_at)}</span>
+          <span style={{ fontSize: 11, color: 'var(--text3)' }}>최근 30일 이상</span>
+          <span style={{ fontSize: 11, color: 'var(--text4)' }}>· 마지막 {relTime(item.last_anomaly_at)}</span>
         </div>
         <div style={s.chips}>
           {c.HIGH   > 0 && <span style={{ ...s.chip, color: '#f85149', background: '#f8514918' }}>심각 {c.HIGH}</span>}
@@ -251,7 +251,7 @@ export default function EquipmentPanel({ onEquipmentClick, onWorkOrderCreated, o
         {loading && (
           <div style={s.center}>
             <div style={{ fontSize: 28, marginBottom: 12 }}>⏳</div>
-            <div style={{ fontSize: 13, color: '#5a6675' }}>설비 상태 분석 중...</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)' }}>설비 상태 분석 중...</div>
           </div>
         )}
         {!loading && error && (
@@ -299,7 +299,7 @@ function DiagnosisModal({ item, diag, loading, onRegen, onClose, onViewAnomalies
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <EquipIcon id={item.id} size={24} />
             <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#1b2433' }}>{item.name} · AI 진단</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>{item.name} · AI 진단</div>
               <span style={{ ...s.statusBadge, color: st.color, background: st.bg, border: `1px solid ${st.color}55` }}>
                 ● {st.label} · 헬스 {item.health_score}
               </span>
@@ -309,7 +309,7 @@ function DiagnosisModal({ item, diag, loading, onRegen, onClose, onViewAnomalies
         </div>
 
         <div style={s.modalSummary}>
-          <span style={{ fontSize: 11, color: '#5a6675' }}>최근 30일 이상</span>
+          <span style={{ fontSize: 11, color: 'var(--text3)' }}>최근 30일 이상</span>
           {c.HIGH   > 0 && <span style={{ ...s.chip, color: '#f85149', background: '#f8514918' }}>심각 {c.HIGH}</span>}
           {c.MEDIUM > 0 && <span style={{ ...s.chip, color: '#d29922', background: '#d2992218' }}>주의 {c.MEDIUM}</span>}
           {c.LOW    > 0 && <span style={{ ...s.chip, color: '#2563eb', background: '#2563eb18' }}>경미 {c.LOW}</span>}
@@ -322,7 +322,7 @@ function DiagnosisModal({ item, diag, loading, onRegen, onClose, onViewAnomalies
 
         <div style={s.modalBody}>
           {loading && (
-            <div style={{ textAlign: 'center', padding: 30, color: '#5a6675', fontSize: 13 }}>
+            <div style={{ textAlign: 'center', padding: 30, color: 'var(--text3)', fontSize: 13 }}>
               🤖 AI가 데이터를 분석하고 있습니다...
             </div>
           )}
@@ -359,30 +359,30 @@ function DiagnosisModal({ item, diag, loading, onRegen, onClose, onViewAnomalies
 }
 
 const s = {
-  wrap:   { display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', background: '#f4f6fa' },
-  header: { padding: '14px 24px', borderBottom: '1px solid #e7ebf1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, background: '#ffffff' },
-  title:  { fontWeight: 700, fontSize: 16, color: '#1b2433', display: 'flex', alignItems: 'center', gap: 8 },
-  sub:    { fontSize: 11, color: '#5a6675', marginTop: 3 },
+  wrap:   { display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', background: 'var(--bg)' },
+  header: { padding: '14px 24px', borderBottom: '1px solid var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, background: 'var(--surface)' },
+  title:  { fontWeight: 700, fontSize: 16, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8 },
+  sub:    { fontSize: 11, color: 'var(--text3)', marginTop: 3 },
   summary:{ display: 'flex', gap: 12, fontSize: 12, fontWeight: 700 },
-  refreshBtn: { padding: '7px 14px', background: '#e7ebf1', border: '1px solid #e2e7ef', borderRadius: 6, color: '#1b2433', fontSize: 12, cursor: 'pointer', fontWeight: 600 },
+  refreshBtn: { padding: '7px 14px', background: 'var(--line)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text)', fontSize: 12, cursor: 'pointer', fontWeight: 600 },
 
   body:   { flex: 1, overflowY: 'auto', padding: 24 },
   grid:   { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 },
   center: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 60 },
   errorBox: { padding: 20, background: '#fee2e2', border: '1px solid #f85149', borderRadius: 8, color: '#f85149', fontSize: 13 },
   retryBtn: { marginLeft: 12, padding: '4px 12px', background: '#f85149', border: 'none', borderRadius: 4, color: '#fff', cursor: 'pointer', fontSize: 12 },
-  hint:   { marginTop: 20, fontSize: 11, color: '#909aa8', textAlign: 'center' },
+  hint:   { marginTop: 20, fontSize: 11, color: 'var(--text4)', textAlign: 'center' },
 
-  card:    { background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 12, padding: 18, cursor: 'pointer' },
+  card:    { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: 18, cursor: 'pointer' },
   cardTop: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
-  name:    { fontSize: 15, fontWeight: 700, color: '#1b2433', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+  name:    { fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   statusBadge: { fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4 },
 
   metricRow:  { display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 14 },
-  metricLabel:{ fontSize: 12, color: '#5a6675' },
+  metricLabel:{ fontSize: 12, color: 'var(--text3)' },
   metricValue:{ fontSize: 20, fontWeight: 700, color: '#2563eb', fontVariantNumeric: 'tabular-nums' },
 
-  divider: { height: 1, background: '#e7ebf1', margin: '14px 0' },
+  divider: { height: 1, background: 'var(--line)', margin: '14px 0' },
 
   anomalyRow:  { display: 'flex', flexDirection: 'column', gap: 8 },
   anomalyLeft: { display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
@@ -390,22 +390,22 @@ const s = {
   chip:    { fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4 },
 
   // 예지보전 섹션
-  predWrap:  { marginTop: 24, background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 12, padding: 18 },
-  predTitle: { fontSize: 13, fontWeight: 700, color: '#1b2433', marginBottom: 12 },
+  predWrap:  { marginTop: 24, background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 12, padding: 18 },
+  predTitle: { fontSize: 13, fontWeight: 700, color: 'var(--text)', marginBottom: 12 },
   predList:  { display: 'flex', flexDirection: 'column', gap: 10 },
   predRow:   { display: 'flex', alignItems: 'center', gap: 12 },
   riskBadge: { fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 4, width: 78, textAlign: 'center', flexShrink: 0 },
 
   // 진단 모달
   overlay:  { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: 20 },
-  modal:    { width: 'min(560px, 92vw)', maxHeight: '85vh', background: '#f4f6fa', border: '1px solid #e2e7ef', borderRadius: 14, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 12px 48px rgba(0,0,0,0.6)' },
-  modalHeader: { padding: '16px 20px', borderBottom: '1px solid #e7ebf1', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
-  closeBtn: { background: 'none', border: 'none', color: '#5a6675', fontSize: 16, cursor: 'pointer' },
-  modalSummary: { padding: '10px 20px', borderBottom: '1px solid #e7ebf1', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  elecBar:  { margin: '0 20px', padding: '6px 10px', background: '#f4f6fa', border: '1px solid #e7ebf1', borderRadius: 6, fontSize: 11, color: '#0550ae', fontFamily: 'monospace' },
+  modal:    { width: 'min(560px, 92vw)', maxHeight: '85vh', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 14, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 12px 48px rgba(0,0,0,0.6)' },
+  modalHeader: { padding: '16px 20px', borderBottom: '1px solid var(--line)', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+  closeBtn: { background: 'none', border: 'none', color: 'var(--text3)', fontSize: 16, cursor: 'pointer' },
+  modalSummary: { padding: '10px 20px', borderBottom: '1px solid var(--line)', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  elecBar:  { margin: '0 20px', padding: '6px 10px', background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 6, fontSize: 11, color: 'var(--code)', fontFamily: 'monospace' },
   modalBody: { padding: '12px 20px 16px', overflowY: 'auto', flex: 1 },
-  llmTag:   { marginTop: 12, fontSize: 10, color: '#909aa8', textAlign: 'right' },
-  modalFooter: { padding: '12px 20px', borderTop: '1px solid #e7ebf1', background: '#ffffff', display: 'flex', justifyContent: 'space-between', gap: 10 },
-  ghostBtn: { padding: '8px 14px', background: '#e7ebf1', border: '1px solid #e2e7ef', borderRadius: 6, color: '#1b2433', fontSize: 12, cursor: 'pointer', fontWeight: 600 },
+  llmTag:   { marginTop: 12, fontSize: 10, color: 'var(--text4)', textAlign: 'right' },
+  modalFooter: { padding: '12px 20px', borderTop: '1px solid var(--line)', background: 'var(--surface)', display: 'flex', justifyContent: 'space-between', gap: 10 },
+  ghostBtn: { padding: '8px 14px', background: 'var(--line)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text)', fontSize: 12, cursor: 'pointer', fontWeight: 600 },
   primaryBtn: { padding: '8px 14px', background: '#2563eb', border: 'none', borderRadius: 6, color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 600 },
 }

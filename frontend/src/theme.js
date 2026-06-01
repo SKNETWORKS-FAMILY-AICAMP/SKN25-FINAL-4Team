@@ -1,23 +1,23 @@
 // 라이트 엔터프라이즈 디자인 토큰 (틸 브랜드)
 // 점진적 적용: 패널을 이 토큰으로 옮기며 상용 룩으로 전환
 export const T = {
-  // 표면
-  bg:           '#f4f6fa',   // 앱 배경
-  surface:      '#ffffff',   // 카드/패널
-  surface2:     '#eef1f6',   // 옅은 보조 표면
-  surfaceHover: '#f7f9fc',
-  border:       '#e2e7ef',
-  borderStrong: '#cdd5e0',
+  // 표면 (CSS 변수 — data-theme로 라이트/다크 전환)
+  bg:           'var(--bg)',
+  surface:      'var(--surface)',
+  surface2:     'var(--surface2)',
+  surfaceHover: 'var(--surface2)',
+  border:       'var(--border)',
+  borderStrong: 'var(--border)',
 
   // 텍스트
-  text:      '#1b2433',
-  textMuted: '#5a6675',
-  textFaint: '#909aa8',
+  text:      'var(--text)',
+  textMuted: 'var(--text3)',
+  textFaint: 'var(--text4)',
 
   // 브랜드 (틸)
-  brand:       '#0d9488',
-  brandStrong: '#0f766e',
-  brandSoft:   '#d3f3ee',
+  brand:       'var(--brand)',
+  brandStrong: 'var(--brand-strong)',
+  brandSoft:   'var(--brand-soft)',
 
   // 보조/상태
   accent:  '#2563eb',

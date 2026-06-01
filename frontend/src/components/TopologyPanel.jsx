@@ -44,10 +44,10 @@ function InjectStyles() {
 
 function EnergyNode({ id, label, desc, type, role, avgKw, small = false, dimmed = false }) {
   const [hovered, setHovered] = useState(false)
-  const roleColor = ROLE_COLOR[role] || '#5a6675'
+  const roleColor = ROLE_COLOR[role] || 'var(--text3)'
   const icon = TYPE_ICON[type] || '●'
   const barPct = avgKw != null ? Math.min(Math.abs(avgKw) / 150 * 100, 100) : null
-  const kwColor = avgKw == null ? '#5a6675' : avgKw < 0 ? '#3fb950' : roleColor
+  const kwColor = avgKw == null ? 'var(--text3)' : avgKw < 0 ? '#3fb950' : roleColor
 
   return (
     <div
@@ -56,7 +56,7 @@ function EnergyNode({ id, label, desc, type, role, avgKw, small = false, dimmed 
       onMouseLeave={() => setHovered(false)}
     >
       <div style={{
-        background: '#f4f6fa',
+        background: 'var(--bg)',
         border: `1.5px solid ${roleColor}`,
         borderRadius: 8,
         padding: small ? '5px 10px' : '8px 13px',
@@ -74,7 +74,7 @@ function EnergyNode({ id, label, desc, type, role, avgKw, small = false, dimmed 
           }}>{ROLE_LABEL[role]}</span>
         </div>
         <div style={{ fontFamily: 'monospace', fontSize: small ? 9 : 10, color: '#2563eb', marginBottom: 2 }}>{id}</div>
-        <div style={{ fontSize: small ? 10 : 11, color: '#1b2433', lineHeight: 1.35 }}>{label}</div>
+        <div style={{ fontSize: small ? 10 : 11, color: 'var(--text)', lineHeight: 1.35 }}>{label}</div>
         {barPct !== null && (
           <div style={{ marginTop: 6 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
@@ -83,7 +83,7 @@ function EnergyNode({ id, label, desc, type, role, avgKw, small = false, dimmed 
                 {avgKw > 0 ? '+' : ''}{avgKw} kW
               </span>
             </div>
-            <div style={{ background: '#ffffff', borderRadius: 3, height: 3 }}>
+            <div style={{ background: 'var(--surface)', borderRadius: 3, height: 3 }}>
               <div style={{
                 background: kwColor, borderRadius: 3, height: '100%',
                 width: `${barPct}%`, transition: 'width .3s',
@@ -96,9 +96,9 @@ function EnergyNode({ id, label, desc, type, role, avgKw, small = false, dimmed 
         <div style={{
           position: 'absolute',
           bottom: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)',
-          background: '#ffffff', border: '1px solid #e2e7ef',
+          background: 'var(--surface)', border: '1px solid var(--border)',
           borderRadius: 6, padding: '8px 10px',
-          fontSize: 11, color: '#33404f',
+          fontSize: 11, color: 'var(--text2)',
           width: 250, zIndex: 999,
           boxShadow: '0 4px 16px rgba(0,0,0,.7)',
           lineHeight: 1.55, whiteSpace: 'normal', pointerEvents: 'none',
@@ -151,7 +151,7 @@ function NodeGroup({ nodes, title, color, column = false }) {
       {title && (
         <div style={{
           fontSize: 9, fontWeight: 700,
-          color: color ?? '#5a6675',
+          color: color ?? 'var(--text3)',
           letterSpacing: '.6px', textTransform: 'uppercase', marginBottom: 8,
         }}>{title}</div>
       )}
@@ -177,7 +177,7 @@ function RefBox({ id, label, sub, color = ROLE_COLOR.grid }) {
     }}>
       {id && <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#2563eb', marginBottom: 2 }}>{id}</div>}
       <div style={{ fontSize: 11, fontWeight: 600, color }}>{label}</div>
-      {sub && <div style={{ fontSize: 9, color: '#5a6675', marginTop: 2 }}>{sub}</div>}
+      {sub && <div style={{ fontSize: 9, color: 'var(--text3)', marginTop: 2 }}>{sub}</div>}
     </div>
   )
 }
@@ -211,7 +211,7 @@ const BALANCE_DATA = {
   V: {
     items: [
       { label: 'PV 주차장',     kw: -14.6, color: ROLE_COLOR.production, suffix: 'kW' },
-      { label: '중앙 냉각 공급', kw: +54.0, color: '#0550ae',             suffix: '열kW' },
+      { label: '중앙 냉각 공급', kw: +54.0, color: 'var(--code)',             suffix: '열kW' },
     ],
     note: '부지 변압기 V.Z81+V.Z82 · V.K21 고장 구간은 H1.K11+K12+K14+K16 합산 재구성',
   },
@@ -222,12 +222,12 @@ function EnergyBalance({ building }) {
   if (!d) return null
   return (
     <div style={{
-      background: '#f4f6fa', border: '1px solid #e7ebf1',
+      background: 'var(--bg)', border: '1px solid var(--line)',
       borderRadius: 8, padding: '10px 14px',
       display: 'flex', flexWrap: 'wrap', gap: 14, alignItems: 'center',
       marginBottom: 12,
     }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: '#5a6675', flexShrink: 0 }}>에너지 균형</div>
+      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text3)', flexShrink: 0 }}>에너지 균형</div>
       {d.items.map(it => (
         <div key={it.label} style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           <span style={{ fontSize: 9, color: '#484f58' }}>{it.label}</span>
@@ -257,11 +257,11 @@ function SankeyBar() {
   const segs = [
     { label: '그리드',  pct: 62, color: ROLE_COLOR.grid,       sub: '9,262 MWh' },
     { label: 'CHP',     pct: 22, color: ROLE_COLOR.production, sub: '3,388 MWh' },
-    { label: 'PV',      pct: 16, color: '#0550ae',             sub: '2,467 MWh' },
+    { label: 'PV',      pct: 16, color: 'var(--code)',             sub: '2,467 MWh' },
   ]
   return (
     <div style={{ marginBottom: 16, width: '100%', maxWidth: 700 }}>
-      <div style={{ fontSize: 11, color: '#5a6675', marginBottom: 6 }}>
+      <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 6 }}>
         전기 공급원 비율 — 6년 합계 소비 14,782 MWh (Gruner et al. 2025, Fig. 5)
       </div>
       <div style={{ display: 'flex', height: 22, borderRadius: 6, overflow: 'hidden', gap: 1 }}>
@@ -269,7 +269,7 @@ function SankeyBar() {
           <div key={s.label} style={{ width: `${s.pct}%`, background: s.color, position: 'relative' }}>
             <span style={{
               position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#f4f6fa',
+              justifyContent: 'center', fontSize: 10, fontWeight: 700, color: 'var(--bg)',
             }}>{s.pct}%</span>
           </div>
         ))}
@@ -278,7 +278,7 @@ function SankeyBar() {
         {segs.map(s => (
           <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <div style={{ width: 8, height: 8, borderRadius: 2, background: s.color }} />
-            <span style={{ fontSize: 10, color: '#5a6675' }}>{s.label} {s.sub}</span>
+            <span style={{ fontSize: 10, color: 'var(--text3)' }}>{s.label} {s.sub}</span>
           </div>
         ))}
         <span style={{ fontSize: 10, color: '#484f58', marginLeft: 'auto' }}>
@@ -294,11 +294,11 @@ function SankeyBar() {
 function BuildingBox({ label, sub, meters, tags, tagColor = '#3fb950' }) {
   return (
     <div style={{
-      background: '#ffffff', border: '1px solid #e7ebf1',
+      background: 'var(--surface)', border: '1px solid var(--line)',
       borderRadius: 8, padding: '10px 14px', minWidth: 150,
     }}>
-      <div style={{ fontSize: 12, fontWeight: 700, color: '#1b2433' }}>{label}</div>
-      {sub && <div style={{ fontSize: 10, color: '#5a6675', marginTop: 1 }}>{sub}</div>}
+      <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>{label}</div>
+      {sub && <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 1 }}>{sub}</div>}
       <div style={{ fontSize: 10, color: '#484f58', marginTop: 3 }}>계량기 {meters}개</div>
       {tags.length > 0 && (
         <div style={{ display: 'flex', gap: 4, marginTop: 6, flexWrap: 'wrap' }}>
@@ -326,7 +326,7 @@ function CampusOverview() {
           borderRadius: 8, padding: '8px 16px', textAlign: 'center', minWidth: 160,
         }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: '#f85149' }}>⟺ 외부 계통 20kV</div>
-          <div style={{ fontSize: 10, color: '#5a6675', marginTop: 2 }}>Stadtwerke Offenbach am Main</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>Stadtwerke Offenbach am Main</div>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#f85149', marginTop: 3 }}>9,262 MWh / 6년</div>
         </div>
         <div style={{
@@ -334,7 +334,7 @@ function CampusOverview() {
           borderRadius: 8, padding: '8px 16px', textAlign: 'center', minWidth: 160,
         }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: '#3fb950' }}>↑ 총 PV 설비</div>
-          <div style={{ fontSize: 10, color: '#5a6675', marginTop: 2 }}>749 kWp (6개 그룹)</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>749 kWp (6개 그룹)</div>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#3fb950', marginTop: 3 }}>avg −80 kW · 2,467 MWh/6년</div>
         </div>
         <div style={{
@@ -342,7 +342,7 @@ function CampusOverview() {
           borderRadius: 8, padding: '8px 16px', textAlign: 'center', minWidth: 160,
         }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: '#3fb950' }}>↑ CHP (H1)</div>
-          <div style={{ fontSize: 10, color: '#5a6675', marginTop: 2 }}>Viessmann Vitobloc 199 kWel</div>
+          <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>Viessmann Vitobloc 199 kWel</div>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#3fb950', marginTop: 3 }}>avg −85 kW · 3,388 MWh/6년</div>
         </div>
       </div>
@@ -355,10 +355,10 @@ function CampusOverview() {
         borderRadius: 8, padding: '10px 22px', textAlign: 'center', minWidth: 280,
       }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: '#d29922' }}>⇄ V — 부지 공통 변압기</div>
-        <div style={{ fontSize: 10, color: '#5a6675', marginTop: 3 }}>
+        <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 3 }}>
           V.Z81 + V.Z82 (20kV→230V 이중권선) · V.Z84/ZE84 PV 136kWp (주차장)
         </div>
-        <div style={{ fontSize: 10, color: '#0550ae', marginTop: 2 }}>
+        <div style={{ fontSize: 10, color: 'var(--code)', marginTop: 2 }}>
           ❄ 중앙 냉각 V.K21 — CM1+CM2+CM3 avg 54kW
         </div>
       </div>
@@ -386,15 +386,15 @@ function CampusOverview() {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
               <FlowArrow color={ROLE_COLOR.distribution} h={22} label="T.Z30" />
               <BuildingBox label="H4 — Office B4" sub="사무동 B4" meters={4}
-                tags={['ZE 교정미터 (2023.6~)']} tagColor="#5a6675" />
+                tags={['ZE 교정미터 (2023.6~)']} tagColor="var(--text3)" />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
               <FlowArrow color={ROLE_COLOR.distribution} h={22} label="T.Z34" />
               <div style={{
-                background: '#ffffff', border: '1px solid #e7ebf1',
+                background: 'var(--surface)', border: '1px solid var(--line)',
                 borderRadius: 8, padding: '10px 14px', minWidth: 120,
               }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#1b2433' }}>Workshop 부하</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)' }}>Workshop 부하</div>
                 <div style={{ fontSize: 10, color: '#484f58', marginTop: 2 }}>서버·냉각·환기</div>
               </div>
             </div>
@@ -480,24 +480,24 @@ function FlowDiagram({ building }) {
             <FlowArrow kw={247.1} color="#e3a855" label="보일러 + CHP 총합" />
             <NodeGroup nodes={heatDist} title="🔥 열 총량 (H1.W11)" color="#e3a855" />
 
-            <div style={{ borderTop: '1px dashed #e7ebf1', width: '90%', margin: '4px 0' }} />
+            <div style={{ borderTop: '1px dashed var(--line)', width: '90%', margin: '4px 0' }} />
 
             {/* 냉각기 전기 소비 → V.K21 → 냉수 분배 (Fig. 2a) */}
             <NodeGroup nodes={coolElec} title="⚡ 냉각기 전기 소비 (CM1 · CM2 · CM3)" color={ROLE_COLOR.consumption} />
-            <FlowArrow kw={54} color="#0550ae" label="냉수 출력 → V.K21" />
+            <FlowArrow kw={54} color="var(--code)" label="냉수 출력 → V.K21" />
             <div style={{
               background: '#0550ae12', border: '1px solid #0550ae44',
               borderRadius: 8, padding: '7px 14px', textAlign: 'center',
             }}>
               <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#2563eb' }}>V.K21</div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#0550ae' }}>❄ 중앙 냉각기 총합</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--code)' }}>❄ 중앙 냉각기 총합</div>
               <div style={{ fontSize: 9, color: '#484f58', marginTop: 2 }}>
                 CM1+CM2+CM3 · avg 54kW · Tvl=6.5°C<br />
                 고장 구간 → K11+K12+K14+K16 합산 재구성
               </div>
             </div>
-            <FlowArrow color="#0550ae" />
-            <NodeGroup nodes={coldCons} title="❄ 냉수 공급 (HVAC · 서버룸 · 사무실)" color="#0550ae" />
+            <FlowArrow color="var(--code)" />
+            <NodeGroup nodes={coldCons} title="❄ 냉수 공급 (HVAC · 서버룸 · 사무실)" color="var(--code)" />
           </div>
         </div>
       </div>
@@ -676,7 +676,7 @@ function FlowDiagram({ building }) {
             )}
           </div>
           {weather.length > 0 && (
-            <NodeGroup nodes={weather} title="🌤 기상관측소 (Lufft WS501-UMB)" color="#5a6675" />
+            <NodeGroup nodes={weather} title="🌤 기상관측소 (Lufft WS501-UMB)" color="var(--text3)" />
           )}
         </div>
 
@@ -691,7 +691,7 @@ function FlowDiagram({ building }) {
           ].map(b => (
             <div key={b.id} style={{ textAlign: 'center' }}>
               <FlowArrow color={ROLE_COLOR.grid} h={24} />
-              <div style={{ fontSize: 10, color: '#5a6675', marginTop: 2 }}>
+              <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>
                 <span style={{ fontFamily: 'monospace', color: '#2563eb', fontSize: 9 }}>{b.id}</span>
                 <br />{b.label}
               </div>
@@ -710,12 +710,12 @@ function FlowDiagram({ building }) {
 function SummaryCard({ value, label, sub, color = '#2563eb' }) {
   return (
     <div style={{
-      background: '#ffffff', border: '1px solid #e7ebf1',
+      background: 'var(--surface)', border: '1px solid var(--line)',
       borderRadius: 8, padding: '14px 18px', minWidth: 130, flex: 1,
     }}>
       <div style={{ fontSize: 28, fontWeight: 700, color }}>{value}</div>
-      <div style={{ fontSize: 13, color: '#1b2433', marginTop: 4 }}>{label}</div>
-      {sub && <div style={{ fontSize: 11, color: '#5a6675', marginTop: 2 }}>{sub}</div>}
+      <div style={{ fontSize: 13, color: 'var(--text)', marginTop: 4 }}>{label}</div>
+      {sub && <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{sub}</div>}
     </div>
   )
 }
@@ -728,20 +728,20 @@ function RoleLegend() {
       {Object.entries(ROLE_COLOR).map(([role, color]) => (
         <div key={role} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 12, height: 12, borderRadius: 3, background: color, flexShrink: 0 }} />
-          <span style={{ fontSize: 12, color: '#1b2433' }}>
+          <span style={{ fontSize: 12, color: 'var(--text)' }}>
             {ROLE_ICON[role]} {ROLE_LABEL[role]}
           </span>
         </div>
       ))}
-      <div style={{ borderTop: '1px solid #e7ebf1', marginTop: 4, paddingTop: 8 }}>
+      <div style={{ borderTop: '1px solid var(--line)', marginTop: 4, paddingTop: 8 }}>
         {Object.entries(TYPE_ICON).map(([type, icon]) => (
           <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
             <span style={{ fontSize: 14, width: 16, textAlign: 'center' }}>{icon}</span>
-            <span style={{ fontSize: 12, color: '#5a6675' }}>{type}</span>
+            <span style={{ fontSize: 12, color: 'var(--text3)' }}>{type}</span>
           </div>
         ))}
       </div>
-      <div style={{ borderTop: '1px solid #e7ebf1', paddingTop: 8, display: 'flex', flexDirection: 'column', gap: 5 }}>
+      <div style={{ borderTop: '1px solid var(--line)', paddingTop: 8, display: 'flex', flexDirection: 'column', gap: 5 }}>
         <div style={{ fontSize: 10, color: '#484f58', lineHeight: 1.65 }}>
           <span style={{ color: '#2563eb' }}>ZE</span> 미터: 2023년 독일 교정법<br />
           대응 이중 설치 — 동일 선로,<br />
@@ -771,10 +771,10 @@ function RoleBreakdown({ meters }) {
         return (
           <div key={role}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-              <span style={{ fontSize: 12, color: '#1b2433' }}>{ROLE_ICON[role]} {ROLE_LABEL[role]}</span>
-              <span style={{ fontSize: 12, color: '#5a6675' }}>{count}개 ({pct}%)</span>
+              <span style={{ fontSize: 12, color: 'var(--text)' }}>{ROLE_ICON[role]} {ROLE_LABEL[role]}</span>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }}>{count}개 ({pct}%)</span>
             </div>
-            <div style={{ background: '#e7ebf1', borderRadius: 4, height: 7, width: 180 }}>
+            <div style={{ background: 'var(--line)', borderRadius: 4, height: 7, width: 180 }}>
               <div style={{
                 background: ROLE_COLOR[role], borderRadius: 4, height: '100%',
                 width: `${pct}%`, transition: 'width .3s',
@@ -790,9 +790,9 @@ function RoleBreakdown({ meters }) {
 // ─── MeterRow ─────────────────────────────────────────────────────────────────
 
 function MeterRow({ meter }) {
-  const roleColor = ROLE_COLOR[meter.role] || '#5a6675'
+  const roleColor = ROLE_COLOR[meter.role] || 'var(--text3)'
   return (
-    <tr style={{ borderBottom: '1px solid #e7ebf1' }}>
+    <tr style={{ borderBottom: '1px solid var(--line)' }}>
       <td style={{ padding: '8px 10px', fontFamily: 'monospace', fontSize: 12, color: '#2563eb', whiteSpace: 'nowrap' }}>
         {meter.id}
       </td>
@@ -807,9 +807,9 @@ function MeterRow({ meter }) {
           {ROLE_ICON[meter.role]} {ROLE_LABEL[meter.role]}
         </span>
       </td>
-      <td style={{ padding: '8px 10px', fontSize: 12, color: '#1b2433', maxWidth: 200 }}>
+      <td style={{ padding: '8px 10px', fontSize: 12, color: 'var(--text)', maxWidth: 200 }}>
         <div>{meter.label}</div>
-        {meter.desc && <div style={{ fontSize: 10, color: '#5a6675', marginTop: 2 }}>{meter.desc}</div>}
+        {meter.desc && <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>{meter.desc}</div>}
       </td>
       <td style={{ padding: '8px 10px', fontSize: 12, textAlign: 'right', whiteSpace: 'nowrap' }}>
         {meter.avgKw != null ? (
@@ -824,7 +824,7 @@ function MeterRow({ meter }) {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
           {meter.tags.map(tag => (
             <span key={tag} style={{
-              fontSize: 10, background: '#e7ebf1', color: '#5a6675',
+              fontSize: 10, background: 'var(--line)', color: 'var(--text3)',
               borderRadius: 3, padding: '1px 5px',
             }}>{tag}</span>
           ))}
@@ -846,11 +846,11 @@ function PaperFigures() {
         style={{
           display: 'flex', alignItems: 'center', gap: 8,
           background: 'none', border: 'none', cursor: 'pointer',
-          color: '#5a6675', fontSize: 13, padding: 0, marginBottom: open ? 16 : 0,
+          color: 'var(--text3)', fontSize: 13, padding: 0, marginBottom: open ? 16 : 0,
         }}
       >
         <span style={{ fontSize: 16, lineHeight: 1 }}>{open ? '▾' : '▸'}</span>
-        <span style={{ fontWeight: 600, color: '#1b2433' }}>논문 원본 다이어그램</span>
+        <span style={{ fontWeight: 600, color: 'var(--text)' }}>논문 원본 다이어그램</span>
         <span style={{ fontSize: 11, color: '#484f58' }}>Gruner et al. Scientific Data 2025</span>
       </button>
 
@@ -858,28 +858,28 @@ function PaperFigures() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
 
           {/* Fig. 1 */}
-          <div style={{ background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 8, padding: '16px 20px' }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 8, padding: '16px 20px' }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#2563eb', marginBottom: 4 }}>Fig. 1</div>
-            <div style={{ fontSize: 12, color: '#5a6675', marginBottom: 12, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               전기 계량기 계층 구조 — H1(Emission Lab) · H2(Workshop/Office) · H3(Design Studio) · H4(Office B4) · V(부지 공통)
             </div>
             <img
               src="/fig1_meter_hierarchy.png"
               alt="Fig.1 Electricity metering hierarchy"
-              style={{ width: '100%', borderRadius: 6, border: '1px solid #e7ebf1', display: 'block' }}
+              style={{ width: '100%', borderRadius: 6, border: '1px solid var(--line)', display: 'block' }}
             />
           </div>
 
           {/* Fig. 2 */}
-          <div style={{ background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 8, padding: '16px 20px' }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 8, padding: '16px 20px' }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#2563eb', marginBottom: 4 }}>Fig. 2</div>
-            <div style={{ fontSize: 12, color: '#5a6675', marginBottom: 12, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 12, lineHeight: 1.5 }}>
               냉방·난방 시스템 미터 구성 — 냉각기(CM1/2/3) · V.K21 냉각 통합 · CHP(H1.ZE20) · 보일러(H1.W12)
             </div>
             <img
               src="/fig2_hvac_meters.png"
               alt="Fig.2 Central cooling and heating system meters"
-              style={{ width: '100%', borderRadius: 6, border: '1px solid #e7ebf1', display: 'block' }}
+              style={{ width: '100%', borderRadius: 6, border: '1px solid var(--line)', display: 'block' }}
             />
           </div>
 
@@ -905,9 +905,9 @@ function MChip({ id, kw, dimmed, warn }) {
   return (
     <span style={{
       fontFamily: 'monospace', fontSize: 10,
-      background: '#f4f6fa', border: `1px solid ${warn ? '#f8514966' : '#e2e7ef'}`,
+      background: 'var(--bg)', border: `1px solid ${warn ? '#f8514966' : 'var(--border)'}`,
       borderRadius: 4, padding: '2px 7px',
-      color: dimmed ? '#484f58' : warn ? '#f85149' : '#0550ae',
+      color: dimmed ? '#484f58' : warn ? '#f85149' : 'var(--code)',
       whiteSpace: 'nowrap', opacity: dimmed ? 0.6 : 1,
     }}>
       {id}
@@ -922,15 +922,15 @@ function MChip({ id, kw, dimmed, warn }) {
 
 function AggBlock({ label, meters, fallback, op, variable, varColor, desc, note }) {
   return (
-    <div style={{ background: '#ffffff', border: `1px solid ${varColor}33`, borderRadius: 8, padding: '12px 14px' }}>
+    <div style={{ background: 'var(--surface)', border: `1px solid ${varColor}33`, borderRadius: 8, padding: '12px 14px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 12, color: '#5a6675', fontWeight: 600, minWidth: 120 }}>{label}</span>
-        <span style={{ fontSize: 11, background: '#e7ebf1', color: '#d29922', borderRadius: 4, padding: '1px 7px', fontWeight: 700 }}>
+        <span style={{ fontSize: 12, color: 'var(--text3)', fontWeight: 600, minWidth: 120 }}>{label}</span>
+        <span style={{ fontSize: 11, background: 'var(--line)', color: '#d29922', borderRadius: 4, padding: '1px 7px', fontWeight: 700 }}>
           {op}
         </span>
         <span style={{ color: '#484f58', fontSize: 16 }}>→</span>
         <VBadge name={variable} color={varColor} />
-        {desc && <span style={{ fontSize: 11, color: '#909aa8' }}>{desc}</span>}
+        {desc && <span style={{ fontSize: 11, color: 'var(--text4)' }}>{desc}</span>}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
         {meters.map(m => <MChip key={m.id} {...m} />)}
@@ -953,7 +953,7 @@ function AggBlock({ label, meters, fallback, op, variable, varColor, desc, note 
 function KpiLine({ children }) {
   return (
     <div style={{
-      background: '#f4f6fa', border: '1px solid #e7ebf1', borderRadius: 6,
+      background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 6,
       padding: '9px 14px', fontSize: 12,
       display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
     }}>
@@ -974,7 +974,7 @@ function AggVarNode({ varId, label, type, avgKw, color }) {
       <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#2563eb', margin: '3px 0' }}>{varId}</div>
       <div style={{ fontSize: 11, fontWeight: 700, color }}>{label}</div>
       {avgKw != null && (
-        <div style={{ fontSize: 10, color: avgKw < 0 ? '#3fb950' : '#5a6675', marginTop: 2 }}>
+        <div style={{ fontSize: 10, color: avgKw < 0 ? '#3fb950' : 'var(--text3)', marginTop: 2 }}>
           avg {avgKw > 0 ? '+' : ''}{avgKw} kW
         </div>
       )}
@@ -990,14 +990,14 @@ function KpiResultNode({ label, formula, value, color }) {
       borderRadius: 8, padding: '8px 16px', textAlign: 'center', minWidth: 150,
     }}>
       <div style={{ fontSize: 11, fontWeight: 700, color, marginBottom: 2 }}>{label}</div>
-      <div style={{ fontSize: 9, color: '#909aa8', fontFamily: 'monospace' }}>{formula}</div>
+      <div style={{ fontSize: 9, color: 'var(--text4)', fontFamily: 'monospace' }}>{formula}</div>
       {value && <div style={{ fontSize: 13, fontWeight: 800, color, marginTop: 3 }}>{value}</div>}
     </div>
   )
 }
 
 // ── 수평 합산 연결선 (여러 변수 → 하나의 KPI) ─────────────────────
-function JoinRow({ items, op = '+', color = '#e2e7ef' }) {
+function JoinRow({ items, op = '+', color = 'var(--border)' }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
       {items.map((item, i) => (
@@ -1065,9 +1065,9 @@ function PowerAggregationView() {
         </div>
 
         {/* KPI 행 */}
-        <FlowArrow color="#e2e7ef" label="grid + pv + chp" h={28} />
+        <FlowArrow color="var(--border)" label="grid + pv + chp" h={28} />
         <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
-          <KpiResultNode label="총 공급" formula="grid_P + pv_P + chp_P" color="#1b2433" />
+          <KpiResultNode label="총 공급" formula="grid_P + pv_P + chp_P" color="var(--text)" />
           <KpiResultNode label="자급률" formula="(pv + chp) ÷ 총공급" value="avg 39.6%" color={ROLE_COLOR.production} />
         </div>
       </div>
@@ -1089,16 +1089,16 @@ function PowerAggregationView() {
           {/* cool_output_P 열 */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-              <NodeGroup color="#0550ae" title="중앙 냉각기 출력"
+              <NodeGroup color="var(--code)" title="중앙 냉각기 출력"
                 nodes={meterNodes([{id:'V.K21',avgKw:54}], 'distribution', 'cooling')} />
               <div style={{ fontSize: 9, color: '#f85149' }}>⚠ 센서 반복 고장 → H1.K11+K12+K14+K16 재구성</div>
             </div>
-            <FlowArrow color="#0550ae" label="직접 측정" />
-            <AggVarNode varId="cool_output_P" label="냉수 출력 (열량)" type="cooling" avgKw={54} color="#0550ae" />
+            <FlowArrow color="var(--code)" label="직접 측정" />
+            <AggVarNode varId="cool_output_P" label="냉수 출력 (열량)" type="cooling" avgKw={54} color="var(--code)" />
           </div>
         </div>
 
-        <FlowArrow color="#e2e7ef" label="output ÷ elec" h={28} />
+        <FlowArrow color="var(--border)" label="output ÷ elec" h={28} />
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <KpiResultNode label="COP (성능계수)" formula="cool_output_P ÷ cool_elec_P" value="중앙값 2.06" color="#a371f7" />
         </div>
@@ -1127,7 +1127,7 @@ function PowerAggregationView() {
           </div>
         </div>
 
-        <FlowArrow color="#e2e7ef" label="total − chp_heat" h={28} />
+        <FlowArrow color="var(--border)" label="total − chp_heat" h={28} />
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <KpiResultNode label="보일러 기여 (추정)" formula="heat_total_P − chp_heat_P" value="≈ 157 kW (별도 계량 없음)" color="#d29922" />
         </div>
@@ -1168,13 +1168,13 @@ export default function TopologyPanel() {
   const totalProduce  = METER_CATALOG.filter(m => m.role === 'production').length
 
   return (
-    <div style={{ background: '#f4f6fa', minHeight: '100%', padding: 20, overflow: 'auto', color: '#1b2433' }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100%', padding: 20, overflow: 'auto', color: 'var(--text)' }}>
       <InjectStyles />
 
       {/* ── Header ── */}
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, color: '#1b2433' }}>계량기 토폴로지</div>
-        <div style={{ fontSize: 13, color: '#5a6675', marginTop: 4 }}>
+        <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>계량기 토폴로지</div>
+        <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 4 }}>
           81개 계량기 · 4개 건물 + 부지 · Honda R&D Europe (Offenbach am Main)
           <span style={{ marginLeft: 8, fontSize: 11, color: '#484f58' }}>
             출처: Gruner et al. Scientific Data 2025
@@ -1187,9 +1187,9 @@ export default function TopologyPanel() {
         {[['topology', '🔌 토폴로지'], ['aggregation', '➕ 전력 집계 구조']].map(([v, l]) => (
           <button key={v} onClick={() => setView(v)} style={{
             padding: '7px 16px', borderRadius: 6, border: '1px solid',
-            borderColor: view === v ? '#2563eb' : '#e7ebf1',
+            borderColor: view === v ? '#2563eb' : 'var(--line)',
             background:  view === v ? '#2563eb22' : 'transparent',
-            color:       view === v ? '#2563eb' : '#5a6675',
+            color:       view === v ? '#2563eb' : 'var(--text3)',
             fontSize: 13, cursor: 'pointer', fontWeight: view === v ? 600 : 400,
             transition: 'all .15s',
           }}>{l}</button>
@@ -1206,7 +1206,7 @@ export default function TopologyPanel() {
       {/* ── Summary Cards (전체 탭) ── */}
       {activeBuilding === 'all' && (
         <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-          <SummaryCard value={81}            label="총 계량기 수"       sub="전체 건물 합계"   color="#1b2433" />
+          <SummaryCard value={81}            label="총 계량기 수"       sub="전체 건물 합계"   color="var(--text)" />
           <SummaryCard value={totalElec}     label="전기 미터 (Z/ZE)"   sub="electricity"    color="#2563eb" />
           <SummaryCard value={totalHeatCool} label="열/냉각 미터 (K/W)" sub="heat + cooling" color="#d29922" />
           <SummaryCard value={totalProduce}  label="생산 미터"           sub="PV + CHP"       color="#3fb950" />
@@ -1221,9 +1221,9 @@ export default function TopologyPanel() {
             onClick={() => { setActiveBuilding(tab.id); setSearch(''); setRoleFilter('all'); setTypeFilter('all') }}
             style={{
               padding: '6px 14px', borderRadius: 6, border: '1px solid',
-              borderColor: activeBuilding === tab.id ? '#2563eb' : '#e7ebf1',
+              borderColor: activeBuilding === tab.id ? '#2563eb' : 'var(--line)',
               background:  activeBuilding === tab.id ? '#2563eb22' : 'transparent',
-              color:       activeBuilding === tab.id ? '#2563eb' : '#5a6675',
+              color:       activeBuilding === tab.id ? '#2563eb' : 'var(--text3)',
               fontSize: 13, cursor: 'pointer',
               fontWeight: activeBuilding === tab.id ? 600 : 400,
               transition: 'all .15s',
@@ -1237,13 +1237,13 @@ export default function TopologyPanel() {
 
       {/* ── Energy Flow Diagram ── */}
       <div style={{
-        background: '#ffffff', border: '1px solid #e7ebf1',
+        background: 'var(--surface)', border: '1px solid var(--line)',
         borderRadius: 8, padding: '14px 16px', marginBottom: 20,
       }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: '#1b2433', marginBottom: 12 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>
           에너지 흐름
           {activeBuilding !== 'all' && (
-            <span style={{ fontSize: 11, color: '#5a6675', marginLeft: 6 }}>({activeBuilding})</span>
+            <span style={{ fontSize: 11, color: 'var(--text3)', marginLeft: 6 }}>({activeBuilding})</span>
           )}
         </div>
         <FlowDiagram building={activeBuilding} />
@@ -1254,12 +1254,12 @@ export default function TopologyPanel() {
 
         {/* Left */}
         <div style={{ width: 260, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 8, padding: '14px 16px' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#1b2433', marginBottom: 12 }}>역할 분포</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 8, padding: '14px 16px' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>역할 분포</div>
             <RoleBreakdown meters={filteredMeters} />
           </div>
-          <div style={{ background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 8, padding: '14px 16px' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#1b2433', marginBottom: 10 }}>범례</div>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 8, padding: '14px 16px' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 10 }}>범례</div>
             <RoleLegend />
           </div>
         </div>
@@ -1274,12 +1274,12 @@ export default function TopologyPanel() {
               onChange={e => setSearch(e.target.value)}
               style={{
                 flex: 1, minWidth: 180, padding: '7px 12px',
-                background: '#ffffff', border: '1px solid #e7ebf1',
-                borderRadius: 6, color: '#1b2433', fontSize: 13, outline: 'none',
+                background: 'var(--surface)', border: '1px solid var(--line)',
+                borderRadius: 6, color: 'var(--text)', fontSize: 13, outline: 'none',
               }}
             />
             <select value={roleFilter} onChange={e => setRoleFilter(e.target.value)}
-              style={{ padding: '7px 10px', background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 6, color: '#1b2433', fontSize: 13, cursor: 'pointer', outline: 'none' }}>
+              style={{ padding: '7px 10px', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 6, color: 'var(--text)', fontSize: 13, cursor: 'pointer', outline: 'none' }}>
               <option value="all">모든 역할</option>
               <option value="production">생산</option>
               <option value="consumption">소비</option>
@@ -1287,29 +1287,29 @@ export default function TopologyPanel() {
               <option value="grid">계통</option>
             </select>
             <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
-              style={{ padding: '7px 10px', background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 6, color: '#1b2433', fontSize: 13, cursor: 'pointer', outline: 'none' }}>
+              style={{ padding: '7px 10px', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 6, color: 'var(--text)', fontSize: 13, cursor: 'pointer', outline: 'none' }}>
               <option value="all">모든 유형</option>
               <option value="electricity">전기</option>
               <option value="heat">열</option>
               <option value="cooling">냉각</option>
               <option value="weather">기상</option>
             </select>
-            <span style={{ fontSize: 12, color: '#5a6675', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 12, color: 'var(--text3)', whiteSpace: 'nowrap' }}>
               {filteredMeters.length}개 표시
             </span>
           </div>
 
-          <div style={{ background: '#ffffff', border: '1px solid #e7ebf1', borderRadius: 8, overflow: 'hidden' }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
-                  <tr style={{ background: '#f4f6fa', borderBottom: '1px solid #e7ebf1' }}>
-                    <th style={{ padding: '10px 10px', textAlign: 'left',   color: '#5a6675', fontWeight: 600, fontSize: 12, whiteSpace: 'nowrap' }}>ID</th>
-                    <th style={{ padding: '10px 6px',  textAlign: 'center', color: '#5a6675', fontWeight: 600, fontSize: 12 }}>유형</th>
-                    <th style={{ padding: '10px 6px',  textAlign: 'center', color: '#5a6675', fontWeight: 600, fontSize: 12, whiteSpace: 'nowrap' }}>역할</th>
-                    <th style={{ padding: '10px 10px', textAlign: 'left',   color: '#5a6675', fontWeight: 600, fontSize: 12 }}>라벨</th>
-                    <th style={{ padding: '10px 10px', textAlign: 'right',  color: '#5a6675', fontWeight: 600, fontSize: 12, whiteSpace: 'nowrap' }}>평균 전력</th>
-                    <th style={{ padding: '10px 10px', textAlign: 'left',   color: '#5a6675', fontWeight: 600, fontSize: 12 }}>태그</th>
+                  <tr style={{ background: 'var(--bg)', borderBottom: '1px solid var(--line)' }}>
+                    <th style={{ padding: '10px 10px', textAlign: 'left',   color: 'var(--text3)', fontWeight: 600, fontSize: 12, whiteSpace: 'nowrap' }}>ID</th>
+                    <th style={{ padding: '10px 6px',  textAlign: 'center', color: 'var(--text3)', fontWeight: 600, fontSize: 12 }}>유형</th>
+                    <th style={{ padding: '10px 6px',  textAlign: 'center', color: 'var(--text3)', fontWeight: 600, fontSize: 12, whiteSpace: 'nowrap' }}>역할</th>
+                    <th style={{ padding: '10px 10px', textAlign: 'left',   color: 'var(--text3)', fontWeight: 600, fontSize: 12 }}>라벨</th>
+                    <th style={{ padding: '10px 10px', textAlign: 'right',  color: 'var(--text3)', fontWeight: 600, fontSize: 12, whiteSpace: 'nowrap' }}>평균 전력</th>
+                    <th style={{ padding: '10px 10px', textAlign: 'left',   color: 'var(--text3)', fontWeight: 600, fontSize: 12 }}>태그</th>
                   </tr>
                 </thead>
                 <tbody>

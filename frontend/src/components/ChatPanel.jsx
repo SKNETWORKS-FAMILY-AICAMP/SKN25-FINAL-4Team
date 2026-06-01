@@ -170,8 +170,8 @@ export default function ChatPanel({ initialSessionId = null, initialMessages = n
       {/* 현재 설비 컨텍스트 칩 — "이 설비 진단해줘" 가능 */}
       {!readOnly && context?.equipmentName && (
         <div style={s.ctxBar}>
-          📍 현재 설비: <b style={{ color: '#1b2433' }}>{context.equipmentName}</b>
-          <span style={{ color: '#909aa8' }}> — "진단해줘 / 작업지시 만들어줘"에 자동 적용</span>
+          📍 현재 설비: <b style={{ color: 'var(--text)' }}>{context.equipmentName}</b>
+          <span style={{ color: 'var(--text4)' }}> — "진단해줘 / 작업지시 만들어줘"에 자동 적용</span>
           {onClearContext && (
             <button onClick={onClearContext} style={s.ctxClear} title="컨텍스트 해제">✕</button>
           )}
@@ -195,7 +195,7 @@ export default function ChatPanel({ initialSessionId = null, initialMessages = n
                     {group.questions.map(q => (
                       <button key={q} style={s.exBtn}
                         onMouseEnter={e => e.currentTarget.style.borderColor = group.color}
-                        onMouseLeave={e => e.currentTarget.style.borderColor = '#e2e7ef'}
+                        onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
                         onClick={() => submit(q)}>{q}</button>
                     ))}
                   </div>
@@ -281,76 +281,76 @@ export default function ChatPanel({ initialSessionId = null, initialMessages = n
 }
 
 const MD_COMPONENTS = {
-  h1: ({ children }) => <div style={{ fontSize: 17, fontWeight: 700, color: '#1b2433', borderBottom: '1px solid #e2e7ef', paddingBottom: 6, marginTop: 16, marginBottom: 10 }}>{children}</div>,
-  h2: ({ children }) => <div style={{ fontSize: 15, fontWeight: 700, color: '#1b2433', borderBottom: '1px solid #e7ebf1', paddingBottom: 4, marginTop: 14, marginBottom: 8 }}>{children}</div>,
+  h1: ({ children }) => <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', borderBottom: '1px solid var(--border)', paddingBottom: 6, marginTop: 16, marginBottom: 10 }}>{children}</div>,
+  h2: ({ children }) => <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', borderBottom: '1px solid var(--line)', paddingBottom: 4, marginTop: 14, marginBottom: 8 }}>{children}</div>,
   h3: ({ children }) => <div style={{ fontSize: 13, fontWeight: 700, color: '#2563eb', marginTop: 12, marginBottom: 6 }}>{children}</div>,
   p:  ({ children }) => {
     const textContent = Array.isArray(children) ? children.join('') : String(children);
     if (textContent.includes('[CHART:FORECAST]')) {
        return (
          <>
-           <p style={{ margin: '0 0 10px', lineHeight: 1.75, color: '#1b2433' }}>
+           <p style={{ margin: '0 0 10px', lineHeight: 1.75, color: 'var(--text)' }}>
              {textContent.replace('[CHART:FORECAST]', '')}
            </p>
-           <div style={{ marginTop: 10, marginBottom: 10, border: '1px solid #e2e7ef', borderRadius: 8, padding: 10, background: '#f4f6fa', height: 450, overflow: 'hidden' }}>
+           <div style={{ marginTop: 10, marginBottom: 10, border: '1px solid var(--border)', borderRadius: 8, padding: 10, background: 'var(--bg)', height: 450, overflow: 'hidden' }}>
              <ForecastPanel />
            </div>
          </>
        )
     }
-    return <p style={{ margin: '0 0 10px', lineHeight: 1.75, color: '#1b2433' }}>{children}</p>
+    return <p style={{ margin: '0 0 10px', lineHeight: 1.75, color: 'var(--text)' }}>{children}</p>
   },
-  ul: ({ children }) => <ul style={{ margin: '4px 0 10px', paddingLeft: 20, listStyleType: 'disc', color: '#1b2433' }}>{children}</ul>,
-  ol: ({ children }) => <ol style={{ margin: '4px 0 10px', paddingLeft: 20, listStyleType: 'decimal', color: '#1b2433' }}>{children}</ol>,
-  li: ({ children }) => <li style={{ marginBottom: 4, lineHeight: 1.7, color: '#1b2433' }}>{children}</li>,
-  strong: ({ children }) => <strong style={{ fontWeight: 700, color: '#0f1620' }}>{children}</strong>,
+  ul: ({ children }) => <ul style={{ margin: '4px 0 10px', paddingLeft: 20, listStyleType: 'disc', color: 'var(--text)' }}>{children}</ul>,
+  ol: ({ children }) => <ol style={{ margin: '4px 0 10px', paddingLeft: 20, listStyleType: 'decimal', color: 'var(--text)' }}>{children}</ol>,
+  li: ({ children }) => <li style={{ marginBottom: 4, lineHeight: 1.7, color: 'var(--text)' }}>{children}</li>,
+  strong: ({ children }) => <strong style={{ fontWeight: 700, color: 'var(--text-strong)' }}>{children}</strong>,
   em:     ({ children }) => <em     style={{ fontStyle: 'italic', color: '#8250df' }}>{children}</em>,
-  hr: () => <hr style={{ border: 'none', borderTop: '1px solid #e2e7ef', margin: '12px 0' }} />,
+  hr: () => <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '12px 0' }} />,
   blockquote: ({ children }) => (
-    <blockquote style={{ borderLeft: '3px solid #2563eb', paddingLeft: 12, margin: '8px 0', color: '#5a6675', fontStyle: 'italic' }}>
+    <blockquote style={{ borderLeft: '3px solid #2563eb', paddingLeft: 12, margin: '8px 0', color: 'var(--text3)', fontStyle: 'italic' }}>
       {children}
     </blockquote>
   ),
   code: ({ inline, children }) => inline
-    ? <code style={{ background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 4, padding: '1px 6px', fontSize: 12, color: '#0550ae', fontFamily: 'monospace' }}>{children}</code>
-    : <pre style={{ background: '#f4f6fa', border: '1px solid #e7ebf1', borderRadius: 8, padding: '12px 14px', overflowX: 'auto', marginBottom: 10 }}>
-        <code style={{ fontSize: 12, color: '#1b2433', fontFamily: 'monospace', whiteSpace: 'pre' }}>{children}</code>
+    ? <code style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 4, padding: '1px 6px', fontSize: 12, color: 'var(--code)', fontFamily: 'monospace' }}>{children}</code>
+    : <pre style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 8, padding: '12px 14px', overflowX: 'auto', marginBottom: 10 }}>
+        <code style={{ fontSize: 12, color: 'var(--text)', fontFamily: 'monospace', whiteSpace: 'pre' }}>{children}</code>
       </pre>,
   table: ({ children }) => <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, marginBottom: 10 }}>{children}</table>,
-  th: ({ children }) => <th style={{ padding: '6px 10px', background: '#e7ebf1', color: '#1b2433', fontWeight: 600, textAlign: 'left', borderBottom: '1px solid #e2e7ef' }}>{children}</th>,
-  td: ({ children }) => <td style={{ padding: '5px 10px', color: '#33404f', borderBottom: '1px solid #e7ebf1' }}>{children}</td>,
+  th: ({ children }) => <th style={{ padding: '6px 10px', background: 'var(--line)', color: 'var(--text)', fontWeight: 600, textAlign: 'left', borderBottom: '1px solid var(--border)' }}>{children}</th>,
+  td: ({ children }) => <td style={{ padding: '5px 10px', color: 'var(--text2)', borderBottom: '1px solid var(--line)' }}>{children}</td>,
 }
 
 const s = {
   wrap:       { display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' },
-  chatHeader: { padding: '14px 20px 12px', borderBottom: '1px solid #e7ebf1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 },
-  chatTitle:  { fontWeight: 600, fontSize: 15, color: '#1b2433' },
-  clearBtn:   { background: 'none', border: '1px solid #e2e7ef', borderRadius: 6, color: '#5a6675', fontSize: 12, padding: '4px 10px', cursor: 'pointer' },
+  chatHeader: { padding: '14px 20px 12px', borderBottom: '1px solid var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 },
+  chatTitle:  { fontWeight: 600, fontSize: 15, color: 'var(--text)' },
+  clearBtn:   { background: 'none', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text3)', fontSize: 12, padding: '4px 10px', cursor: 'pointer' },
   ctxBar:     { display: 'flex', alignItems: 'center', gap: 4, padding: '7px 16px', background: '#39c5cf12', borderBottom: '1px solid #39c5cf33', fontSize: 11, color: '#39c5cf', flexShrink: 0 },
-  ctxClear:   { marginLeft: 'auto', background: 'none', border: 'none', color: '#5a6675', cursor: 'pointer', fontSize: 12, flexShrink: 0 },
+  ctxClear:   { marginLeft: 'auto', background: 'none', border: 'none', color: 'var(--text3)', cursor: 'pointer', fontSize: 12, flexShrink: 0 },
   messages:   { flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: 16 },
   empty:      { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, paddingTop: 40 },
   emptyIcon:  { fontSize: 44 },
-  emptyTitle: { fontSize: 18, fontWeight: 600, color: '#1b2433' },
-  emptyDesc:  { fontSize: 13, color: '#5a6675' },
+  emptyTitle: { fontSize: 18, fontWeight: 600, color: 'var(--text)' },
+  emptyDesc:  { fontSize: 13, color: 'var(--text3)' },
   quickGroups:{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 14, width: '100%', maxWidth: 640 },
   quickGroup: { display: 'flex', flexDirection: 'column', gap: 6 },
   quickCat:   { fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4, border: '1px solid', alignSelf: 'flex-start' },
   quickBtns:  { display: 'flex', flexWrap: 'wrap', gap: 6 },
-  exBtn:      { padding: '7px 13px', background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 8, color: '#5a6675', cursor: 'pointer', fontSize: 12, transition: 'border-color .15s' },
+  exBtn:      { padding: '7px 13px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text3)', cursor: 'pointer', fontSize: 12, transition: 'border-color .15s' },
   row:        { display: 'flex', gap: 10, alignItems: 'flex-start' },
-  avatar:     { width: 30, height: 30, borderRadius: '50%', background: '#e7ebf1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0, marginTop: 2 },
+  avatar:     { width: 30, height: 30, borderRadius: '50%', background: 'var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0, marginTop: 2 },
   bubble:     { maxWidth: '78%', padding: '12px 16px', borderRadius: 12, fontSize: 14, lineHeight: 1.7, position: 'relative' },
   userBubble: { background: '#2563eb', color: '#fff', borderBottomRightRadius: 4 },
-  aiBubble:   { background: '#ffffff', border: '1px solid #e2e7ef', borderBottomLeftRadius: 4 },
+  aiBubble:   { background: 'var(--surface)', border: '1px solid var(--border)', borderBottomLeftRadius: 4 },
   errorBubble:{ background: '#fee2e2', border: '1px solid #f85149', color: '#f85149' },
-  badge:      { display: 'inline-block', fontSize: 11, padding: '1px 7px', borderRadius: 4, color: '#f4f6fa', fontWeight: 700, marginBottom: 8 },
-  mdWrap:     { color: '#1b2433', lineHeight: 1.75, fontSize: 13 },
-  copyBtn:    { position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', color: '#909aa8', cursor: 'pointer', fontSize: 14, padding: '2px 4px', borderRadius: 4 },
+  badge:      { display: 'inline-block', fontSize: 11, padding: '1px 7px', borderRadius: 4, color: 'var(--bg)', fontWeight: 700, marginBottom: 8 },
+  mdWrap:     { color: 'var(--text)', lineHeight: 1.75, fontSize: 13 },
+  copyBtn:    { position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', color: 'var(--text4)', cursor: 'pointer', fontSize: 14, padding: '2px 4px', borderRadius: 4 },
   typing:     { display: 'flex', gap: 5, alignItems: 'center', height: 20, padding: '2px 0' },
   statusBox:  { display: 'flex', alignItems: 'center', gap: 10, minHeight: 24 },
-  statusText: { fontSize: 12, color: '#5a6675', fontStyle: 'italic', animation: 'fadeIn .3s ease' },
-  inputWrap:  { padding: '12px 20px 20px', borderTop: '1px solid #e7ebf1', display: 'flex', gap: 8, flexShrink: 0 },
-  input:      { flex: 1, padding: '10px 16px', background: '#ffffff', border: '1px solid #e2e7ef', borderRadius: 8, color: '#1b2433', fontSize: 14, outline: 'none' },
+  statusText: { fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', animation: 'fadeIn .3s ease' },
+  inputWrap:  { padding: '12px 20px 20px', borderTop: '1px solid var(--line)', display: 'flex', gap: 8, flexShrink: 0 },
+  input:      { flex: 1, padding: '10px 16px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', fontSize: 14, outline: 'none' },
   sendBtn:    { padding: '10px 20px', background: '#2563eb', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 14, minWidth: 64 },
 }
