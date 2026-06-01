@@ -65,7 +65,7 @@ PostgreSQL + TimescaleDB + pgvector
 > **안정화 설계** — 모든 동기 라우터를 `def`로 두어 FastAPI 스레드풀에서 병렬 처리(이벤트 루프 블록 방지),
 > DB 커넥션 풀(2~25)+반환 시 rollback, DDL 1회 실행(락 데드락 방지). 의도 분류는 키워드 룰 우선으로 LLM 호출 절감.
 
-> **팀 분담** — ML 모델(VMD-LSTM 예측, 잔차+IF 이상탐지)은 팀원 담당. 인터페이스 계약은 [docs/ML_INTERFACE.md](docs/ML_INTERFACE.md) 참고.
+> **팀 분담** — ML 모델(VMD-LSTM 예측, 잔차+IF 이상탐지)은 팀원 담당. 모델 교체용 인터페이스 계약 문서는 팀에 별도 공유.
 
 ---
 
@@ -206,8 +206,6 @@ npm run dev                      # http://localhost:5173
 
 ```
 SKN25-FINAL-4Team/
-├── docs/
-│   └── ML_INTERFACE.md                 # 팀 ML 모델 인터페이스 계약
 ├── backend/src/
 │   ├── agents/                         # LangGraph 멀티 에이전트
 │   │   ├── orchestrator.py             # 의도 분류(cms/anomaly/report/forecast/rag) + 라우팅
