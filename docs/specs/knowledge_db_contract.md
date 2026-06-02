@@ -2,22 +2,23 @@
 
 **Updated:** 2026-06-02
 **Status:** 기준 문서. 실제 AWS DDL, vector row 적재, Hermes MCP config 변경은 별도 승인/작업으로 수행한다.
-**Scope:** CMS 문서 기반 vector DB 기준, AWS PostgreSQL `pgvector` 준비, Graphify 기반 project graph와 MCP hook 운영 기준.
+**Scope:** CMS 문서 기반 vector DB 기준, AWS PostgreSQL `pgvector` 준비, `docs/specs` 전용 Graphify MCP hook 운영 기준.
 
 ## 1. 목적
 
-CMS agent/RAG/SQLLM/anomaly explanation이 같은 기준 문서를 사용하도록 source tier, chunking, metadata, retrieval policy를 고정한다. Graph DB server는 별도로 구축하지 않고, project graph는 Graphify artifact와 MCP hook 후보로 운영한다.
+CMS agent/RAG/SQLLM/anomaly explanation이 같은 기준 문서를 사용하도록 source tier, chunking, metadata, retrieval policy를 고정한다. Graph DB server는 별도로 구축하지 않는다. Graphify는 프로젝트 전체 도식화가 아니라 `docs/specs` contract set을 에이전트에게 MCP/CLI로 붙이는 좁은 context graph로 운영한다.
 
 ## 2. Source tier
 
 | Tier | Source | Vector 대상 | Graphify 대상 | 비고 |
 |---|---|---|---|---|
-| 0 | Nature DOI `10.1038/s41597-025-05186-3`, Honda RI PDF, Dryad DOI `10.5061/dryad.73n5tb363` | 예 | 요약/참조만 | 원문 데이터 source |
-| 1 | `README.md`, `docs/specs/*.md`, `docs/qa/*.md`, `docs/reference/source_inventory.md`, `docs/reference/domain_concepts.md` | 예 | 예 | active CMS 기준 |
-| 1 | `docs/ontology/ems.ttl`, `ems_shapes.ttl`, `competency_questions.md` | 예 | 예 | namespace는 legacy `ems`, meaning은 CMS metadata |
-| 1 | `src/cms/**`, `scripts/ontology/**`, `scripts/verify/**`, `tests/**` | 선택 | 예 | code graph/navigation |
-| 2 | HRI-EU `MonitoringDatasetAnalysis` selected files | 예 | 별도 후보 | meter grouping, issue template 보조 |
-| 2 | `_archive`의 원문 Table 2/3 일부 mapping | 제한 | archive graph 별도 | active claim 전 원문 재확인 |
+| 0 | Nature DOI `10.1038/s41597-025-05186-3`, Honda RI PDF, Dryad DOI `10.5061/dryad.73n5tb363` | 예 | 아니오 | 원문 데이터 source. 필요 fact는 `docs/specs`와 source inventory로 요약 반영 |
+| 1 | `docs/specs/*.md`, `docs/specs/diagrams/*.mmd`, `docs/specs/timestamp_policy_registry.example.csv` | 예 | 예 | Graphify MCP hook의 유일한 1차 범위 |
+| 1 | `README.md`, `docs/qa/*.md`, `docs/reference/*.md`, `docs/ontology/competency_questions.md` | 예 | 아니오 | vector/RAG에는 사용 가능하지만 Graphify MCP context에는 직접 넣지 않음 |
+| 1 | `docs/ontology/ems.ttl`, `ems_shapes.ttl` | 선택 | 아니오 | ontology helper/validation source. Graphify 대신 ontology tool/query로 확인 |
+| 1 | `src/cms/**`, `scripts/**`, `tests/**` | 아니오 | 아니오 | code graph/navigation 대상이 아님. 필요 시 별도 code inspection으로 확인 |
+| 2 | HRI-EU `MonitoringDatasetAnalysis` selected files | 예 | 아니오 | meter grouping, issue template 보조 |
+| 2 | `_archive`의 원문 Table 2/3 일부 mapping | 제한 | 아니오 | active claim 전 원문 재확인 |
 | 제외 | benchmark/model reports, notebooks, generated run folders, caches, `.env`, secrets | 아니오 | 아니오 | stale/민감/실험 결과 오염 방지 |
 
 ## 3. Vector DB 대상 문서
@@ -145,21 +146,30 @@ Embedding dimension은 모델 결정 후 고정한다. `intfloat/multilingual-e5
 
 ## 7. Graphify 운영 기준
 
-Graph DB server는 구축하지 않는다. Graphify artifact를 project navigation graph로 유지한다.
+Graph DB server는 구축하지 않는다. Graphify artifact는 `docs/specs` contract graph로만 유지한다. 목적은 RAG/Neo4j 대체용으로 에이전트가 active spec 간 관계를 빠르게 조회하게 하는 것이며, 프로젝트 폴더 전체나 code tree를 도식화하는 것이 아니다.
 
 권장 생성 방식:
 
 ```text
-active-tree mirror -> graphify update --no-cluster -> graphify-out/graph.json, graph_tree.html
+docs/specs mirror -> graphify update --no-cluster -> graphify-out/graph.json, graph_tree.html
+```
+
+포함:
+
+```text
+docs/specs/**/*.md
+docs/specs/**/*.mmd
+docs/specs/**/*.csv
 ```
 
 제외:
 
 ```text
-.git, .venv, .env, _archive, graphify-out, __pycache__, .pytest_cache, generated reports
+README.md, docs/qa, docs/reference, docs/ontology, src, scripts, tests,
+reports, .git, .venv, .env, _archive, graphify-out, __pycache__, .pytest_cache
 ```
 
-Graphify output은 candidate knowledge다. 중요한 claim은 `docs/specs`, `docs/qa`, `docs/reference`, `docs/ontology` 원본으로 재확인한다.
+Graphify output은 `docs/specs` 후보 knowledge다. 중요한 claim은 Graphify 결과가 아니라 해당 `docs/specs` 원본 파일과, 필요 시 `docs/qa`, `docs/reference`, `docs/ontology` 원본으로 재확인한다.
 
 ## 8. Graphify MCP hook 기준
 
@@ -197,7 +207,8 @@ hermes gateway restart
 | 계량기 관계 | ontology helper / TTL | vector chunk | 관계 추정 |
 | anomaly explanation | QA packet + ontology context | vector docs | 고장 확정 표현 |
 | source dataset 질문 | source inventory + Nature/Dryad provenance | vector chunks | benchmark 결과로 원문 대체 |
-| architecture 질문 | Graphify query/path | source file verification | generated graph 단독 확정 |
+| spec 관계/architecture contract 질문 | Graphify query/path over `docs/specs` | source file verification | generated graph 단독 확정 |
+| code/runtime 구조 질문 | source file inspection | tests/verification scripts | Graphify spec graph를 code truth로 사용 |
 
 ## 10. 검증
 
@@ -206,4 +217,13 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python scripts/verify/verify_skeleton_c
 
 test -f graphify-out/graph.json
 graphify query "CMS data boundary" --graph graphify-out/graph.json
+python - <<'PY'
+import json
+from pathlib import Path
+graph = json.loads(Path('graphify-out/graph.json').read_text(encoding='utf-8'))
+for item in graph.get('nodes', []) + graph.get('links', []):
+    source_file = item.get('source_file')
+    if source_file:
+        assert (Path('docs/specs') / source_file).exists(), source_file
+PY
 ```

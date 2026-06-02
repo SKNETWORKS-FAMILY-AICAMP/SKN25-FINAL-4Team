@@ -1,7 +1,7 @@
 # CMS Source Inventory
 
 **Updated:** 2026-06-02
-**Scope:** CMS ontology, vector DB 기준 문서, Graphify navigation에 반영할 source tier. Benchmark나 paper-model 실험 결과는 원본 데이터 이해에 필요한 경우를 제외하고 제외한다.
+**Scope:** CMS ontology와 vector DB 기준 문서에 반영할 source tier. Graphify MCP/CLI graph는 `docs/specs` 전용으로 별도 제한한다. Benchmark나 paper-model 실험 결과는 원본 데이터 이해에 필요한 경우를 제외하고 제외한다.
 
 ## 1. 기준 원칙
 

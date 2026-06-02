@@ -106,7 +106,7 @@ SKN25-FINAL-4Team/
 
 Folder-local `.hermes.md` navigation maps are not active project files. If local agents regenerate them, Git ignores them and they should not be treated as shared deliverables. `HERMES.md` is kept in `.gitignore` only as a legacy safety net.
 
-Project-root `images/` is not an active folder. `graphify-out/` is generated candidate navigation output and remains local/ignored; the synced wiki copy is kept under `/home/viowlet/wiki/graphify/skn25_cms/`.
+Project-root `images/` is not an active folder. `graphify-out/` is generated `docs/specs`-only candidate context for Graphify MCP/CLI and remains local/ignored; the synced wiki copy is kept under `/home/viowlet/wiki/graphify/skn25_cms/`.
 
 ---
 

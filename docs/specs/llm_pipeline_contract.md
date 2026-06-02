@@ -24,7 +24,7 @@
 | `replay_planning` | scope/risk/size 추정 | reasoning | pipeline/data contract | dry-run/scratch/approval plan |
 | `approval_review` | side-effect risk classification | high-reasoning | parent evidence, policy docs | approval recommendation only |
 | `source_dataset_qa` | Honda Nature/Dryad source 설명 | citation-aware | `source_inventory.md`, Nature/Dryad chunks | sourced answer |
-| `graph_navigation` | project structure relation 탐색 | tool-using model | Graphify MCP/CLI | candidate paths/nodes |
+| `spec_graph_navigation` | `docs/specs` contract relation 탐색 | tool-using model | Graphify MCP/CLI over `docs/specs` | candidate spec nodes/paths |
 
 ## 3. Prompt boundary
 
@@ -91,7 +91,8 @@ Return recommendation, risk_summary, missing_evidence, allowed_next_step.
 | Honda source fact | `source_inventory.md` + Tier 0 chunks | original DOI/PDF/Dryad recheck |
 | SQL schema | `database_schema.md` | reject unknown schema |
 | QA policy | `docs/qa/*` | `data_contract.md`, `cadence_policy.md` |
-| architecture | Graphify query/path | read source files |
+| spec contract architecture | Graphify query/path over `docs/specs` | read source files |
+| code/runtime structure | source file inspection | tests/verification scripts |
 
 ## 5. Prompt registry 후보
 
