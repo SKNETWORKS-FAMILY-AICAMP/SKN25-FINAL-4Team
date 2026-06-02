@@ -13,7 +13,7 @@ CMS agent/RAG/SQLLM/anomaly explanation이 같은 기준 문서를 사용하도�
 | Tier | Source | Vector 대상 | Graphify 대상 | 비고 |
 |---|---|---|---|---|
 | 0 | Nature DOI `10.1038/s41597-025-05186-3`, Honda RI PDF, Dryad DOI `10.5061/dryad.73n5tb363` | 예 | 아니오 | 원문 데이터 source. 필요 fact는 `docs/specs`와 source inventory로 요약 반영 |
-| 1 | `docs/specs/*.md`, `docs/specs/diagrams/*.mmd`, `docs/specs/timestamp_policy_registry.example.csv` | 예 | 예 | Graphify MCP hook의 유일한 1차 범위 |
+| 1 | `docs/specs/*.md`, `docs/specs/diagrams/*.mmd` | 예 | 예 | Graphify MCP hook의 유일한 1차 범위 |
 | 1 | `README.md`, `docs/qa/*.md`, `docs/reference/*.md`, `docs/ontology/competency_questions.md` | 예 | 아니오 | vector/RAG에는 사용 가능하지만 Graphify MCP context에는 직접 넣지 않음 |
 | 1 | `docs/ontology/cms.ttl`, `cms_shapes.ttl` | 선택 | 아니오 | ontology helper/validation source. Graphify 대신 ontology tool/query로 확인 |
 | 1 | `src/cms/**`, `scripts/**`, `tests/**` | 아니오 | 아니오 | code graph/navigation 대상이 아님. 필요 시 별도 code inspection으로 확인 |
@@ -159,7 +159,6 @@ docs/specs mirror -> graphify update --no-cluster -> graphify-out/graph.json + /
 ```text
 docs/specs/**/*.md
 docs/specs/**/*.mmd
-docs/specs/**/*.csv
 ```
 
 제외:

@@ -1,216 +1,6 @@
 {
   "nodes": [
     {
-      "id": "diagrams_mermaid_render_config_json",
-      "label": "mermaid_render_config.json",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L1"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_theme",
-      "label": "theme",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L2"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_htmllabels",
-      "label": "htmlLabels",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L3"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables",
-      "label": "themeVariables",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L4"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_background",
-      "label": "background",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L5"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_mainbkg",
-      "label": "mainBkg",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L6"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_primarycolor",
-      "label": "primaryColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L7"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_primarybordercolor",
-      "label": "primaryBorderColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L8"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_primarytextcolor",
-      "label": "primaryTextColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L9"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_secondarycolor",
-      "label": "secondaryColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L10"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_secondarybordercolor",
-      "label": "secondaryBorderColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L11"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_secondarytextcolor",
-      "label": "secondaryTextColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L12"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_tertiarycolor",
-      "label": "tertiaryColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L13"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_tertiarybordercolor",
-      "label": "tertiaryBorderColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L14"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_tertiarytextcolor",
-      "label": "tertiaryTextColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L15"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_clusterbkg",
-      "label": "clusterBkg",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L16"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_clusterborder",
-      "label": "clusterBorder",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L17"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_edgelabelbackground",
-      "label": "edgeLabelBackground",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L18"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_linecolor",
-      "label": "lineColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L19"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_themevariables_fontfamily",
-      "label": "fontFamily",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L20"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_flowchart",
-      "label": "flowchart",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L22"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_flowchart_htmllabels",
-      "label": "htmlLabels",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L23"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_flowchart_curve",
-      "label": "curve",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L24"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_sequence",
-      "label": "sequence",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L26"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_sequence_actorbkg",
-      "label": "actorBkg",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L27"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_sequence_actorborder",
-      "label": "actorBorder",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L28"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_sequence_actortextcolor",
-      "label": "actorTextColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L29"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_sequence_messagetextcolor",
-      "label": "messageTextColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L30"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_sequence_notebkgcolor",
-      "label": "noteBkgColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L31"
-    },
-    {
-      "id": "diagrams_mermaid_render_config_sequence_notebordercolor",
-      "label": "noteBorderColor",
-      "file_type": "code",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L32"
-    },
-    {
       "id": "ontology_schema_md",
       "label": "ontology_schema.md",
       "file_type": "document",
@@ -719,49 +509,49 @@
       "label": "code:text (README.md, docs/qa, docs/reference, docs/ontology, src, scri)",
       "file_type": "document",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L167"
+      "source_location": "L166"
     },
     {
       "id": "specs_knowledge_db_contract_8_graphify_mcp_hook_기준",
       "label": "8. Graphify MCP hook 기준",
       "file_type": "document",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L174"
+      "source_location": "L173"
     },
     {
       "id": "specs_knowledge_db_contract_codeblock_9",
       "label": "code:yaml (mcp_servers:)",
       "file_type": "document",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L184"
+      "source_location": "L183"
     },
     {
       "id": "specs_knowledge_db_contract_codeblock_10",
       "label": "code:bash (graphify --help | grep -i mcp)",
       "file_type": "document",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L195"
+      "source_location": "L194"
     },
     {
       "id": "specs_knowledge_db_contract_9_retrieval_policy",
       "label": "9. Retrieval policy",
       "file_type": "document",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L202"
+      "source_location": "L201"
     },
     {
       "id": "specs_knowledge_db_contract_10_검증",
       "label": "10. 검증",
       "file_type": "document",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L213"
+      "source_location": "L212"
     },
     {
       "id": "specs_knowledge_db_contract_codeblock_11",
       "label": "code:bash (PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python scripts/veri)",
       "file_type": "document",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L215"
+      "source_location": "L214"
     },
     {
       "id": "application_skeleton_md",
@@ -2063,267 +1853,6 @@
   "output_tokens": 0,
   "links": [
     {
-      "source": "diagrams_mermaid_render_config_json",
-      "target": "diagrams_mermaid_render_config_theme",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_json",
-      "target": "diagrams_mermaid_render_config_htmllabels",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L3",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_json",
-      "target": "diagrams_mermaid_render_config_themevariables",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L4",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_background",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L5",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_mainbkg",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L6",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_primarycolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L7",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_primarybordercolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L8",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_primarytextcolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L9",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_secondarycolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L10",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_secondarybordercolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L11",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_secondarytextcolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L12",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_tertiarycolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L13",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_tertiarybordercolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L14",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_tertiarytextcolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L15",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_clusterbkg",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L16",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_clusterborder",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L17",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_edgelabelbackground",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L18",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_linecolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L19",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_themevariables",
-      "target": "diagrams_mermaid_render_config_themevariables_fontfamily",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L20",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_json",
-      "target": "diagrams_mermaid_render_config_flowchart",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L22",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_flowchart",
-      "target": "diagrams_mermaid_render_config_flowchart_htmllabels",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L23",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_flowchart",
-      "target": "diagrams_mermaid_render_config_flowchart_curve",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L24",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_json",
-      "target": "diagrams_mermaid_render_config_sequence",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L26",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_sequence",
-      "target": "diagrams_mermaid_render_config_sequence_actorbkg",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L27",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_sequence",
-      "target": "diagrams_mermaid_render_config_sequence_actorborder",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L28",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_sequence",
-      "target": "diagrams_mermaid_render_config_sequence_actortextcolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L29",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_sequence",
-      "target": "diagrams_mermaid_render_config_sequence_messagetextcolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L30",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_sequence",
-      "target": "diagrams_mermaid_render_config_sequence_notebkgcolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L31",
-      "weight": 1.0
-    },
-    {
-      "source": "diagrams_mermaid_render_config_sequence",
-      "target": "diagrams_mermaid_render_config_sequence_notebordercolor",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "diagrams/mermaid_render_config.json",
-      "source_location": "L32",
-      "weight": 1.0
-    },
-    {
       "source": "ontology_schema_md",
       "target": "specs_ontology_schema_cms_ontology_schema_명세",
       "relation": "contains",
@@ -2941,7 +2470,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L167",
+      "source_location": "L166",
       "weight": 1.0
     },
     {
@@ -2950,7 +2479,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L174",
+      "source_location": "L173",
       "weight": 1.0
     },
     {
@@ -2959,7 +2488,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L184",
+      "source_location": "L183",
       "weight": 1.0
     },
     {
@@ -2968,7 +2497,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L195",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -2977,7 +2506,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L202",
+      "source_location": "L201",
       "weight": 1.0
     },
     {
@@ -2986,7 +2515,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L213",
+      "source_location": "L212",
       "weight": 1.0
     },
     {
@@ -2995,7 +2524,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "knowledge_db_contract.md",
-      "source_location": "L215",
+      "source_location": "L214",
       "weight": 1.0
     },
     {
