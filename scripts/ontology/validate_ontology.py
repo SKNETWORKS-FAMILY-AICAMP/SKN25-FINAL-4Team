@@ -23,12 +23,12 @@ except ImportError:  # pragma: no cover - exercised only when dependency is miss
     pyshacl_validate = None
 
 ROOT = Path(__file__).resolve().parents[2]
-TTL_PATH = ROOT / "docs/ontology/ems.ttl"
-PROTEGE_PATH = ROOT / "docs/ontology/ems_protege.owl"
-SHAPES_PATH = ROOT / "docs/ontology/ems_shapes.ttl"
+TTL_PATH = ROOT / "docs/ontology/cms.ttl"
+PROTEGE_PATH = ROOT / "docs/ontology/cms_protege.owl"
+SHAPES_PATH = ROOT / "docs/ontology/cms_shapes.ttl"
 
-EMS = Namespace("https://nousresearch.local/ems/ontology#")
-RES = Namespace("https://nousresearch.local/ems/resource/")
+CMS = Namespace("https://nousresearch.local/cms/ontology#")
+RES = Namespace("https://nousresearch.local/cms/resource/")
 
 EXPECTED_COUNTS = {
     "ttl_triples": 3006,
@@ -155,7 +155,7 @@ def labels(graph: Graph, resources: Iterable[URIRef]) -> set[str]:
 
 
 def local_names(graph: Graph, rdf_type: URIRef) -> set[str]:
-    prefix = str(EMS)
+    prefix = str(CMS)
     return {
         str(subject).removeprefix(prefix)
         for subject in graph.subjects(RDF.type, rdf_type)
@@ -185,18 +185,18 @@ def validate_counts(ttl_graph: Graph, protege_graph: Graph) -> list[ValidationRe
     check_count(results, "classes", EXPECTED_COUNTS["classes"], len(local_names(ttl_graph, OWL.Class)))
     check_count(results, "object_properties", EXPECTED_COUNTS["object_properties"], len(local_names(ttl_graph, OWL.ObjectProperty)))
     check_count(results, "data_properties", EXPECTED_COUNTS["data_properties"], len(local_names(ttl_graph, OWL.DatatypeProperty)))
-    check_count(results, "meters", EXPECTED_COUNTS["meters"], len(unique_subjects(ttl_graph, RDF.type, EMS.Meter)))
-    check_count(results, "electricity_meters", EXPECTED_COUNTS["electricity_meters"], len(unique_subjects(ttl_graph, RDF.type, EMS.ElectricityMeter)))
-    check_count(results, "thermal_meters", EXPECTED_COUNTS["thermal_meters"], len(unique_subjects(ttl_graph, RDF.type, EMS.ThermalMeter)))
-    check_count(results, "weather_meters", EXPECTED_COUNTS["weather_meters"], len(unique_subjects(ttl_graph, RDF.type, EMS.WeatherMeter)))
-    check_count(results, "equipment_groups", EXPECTED_COUNTS["equipment_groups"], len(unique_subjects(ttl_graph, RDF.type, EMS.EquipmentGroup)))
-    check_count(results, "buildings", EXPECTED_COUNTS["buildings"], len(unique_subjects(ttl_graph, RDF.type, EMS.Building)))
-    check_count(results, "meter_roles", EXPECTED_COUNTS["meter_roles"], len(unique_subjects(ttl_graph, RDF.type, EMS.MeterRole)))
-    check_count(results, "redundancy_pairs", EXPECTED_COUNTS["redundancy_pairs"], len(unique_subjects(ttl_graph, RDF.type, EMS.RedundancyPair)))
-    check_count(results, "visualization_views", EXPECTED_COUNTS["visualization_views"], len(unique_subjects(ttl_graph, RDF.type, EMS.VisualizationView)))
-    check_count(results, "metadata_documents", EXPECTED_COUNTS["metadata_documents"], len(unique_subjects(ttl_graph, RDF.type, EMS.MetadataDocument)))
-    check_count(results, "hardware_models", EXPECTED_COUNTS["hardware_models"], len(unique_subjects(ttl_graph, RDF.type, EMS.HardwareModel)))
-    check_count(results, "hardware_assignments", EXPECTED_COUNTS["hardware_assignments"], len(list(ttl_graph.triples((None, EMS.hasHardwareModel, None)))))
+    check_count(results, "meters", EXPECTED_COUNTS["meters"], len(unique_subjects(ttl_graph, RDF.type, CMS.Meter)))
+    check_count(results, "electricity_meters", EXPECTED_COUNTS["electricity_meters"], len(unique_subjects(ttl_graph, RDF.type, CMS.ElectricityMeter)))
+    check_count(results, "thermal_meters", EXPECTED_COUNTS["thermal_meters"], len(unique_subjects(ttl_graph, RDF.type, CMS.ThermalMeter)))
+    check_count(results, "weather_meters", EXPECTED_COUNTS["weather_meters"], len(unique_subjects(ttl_graph, RDF.type, CMS.WeatherMeter)))
+    check_count(results, "equipment_groups", EXPECTED_COUNTS["equipment_groups"], len(unique_subjects(ttl_graph, RDF.type, CMS.EquipmentGroup)))
+    check_count(results, "buildings", EXPECTED_COUNTS["buildings"], len(unique_subjects(ttl_graph, RDF.type, CMS.Building)))
+    check_count(results, "meter_roles", EXPECTED_COUNTS["meter_roles"], len(unique_subjects(ttl_graph, RDF.type, CMS.MeterRole)))
+    check_count(results, "redundancy_pairs", EXPECTED_COUNTS["redundancy_pairs"], len(unique_subjects(ttl_graph, RDF.type, CMS.RedundancyPair)))
+    check_count(results, "visualization_views", EXPECTED_COUNTS["visualization_views"], len(unique_subjects(ttl_graph, RDF.type, CMS.VisualizationView)))
+    check_count(results, "metadata_documents", EXPECTED_COUNTS["metadata_documents"], len(unique_subjects(ttl_graph, RDF.type, CMS.MetadataDocument)))
+    check_count(results, "hardware_models", EXPECTED_COUNTS["hardware_models"], len(unique_subjects(ttl_graph, RDF.type, CMS.HardwareModel)))
+    check_count(results, "hardware_assignments", EXPECTED_COUNTS["hardware_assignments"], len(list(ttl_graph.triples((None, CMS.hasHardwareModel, None)))))
     return results
 
 
@@ -210,7 +210,7 @@ def validate_schema_declarations(graph: Graph) -> list[ValidationResult]:
 
 def validate_meter_completeness(graph: Graph) -> list[ValidationResult]:
     results: list[ValidationResult] = []
-    meters = unique_subjects(graph, RDF.type, EMS.Meter)
+    meters = unique_subjects(graph, RDF.type, CMS.Meter)
 
     missing_group = []
     missing_building = []
@@ -226,14 +226,14 @@ def validate_meter_completeness(graph: Graph) -> list[ValidationResult]:
     multi_role = []
 
     for meter in sorted(meters):
-        groups = list(graph.objects(meter, EMS.belongsToGroup))
-        buildings = list(graph.objects(meter, EMS.locatedInBuilding))
-        roles = list(graph.objects(meter, EMS.hasRole))
-        domains = list(graph.objects(meter, EMS.meterDomain))
-        urns = list(graph.objects(meter, EMS.meterUrn))
-        notes = list(graph.objects(meter, EMS.noteFile))
-        signs = list(graph.objects(meter, EMS.signConvention))
-        priorities = list(graph.objects(meter, EMS.anomalyPriority))
+        groups = list(graph.objects(meter, CMS.belongsToGroup))
+        buildings = list(graph.objects(meter, CMS.locatedInBuilding))
+        roles = list(graph.objects(meter, CMS.hasRole))
+        domains = list(graph.objects(meter, CMS.meterDomain))
+        urns = list(graph.objects(meter, CMS.meterUrn))
+        notes = list(graph.objects(meter, CMS.noteFile))
+        signs = list(graph.objects(meter, CMS.signConvention))
+        priorities = list(graph.objects(meter, CMS.anomalyPriority))
 
         if not groups:
             missing_group.append(meter)
@@ -274,8 +274,8 @@ def validate_meter_completeness(graph: Graph) -> list[ValidationResult]:
 
 def validate_redundancy(graph: Graph) -> list[ValidationResult]:
     results: list[ValidationResult] = []
-    pairs = unique_subjects(graph, RDF.type, EMS.RedundancyPair)
-    meters = unique_subjects(graph, RDF.type, EMS.Meter)
+    pairs = unique_subjects(graph, RDF.type, CMS.RedundancyPair)
+    meters = unique_subjects(graph, RDF.type, CMS.Meter)
 
     missing_primary = []
     missing_redundant = []
@@ -285,9 +285,9 @@ def validate_redundancy(graph: Graph) -> list[ValidationResult]:
     missing_reverse_relation = []
 
     for pair in sorted(pairs):
-        primary_values = unique_objects(graph, pair, EMS.hasPrimaryMeter)
-        redundant_values = unique_objects(graph, pair, EMS.hasRedundantMeter)
-        group_values = unique_objects(graph, pair, EMS.hasGroup)
+        primary_values = unique_objects(graph, pair, CMS.hasPrimaryMeter)
+        redundant_values = unique_objects(graph, pair, CMS.hasRedundantMeter)
+        group_values = unique_objects(graph, pair, CMS.hasGroup)
 
         if len(primary_values) != 1:
             missing_primary.append(pair)
@@ -302,9 +302,9 @@ def validate_redundancy(graph: Graph) -> list[ValidationResult]:
         redundant = next(iter(redundant_values))
         if primary not in meters or redundant not in meters:
             non_meter_endpoint.append(pair)
-        if (primary, EMS.redundantWith, redundant) not in graph:
+        if (primary, CMS.redundantWith, redundant) not in graph:
             missing_forward_relation.append(pair)
-        if (redundant, EMS.redundantWith, primary) not in graph:
+        if (redundant, CMS.redundantWith, primary) not in graph:
             missing_reverse_relation.append(pair)
 
     check_count(results, "redundancy_pairs_missing_primary", 0, len(missing_primary))
@@ -313,7 +313,7 @@ def validate_redundancy(graph: Graph) -> list[ValidationResult]:
     check_count(results, "redundancy_pairs_with_non_meter_endpoint", 0, len(non_meter_endpoint))
     check_count(results, "redundancy_pairs_missing_forward_relation", 0, len(missing_forward_relation))
     check_count(results, "redundancy_pairs_missing_reverse_relation", 0, len(missing_reverse_relation))
-    check_count(results, "redundantWith_triples", 24, len(list(graph.triples((None, EMS.redundantWith, None)))))
+    check_count(results, "redundantWith_triples", 24, len(list(graph.triples((None, CMS.redundantWith, None)))))
     return results
 
 
@@ -325,7 +325,7 @@ def validate_analysis_invariants(graph: Graph) -> list[ValidationResult]:
     group_emission_lab = RES.group_emission_lab
 
     def meters_in_group(group: URIRef) -> set[URIRef]:
-        return {subject for subject in graph.subjects(EMS.belongsToGroup, group) if isinstance(subject, URIRef)}
+        return {subject for subject in graph.subjects(CMS.belongsToGroup, group) if isinstance(subject, URIRef)}
 
     server_power_meters = meters_in_group(group_server_power)
     central_cooling_meters = meters_in_group(group_central_cooling)
@@ -333,8 +333,8 @@ def validate_analysis_invariants(graph: Graph) -> list[ValidationResult]:
 
     server_power_pairs = {
         subject
-        for subject in graph.subjects(EMS.hasGroup, group_server_power)
-        if (subject, RDF.type, EMS.RedundancyPair) in graph
+        for subject in graph.subjects(CMS.hasGroup, group_server_power)
+        if (subject, RDF.type, CMS.RedundancyPair) in graph
     }
 
     check_count(results, "server_power_meters", EXPECTED_COUNTS["server_power_meters"], len(server_power_meters))
@@ -344,20 +344,20 @@ def validate_analysis_invariants(graph: Graph) -> list[ValidationResult]:
 
     h2_z64 = RES.meter_H2_Z64
     h2_ze64 = RES.meter_H2_ZE64
-    check_count(results, "h2_z64_exists", True, (h2_z64, RDF.type, EMS.Meter) in graph)
-    check_count(results, "h2_z64_group", {"server_power"}, labels(graph, graph.objects(h2_z64, EMS.belongsToGroup)))
-    check_count(results, "h2_z64_building", {"H2"}, labels(graph, graph.objects(h2_z64, EMS.locatedInBuilding)))
-    check_count(results, "h2_z64_role", {"consumption"}, labels(graph, graph.objects(h2_z64, EMS.hasRole)))
-    check_count(results, "h2_z64_sign_convention", {"positive_consumption_negative_quality_candidate"}, set(str(value) for value in graph.objects(h2_z64, EMS.signConvention)))
-    check_count(results, "h2_z64_anomaly_priority", {"2"}, set(str(value) for value in graph.objects(h2_z64, EMS.anomalyPriority)))
-    check_count(results, "h2_z64_redundant_with_h2_ze64", True, (h2_z64, EMS.redundantWith, h2_ze64) in graph)
-    check_count(results, "h2_ze64_redundant_with_h2_z64", True, (h2_ze64, EMS.redundantWith, h2_z64) in graph)
-    check_count(results, "h2_z64_has_all_canvas", True, (h2_z64, EMS.visualizedBy, RES.view_ems_meter_system_all) in graph)
-    check_count(results, "h2_z64_has_server_canvas", True, (h2_z64, EMS.visualizedBy, RES.view_focus_server_power) in graph)
-    check_count(results, "h2_z64_has_redundancy_canvas", True, (h2_z64, EMS.visualizedBy, RES.view_focus_redundancy) in graph)
-    check_count(results, "h2_z64_hardware_model", {"ABB-B24"}, labels(graph, graph.objects(h2_z64, EMS.hasHardwareModel)))
-    check_count(results, "h2_ze64_hardware_model", {"Janitza UMG 96 PA MID+"}, labels(graph, graph.objects(h2_ze64, EMS.hasHardwareModel)))
-    check_count(results, "weather_station_hardware_model", {"Lufft WS501-UMB"}, labels(graph, graph.objects(RES.meter_WeatherStation_Weather, EMS.hasHardwareModel)))
+    check_count(results, "h2_z64_exists", True, (h2_z64, RDF.type, CMS.Meter) in graph)
+    check_count(results, "h2_z64_group", {"server_power"}, labels(graph, graph.objects(h2_z64, CMS.belongsToGroup)))
+    check_count(results, "h2_z64_building", {"H2"}, labels(graph, graph.objects(h2_z64, CMS.locatedInBuilding)))
+    check_count(results, "h2_z64_role", {"consumption"}, labels(graph, graph.objects(h2_z64, CMS.hasRole)))
+    check_count(results, "h2_z64_sign_convention", {"positive_consumption_negative_quality_candidate"}, set(str(value) for value in graph.objects(h2_z64, CMS.signConvention)))
+    check_count(results, "h2_z64_anomaly_priority", {"2"}, set(str(value) for value in graph.objects(h2_z64, CMS.anomalyPriority)))
+    check_count(results, "h2_z64_redundant_with_h2_ze64", True, (h2_z64, CMS.redundantWith, h2_ze64) in graph)
+    check_count(results, "h2_ze64_redundant_with_h2_z64", True, (h2_ze64, CMS.redundantWith, h2_z64) in graph)
+    check_count(results, "h2_z64_has_all_canvas", True, (h2_z64, CMS.visualizedBy, RES.view_cms_meter_system_all) in graph)
+    check_count(results, "h2_z64_has_server_canvas", True, (h2_z64, CMS.visualizedBy, RES.view_focus_server_power) in graph)
+    check_count(results, "h2_z64_has_redundancy_canvas", True, (h2_z64, CMS.visualizedBy, RES.view_focus_redundancy) in graph)
+    check_count(results, "h2_z64_hardware_model", {"ABB-B24"}, labels(graph, graph.objects(h2_z64, CMS.hasHardwareModel)))
+    check_count(results, "h2_ze64_hardware_model", {"Janitza UMG 96 PA MID+"}, labels(graph, graph.objects(h2_ze64, CMS.hasHardwareModel)))
+    check_count(results, "weather_station_hardware_model", {"Lufft WS501-UMB"}, labels(graph, graph.objects(RES.meter_WeatherStation_Weather, CMS.hasHardwareModel)))
     return results
 
 
@@ -365,28 +365,28 @@ def validate_operational_mappings(graph: Graph) -> list[ValidationResult]:
     results: list[ValidationResult] = []
     group_visualized_by_triples = [
         subject
-        for subject, _, _ in graph.triples((None, EMS.visualizedBy, None))
-        if (subject, RDF.type, EMS.EquipmentGroup) in graph
+        for subject, _, _ in graph.triples((None, CMS.visualizedBy, None))
+        if (subject, RDF.type, CMS.EquipmentGroup) in graph
     ]
     role_sign_conventions = {
         str(label): str(sign)
-        for role in unique_subjects(graph, RDF.type, EMS.MeterRole)
+        for role in unique_subjects(graph, RDF.type, CMS.MeterRole)
         for label in graph.objects(role, RDFS.label)
-        for sign in graph.objects(role, EMS.signConvention)
+        for sign in graph.objects(role, CMS.signConvention)
     }
 
-    check_count(results, "sign_convention_triples", EXPECTED_COUNTS["sign_convention_triples"], len(list(graph.triples((None, EMS.signConvention, None)))))
-    check_count(results, "anomaly_priority_triples", EXPECTED_COUNTS["anomaly_priority_triples"], len(list(graph.triples((None, EMS.anomalyPriority, None)))))
-    check_count(results, "primary_view_triples", EXPECTED_COUNTS["primary_view_triples"], len(list(graph.triples((None, EMS.primaryView, None)))))
+    check_count(results, "sign_convention_triples", EXPECTED_COUNTS["sign_convention_triples"], len(list(graph.triples((None, CMS.signConvention, None)))))
+    check_count(results, "anomaly_priority_triples", EXPECTED_COUNTS["anomaly_priority_triples"], len(list(graph.triples((None, CMS.anomalyPriority, None)))))
+    check_count(results, "primary_view_triples", EXPECTED_COUNTS["primary_view_triples"], len(list(graph.triples((None, CMS.primaryView, None)))))
     check_count(results, "group_visualized_by_triples", EXPECTED_COUNTS["group_visualized_by_triples"], len(group_visualized_by_triples))
-    check_count(results, "equipment_layer_triples", EXPECTED_COUNTS["equipment_layer_triples"], len(list(graph.triples((None, EMS.equipmentLayer, None)))))
+    check_count(results, "equipment_layer_triples", EXPECTED_COUNTS["equipment_layer_triples"], len(list(graph.triples((None, CMS.equipmentLayer, None)))))
     check_count(results, "role_sign_conventions", EXPECTED_ROLE_SIGN_CONVENTIONS, role_sign_conventions)
-    check_count(results, "emission_lab_feed_layers", {"feed"}, set(str(value) for value in graph.objects(RES.meter_H1_Z15, EMS.equipmentLayer)))
-    check_count(results, "emission_lab_distribution_layers", {"distribution"}, set(str(value) for value in graph.objects(RES.meter_H1_Z17, EMS.equipmentLayer)))
-    check_count(results, "server_power_group_priority", {"2"}, set(str(value) for value in graph.objects(RES.group_server_power, EMS.anomalyPriority)))
-    check_count(results, "weather_station_group_priority", {"4"}, set(str(value) for value in graph.objects(RES.group_weather_station, EMS.anomalyPriority)))
-    check_count(results, "server_power_group_has_focus_view", True, (RES.group_server_power, EMS.visualizedBy, RES.view_focus_server_power) in graph)
-    check_count(results, "server_power_group_has_redundancy_view", True, (RES.group_server_power, EMS.visualizedBy, RES.view_focus_redundancy) in graph)
+    check_count(results, "emission_lab_feed_layers", {"feed"}, set(str(value) for value in graph.objects(RES.meter_H1_Z15, CMS.equipmentLayer)))
+    check_count(results, "emission_lab_distribution_layers", {"distribution"}, set(str(value) for value in graph.objects(RES.meter_H1_Z17, CMS.equipmentLayer)))
+    check_count(results, "server_power_group_priority", {"2"}, set(str(value) for value in graph.objects(RES.group_server_power, CMS.anomalyPriority)))
+    check_count(results, "weather_station_group_priority", {"4"}, set(str(value) for value in graph.objects(RES.group_weather_station, CMS.anomalyPriority)))
+    check_count(results, "server_power_group_has_focus_view", True, (RES.group_server_power, CMS.visualizedBy, RES.view_focus_server_power) in graph)
+    check_count(results, "server_power_group_has_redundancy_view", True, (RES.group_server_power, CMS.visualizedBy, RES.view_focus_redundancy) in graph)
     return results
 
 

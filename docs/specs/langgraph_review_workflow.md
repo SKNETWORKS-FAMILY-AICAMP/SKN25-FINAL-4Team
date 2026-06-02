@@ -9,7 +9,7 @@
 
 관련 문서:
 - Route policy: [`qa_report_chat_policy.md`](../qa/qa_report_chat_policy.md) (§6 evidence packet, §7 route table, §10 response requirements)
-- Routing diagram: [`diagrams/03_chat_routing.md`](diagrams/03_chat_routing.md) (`lg` node를 본 subgraph로 확장)
+- Routing diagram: [`diagrams/flow_04_app_pipeline.md`](diagrams/flow_04_app_pipeline.md), [`diagrams/sequence_04_app_pipeline.md`](diagrams/sequence_04_app_pipeline.md) (`LangGraph` branch가 비동기 review path로 분리됨)
 - Responsibility boundary: [`application_skeleton.md`](application_skeleton.md)
 - QA contract: [`anomaly_service_data_qa_contract.md`](../qa/anomaly_service_data_qa_contract.md)
 

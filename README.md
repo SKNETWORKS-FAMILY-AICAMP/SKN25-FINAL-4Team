@@ -85,7 +85,7 @@ SKN25-FINAL-4Team/
 │   ├── reference/          # domain and policy references
 │   └── ontology/           # RDF/OWL/SHACL ontology artifacts
 ├── reports/
-│   └── mermaid_20260601/  # active shareable Mermaid report package
+│   └── mermaid_20260601/  # retained historical Mermaid report package
 ├── scripts/
 │   ├── ontology/           # ontology generation, validation, query scripts
 │   ├── live/               # live/replay dry-run and QA latency smoke scripts
@@ -113,7 +113,7 @@ SKN25-FINAL-4Team/
 
 Folder-local `.hermes.md` navigation maps are not active project files. If local agents regenerate them, Git ignores them and they should not be treated as shared deliverables. `HERMES.md` is kept in `.gitignore` only as a legacy safety net.
 
-Project-root `images/` is not an active folder. `graphify-out/` is generated scratch output only; durable Graphify MCP/CLI candidate context is the `docs/specs`-only wiki copy under `/home/viowlet/wiki/graphify/skn25_cms/`.
+Project-root `images/` is not an active folder. `graphify-out/` is restored as the local specs-only Graphify context graph for future MCP/agent pipeline calls; `/home/viowlet/wiki/graphify/skn25_cms/` remains the durable synced copy.
 
 ---
 
@@ -121,8 +121,8 @@ Project-root `images/` is not an active folder. `graphify-out/` is generated scr
 
 | 경로 | 기준 |
 |---|---|
-| `docs/specs/`, `docs/qa/`, `docs/reference/`, `docs/ontology/` | 공유 기준 문서, QA contract, reference, ontology artifact. `docs/specs/diagrams/*.svg` render는 active spec source가 아니므로 local/generated로 분리 |
-| `reports/mermaid_20260601/` | Mermaid source/rendered diagram report package |
+| `docs/specs/`, `docs/qa/`, `docs/reference/`, `docs/ontology/` | 공유 기준 문서, QA contract, reference, ontology artifact. `docs/specs/diagrams/*.svg` render는 현재 diagram source의 shareable artifact로 함께 추적 |
+| `reports/mermaid_20260601/` | retained historical Mermaid report package; current pipeline diagram canon is `docs/specs/diagrams/` |
 | `scripts/ontology/`, `scripts/live/`, `scripts/migrations/`, `scripts/scratch/`, `scripts/verify/` | ontology, dry-run, migration draft, smoke, scratch guard, contract verification code |
 | `src/cms/` | active CMS Python package |
 | `tests/` | unit and integration tests |
@@ -226,7 +226,7 @@ uv run --with rdflib --with pyshacl \
 | `docs/qa/qa_report_chat_policy.md` | report/chat route와 QA policy |
 | `docs/reference/source_inventory.md` | Honda Nature/Dryad source tier와 legacy 선별 기준 |
 | `docs/reference/domain_concepts.md` | EMS/CMS 전기 measurement와 전력 개념 참조 |
-| `reports/mermaid_20260601/` | Mermaid source/rendered diagram report package |
+| `reports/mermaid_20260601/` | retained historical Mermaid report package; current pipeline diagram canon is `docs/specs/diagrams/` |
 
 ---
 

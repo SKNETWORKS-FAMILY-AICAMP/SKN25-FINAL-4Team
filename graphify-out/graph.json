@@ -1,0 +1,4478 @@
+{
+  "nodes": [
+    {
+      "id": "diagrams_mermaid_render_config_json",
+      "label": "mermaid_render_config.json",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_theme",
+      "label": "theme",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_htmllabels",
+      "label": "htmlLabels",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables",
+      "label": "themeVariables",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L4"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_background",
+      "label": "background",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L5"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_mainbkg",
+      "label": "mainBkg",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_primarycolor",
+      "label": "primaryColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_primarybordercolor",
+      "label": "primaryBorderColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_primarytextcolor",
+      "label": "primaryTextColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L9"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_secondarycolor",
+      "label": "secondaryColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L10"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_secondarybordercolor",
+      "label": "secondaryBorderColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L11"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_secondarytextcolor",
+      "label": "secondaryTextColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L12"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_tertiarycolor",
+      "label": "tertiaryColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_tertiarybordercolor",
+      "label": "tertiaryBorderColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L14"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_tertiarytextcolor",
+      "label": "tertiaryTextColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L15"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_clusterbkg",
+      "label": "clusterBkg",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L16"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_clusterborder",
+      "label": "clusterBorder",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_edgelabelbackground",
+      "label": "edgeLabelBackground",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L18"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_linecolor",
+      "label": "lineColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_themevariables_fontfamily",
+      "label": "fontFamily",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L20"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_flowchart",
+      "label": "flowchart",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L22"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_flowchart_htmllabels",
+      "label": "htmlLabels",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_flowchart_curve",
+      "label": "curve",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L24"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_sequence",
+      "label": "sequence",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L26"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_sequence_actorbkg",
+      "label": "actorBkg",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L27"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_sequence_actorborder",
+      "label": "actorBorder",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L28"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_sequence_actortextcolor",
+      "label": "actorTextColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L29"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_sequence_messagetextcolor",
+      "label": "messageTextColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L30"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_sequence_notebkgcolor",
+      "label": "noteBkgColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L31"
+    },
+    {
+      "id": "diagrams_mermaid_render_config_sequence_notebordercolor",
+      "label": "noteBorderColor",
+      "file_type": "code",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L32"
+    },
+    {
+      "id": "ontology_schema_md",
+      "label": "ontology_schema.md",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_ontology_schema_cms_ontology_schema_명세",
+      "label": "CMS Ontology Schema 명세",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_ontology_schema_1_목적",
+      "label": "1. 목적",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "specs_ontology_schema_2_기준_원천",
+      "label": "2. 기준 원천",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L12"
+    },
+    {
+      "id": "specs_ontology_schema_3_class_정의",
+      "label": "3. Class 정의",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L29"
+    },
+    {
+      "id": "specs_ontology_schema_4_object_property_정의",
+      "label": "4. Object property 정의",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L51"
+    },
+    {
+      "id": "specs_ontology_schema_5_data_property_정의",
+      "label": "5. Data property 정의",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L72"
+    },
+    {
+      "id": "specs_ontology_schema_6_constraint_후보",
+      "label": "6. Constraint 후보",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L98"
+    },
+    {
+      "id": "specs_ontology_schema_7_artifact_coverage_기준",
+      "label": "7. Artifact coverage 기준",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L113"
+    },
+    {
+      "id": "specs_ontology_schema_8_cms_분석에서의_사용",
+      "label": "8. CMS 분석에서의 사용",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L135"
+    },
+    {
+      "id": "specs_ontology_schema_8_1_feature_설계",
+      "label": "8.1 Feature 설계",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L137"
+    },
+    {
+      "id": "specs_ontology_schema_codeblock_1",
+      "label": "code:text (equipment_group = server_power)",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L141"
+    },
+    {
+      "id": "specs_ontology_schema_8_2_live_replay_anomaly_설명",
+      "label": "8.2 Live/replay anomaly 설명",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L149"
+    },
+    {
+      "id": "specs_ontology_schema_codeblock_2",
+      "label": "code:text (meter -> measurement -> equipment group -> building -> role )",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L153"
+    },
+    {
+      "id": "specs_ontology_schema_8_3_llm_grounding",
+      "label": "8.3 LLM grounding",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L159"
+    },
+    {
+      "id": "specs_ontology_schema_9_protégé_사용_기준",
+      "label": "9. Protégé 사용 기준",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L163"
+    },
+    {
+      "id": "specs_ontology_schema_10_제외_범위",
+      "label": "10. 제외 범위",
+      "file_type": "document",
+      "source_file": "ontology_schema.md",
+      "source_location": "L167"
+    },
+    {
+      "id": "meter_metadata_md",
+      "label": "meter_metadata.md",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "label": "EMS 계량기 Metadata 명세",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_meter_metadata_1_기준",
+      "label": "1. 기준",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L8"
+    },
+    {
+      "id": "specs_meter_metadata_2_분류_체계",
+      "label": "2. 분류 체계",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "specs_meter_metadata_2_1_분류_column",
+      "label": "2.1 분류 column",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "specs_meter_metadata_2_2_부호_규약",
+      "label": "2.2 부호 규약",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "specs_meter_metadata_3_전기_계량기_그룹",
+      "label": "3. 전기 계량기 그룹",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L50"
+    },
+    {
+      "id": "specs_meter_metadata_4_열_및_기상_계량기_그룹",
+      "label": "4. 열 및 기상 계량기 그룹",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L70"
+    },
+    {
+      "id": "specs_meter_metadata_5_중앙_냉각기_mapping",
+      "label": "5. 중앙 냉각기 mapping",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L87"
+    },
+    {
+      "id": "specs_meter_metadata_6_redundancy_mapping",
+      "label": "6. Redundancy mapping",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L104"
+    },
+    {
+      "id": "specs_meter_metadata_7_이상탐지_우선순위",
+      "label": "7. 이상탐지 우선순위",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L130"
+    },
+    {
+      "id": "specs_meter_metadata_8_db_schema_후보",
+      "label": "8. DB schema 후보",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L143"
+    },
+    {
+      "id": "specs_meter_metadata_codeblock_1",
+      "label": "code:sql (CREATE TABLE ems.meter_definition ()",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L147"
+    },
+    {
+      "id": "specs_meter_metadata_codeblock_2",
+      "label": "code:sql (ALTER TABLE ems.meter_definition)",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L177"
+    },
+    {
+      "id": "specs_meter_metadata_9_검증_쿼리_후보",
+      "label": "9. 검증 쿼리 후보",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L189"
+    },
+    {
+      "id": "specs_meter_metadata_codeblock_3",
+      "label": "code:sql (SELECT count(*) AS meters)",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L191"
+    },
+    {
+      "id": "specs_meter_metadata_10_db_승격_결정_기준",
+      "label": "10. DB 승격 결정 기준",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L215"
+    },
+    {
+      "id": "specs_meter_metadata_11_적용_후_검증_기준",
+      "label": "11. 적용 후 검증 기준",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L232"
+    },
+    {
+      "id": "specs_meter_metadata_12_후속_작업",
+      "label": "12. 후속 작업",
+      "file_type": "document",
+      "source_file": "meter_metadata.md",
+      "source_location": "L248"
+    },
+    {
+      "id": "llm_pipeline_contract_md",
+      "label": "llm_pipeline_contract.md",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_llm_pipeline_contract",
+      "label": "LLM Pipeline Contract",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_1_원칙",
+      "label": "1. 원칙",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_2_pipeline별_llm_배치",
+      "label": "2. Pipeline별 LLM 배치",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L15"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_3_prompt_boundary",
+      "label": "3. Prompt boundary",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L29"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_3_1_sqllm",
+      "label": "3.1 SQLLM",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L31"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_codeblock_1",
+      "label": "code:text (You generate read-only SQL query plans for CMS.)",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L35"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_3_2_qa_review",
+      "label": "3.2 QA review",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L50"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_codeblock_2",
+      "label": "code:text (Review the QA evidence packet against CMS observed-canonical)",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_3_3_report_review",
+      "label": "3.3 Report review",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L59"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_codeblock_3",
+      "label": "code:text (Validate numeric claims before writing prose.)",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L61"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_3_4_anomaly_explanation",
+      "label": "3.4 Anomaly explanation",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L69"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_codeblock_4",
+      "label": "code:text (Explain anomaly candidates, not confirmed failures.)",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L71"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_3_5_approval_review",
+      "label": "3.5 Approval review",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L78"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_codeblock_5",
+      "label": "code:text (Classify risk and required approval fields.)",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L80"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_4_retrieval_routing",
+      "label": "4. Retrieval routing",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L86"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_5_prompt_registry_후보",
+      "label": "5. Prompt registry 후보",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L97"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_codeblock_6",
+      "label": "code:text (quick_chat_router.v1)",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L101"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_6_model_selection_note",
+      "label": "6. Model selection note",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L115"
+    },
+    {
+      "id": "specs_llm_pipeline_contract_7_verification",
+      "label": "7. Verification",
+      "file_type": "document",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L126"
+    },
+    {
+      "id": "knowledge_db_contract_md",
+      "label": "knowledge_db_contract.md",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_knowledge_db_contract_knowledge_db_contract",
+      "label": "Knowledge DB Contract",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_knowledge_db_contract_1_목적",
+      "label": "1. 목적",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "specs_knowledge_db_contract_2_source_tier",
+      "label": "2. Source tier",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "specs_knowledge_db_contract_3_vector_db_대상_문서",
+      "label": "3. Vector DB 대상 문서",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "specs_knowledge_db_contract_codeblock_1",
+      "label": "code:text (README.md)",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L30"
+    },
+    {
+      "id": "specs_knowledge_db_contract_codeblock_2",
+      "label": "code:text (.env)",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L54"
+    },
+    {
+      "id": "specs_knowledge_db_contract_4_chunking_기준",
+      "label": "4. Chunking 기준",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L66"
+    },
+    {
+      "id": "specs_knowledge_db_contract_5_metadata_schema",
+      "label": "5. Metadata schema",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L76"
+    },
+    {
+      "id": "specs_knowledge_db_contract_codeblock_3",
+      "label": "code:text (doc_id)",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L80"
+    },
+    {
+      "id": "specs_knowledge_db_contract_codeblock_4",
+      "label": "code:text (source_tier = tier0_original | tier1_active | tier2_referenc)",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L104"
+    },
+    {
+      "id": "specs_knowledge_db_contract_6_aws_postgresql_pgvector_준비",
+      "label": "6. AWS PostgreSQL pgvector 준비",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L111"
+    },
+    {
+      "id": "specs_knowledge_db_contract_codeblock_5",
+      "label": "code:sql (CREATE EXTENSION IF NOT EXISTS vector;)",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L115"
+    },
+    {
+      "id": "specs_knowledge_db_contract_7_graphify_운영_기준",
+      "label": "7. Graphify 운영 기준",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L147"
+    },
+    {
+      "id": "specs_knowledge_db_contract_codeblock_6",
+      "label": "code:text (docs/specs mirror -> graphify update --no-cluster -> graphif)",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L153"
+    },
+    {
+      "id": "specs_knowledge_db_contract_codeblock_7",
+      "label": "code:text (docs/specs/**/*.md)",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L159"
+    },
+    {
+      "id": "specs_knowledge_db_contract_codeblock_8",
+      "label": "code:text (README.md, docs/qa, docs/reference, docs/ontology, src, scri)",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L167"
+    },
+    {
+      "id": "specs_knowledge_db_contract_8_graphify_mcp_hook_기준",
+      "label": "8. Graphify MCP hook 기준",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L174"
+    },
+    {
+      "id": "specs_knowledge_db_contract_codeblock_9",
+      "label": "code:yaml (mcp_servers:)",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L184"
+    },
+    {
+      "id": "specs_knowledge_db_contract_codeblock_10",
+      "label": "code:bash (graphify --help | grep -i mcp)",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L195"
+    },
+    {
+      "id": "specs_knowledge_db_contract_9_retrieval_policy",
+      "label": "9. Retrieval policy",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L202"
+    },
+    {
+      "id": "specs_knowledge_db_contract_10_검증",
+      "label": "10. 검증",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L213"
+    },
+    {
+      "id": "specs_knowledge_db_contract_codeblock_11",
+      "label": "code:bash (PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python scripts/veri)",
+      "file_type": "document",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L215"
+    },
+    {
+      "id": "application_skeleton_md",
+      "label": "application_skeleton.md",
+      "file_type": "document",
+      "source_file": "application_skeleton.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_application_skeleton_애플리케이션_스켈레톤",
+      "label": "애플리케이션 스켈레톤",
+      "file_type": "document",
+      "source_file": "application_skeleton.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_application_skeleton_원칙",
+      "label": "원칙",
+      "file_type": "document",
+      "source_file": "application_skeleton.md",
+      "source_location": "L5"
+    },
+    {
+      "id": "specs_application_skeleton_파일별_역할",
+      "label": "파일별 역할",
+      "file_type": "document",
+      "source_file": "application_skeleton.md",
+      "source_location": "L14"
+    },
+    {
+      "id": "specs_application_skeleton_금지된_작업",
+      "label": "금지된 작업",
+      "file_type": "document",
+      "source_file": "application_skeleton.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "meter_measurement_cadence_policy_md",
+      "label": "meter_measurement_cadence_policy.md",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_meter_measurement_cadence_policy_meter_measurement_cadence_policy",
+      "label": "Meter / Measurement Cadence Policy",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_meter_measurement_cadence_policy_1_repository_evidence",
+      "label": "1. Repository evidence",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "specs_meter_measurement_cadence_policy_2_required_cadence_inventory",
+      "label": "2. Required cadence inventory",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "specs_meter_measurement_cadence_policy_codeblock_1",
+      "label": "code:text ((meter_urn, measurement, source_layer, source_file/run_id))",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "specs_meter_measurement_cadence_policy_3_canonical_grid_selection",
+      "label": "3. Canonical grid selection",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L43"
+    },
+    {
+      "id": "specs_meter_measurement_cadence_policy_4_expected_observed_coverage_arithmetic",
+      "label": "4. Expected/observed/coverage arithmetic",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L58"
+    },
+    {
+      "id": "specs_meter_measurement_cadence_policy_codeblock_2",
+      "label": "code:text (expected_points = count of native source timestamps expected)",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L62"
+    },
+    {
+      "id": "specs_meter_measurement_cadence_policy_5_aggregation_rules",
+      "label": "5. Aggregation rules",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L78"
+    },
+    {
+      "id": "specs_meter_measurement_cadence_policy_6_gap_and_null_semantics",
+      "label": "6. Gap and null semantics",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L91"
+    },
+    {
+      "id": "specs_meter_measurement_cadence_policy_7_required_provenance_fields",
+      "label": "7. Required provenance fields",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L98"
+    },
+    {
+      "id": "specs_meter_measurement_cadence_policy_codeblock_3",
+      "label": "code:text (source_native_interval_seconds)",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L102"
+    },
+    {
+      "id": "specs_meter_measurement_cadence_policy_8_implementation_impact",
+      "label": "8. Implementation impact",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L120"
+    },
+    {
+      "id": "specs_meter_measurement_cadence_policy_9_policy_decision",
+      "label": "9. Policy decision",
+      "file_type": "document",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L130"
+    },
+    {
+      "id": "database_schema_md",
+      "label": "database_schema.md",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_database_schema_cms_database_schema",
+      "label": "CMS Database Schema",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_database_schema_1_목적",
+      "label": "1. 목적",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "specs_database_schema_2_database_및_schema_layout",
+      "label": "2. Database 및 schema layout",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "specs_database_schema_codeblock_1",
+      "label": "code:text (cms)",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L14"
+    },
+    {
+      "id": "specs_database_schema_aws_read_only_inventory_evidence",
+      "label": "AWS read-only inventory evidence",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L27"
+    },
+    {
+      "id": "specs_database_schema_3_reference_및_canonical_facts",
+      "label": "3. Reference 및 canonical facts",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L55"
+    },
+    {
+      "id": "specs_database_schema_reference_corrected_resampled_data",
+      "label": "Reference corrected_resampled data",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "specs_database_schema_codeblock_2",
+      "label": "code:text (# AWS present / populated)",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L61"
+    },
+    {
+      "id": "specs_database_schema_canonical_observed_measurement_facts",
+      "label": "Canonical observed measurement facts",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L72"
+    },
+    {
+      "id": "specs_database_schema_codeblock_3",
+      "label": "code:text (canonical.measurement_1min)",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L76"
+    },
+    {
+      "id": "specs_database_schema_4_candidate_및_promotion_boundary",
+      "label": "4. Candidate 및 promotion boundary",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L109"
+    },
+    {
+      "id": "specs_database_schema_codeblock_4",
+      "label": "code:text (candidate output)",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L113"
+    },
+    {
+      "id": "specs_database_schema_5_mart_및_model_input_boundary",
+      "label": "5. Mart 및 model-input boundary",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L124"
+    },
+    {
+      "id": "specs_database_schema_6_scratch_및_test_schemas",
+      "label": "6. Scratch 및 test schemas",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L128"
+    },
+    {
+      "id": "specs_database_schema_codeblock_5",
+      "label": "code:text (cms_scratch_<test_run_id>.measurement_1min)",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L132"
+    },
+    {
+      "id": "specs_database_schema_7_legacy_compatibility_note",
+      "label": "7. Legacy compatibility note",
+      "file_type": "document",
+      "source_file": "database_schema.md",
+      "source_location": "L141"
+    },
+    {
+      "id": "langgraph_review_workflow_md",
+      "label": "langgraph_review_workflow.md",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_langgraph_비동기_review_워크플로_설계",
+      "label": "LangGraph 비동기 Review 워크플로 설계",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_1_목적과_경계",
+      "label": "1. 목적과 경계",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_2_2단계_라우팅",
+      "label": "2. 2단계 라우팅",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L16"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_codeblock_1",
+      "label": "code:block1 (사용자 → FastAPI lightweight router)",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L18"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_우선순위_규칙_정책_7_1",
+      "label": "우선순위 규칙 (정책 §7.1)",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L31"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_3_review_서브그래프",
+      "label": "3. Review 서브그래프",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_codeblock_2",
+      "label": "code:mermaid (flowchart TB)",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L41"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_graphstate_frozen_dataclass",
+      "label": "GraphState (frozen dataclass)",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L60"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_노드_모두_side_effect_없음",
+      "label": "노드 (모두 side-effect 없음)",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L76"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_qa_gate_context_입력_키",
+      "label": "qa_gate context 입력 키",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L88"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_4_human_in_the_loop",
+      "label": "4. Human-in-the-loop",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L97"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_5_evidencepacket_agentresponse_계약",
+      "label": "5. EvidencePacket / AgentResponse 계약",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L101"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_6_import_safe_llm_optional_불변식",
+      "label": "6. Import-safe / LLM-optional 불변식",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L109"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_7_검증",
+      "label": "7. 검증",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L116"
+    },
+    {
+      "id": "specs_langgraph_review_workflow_codeblock_3",
+      "label": "code:bash (PYTHONPATH=src python scripts/verify/verify_skeleton_contrac)",
+      "file_type": "document",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L118"
+    },
+    {
+      "id": "data_contract_md",
+      "label": "data_contract.md",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_data_contract_cms_data_contract",
+      "label": "CMS Data Contract",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_data_contract_1_contract_범위",
+      "label": "1. Contract 범위",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "specs_data_contract_2_data_layers",
+      "label": "2. Data layers",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "specs_data_contract_codeblock_1",
+      "label": "code:text (source archive / live input)",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L12"
+    },
+    {
+      "id": "specs_data_contract_source_archive",
+      "label": "Source archive",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "specs_data_contract_raw_buffer_and_staging",
+      "label": "Raw buffer and staging",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L28"
+    },
+    {
+      "id": "specs_data_contract_harmonized_observed_equal_interval_path",
+      "label": "Harmonized observed equal-interval path",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L32"
+    },
+    {
+      "id": "specs_data_contract_candidate_output",
+      "label": "Candidate output",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L40"
+    },
+    {
+      "id": "specs_data_contract_qa_evidence",
+      "label": "QA evidence",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L44"
+    },
+    {
+      "id": "specs_data_contract_canonical_facts",
+      "label": "Canonical facts",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L48"
+    },
+    {
+      "id": "specs_data_contract_3_identifier_contract",
+      "label": "3. Identifier contract",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "specs_data_contract_4_live_replay_output_contract",
+      "label": "4. Live/replay output contract",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L63"
+    },
+    {
+      "id": "specs_data_contract_codeblock_2",
+      "label": "code:text (measurement_raw or measurement_read_cache)",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L67"
+    },
+    {
+      "id": "specs_data_contract_5_report_and_artifact_contract",
+      "label": "5. Report and artifact contract",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L77"
+    },
+    {
+      "id": "specs_data_contract_codeblock_3",
+      "label": "code:text (reports/cms_md_reports_20260601/)",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L81"
+    },
+    {
+      "id": "specs_data_contract_6_verification",
+      "label": "6. Verification",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L87"
+    },
+    {
+      "id": "specs_data_contract_codeblock_4",
+      "label": "code:bash (PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python scripts/veri)",
+      "file_type": "document",
+      "source_file": "data_contract.md",
+      "source_location": "L91"
+    },
+    {
+      "id": "project_overview_md",
+      "label": "project_overview.md",
+      "file_type": "document",
+      "source_file": "project_overview.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_project_overview_cms_프로젝트_개요",
+      "label": "CMS 프로젝트 개요",
+      "file_type": "document",
+      "source_file": "project_overview.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_project_overview_1_범위",
+      "label": "1. 범위",
+      "file_type": "document",
+      "source_file": "project_overview.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "specs_project_overview_2_현재_active_architecture",
+      "label": "2. 현재 active architecture",
+      "file_type": "document",
+      "source_file": "project_overview.md",
+      "source_location": "L12"
+    },
+    {
+      "id": "specs_project_overview_3_현재_repository_map",
+      "label": "3. 현재 repository map",
+      "file_type": "document",
+      "source_file": "project_overview.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "specs_project_overview_codeblock_1",
+      "label": "code:text (SKN25-FINAL-4Team/)",
+      "file_type": "document",
+      "source_file": "project_overview.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "specs_project_overview_4_naming_및_용어",
+      "label": "4. Naming 및 용어",
+      "file_type": "document",
+      "source_file": "project_overview.md",
+      "source_location": "L38"
+    },
+    {
+      "id": "specs_project_overview_5_검증_baseline",
+      "label": "5. 검증 baseline",
+      "file_type": "document",
+      "source_file": "project_overview.md",
+      "source_location": "L44"
+    },
+    {
+      "id": "specs_project_overview_codeblock_2",
+      "label": "code:bash (PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python scripts/veri)",
+      "file_type": "document",
+      "source_file": "project_overview.md",
+      "source_location": "L48"
+    },
+    {
+      "id": "feature_spec_md",
+      "label": "feature_spec.md",
+      "file_type": "document",
+      "source_file": "feature_spec.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_feature_spec_cms_feature_specification",
+      "label": "CMS Feature Specification",
+      "file_type": "document",
+      "source_file": "feature_spec.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_feature_spec_1_범위",
+      "label": "1. 범위",
+      "file_type": "document",
+      "source_file": "feature_spec.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "specs_feature_spec_2_feature_source_hierarchy",
+      "label": "2. Feature source hierarchy",
+      "file_type": "document",
+      "source_file": "feature_spec.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "specs_feature_spec_3_feature_groups",
+      "label": "3. Feature groups",
+      "file_type": "document",
+      "source_file": "feature_spec.md",
+      "source_location": "L23"
+    },
+    {
+      "id": "specs_feature_spec_4_output_boundary",
+      "label": "4. Output boundary",
+      "file_type": "document",
+      "source_file": "feature_spec.md",
+      "source_location": "L33"
+    },
+    {
+      "id": "specs_feature_spec_codeblock_1",
+      "label": "code:text (local dry-run)",
+      "file_type": "document",
+      "source_file": "feature_spec.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "specs_feature_spec_5_planned_implementation_slots",
+      "label": "5. Planned implementation slots",
+      "file_type": "document",
+      "source_file": "feature_spec.md",
+      "source_location": "L48"
+    },
+    {
+      "id": "specs_feature_spec_codeblock_2",
+      "label": "code:text (scripts/features/)",
+      "file_type": "document",
+      "source_file": "feature_spec.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "specs_feature_spec_6_verification",
+      "label": "6. Verification",
+      "file_type": "document",
+      "source_file": "feature_spec.md",
+      "source_location": "L60"
+    },
+    {
+      "id": "specs_feature_spec_codeblock_3",
+      "label": "code:text (docs/specs/database_schema.md)",
+      "file_type": "document",
+      "source_file": "feature_spec.md",
+      "source_location": "L64"
+    },
+    {
+      "id": "specs_feature_spec_codeblock_4",
+      "label": "code:bash (PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python scripts/veri)",
+      "file_type": "document",
+      "source_file": "feature_spec.md",
+      "source_location": "L73"
+    },
+    {
+      "id": "mongo_live_replay_contract_md",
+      "label": "mongo_live_replay_contract.md",
+      "file_type": "document",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_mongo_live_replay_contract_cms_mongo_live_replay_contract",
+      "label": "CMS Mongo Live/Replay Contract",
+      "file_type": "document",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_mongo_live_replay_contract_1_목적",
+      "label": "1. 목적",
+      "file_type": "document",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "specs_mongo_live_replay_contract_2_active_collection_roles",
+      "label": "2. Active collection roles",
+      "file_type": "document",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "specs_mongo_live_replay_contract_3_event_shape",
+      "label": "3. Event shape",
+      "file_type": "document",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "specs_mongo_live_replay_contract_4_processor_boundary",
+      "label": "4. Processor boundary",
+      "file_type": "document",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "specs_mongo_live_replay_contract_codeblock_1",
+      "label": "code:text (MongoDB raw/read cache)",
+      "file_type": "document",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L45"
+    },
+    {
+      "id": "specs_mongo_live_replay_contract_5_forbidden_shortcuts",
+      "label": "5. Forbidden shortcuts",
+      "file_type": "document",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L55"
+    },
+    {
+      "id": "specs_mongo_live_replay_contract_6_verification",
+      "label": "6. Verification",
+      "file_type": "document",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L64"
+    },
+    {
+      "id": "specs_mongo_live_replay_contract_codeblock_2",
+      "label": "code:bash (PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python scripts/veri)",
+      "file_type": "document",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L68"
+    },
+    {
+      "id": "pipeline_skeleton_md",
+      "label": "pipeline_skeleton.md",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_pipeline_skeleton_cms_파이프라인_스켈레톤_명세",
+      "label": "CMS 파이프라인 스켈레톤 명세",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "specs_pipeline_skeleton_1_확정_원칙",
+      "label": "1. 확정 원칙",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_1",
+      "label": "code:text (PostgreSQL database = cms)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_2",
+      "label": "code:text (reference lineage: reference.corrected_resampled_1min/15min/)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "specs_pipeline_skeleton_2_구성_범위",
+      "label": "2. 구성 범위",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L31"
+    },
+    {
+      "id": "specs_pipeline_skeleton_지금_구성한다",
+      "label": "지금 구성한다",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L33"
+    },
+    {
+      "id": "specs_pipeline_skeleton_지금_구성하지_않는다",
+      "label": "지금 구성하지 않는다",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L46"
+    },
+    {
+      "id": "specs_pipeline_skeleton_3_postgresql_schema_구조",
+      "label": "3. PostgreSQL schema 구조",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L58"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_3",
+      "label": "code:text (cms)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L60"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_4",
+      "label": "code:text (canonical.measurement_1min)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L83"
+    },
+    {
+      "id": "specs_pipeline_skeleton_4_mongodb_collection_구조",
+      "label": "4. MongoDB collection 구조",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L91"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_5",
+      "label": "code:text (cms)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L95"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_6",
+      "label": "code:text (MongoDB = recent live/replay buffer + cache + transient quar)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L114"
+    },
+    {
+      "id": "specs_pipeline_skeleton_5_정상_비정상_데이터_분기",
+      "label": "5. 정상/비정상 데이터 분기",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L121"
+    },
+    {
+      "id": "specs_pipeline_skeleton_정상_path",
+      "label": "정상 path",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L123"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_7",
+      "label": "code:text (source event)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L125"
+    },
+    {
+      "id": "specs_pipeline_skeleton_비정상_data_quality_path",
+      "label": "비정상 data-quality path",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L140"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_8",
+      "label": "code:text (source event)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L142"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_9",
+      "label": "code:text (data quality issue)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L152"
+    },
+    {
+      "id": "specs_pipeline_skeleton_6_latency_budget_기준",
+      "label": "6. Latency budget 기준",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L164"
+    },
+    {
+      "id": "specs_pipeline_skeleton_live_ingestion",
+      "label": "Live ingestion",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L166"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_10",
+      "label": "code:text (interval: 5s ~ 60s)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L179"
+    },
+    {
+      "id": "specs_pipeline_skeleton_dashboard_read",
+      "label": "Dashboard read",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L184"
+    },
+    {
+      "id": "specs_pipeline_skeleton_chat",
+      "label": "Chat",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L193"
+    },
+    {
+      "id": "specs_pipeline_skeleton_report",
+      "label": "Report",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L202"
+    },
+    {
+      "id": "specs_pipeline_skeleton_7_component_skeleton",
+      "label": "7. Component skeleton",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L217"
+    },
+    {
+      "id": "specs_pipeline_skeleton_worker",
+      "label": "Worker",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L219"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_11",
+      "label": "code:text (measurement_ingest_worker)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L221"
+    },
+    {
+      "id": "specs_pipeline_skeleton_fastapi_shell",
+      "label": "FastAPI shell",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L235"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_12",
+      "label": "code:text (GET  /health)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L237"
+    },
+    {
+      "id": "specs_pipeline_skeleton_airflow_shell",
+      "label": "Airflow shell",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L253"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_13",
+      "label": "code:text (cms_measurement_qa)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L257"
+    },
+    {
+      "id": "specs_pipeline_skeleton_chat_shell_및_langgraph_workflow",
+      "label": "Chat shell 및 LangGraph workflow",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L263"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_14",
+      "label": "code:text (FastAPI /chat)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L267"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_15",
+      "label": "code:text (Airflow cms_report_daily)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L282"
+    },
+    {
+      "id": "specs_pipeline_skeleton_8_mermaid_diagram_파일",
+      "label": "8. Mermaid diagram 파일",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L296"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_16",
+      "label": "code:text (docs/specs/diagrams/README.md)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L310"
+    },
+    {
+      "id": "specs_pipeline_skeleton_9_git_반영_방식",
+      "label": "9. Git 반영 방식",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L317"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_17",
+      "label": "code:bash (git add \\)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L321"
+    },
+    {
+      "id": "specs_pipeline_skeleton_codeblock_18",
+      "label": "code:bash (PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python scripts/veri)",
+      "file_type": "document",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L335"
+    },
+    {
+      "id": "diagrams_pipeline_explanations_md",
+      "label": "pipeline_explanations.md",
+      "file_type": "document",
+      "source_file": "diagrams/pipeline_explanations.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_pipeline_explanations_pipeline_diagram_explanations",
+      "label": "Pipeline Diagram Explanations",
+      "file_type": "document",
+      "source_file": "diagrams/pipeline_explanations.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_pipeline_explanations_전체_pipeline",
+      "label": "전체 pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/pipeline_explanations.md",
+      "source_location": "L5"
+    },
+    {
+      "id": "diagrams_pipeline_explanations_db_pipeline",
+      "label": "DB pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/pipeline_explanations.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "diagrams_pipeline_explanations_airflow_pipeline",
+      "label": "Airflow pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/pipeline_explanations.md",
+      "source_location": "L17"
+    },
+    {
+      "id": "diagrams_pipeline_explanations_langgraph_pipeline",
+      "label": "LangGraph pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/pipeline_explanations.md",
+      "source_location": "L23"
+    },
+    {
+      "id": "diagrams_pipeline_explanations_app_pipeline",
+      "label": "App pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/pipeline_explanations.md",
+      "source_location": "L29"
+    },
+    {
+      "id": "diagrams_sequence_04_app_pipeline_md",
+      "label": "sequence_04_app_pipeline.md",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_04_app_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_sequence_04_app_pipeline_sequence_04_app_pipeline",
+      "label": "Sequence 04 App Pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_04_app_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_sequence_04_app_pipeline_codeblock_1",
+      "label": "code:mermaid (%%{init: {\"theme\": \"base\", \"sequence\": {\"showSequenceNumbers)",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_04_app_pipeline.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "diagrams_sequence_03_langgraph_pipeline_md",
+      "label": "sequence_03_langgraph_pipeline.md",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_03_langgraph_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_sequence_03_langgraph_pipeline_sequence_03_langgraph_pipeline",
+      "label": "Sequence 03 Langgraph Pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_03_langgraph_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_sequence_03_langgraph_pipeline_codeblock_1",
+      "label": "code:mermaid (%%{init: {\"theme\": \"base\", \"sequence\": {\"showSequenceNumbers)",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_03_langgraph_pipeline.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "diagrams_sequence_02_airflow_pipeline_md",
+      "label": "sequence_02_airflow_pipeline.md",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_02_airflow_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_sequence_02_airflow_pipeline_sequence_02_airflow_pipeline",
+      "label": "Sequence 02 Airflow Pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_02_airflow_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_sequence_02_airflow_pipeline_codeblock_1",
+      "label": "code:mermaid (%%{init: {\"theme\": \"base\", \"sequence\": {\"showSequenceNumbers)",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_02_airflow_pipeline.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "diagrams_sequence_01_database_pipeline_md",
+      "label": "sequence_01_database_pipeline.md",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_01_database_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_sequence_01_database_pipeline_sequence_01_database_pipeline",
+      "label": "Sequence 01 Database Pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_01_database_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_sequence_01_database_pipeline_codeblock_1",
+      "label": "code:mermaid (%%{init: {\"theme\": \"base\", \"sequence\": {\"showSequenceNumbers)",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_01_database_pipeline.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "diagrams_sequence_00_overall_pipeline_md",
+      "label": "sequence_00_overall_pipeline.md",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_00_overall_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_sequence_00_overall_pipeline_sequence_00_overall_pipeline",
+      "label": "Sequence 00 Overall Pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_00_overall_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_sequence_00_overall_pipeline_codeblock_1",
+      "label": "code:mermaid (%%{init: {\"theme\": \"base\", \"sequence\": {\"showSequenceNumbers)",
+      "file_type": "document",
+      "source_file": "diagrams/sequence_00_overall_pipeline.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "diagrams_flow_04_app_pipeline_md",
+      "label": "flow_04_app_pipeline.md",
+      "file_type": "document",
+      "source_file": "diagrams/flow_04_app_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_flow_04_app_pipeline_flow_04_app_pipeline",
+      "label": "Flow 04 App Pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/flow_04_app_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_flow_04_app_pipeline_codeblock_1",
+      "label": "code:mermaid (%%{init: {\"theme\": \"base\", \"flowchart\": {\"htmlLabels\": false)",
+      "file_type": "document",
+      "source_file": "diagrams/flow_04_app_pipeline.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "diagrams_flow_03_langgraph_pipeline_md",
+      "label": "flow_03_langgraph_pipeline.md",
+      "file_type": "document",
+      "source_file": "diagrams/flow_03_langgraph_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_flow_03_langgraph_pipeline_flow_03_langgraph_pipeline",
+      "label": "Flow 03 Langgraph Pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/flow_03_langgraph_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_flow_03_langgraph_pipeline_codeblock_1",
+      "label": "code:mermaid (%%{init: {\"theme\": \"base\", \"flowchart\": {\"htmlLabels\": false)",
+      "file_type": "document",
+      "source_file": "diagrams/flow_03_langgraph_pipeline.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "diagrams_flow_02_airflow_pipeline_md",
+      "label": "flow_02_airflow_pipeline.md",
+      "file_type": "document",
+      "source_file": "diagrams/flow_02_airflow_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_flow_02_airflow_pipeline_flow_02_airflow_pipeline",
+      "label": "Flow 02 Airflow Pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/flow_02_airflow_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_flow_02_airflow_pipeline_codeblock_1",
+      "label": "code:mermaid (%%{init: {\"theme\": \"base\", \"flowchart\": {\"htmlLabels\": false)",
+      "file_type": "document",
+      "source_file": "diagrams/flow_02_airflow_pipeline.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "diagrams_flow_01_database_pipeline_md",
+      "label": "flow_01_database_pipeline.md",
+      "file_type": "document",
+      "source_file": "diagrams/flow_01_database_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_flow_01_database_pipeline_flow_01_database_pipeline",
+      "label": "Flow 01 Database Pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/flow_01_database_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_flow_01_database_pipeline_codeblock_1",
+      "label": "code:mermaid (%%{init: {\"theme\": \"base\", \"flowchart\": {\"htmlLabels\": false)",
+      "file_type": "document",
+      "source_file": "diagrams/flow_01_database_pipeline.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "diagrams_flow_00_overall_pipeline_md",
+      "label": "flow_00_overall_pipeline.md",
+      "file_type": "document",
+      "source_file": "diagrams/flow_00_overall_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_flow_00_overall_pipeline_flow_00_overall_pipeline",
+      "label": "Flow 00 Overall Pipeline",
+      "file_type": "document",
+      "source_file": "diagrams/flow_00_overall_pipeline.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_flow_00_overall_pipeline_codeblock_1",
+      "label": "code:mermaid (%%{init: {\"theme\": \"base\", \"flowchart\": {\"htmlLabels\": false)",
+      "file_type": "document",
+      "source_file": "diagrams/flow_00_overall_pipeline.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "diagrams_readme_md",
+      "label": "README.md",
+      "file_type": "document",
+      "source_file": "diagrams/README.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_readme_cms_mermaid_diagram_모음",
+      "label": "CMS Mermaid Diagram 모음",
+      "file_type": "document",
+      "source_file": "diagrams/README.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "diagrams_readme_diagram_세트",
+      "label": "Diagram 세트",
+      "file_type": "document",
+      "source_file": "diagrams/README.md",
+      "source_location": "L8"
+    },
+    {
+      "id": "diagrams_readme_render_readability_기준",
+      "label": "Render/readability 기준",
+      "file_type": "document",
+      "source_file": "diagrams/README.md",
+      "source_location": "L18"
+    },
+    {
+      "id": "diagrams_readme_local_render",
+      "label": "Local render",
+      "file_type": "document",
+      "source_file": "diagrams/README.md",
+      "source_location": "L26"
+    },
+    {
+      "id": "diagrams_readme_codeblock_1",
+      "label": "code:bash (python scripts/verify/render_diagrams.py --png-preview)",
+      "file_type": "document",
+      "source_file": "diagrams/README.md",
+      "source_location": "L28"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "links": [
+    {
+      "source": "diagrams_mermaid_render_config_json",
+      "target": "diagrams_mermaid_render_config_theme",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_json",
+      "target": "diagrams_mermaid_render_config_htmllabels",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_json",
+      "target": "diagrams_mermaid_render_config_themevariables",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_background",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_mainbkg",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_primarycolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_primarybordercolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_primarytextcolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_secondarycolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_secondarybordercolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_secondarytextcolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_tertiarycolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_tertiarybordercolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_tertiarytextcolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_clusterbkg",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_clusterborder",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_edgelabelbackground",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_linecolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_themevariables",
+      "target": "diagrams_mermaid_render_config_themevariables_fontfamily",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_json",
+      "target": "diagrams_mermaid_render_config_flowchart",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_flowchart",
+      "target": "diagrams_mermaid_render_config_flowchart_htmllabels",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_flowchart",
+      "target": "diagrams_mermaid_render_config_flowchart_curve",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_json",
+      "target": "diagrams_mermaid_render_config_sequence",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_sequence",
+      "target": "diagrams_mermaid_render_config_sequence_actorbkg",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_sequence",
+      "target": "diagrams_mermaid_render_config_sequence_actorborder",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_sequence",
+      "target": "diagrams_mermaid_render_config_sequence_actortextcolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_sequence",
+      "target": "diagrams_mermaid_render_config_sequence_messagetextcolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_sequence",
+      "target": "diagrams_mermaid_render_config_sequence_notebkgcolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_mermaid_render_config_sequence",
+      "target": "diagrams_mermaid_render_config_sequence_notebordercolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/mermaid_render_config.json",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "ontology_schema_md",
+      "target": "specs_ontology_schema_cms_ontology_schema_명세",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_cms_ontology_schema_명세",
+      "target": "specs_ontology_schema_1_목적",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_cms_ontology_schema_명세",
+      "target": "specs_ontology_schema_2_기준_원천",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_cms_ontology_schema_명세",
+      "target": "specs_ontology_schema_3_class_정의",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_cms_ontology_schema_명세",
+      "target": "specs_ontology_schema_4_object_property_정의",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_cms_ontology_schema_명세",
+      "target": "specs_ontology_schema_5_data_property_정의",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_cms_ontology_schema_명세",
+      "target": "specs_ontology_schema_6_constraint_후보",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_cms_ontology_schema_명세",
+      "target": "specs_ontology_schema_7_artifact_coverage_기준",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_cms_ontology_schema_명세",
+      "target": "specs_ontology_schema_8_cms_분석에서의_사용",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L135",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_8_cms_분석에서의_사용",
+      "target": "specs_ontology_schema_8_1_feature_설계",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L137",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_8_1_feature_설계",
+      "target": "specs_ontology_schema_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_8_cms_분석에서의_사용",
+      "target": "specs_ontology_schema_8_2_live_replay_anomaly_설명",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L149",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_8_2_live_replay_anomaly_설명",
+      "target": "specs_ontology_schema_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L153",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_8_cms_분석에서의_사용",
+      "target": "specs_ontology_schema_8_3_llm_grounding",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L159",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_cms_ontology_schema_명세",
+      "target": "specs_ontology_schema_9_protégé_사용_기준",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L163",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_ontology_schema_cms_ontology_schema_명세",
+      "target": "specs_ontology_schema_10_제외_범위",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ontology_schema.md",
+      "source_location": "L167",
+      "weight": 1.0
+    },
+    {
+      "source": "meter_metadata_md",
+      "target": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "target": "specs_meter_metadata_1_기준",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "target": "specs_meter_metadata_2_분류_체계",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_2_분류_체계",
+      "target": "specs_meter_metadata_2_1_분류_column",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_2_분류_체계",
+      "target": "specs_meter_metadata_2_2_부호_규약",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "target": "specs_meter_metadata_3_전기_계량기_그룹",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "target": "specs_meter_metadata_4_열_및_기상_계량기_그룹",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "target": "specs_meter_metadata_5_중앙_냉각기_mapping",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "target": "specs_meter_metadata_6_redundancy_mapping",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "target": "specs_meter_metadata_7_이상탐지_우선순위",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "target": "specs_meter_metadata_8_db_schema_후보",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_8_db_schema_후보",
+      "target": "specs_meter_metadata_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L147",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_8_db_schema_후보",
+      "target": "specs_meter_metadata_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L177",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "target": "specs_meter_metadata_9_검증_쿼리_후보",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L189",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_9_검증_쿼리_후보",
+      "target": "specs_meter_metadata_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L191",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "target": "specs_meter_metadata_10_db_승격_결정_기준",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L215",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "target": "specs_meter_metadata_11_적용_후_검증_기준",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L232",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_metadata_ems_계량기_metadata_명세",
+      "target": "specs_meter_metadata_12_후속_작업",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_metadata.md",
+      "source_location": "L248",
+      "weight": 1.0
+    },
+    {
+      "source": "llm_pipeline_contract_md",
+      "target": "specs_llm_pipeline_contract_llm_pipeline_contract",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_llm_pipeline_contract",
+      "target": "specs_llm_pipeline_contract_1_원칙",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_llm_pipeline_contract",
+      "target": "specs_llm_pipeline_contract_2_pipeline별_llm_배치",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_llm_pipeline_contract",
+      "target": "specs_llm_pipeline_contract_3_prompt_boundary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_3_prompt_boundary",
+      "target": "specs_llm_pipeline_contract_3_1_sqllm",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_3_1_sqllm",
+      "target": "specs_llm_pipeline_contract_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_3_prompt_boundary",
+      "target": "specs_llm_pipeline_contract_3_2_qa_review",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_3_2_qa_review",
+      "target": "specs_llm_pipeline_contract_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_3_prompt_boundary",
+      "target": "specs_llm_pipeline_contract_3_3_report_review",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_3_3_report_review",
+      "target": "specs_llm_pipeline_contract_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_3_prompt_boundary",
+      "target": "specs_llm_pipeline_contract_3_4_anomaly_explanation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_3_4_anomaly_explanation",
+      "target": "specs_llm_pipeline_contract_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_3_prompt_boundary",
+      "target": "specs_llm_pipeline_contract_3_5_approval_review",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_3_5_approval_review",
+      "target": "specs_llm_pipeline_contract_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_llm_pipeline_contract",
+      "target": "specs_llm_pipeline_contract_4_retrieval_routing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_llm_pipeline_contract",
+      "target": "specs_llm_pipeline_contract_5_prompt_registry_후보",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_5_prompt_registry_후보",
+      "target": "specs_llm_pipeline_contract_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_llm_pipeline_contract",
+      "target": "specs_llm_pipeline_contract_6_model_selection_note",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_llm_pipeline_contract_llm_pipeline_contract",
+      "target": "specs_llm_pipeline_contract_7_verification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "llm_pipeline_contract.md",
+      "source_location": "L126",
+      "weight": 1.0
+    },
+    {
+      "source": "knowledge_db_contract_md",
+      "target": "specs_knowledge_db_contract_knowledge_db_contract",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_knowledge_db_contract",
+      "target": "specs_knowledge_db_contract_1_목적",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_knowledge_db_contract",
+      "target": "specs_knowledge_db_contract_2_source_tier",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_knowledge_db_contract",
+      "target": "specs_knowledge_db_contract_3_vector_db_대상_문서",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_3_vector_db_대상_문서",
+      "target": "specs_knowledge_db_contract_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_3_vector_db_대상_문서",
+      "target": "specs_knowledge_db_contract_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_knowledge_db_contract",
+      "target": "specs_knowledge_db_contract_4_chunking_기준",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_knowledge_db_contract",
+      "target": "specs_knowledge_db_contract_5_metadata_schema",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_5_metadata_schema",
+      "target": "specs_knowledge_db_contract_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_5_metadata_schema",
+      "target": "specs_knowledge_db_contract_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_knowledge_db_contract",
+      "target": "specs_knowledge_db_contract_6_aws_postgresql_pgvector_준비",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L111",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_6_aws_postgresql_pgvector_준비",
+      "target": "specs_knowledge_db_contract_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_knowledge_db_contract",
+      "target": "specs_knowledge_db_contract_7_graphify_운영_기준",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L147",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_7_graphify_운영_기준",
+      "target": "specs_knowledge_db_contract_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L153",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_7_graphify_운영_기준",
+      "target": "specs_knowledge_db_contract_codeblock_7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L159",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_7_graphify_운영_기준",
+      "target": "specs_knowledge_db_contract_codeblock_8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L167",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_knowledge_db_contract",
+      "target": "specs_knowledge_db_contract_8_graphify_mcp_hook_기준",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L174",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_8_graphify_mcp_hook_기준",
+      "target": "specs_knowledge_db_contract_codeblock_9",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L184",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_8_graphify_mcp_hook_기준",
+      "target": "specs_knowledge_db_contract_codeblock_10",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L195",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_knowledge_db_contract",
+      "target": "specs_knowledge_db_contract_9_retrieval_policy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L202",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_knowledge_db_contract",
+      "target": "specs_knowledge_db_contract_10_검증",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L213",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_knowledge_db_contract_10_검증",
+      "target": "specs_knowledge_db_contract_codeblock_11",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "knowledge_db_contract.md",
+      "source_location": "L215",
+      "weight": 1.0
+    },
+    {
+      "source": "application_skeleton_md",
+      "target": "specs_application_skeleton_애플리케이션_스켈레톤",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "application_skeleton.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_application_skeleton_애플리케이션_스켈레톤",
+      "target": "specs_application_skeleton_원칙",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "application_skeleton.md",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_application_skeleton_애플리케이션_스켈레톤",
+      "target": "specs_application_skeleton_파일별_역할",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "application_skeleton.md",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_application_skeleton_애플리케이션_스켈레톤",
+      "target": "specs_application_skeleton_금지된_작업",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "application_skeleton.md",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "meter_measurement_cadence_policy_md",
+      "target": "specs_meter_measurement_cadence_policy_meter_measurement_cadence_policy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_measurement_cadence_policy_meter_measurement_cadence_policy",
+      "target": "specs_meter_measurement_cadence_policy_1_repository_evidence",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_measurement_cadence_policy_meter_measurement_cadence_policy",
+      "target": "specs_meter_measurement_cadence_policy_2_required_cadence_inventory",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_measurement_cadence_policy_2_required_cadence_inventory",
+      "target": "specs_meter_measurement_cadence_policy_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_measurement_cadence_policy_meter_measurement_cadence_policy",
+      "target": "specs_meter_measurement_cadence_policy_3_canonical_grid_selection",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_measurement_cadence_policy_meter_measurement_cadence_policy",
+      "target": "specs_meter_measurement_cadence_policy_4_expected_observed_coverage_arithmetic",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_measurement_cadence_policy_4_expected_observed_coverage_arithmetic",
+      "target": "specs_meter_measurement_cadence_policy_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_measurement_cadence_policy_meter_measurement_cadence_policy",
+      "target": "specs_meter_measurement_cadence_policy_5_aggregation_rules",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_measurement_cadence_policy_meter_measurement_cadence_policy",
+      "target": "specs_meter_measurement_cadence_policy_6_gap_and_null_semantics",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_measurement_cadence_policy_meter_measurement_cadence_policy",
+      "target": "specs_meter_measurement_cadence_policy_7_required_provenance_fields",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_measurement_cadence_policy_7_required_provenance_fields",
+      "target": "specs_meter_measurement_cadence_policy_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_measurement_cadence_policy_meter_measurement_cadence_policy",
+      "target": "specs_meter_measurement_cadence_policy_8_implementation_impact",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L120",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_meter_measurement_cadence_policy_meter_measurement_cadence_policy",
+      "target": "specs_meter_measurement_cadence_policy_9_policy_decision",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "meter_measurement_cadence_policy.md",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "database_schema_md",
+      "target": "specs_database_schema_cms_database_schema",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_cms_database_schema",
+      "target": "specs_database_schema_1_목적",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_cms_database_schema",
+      "target": "specs_database_schema_2_database_및_schema_layout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_2_database_및_schema_layout",
+      "target": "specs_database_schema_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_2_database_및_schema_layout",
+      "target": "specs_database_schema_aws_read_only_inventory_evidence",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_cms_database_schema",
+      "target": "specs_database_schema_3_reference_및_canonical_facts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_3_reference_및_canonical_facts",
+      "target": "specs_database_schema_reference_corrected_resampled_data",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_reference_corrected_resampled_data",
+      "target": "specs_database_schema_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_3_reference_및_canonical_facts",
+      "target": "specs_database_schema_canonical_observed_measurement_facts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_canonical_observed_measurement_facts",
+      "target": "specs_database_schema_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_cms_database_schema",
+      "target": "specs_database_schema_4_candidate_및_promotion_boundary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L109",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_4_candidate_및_promotion_boundary",
+      "target": "specs_database_schema_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_cms_database_schema",
+      "target": "specs_database_schema_5_mart_및_model_input_boundary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L124",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_cms_database_schema",
+      "target": "specs_database_schema_6_scratch_및_test_schemas",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_6_scratch_및_test_schemas",
+      "target": "specs_database_schema_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L132",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_database_schema_cms_database_schema",
+      "target": "specs_database_schema_7_legacy_compatibility_note",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "database_schema.md",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
+      "source": "langgraph_review_workflow_md",
+      "target": "specs_langgraph_review_workflow_langgraph_비동기_review_워크플로_설계",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_langgraph_비동기_review_워크플로_설계",
+      "target": "specs_langgraph_review_workflow_1_목적과_경계",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_langgraph_비동기_review_워크플로_설계",
+      "target": "specs_langgraph_review_workflow_2_2단계_라우팅",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_2_2단계_라우팅",
+      "target": "specs_langgraph_review_workflow_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_2_2단계_라우팅",
+      "target": "specs_langgraph_review_workflow_우선순위_규칙_정책_7_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_langgraph_비동기_review_워크플로_설계",
+      "target": "specs_langgraph_review_workflow_3_review_서브그래프",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_3_review_서브그래프",
+      "target": "specs_langgraph_review_workflow_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_3_review_서브그래프",
+      "target": "specs_langgraph_review_workflow_graphstate_frozen_dataclass",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_3_review_서브그래프",
+      "target": "specs_langgraph_review_workflow_노드_모두_side_effect_없음",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_3_review_서브그래프",
+      "target": "specs_langgraph_review_workflow_qa_gate_context_입력_키",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_langgraph_비동기_review_워크플로_설계",
+      "target": "specs_langgraph_review_workflow_4_human_in_the_loop",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_langgraph_비동기_review_워크플로_설계",
+      "target": "specs_langgraph_review_workflow_5_evidencepacket_agentresponse_계약",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_langgraph_비동기_review_워크플로_설계",
+      "target": "specs_langgraph_review_workflow_6_import_safe_llm_optional_불변식",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L109",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_langgraph_비동기_review_워크플로_설계",
+      "target": "specs_langgraph_review_workflow_7_검증",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L116",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_langgraph_review_workflow_7_검증",
+      "target": "specs_langgraph_review_workflow_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "langgraph_review_workflow.md",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "data_contract_md",
+      "target": "specs_data_contract_cms_data_contract",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_cms_data_contract",
+      "target": "specs_data_contract_1_contract_범위",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_cms_data_contract",
+      "target": "specs_data_contract_2_data_layers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_2_data_layers",
+      "target": "specs_data_contract_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_2_data_layers",
+      "target": "specs_data_contract_source_archive",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_2_data_layers",
+      "target": "specs_data_contract_raw_buffer_and_staging",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_2_data_layers",
+      "target": "specs_data_contract_harmonized_observed_equal_interval_path",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_2_data_layers",
+      "target": "specs_data_contract_candidate_output",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_2_data_layers",
+      "target": "specs_data_contract_qa_evidence",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_2_data_layers",
+      "target": "specs_data_contract_canonical_facts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_cms_data_contract",
+      "target": "specs_data_contract_3_identifier_contract",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_cms_data_contract",
+      "target": "specs_data_contract_4_live_replay_output_contract",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_4_live_replay_output_contract",
+      "target": "specs_data_contract_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_cms_data_contract",
+      "target": "specs_data_contract_5_report_and_artifact_contract",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_5_report_and_artifact_contract",
+      "target": "specs_data_contract_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_cms_data_contract",
+      "target": "specs_data_contract_6_verification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_data_contract_6_verification",
+      "target": "specs_data_contract_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data_contract.md",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "project_overview_md",
+      "target": "specs_project_overview_cms_프로젝트_개요",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "project_overview.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_project_overview_cms_프로젝트_개요",
+      "target": "specs_project_overview_1_범위",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "project_overview.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_project_overview_cms_프로젝트_개요",
+      "target": "specs_project_overview_2_현재_active_architecture",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "project_overview.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_project_overview_cms_프로젝트_개요",
+      "target": "specs_project_overview_3_현재_repository_map",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "project_overview.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_project_overview_3_현재_repository_map",
+      "target": "specs_project_overview_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "project_overview.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_project_overview_cms_프로젝트_개요",
+      "target": "specs_project_overview_4_naming_및_용어",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "project_overview.md",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_project_overview_cms_프로젝트_개요",
+      "target": "specs_project_overview_5_검증_baseline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "project_overview.md",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_project_overview_5_검증_baseline",
+      "target": "specs_project_overview_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "project_overview.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "feature_spec_md",
+      "target": "specs_feature_spec_cms_feature_specification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "feature_spec.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_feature_spec_cms_feature_specification",
+      "target": "specs_feature_spec_1_범위",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "feature_spec.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_feature_spec_cms_feature_specification",
+      "target": "specs_feature_spec_2_feature_source_hierarchy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "feature_spec.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_feature_spec_cms_feature_specification",
+      "target": "specs_feature_spec_3_feature_groups",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "feature_spec.md",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_feature_spec_cms_feature_specification",
+      "target": "specs_feature_spec_4_output_boundary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "feature_spec.md",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_feature_spec_4_output_boundary",
+      "target": "specs_feature_spec_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "feature_spec.md",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_feature_spec_cms_feature_specification",
+      "target": "specs_feature_spec_5_planned_implementation_slots",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "feature_spec.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_feature_spec_5_planned_implementation_slots",
+      "target": "specs_feature_spec_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "feature_spec.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_feature_spec_cms_feature_specification",
+      "target": "specs_feature_spec_6_verification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "feature_spec.md",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_feature_spec_6_verification",
+      "target": "specs_feature_spec_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "feature_spec.md",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_feature_spec_6_verification",
+      "target": "specs_feature_spec_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "feature_spec.md",
+      "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "mongo_live_replay_contract_md",
+      "target": "specs_mongo_live_replay_contract_cms_mongo_live_replay_contract",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_mongo_live_replay_contract_cms_mongo_live_replay_contract",
+      "target": "specs_mongo_live_replay_contract_1_목적",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_mongo_live_replay_contract_cms_mongo_live_replay_contract",
+      "target": "specs_mongo_live_replay_contract_2_active_collection_roles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_mongo_live_replay_contract_cms_mongo_live_replay_contract",
+      "target": "specs_mongo_live_replay_contract_3_event_shape",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_mongo_live_replay_contract_cms_mongo_live_replay_contract",
+      "target": "specs_mongo_live_replay_contract_4_processor_boundary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_mongo_live_replay_contract_4_processor_boundary",
+      "target": "specs_mongo_live_replay_contract_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L45",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_mongo_live_replay_contract_cms_mongo_live_replay_contract",
+      "target": "specs_mongo_live_replay_contract_5_forbidden_shortcuts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_mongo_live_replay_contract_cms_mongo_live_replay_contract",
+      "target": "specs_mongo_live_replay_contract_6_verification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_mongo_live_replay_contract_6_verification",
+      "target": "specs_mongo_live_replay_contract_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mongo_live_replay_contract.md",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "pipeline_skeleton_md",
+      "target": "specs_pipeline_skeleton_cms_파이프라인_스켈레톤_명세",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_cms_파이프라인_스켈레톤_명세",
+      "target": "specs_pipeline_skeleton_1_확정_원칙",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_1_확정_원칙",
+      "target": "specs_pipeline_skeleton_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_1_확정_원칙",
+      "target": "specs_pipeline_skeleton_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_cms_파이프라인_스켈레톤_명세",
+      "target": "specs_pipeline_skeleton_2_구성_범위",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_2_구성_범위",
+      "target": "specs_pipeline_skeleton_지금_구성한다",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_2_구성_범위",
+      "target": "specs_pipeline_skeleton_지금_구성하지_않는다",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_cms_파이프라인_스켈레톤_명세",
+      "target": "specs_pipeline_skeleton_3_postgresql_schema_구조",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_3_postgresql_schema_구조",
+      "target": "specs_pipeline_skeleton_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_3_postgresql_schema_구조",
+      "target": "specs_pipeline_skeleton_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_cms_파이프라인_스켈레톤_명세",
+      "target": "specs_pipeline_skeleton_4_mongodb_collection_구조",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_4_mongodb_collection_구조",
+      "target": "specs_pipeline_skeleton_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_4_mongodb_collection_구조",
+      "target": "specs_pipeline_skeleton_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L114",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_cms_파이프라인_스켈레톤_명세",
+      "target": "specs_pipeline_skeleton_5_정상_비정상_데이터_분기",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L121",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_5_정상_비정상_데이터_분기",
+      "target": "specs_pipeline_skeleton_정상_path",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L123",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_정상_path",
+      "target": "specs_pipeline_skeleton_codeblock_7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L125",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_5_정상_비정상_데이터_분기",
+      "target": "specs_pipeline_skeleton_비정상_data_quality_path",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L140",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_비정상_data_quality_path",
+      "target": "specs_pipeline_skeleton_codeblock_8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L142",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_비정상_data_quality_path",
+      "target": "specs_pipeline_skeleton_codeblock_9",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L152",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_cms_파이프라인_스켈레톤_명세",
+      "target": "specs_pipeline_skeleton_6_latency_budget_기준",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L164",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_6_latency_budget_기준",
+      "target": "specs_pipeline_skeleton_live_ingestion",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L166",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_live_ingestion",
+      "target": "specs_pipeline_skeleton_codeblock_10",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L179",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_6_latency_budget_기준",
+      "target": "specs_pipeline_skeleton_dashboard_read",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L184",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_6_latency_budget_기준",
+      "target": "specs_pipeline_skeleton_chat",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L193",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_6_latency_budget_기준",
+      "target": "specs_pipeline_skeleton_report",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L202",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_cms_파이프라인_스켈레톤_명세",
+      "target": "specs_pipeline_skeleton_7_component_skeleton",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L217",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_7_component_skeleton",
+      "target": "specs_pipeline_skeleton_worker",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L219",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_worker",
+      "target": "specs_pipeline_skeleton_codeblock_11",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L221",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_7_component_skeleton",
+      "target": "specs_pipeline_skeleton_fastapi_shell",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L235",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_fastapi_shell",
+      "target": "specs_pipeline_skeleton_codeblock_12",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L237",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_7_component_skeleton",
+      "target": "specs_pipeline_skeleton_airflow_shell",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L253",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_airflow_shell",
+      "target": "specs_pipeline_skeleton_codeblock_13",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L257",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_7_component_skeleton",
+      "target": "specs_pipeline_skeleton_chat_shell_및_langgraph_workflow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L263",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_chat_shell_및_langgraph_workflow",
+      "target": "specs_pipeline_skeleton_codeblock_14",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L267",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_chat_shell_및_langgraph_workflow",
+      "target": "specs_pipeline_skeleton_codeblock_15",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L282",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_cms_파이프라인_스켈레톤_명세",
+      "target": "specs_pipeline_skeleton_8_mermaid_diagram_파일",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L296",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_8_mermaid_diagram_파일",
+      "target": "specs_pipeline_skeleton_codeblock_16",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L310",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_cms_파이프라인_스켈레톤_명세",
+      "target": "specs_pipeline_skeleton_9_git_반영_방식",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L317",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_9_git_반영_방식",
+      "target": "specs_pipeline_skeleton_codeblock_17",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L321",
+      "weight": 1.0
+    },
+    {
+      "source": "specs_pipeline_skeleton_9_git_반영_방식",
+      "target": "specs_pipeline_skeleton_codeblock_18",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pipeline_skeleton.md",
+      "source_location": "L335",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_pipeline_explanations_md",
+      "target": "diagrams_pipeline_explanations_pipeline_diagram_explanations",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/pipeline_explanations.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_pipeline_explanations_pipeline_diagram_explanations",
+      "target": "diagrams_pipeline_explanations_전체_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/pipeline_explanations.md",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_pipeline_explanations_pipeline_diagram_explanations",
+      "target": "diagrams_pipeline_explanations_db_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/pipeline_explanations.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_pipeline_explanations_pipeline_diagram_explanations",
+      "target": "diagrams_pipeline_explanations_airflow_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/pipeline_explanations.md",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_pipeline_explanations_pipeline_diagram_explanations",
+      "target": "diagrams_pipeline_explanations_langgraph_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/pipeline_explanations.md",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_pipeline_explanations_pipeline_diagram_explanations",
+      "target": "diagrams_pipeline_explanations_app_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/pipeline_explanations.md",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_sequence_04_app_pipeline_md",
+      "target": "diagrams_sequence_04_app_pipeline_sequence_04_app_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/sequence_04_app_pipeline.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_sequence_04_app_pipeline_sequence_04_app_pipeline",
+      "target": "diagrams_sequence_04_app_pipeline_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/sequence_04_app_pipeline.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_sequence_03_langgraph_pipeline_md",
+      "target": "diagrams_sequence_03_langgraph_pipeline_sequence_03_langgraph_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/sequence_03_langgraph_pipeline.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_sequence_03_langgraph_pipeline_sequence_03_langgraph_pipeline",
+      "target": "diagrams_sequence_03_langgraph_pipeline_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/sequence_03_langgraph_pipeline.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_sequence_02_airflow_pipeline_md",
+      "target": "diagrams_sequence_02_airflow_pipeline_sequence_02_airflow_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/sequence_02_airflow_pipeline.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_sequence_02_airflow_pipeline_sequence_02_airflow_pipeline",
+      "target": "diagrams_sequence_02_airflow_pipeline_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/sequence_02_airflow_pipeline.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_sequence_01_database_pipeline_md",
+      "target": "diagrams_sequence_01_database_pipeline_sequence_01_database_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/sequence_01_database_pipeline.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_sequence_01_database_pipeline_sequence_01_database_pipeline",
+      "target": "diagrams_sequence_01_database_pipeline_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/sequence_01_database_pipeline.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_sequence_00_overall_pipeline_md",
+      "target": "diagrams_sequence_00_overall_pipeline_sequence_00_overall_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/sequence_00_overall_pipeline.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_sequence_00_overall_pipeline_sequence_00_overall_pipeline",
+      "target": "diagrams_sequence_00_overall_pipeline_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/sequence_00_overall_pipeline.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_flow_04_app_pipeline_md",
+      "target": "diagrams_flow_04_app_pipeline_flow_04_app_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/flow_04_app_pipeline.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_flow_04_app_pipeline_flow_04_app_pipeline",
+      "target": "diagrams_flow_04_app_pipeline_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/flow_04_app_pipeline.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_flow_03_langgraph_pipeline_md",
+      "target": "diagrams_flow_03_langgraph_pipeline_flow_03_langgraph_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/flow_03_langgraph_pipeline.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_flow_03_langgraph_pipeline_flow_03_langgraph_pipeline",
+      "target": "diagrams_flow_03_langgraph_pipeline_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/flow_03_langgraph_pipeline.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_flow_02_airflow_pipeline_md",
+      "target": "diagrams_flow_02_airflow_pipeline_flow_02_airflow_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/flow_02_airflow_pipeline.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_flow_02_airflow_pipeline_flow_02_airflow_pipeline",
+      "target": "diagrams_flow_02_airflow_pipeline_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/flow_02_airflow_pipeline.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_flow_01_database_pipeline_md",
+      "target": "diagrams_flow_01_database_pipeline_flow_01_database_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/flow_01_database_pipeline.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_flow_01_database_pipeline_flow_01_database_pipeline",
+      "target": "diagrams_flow_01_database_pipeline_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/flow_01_database_pipeline.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_flow_00_overall_pipeline_md",
+      "target": "diagrams_flow_00_overall_pipeline_flow_00_overall_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/flow_00_overall_pipeline.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_flow_00_overall_pipeline_flow_00_overall_pipeline",
+      "target": "diagrams_flow_00_overall_pipeline_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/flow_00_overall_pipeline.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_readme_md",
+      "target": "diagrams_readme_cms_mermaid_diagram_모음",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/README.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_readme_cms_mermaid_diagram_모음",
+      "target": "diagrams_readme_diagram_세트",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/README.md",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_readme_cms_mermaid_diagram_모음",
+      "target": "diagrams_readme_render_readability_기준",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/README.md",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_readme_cms_mermaid_diagram_모음",
+      "target": "diagrams_readme_local_render",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/README.md",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "diagrams_readme_local_render",
+      "target": "diagrams_readme_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "diagrams/README.md",
+      "source_location": "L28",
+      "weight": 1.0
+    }
+  ]
+}

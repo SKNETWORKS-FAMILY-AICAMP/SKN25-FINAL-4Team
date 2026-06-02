@@ -7,7 +7,7 @@
 
 이 문서는 CMS ontology artifact의 class, property, relationship, constraint 후보를 정의한다. 시계열 measurement row는 PostgreSQL `canonical`/`reference`/`qa` layer에서 관리하고, ontology는 metadata, source provenance, 계량기 관계, anomaly explanation grounding을 담당한다.
 
-현재 generated RDF artifact는 legacy namespace와 파일명 `ems.ttl`을 유지한다. 이는 source dataset/legacy artifact 호환을 위한 이름이며, active architecture prose와 runtime package는 `CMS`/`cms`를 기준으로 한다.
+현재 generated RDF artifact는 `cms.ttl`, `cms_shapes.ttl`, `cms_protege.owl` 파일명을 사용한다. CMS는 Condition Monitoring System을 뜻하며 ontology namespace도 CMS 기준이다.
 
 ## 2. 기준 원천
 
@@ -19,8 +19,8 @@
 | Tier 1 | `docs/specs/meter_metadata.md` | 계량기 classification과 redundancy 기준 | 기준 문서 |
 | Tier 1 | `docs/specs/meter_measurement_cadence_policy.md` | native cadence, expected_points, gap/null policy | 기준 문서 |
 | Tier 1 | `docs/specs/data_contract.md` | source/candidate/QA/canonical/reference boundary | 기준 문서 |
-| Tier 1 | `docs/ontology/ems.ttl` | Protégé와 rdflib에서 읽는 Turtle artifact | 자동 생성 대상 |
-| Tier 1 | `docs/ontology/ems_shapes.ttl` | SHACL closed-world validation artifact | 자동 검증 대상 |
+| Tier 1 | `docs/ontology/cms.ttl` | Protégé와 rdflib에서 읽는 Turtle artifact | 자동 생성 대상 |
+| Tier 1 | `docs/ontology/cms_shapes.ttl` | SHACL closed-world validation artifact | 자동 검증 대상 |
 | Tier 1 | `docs/ontology/competency_questions.md` | ontology helper가 답해야 하는 질문 | 검증 기준 |
 | Tier 1 | `scripts/ontology/query_ontology.py` | SPARQL query smoke test | 검증 스크립트 |
 
@@ -158,11 +158,11 @@ meter -> measurement -> equipment group -> building -> role -> redundancy pair -
 
 ### 8.3 LLM grounding
 
-LLM agent는 `docs/ontology/ems.ttl`, `docs/ontology/competency_questions.md`, `scripts/ontology/query_ontology.py`, `docs/reference/source_inventory.md`, 검토된 Wiki/Obsidian project note를 함께 확인한다. Graphify나 Obsidian 자동 생성 note는 후보 지식으로만 사용하고, 중요한 관계는 source artifact와 active spec으로 재확인한다.
+LLM agent는 `docs/ontology/cms.ttl`, `docs/ontology/competency_questions.md`, `scripts/ontology/query_ontology.py`, `docs/reference/source_inventory.md`, 검토된 Wiki/Obsidian project note를 함께 확인한다. Graphify나 Obsidian 자동 생성 note는 후보 지식으로만 사용하고, 중요한 관계는 source artifact와 active spec으로 재확인한다.
 
 ## 9. Protégé 사용 기준
 
-Protégé는 `docs/ontology/ems.ttl` 또는 `docs/ontology/ems_protege.owl`을 열어 class hierarchy, object property, data property, individual 관계를 검토하는 데 사용한다. `ems_protege.owl`은 Protégé GUI 확인을 위한 RDF/XML artifact다. 수동 편집으로 canonical source를 변경하지 않는다. 변경 필요 시 `meter_metadata.md`, source inventory, 또는 향후 DB metadata table을 수정한 뒤 artifact를 재생성한다.
+Protégé는 `docs/ontology/cms.ttl` 또는 `docs/ontology/cms_protege.owl`을 열어 class hierarchy, object property, data property, individual 관계를 검토하는 데 사용한다. `cms_protege.owl`은 Protégé GUI 확인을 위한 RDF/XML artifact다. 수동 편집으로 canonical source를 변경하지 않는다. 변경 필요 시 `meter_metadata.md`, source inventory, 또는 향후 DB metadata table을 수정한 뒤 artifact를 재생성한다.
 
 ## 10. 제외 범위
 

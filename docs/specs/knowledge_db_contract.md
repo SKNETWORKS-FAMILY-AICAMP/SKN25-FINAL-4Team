@@ -15,7 +15,7 @@ CMS agent/RAG/SQLLM/anomaly explanation이 같은 기준 문서를 사용하도�
 | 0 | Nature DOI `10.1038/s41597-025-05186-3`, Honda RI PDF, Dryad DOI `10.5061/dryad.73n5tb363` | 예 | 아니오 | 원문 데이터 source. 필요 fact는 `docs/specs`와 source inventory로 요약 반영 |
 | 1 | `docs/specs/*.md`, `docs/specs/diagrams/*.mmd`, `docs/specs/timestamp_policy_registry.example.csv` | 예 | 예 | Graphify MCP hook의 유일한 1차 범위 |
 | 1 | `README.md`, `docs/qa/*.md`, `docs/reference/*.md`, `docs/ontology/competency_questions.md` | 예 | 아니오 | vector/RAG에는 사용 가능하지만 Graphify MCP context에는 직접 넣지 않음 |
-| 1 | `docs/ontology/ems.ttl`, `ems_shapes.ttl` | 선택 | 아니오 | ontology helper/validation source. Graphify 대신 ontology tool/query로 확인 |
+| 1 | `docs/ontology/cms.ttl`, `cms_shapes.ttl` | 선택 | 아니오 | ontology helper/validation source. Graphify 대신 ontology tool/query로 확인 |
 | 1 | `src/cms/**`, `scripts/**`, `tests/**` | 아니오 | 아니오 | code graph/navigation 대상이 아님. 필요 시 별도 code inspection으로 확인 |
 | 2 | HRI-EU `MonitoringDatasetAnalysis` selected files | 예 | 아니오 | meter grouping, issue template 보조 |
 | 2 | `_archive`의 원문 Table 2/3 일부 mapping | 제한 | 아니오 | active claim 전 원문 재확인 |
@@ -151,7 +151,7 @@ Graph DB server는 구축하지 않는다. Graphify artifact는 `docs/specs` con
 권장 생성 방식:
 
 ```text
-docs/specs mirror -> graphify update --no-cluster -> wiki/graphify/skn25_cms/graph.json, graph_tree.html
+docs/specs mirror -> graphify update --no-cluster -> graphify-out/graph.json + /home/viowlet/wiki/graphify/skn25_cms/graph.json
 ```
 
 포함:
@@ -169,7 +169,7 @@ README.md, docs/qa, docs/reference, docs/ontology, src, scripts, tests,
 reports, .git, .venv, .env, _archive, graphify-out, __pycache__, .pytest_cache
 ```
 
-Graphify output은 `docs/specs` 후보 knowledge다. 중요한 claim은 Graphify 결과가 아니라 해당 `docs/specs` 원본 파일과, 필요 시 `docs/qa`, `docs/reference`, `docs/ontology` 원본으로 재확인한다.
+Project-root `graphify-out/`은 future MCP/agent pipeline call이 직접 참조하는 local context graph다. `/home/viowlet/wiki/graphify/skn25_cms/`는 같은 graph의 durable synced copy다. Graphify output은 `docs/specs` 후보 knowledge다. 중요한 claim은 Graphify 결과가 아니라 해당 `docs/specs` 원본 파일과, 필요 시 `docs/qa`, `docs/reference`, `docs/ontology` 원본으로 재확인한다.
 
 ## 8. Graphify MCP hook 기준
 
@@ -177,7 +177,7 @@ Graphify output은 `docs/specs` 후보 knowledge다. 중요한 claim은 Graphify
 
 1. Graphify package의 MCP extra 또는 upstream MCP entrypoint가 확인되면 Hermes native MCP에 등록한다.
 2. MCP entrypoint가 없으면 작은 stdio MCP wrapper를 별도 구현해 `graphify query/path/explain`을 tool로 노출한다.
-3. MCP가 준비되기 전에는 Hermes built-in terminal/file tool로 `graphify query --graph /home/viowlet/wiki/graphify/skn25_cms/graph.json`를 호출한다.
+3. MCP가 준비되기 전에는 Hermes built-in terminal/file tool로 `graphify query --graph graphify-out/graph.json`를 호출한다. wiki copy는 local root artifact가 없을 때의 fallback이다.
 
 Hermes native MCP 설정 예시는 entrypoint가 확인된 뒤 다음 형태를 따른다.
 
@@ -185,7 +185,7 @@ Hermes native MCP 설정 예시는 entrypoint가 확인된 뒤 다음 형태를 
 mcp_servers:
   graphify_cms:
     command: "/home/viowlet/.local/bin/graphify"
-    args: ["mcp", "--graph", "/home/viowlet/wiki/graphify/skn25_cms/graph.json"]
+    args: ["mcp", "--graph", "graphify-out/graph.json"]
     timeout: 120
     connect_timeout: 60
 ```
@@ -215,12 +215,13 @@ hermes gateway restart
 ```bash
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python scripts/verify/verify_skeleton_contracts.py
 
+test -f graphify-out/graph.json
 test -f /home/viowlet/wiki/graphify/skn25_cms/graph.json
-graphify query "CMS data boundary" --graph /home/viowlet/wiki/graphify/skn25_cms/graph.json
+graphify query "CMS data boundary" --graph graphify-out/graph.json
 python - <<'PY'
 import json
 from pathlib import Path
-graph = json.loads(Path('/home/viowlet/wiki/graphify/skn25_cms/graph.json').read_text(encoding='utf-8'))
+graph = json.loads(Path('graphify-out/graph.json').read_text(encoding='utf-8'))
 for item in graph.get('nodes', []) + graph.get('links', []):
     source_file = item.get('source_file')
     if source_file:

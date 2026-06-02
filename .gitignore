@@ -56,6 +56,7 @@ outputs/tables/*
 # Generated report/spec renders
 docs/specs/diagrams/*.png
 docs/specs/diagrams/*.svg
+!docs/specs/diagrams/*.svg
 reports/*
 !reports/mermaid_20260601/
 !reports/mermaid_20260601/**
@@ -70,10 +71,17 @@ reports/*
 *.[Hh][Tt][Mm][Ll]
 *.[Xx][Ll][Ss][Xx]
 
-# Local preserved history and generated project graph; not shared through Git
+# Local preserved history
 _archive/
 **/_archive/
-graphify-out/
+
+# Project-root Graphify context graph is kept for future MCP/agent pipeline calls.
+# Keep only stable small artifacts in Git; Graphify may generate additional local files.
+graphify-out/*
+!graphify-out/
+!graphify-out/graph.json
+!graphify-out/graph_tree.html
+!graphify-out/manifest.json
 
 # Frontend/package-manager caches that may appear inside report drafts
 node_modules/

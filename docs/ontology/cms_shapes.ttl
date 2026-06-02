@@ -1,143 +1,143 @@
-@prefix ems: <https://nousresearch.local/ems/ontology#> .
+@prefix cms: <https://nousresearch.local/cms/ontology#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-ems:MeterShape a sh:NodeShape ;
-    sh:targetClass ems:Meter ;
+cms:MeterShape a sh:NodeShape ;
+    sh:targetClass cms:Meter ;
     sh:property [
-        sh:path ems:belongsToGroup ;
-        sh:class ems:EquipmentGroup ;
+        sh:path cms:belongsToGroup ;
+        sh:class cms:EquipmentGroup ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:locatedInBuilding ;
-        sh:class ems:Building ;
+        sh:path cms:locatedInBuilding ;
+        sh:class cms:Building ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:hasRole ;
-        sh:class ems:MeterRole ;
+        sh:path cms:hasRole ;
+        sh:class cms:MeterRole ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:meterUrn ;
+        sh:path cms:meterUrn ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:meterDomain ;
+        sh:path cms:meterDomain ;
         sh:datatype xsd:string ;
         sh:in ( "electricity" "thermal" "weather" ) ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:meterRoleCode ;
+        sh:path cms:meterRoleCode ;
         sh:datatype xsd:string ;
         sh:in ( "consumption" "production" "thermal_flow" "weather" ) ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:signConvention ;
+        sh:path cms:signConvention ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:anomalyPriority ;
+        sh:path cms:anomalyPriority ;
         sh:datatype xsd:integer ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:noteFile ;
+        sh:path cms:noteFile ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:hasHardwareModel ;
-        sh:class ems:HardwareModel ;
+        sh:path cms:hasHardwareModel ;
+        sh:class cms:HardwareModel ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] .
 
-ems:HardwareModelShape a sh:NodeShape ;
-    sh:targetClass ems:HardwareModel ;
+cms:HardwareModelShape a sh:NodeShape ;
+    sh:targetClass cms:HardwareModel ;
     sh:property [
-        sh:path ems:hardwareModelCode ;
+        sh:path cms:hardwareModelCode ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:manufacturer ;
+        sh:path cms:manufacturer ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:modelName ;
+        sh:path cms:modelName ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] .
 
-ems:EquipmentGroupShape a sh:NodeShape ;
-    sh:targetClass ems:EquipmentGroup ;
+cms:EquipmentGroupShape a sh:NodeShape ;
+    sh:targetClass cms:EquipmentGroup ;
     sh:property [
-        sh:path ems:equipmentGroupCode ;
+        sh:path cms:equipmentGroupCode ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:meterCount ;
+        sh:path cms:meterCount ;
         sh:datatype xsd:integer ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:anomalyPriority ;
+        sh:path cms:anomalyPriority ;
         sh:datatype xsd:integer ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:noteFile ;
+        sh:path cms:noteFile ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] .
 
-ems:RedundancyPairShape a sh:NodeShape ;
-    sh:targetClass ems:RedundancyPair ;
+cms:RedundancyPairShape a sh:NodeShape ;
+    sh:targetClass cms:RedundancyPair ;
     sh:message "primary and redundant meters must be different"@en ;
     sh:property [
-        sh:path ems:hasPrimaryMeter ;
-        sh:class ems:Meter ;
+        sh:path cms:hasPrimaryMeter ;
+        sh:class cms:Meter ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:hasRedundantMeter ;
-        sh:class ems:Meter ;
+        sh:path cms:hasRedundantMeter ;
+        sh:class cms:Meter ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:hasGroup ;
-        sh:class ems:EquipmentGroup ;
+        sh:path cms:hasGroup ;
+        sh:class cms:EquipmentGroup ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path ems:equipmentName ;
+        sh:path cms:equipmentName ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
@@ -145,11 +145,11 @@ ems:RedundancyPairShape a sh:NodeShape ;
     sh:sparql [
         sh:message "primary and redundant meters must be different"@en ;
         sh:select """
-            PREFIX ems: <https://nousresearch.local/ems/ontology#>
+            PREFIX cms: <https://nousresearch.local/cms/ontology#>
             SELECT $this
             WHERE {
-                $this ems:hasPrimaryMeter ?meter ;
-                      ems:hasRedundantMeter ?meter .
+                $this cms:hasPrimaryMeter ?meter ;
+                      cms:hasRedundantMeter ?meter .
             }
         """ ;
     ] .

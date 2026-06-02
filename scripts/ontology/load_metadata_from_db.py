@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only DB metadata source probes for EMS ontology generation."""
+"""Read-only DB metadata source probes for CMS ontology generation."""
 
 from __future__ import annotations
 
@@ -32,10 +32,10 @@ class MetadataSourceStatus:
 
 def metadata_table_names() -> list[str]:
     return [
-        "ems.meter_definition",
-        "ems.meter_redundancy",
-        "ems.meter_hardware_model",
-        "ems.meter_hardware_assignment",
+        "cms_metadata.meter_definition",
+        "cms_metadata.meter_redundancy",
+        "cms_metadata.meter_hardware_model",
+        "cms_metadata.meter_hardware_assignment",
     ]
 
 
@@ -64,7 +64,7 @@ def build_table_existence_query() -> tuple[str, tuple[str, list[str]]]:
           AND table_name = ANY(%s)
         ORDER BY table_name
         """,
-        ("ems", tables),
+        ("cms_metadata", tables),
     )
 
 
@@ -145,8 +145,8 @@ def fetch_db_metadata() -> tuple[list[dict[str, object]], list[dict[str, str]], 
                         WHEN lower(COALESCE(h.source_description, '')) LIKE 'distribution emission lab%' THEN 'distribution'
                         ELSE ''
                     END AS equipment_layer
-                FROM ems.meter_definition d
-                LEFT JOIN ems.meter_hardware_assignment h USING (meter_urn)
+                FROM cms_metadata.meter_definition d
+                LEFT JOIN cms_metadata.meter_hardware_assignment h USING (meter_urn)
                 ORDER BY d.meter_urn
                 """
             )
@@ -161,14 +161,14 @@ def fetch_db_metadata() -> tuple[list[dict[str, object]], list[dict[str, str]], 
                     "sign_convention": row[6],
                     "anomaly_priority": row[7],
                     "equipment_layer": row[8],
-                    "note_file": f"db:ems.meter_definition/{row[0]}",
+                    "note_file": f"db:cms_metadata.meter_definition/{row[0]}",
                 }
                 for row in cur.fetchall()
             ]
             cur.execute(
                 """
                 SELECT primary_meter_urn, redundant_meter_urn, equipment_group, COALESCE(equipment_name, '')
-                FROM ems.meter_redundancy
+                FROM cms_metadata.meter_redundancy
                 ORDER BY primary_meter_urn, redundant_meter_urn
                 """
             )
@@ -193,8 +193,8 @@ def fetch_db_metadata() -> tuple[list[dict[str, object]], list[dict[str, str]], 
                     COALESCE(a.source_doi, '') AS source_doi,
                     COALESCE(a.source_table, '') AS source_table,
                     COALESCE(a.source_description, '') AS source_description
-                FROM ems.meter_hardware_assignment a
-                JOIN ems.meter_hardware_model h USING (hardware_model_code)
+                FROM cms_metadata.meter_hardware_assignment a
+                JOIN cms_metadata.meter_hardware_model h USING (hardware_model_code)
                 ORDER BY a.meter_urn
                 """
             )

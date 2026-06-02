@@ -1,0 +1,21 @@
+%%{init: {"theme": "base", "flowchart": {"htmlLabels": false, "curve": "basis", "nodeSpacing": 60, "rankSpacing": 75}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "secondaryColor": "#f1f5f9", "secondaryBorderColor": "#94a3b8", "secondaryTextColor": "#0f172a", "tertiaryColor": "#ffffff", "tertiaryBorderColor": "#cbd5e1", "tertiaryTextColor": "#0f172a", "clusterBkg": "#ffffff", "clusterBorder": "#94a3b8", "edgeLabelBackground": "#ffffff", "lineColor": "#475569", "fontFamily": "Arial, sans-serif", "fontSize": "15px"}} }%%
+flowchart LR
+    IN["review_input_plan_wording"]
+    subgraph LG["langgraph_async_review"]
+      STATE["state_contract_no_writes"]
+      RET["retrieve_specs_context"]
+      CHECK["qa_source_boundary_check"]
+      DRAFT["review_note_recommendation"]
+    end
+    subgraph OUT["outputs"]
+      NOTE["review_artifact"]
+      APR["approval_recommendation"]
+      CAVEAT["caveat_list"]
+    end
+    API["fastapi_job_registration"]
+    OPS["ops_manual_approval"]
+    IN --> STATE --> RET --> CHECK --> DRAFT
+    DRAFT --> NOTE
+    DRAFT --> APR --> OPS
+    DRAFT --> CAVEAT --> API
+    API --> IN

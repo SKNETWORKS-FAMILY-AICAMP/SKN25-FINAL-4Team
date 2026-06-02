@@ -6,7 +6,7 @@
 ## 1. 기준 원칙
 
 - Active architecture와 문서 표기는 `CMS` / `cms`를 기준으로 한다.
-- `EMS`는 Honda R&D Europe 원천 dataset wording, legacy DB/schema/ontology namespace, archive provenance에서만 사용한다.
+- `EMS`는 Honda R&D Europe 원천 dataset wording, legacy DB/schema, archive provenance에서만 사용한다.
 - 전력 예측은 향후 CMS mart/model lane에 들어갈 수 있지만, 이 inventory의 기준 source는 forecasting benchmark가 아니라 Honda R&D Europe 원본 데이터 논문과 CMS data contract다.
 - `_archive`의 모델 성능표, SVR/LSTM/XGBoost 실험, Huang-style benchmark, champion model report는 vector DB/ontology source truth에서 제외한다.
 
@@ -32,7 +32,7 @@ Nature 원문 제목은 **A Real-World Energy Management Dataset from a Smart Co
 | `docs/specs/meter_metadata.md` | 81 meter classification, role, redundancy, source metadata |
 | `docs/specs/meter_measurement_cadence_policy.md` | native cadence와 expected/coverage policy |
 | `docs/specs/ontology_schema.md` | ontology class/property/source coverage 기준 |
-| `docs/ontology/ems.ttl`, `ems_shapes.ttl` | legacy namespace를 쓰는 generated RDF/SHACL artifact |
+| `docs/ontology/cms.ttl`, `cms_shapes.ttl` | CMS namespace를 쓰는 generated RDF/SHACL artifact |
 | `src/cms/ontology/ontology.py` | import-safe ontology helper lane |
 
 ## 4. Tier 1 보조: HRI-EU GitHub

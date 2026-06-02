@@ -1,0 +1,27 @@
+%%{init: {"theme": "base", "sequence": {"showSequenceNumbers": true, "wrap": false, "mirrorActors": true, "rightAngles": true, "messageAlign": "center", "actorMargin": 95, "width": 180, "height": 54, "boxMargin": 14, "boxTextMargin": 8, "noteMargin": 12, "messageMargin": 48}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "actorBkg": "#f8fafc", "actorBorder": "#64748b", "actorTextColor": "#0f172a", "actorLineColor": "#64748b", "signalColor": "#334155", "signalTextColor": "#0f172a", "noteBkgColor": "#fff7ed", "noteTextColor": "#0f172a", "noteBorderColor": "#ea580c", "loopTextColor": "#0f172a", "activationBkgColor": "#e0f2fe", "activationBorderColor": "#0284c7", "fontFamily": "Arial, sans-serif", "fontSize": "15px"}} }%%
+sequenceDiagram
+    autonumber
+    participant U as User<br/>request
+    participant R as FastAPI<br/>router
+    participant SQL as SQLLM<br/>SELECT guard
+    participant DB as DB<br/>read evidence
+    participant WF as Worker<br/>Airflow job
+    participant LG as LangGraph<br/>review
+    participant ST as Status<br/>artifact
+    U->>R: ask status evidence or action
+    alt quick answer
+      R-->>U: return cached contract answer
+    else read only evidence
+      R->>SQL: build constrained query
+      SQL->>DB: SELECT whitelisted tables
+      DB-->>R: return evidence rows
+      R-->>U: answer with citations
+    else background job
+      R->>WF: register ops api job
+      WF->>ST: publish artifact status
+      ST-->>U: expose status and download
+    else risky action
+      R->>LG: create approval review request
+      LG->>ST: write review artifact
+      ST-->>U: return approval status
+    end

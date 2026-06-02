@@ -1,0 +1,24 @@
+{
+  "generated_at_utc": "2026-06-02T02:48:40.676381+00:00",
+  "graph_scope": "docs/specs only",
+  "source_root": "docs/specs",
+  "source_extensions": [
+    ".md",
+    ".mmd",
+    ".csv",
+    ".json"
+  ],
+  "rendered_svg_in_graphify_source": false,
+  "graph_path": "graphify-out/graph.json",
+  "tree_path": "graphify-out/graph_tree.html",
+  "wiki_copy": "/home/viowlet/wiki/graphify/skn25_cms/",
+  "graph_sha256": "e95f581490dd4b675e1929bbf1e345fff7a9fe553c31731f2a68f598914866db",
+  "graph_bytes": 151487,
+  "nodes": 294,
+  "links": 268,
+  "graph_source_file_entries": 26,
+  "docs_specs_source_file_count": 37,
+  "missing_source_files": [],
+  "outside_docs_specs_source_files": [],
+  "tree_bytes": 37718
+}

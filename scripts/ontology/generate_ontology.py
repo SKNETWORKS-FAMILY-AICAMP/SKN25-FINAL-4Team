@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Generate EMS RDF/Turtle ontology artifacts.
+"""Generate CMS RDF/Turtle ontology artifacts.
 
 Default source:
-- PostgreSQL/TimescaleDB approved metadata tables under the `ems` schema.
+- PostgreSQL/TimescaleDB approved metadata tables under the approved CMS metadata registry contract.
 
 Optional local markdown source, only when source files are restored manually:
 - docs/ontology/source_graph/계량기_*.md frontmatter
@@ -10,8 +10,8 @@ Optional local markdown source, only when source files are restored manually:
 - docs/specs/meter_metadata.md redundancy table
 
 Output:
-- docs/ontology/ems.ttl
-- docs/ontology/ems_protege.owl
+- docs/ontology/cms.ttl
+- docs/ontology/cms_protege.owl
 """
 
 from __future__ import annotations
@@ -25,12 +25,12 @@ from rdflib.namespace import RDF, RDFS, OWL, XSD
 ROOT = Path(__file__).resolve().parents[2]
 GRAPH_DIR = ROOT / "docs/ontology/source_graph"  # optional local source; absent in the active tree by default
 SPEC_PATH = ROOT / "docs/specs/meter_metadata.md"
-OUTPUT_PATH = ROOT / "docs/ontology/ems.ttl"
-PROTEGE_OUTPUT_PATH = ROOT / "docs/ontology/ems_protege.owl"
+OUTPUT_PATH = ROOT / "docs/ontology/cms.ttl"
+PROTEGE_OUTPUT_PATH = ROOT / "docs/ontology/cms_protege.owl"
 
-ONTOLOGY_IRI = URIRef("https://nousresearch.local/ems/ontology")
-EMS = Namespace("https://nousresearch.local/ems/ontology#")
-RES = Namespace("https://nousresearch.local/ems/resource/")
+ONTOLOGY_IRI = URIRef("https://nousresearch.local/cms/ontology")
+CMS = Namespace("https://nousresearch.local/cms/ontology#")
+RES = Namespace("https://nousresearch.local/cms/resource/")
 
 ROLE_SIGN_CONVENTIONS = {
     "consumption": "positive_consumption_negative_quality_candidate",
@@ -161,7 +161,7 @@ def build_group_records_from_meters(meter_records: list[dict[str, object]]) -> l
             "equipment_group": code,
             "meter_count": str(count),
             "primary_view": GROUP_PRIMARY_VIEWS[code],
-            "note_file": f"db:ems.meter_definition/group/{code}",
+            "note_file": f"db:cms_metadata.meter_definition/group/{code}",
         })
     return records
 
@@ -189,22 +189,22 @@ def load_redundancy_records() -> list[dict[str, str]]:
 
 
 def add_class(graph: Graph, local_name: str, label: str) -> None:
-    graph.add((EMS[local_name], RDF.type, OWL.Class))
-    graph.add((EMS[local_name], RDFS.label, Literal(label, lang="ko")))
+    graph.add((CMS[local_name], RDF.type, OWL.Class))
+    graph.add((CMS[local_name], RDFS.label, Literal(label, lang="ko")))
 
 
 def add_object_property(graph: Graph, local_name: str, domain, range_, label: str) -> None:
-    graph.add((EMS[local_name], RDF.type, OWL.ObjectProperty))
-    graph.add((EMS[local_name], RDFS.domain, domain))
-    graph.add((EMS[local_name], RDFS.range, range_))
-    graph.add((EMS[local_name], RDFS.label, Literal(label, lang="ko")))
+    graph.add((CMS[local_name], RDF.type, OWL.ObjectProperty))
+    graph.add((CMS[local_name], RDFS.domain, domain))
+    graph.add((CMS[local_name], RDFS.range, range_))
+    graph.add((CMS[local_name], RDFS.label, Literal(label, lang="ko")))
 
 
 def add_data_property(graph: Graph, local_name: str, domain, range_, label: str) -> None:
-    graph.add((EMS[local_name], RDF.type, OWL.DatatypeProperty))
-    graph.add((EMS[local_name], RDFS.domain, domain))
-    graph.add((EMS[local_name], RDFS.range, range_))
-    graph.add((EMS[local_name], RDFS.label, Literal(label, lang="ko")))
+    graph.add((CMS[local_name], RDF.type, OWL.DatatypeProperty))
+    graph.add((CMS[local_name], RDFS.domain, domain))
+    graph.add((CMS[local_name], RDFS.range, range_))
+    graph.add((CMS[local_name], RDFS.label, Literal(label, lang="ko")))
 
 
 def build_graph(source: str = "db") -> Graph:
@@ -230,19 +230,19 @@ def build_graph(source: str = "db") -> Graph:
 
     graph = Graph()
     graph.bind("rdf", RDF)
-    graph.bind("ems", EMS)
-    graph.bind("emsres", RES)
+    graph.bind("cms", CMS)
+    graph.bind("cmsres", RES)
     graph.bind("owl", OWL)
     graph.bind("rdfs", RDFS)
     graph.bind("xsd", XSD)
 
     graph.add((ONTOLOGY_IRI, RDF.type, OWL.Ontology))
-    graph.add((ONTOLOGY_IRI, RDFS.label, Literal("EMS ontology", lang="en")))
-    graph.add((ONTOLOGY_IRI, RDFS.label, Literal("EMS 온톨로지", lang="ko")))
-    graph.add((ONTOLOGY_IRI, RDFS.comment, Literal("EMS 계량기 metadata, 설비 group, 건물, 역할, redundancy 관계를 정의한 ontology artifact", lang="ko")))
+    graph.add((ONTOLOGY_IRI, RDFS.label, Literal("CMS ontology", lang="en")))
+    graph.add((ONTOLOGY_IRI, RDFS.label, Literal("CMS 온톨로지", lang="ko")))
+    graph.add((ONTOLOGY_IRI, RDFS.comment, Literal("CMS 계량기 metadata, 설비 group, 건물, 역할, redundancy 관계를 정의한 ontology artifact", lang="ko")))
 
     for name, label in {
-        "Meter": "EMS 계량기",
+        "Meter": "CMS 계량기",
         "ElectricityMeter": "전기 계량기",
         "ThermalMeter": "열 계량기",
         "WeatherMeter": "기상 계량기",
@@ -264,53 +264,53 @@ def build_graph(source: str = "db") -> Graph:
         add_class(graph, name, label)
 
     for sub, sup in [("ElectricityMeter", "Meter"), ("ThermalMeter", "Meter"), ("WeatherMeter", "Meter")]:
-        graph.add((EMS[sub], RDFS.subClassOf, EMS[sup]))
+        graph.add((CMS[sub], RDFS.subClassOf, CMS[sup]))
     for left, right in [("ElectricityMeter", "ThermalMeter"), ("ElectricityMeter", "WeatherMeter"), ("ThermalMeter", "WeatherMeter")]:
-        graph.add((EMS[left], OWL.disjointWith, EMS[right]))
+        graph.add((CMS[left], OWL.disjointWith, CMS[right]))
 
     for name, domain, range_, label in [
-        ("belongsToGroup", EMS.Meter, EMS.EquipmentGroup, "meter가 equipment group에 속함"),
-        ("locatedInBuilding", EMS.Meter, EMS.Building, "meter가 building 또는 zone에 속함"),
-        ("hasRole", EMS.Meter, EMS.MeterRole, "meter의 분석 역할"),
-        ("redundantWith", EMS.Meter, EMS.Meter, "중복 계량 관계"),
-        ("hasPrimaryMeter", EMS.RedundancyPair, EMS.Meter, "redundancy pair의 primary meter"),
-        ("hasRedundantMeter", EMS.RedundancyPair, EMS.Meter, "redundancy pair의 redundant meter"),
-        ("hasGroup", EMS.RedundancyPair, EMS.EquipmentGroup, "redundancy pair가 속한 group"),
-        ("visualizedBy", OWL.Thing, EMS.VisualizationView, "entity를 확인할 수 있는 view"),
-        ("definedBy", OWL.Thing, EMS.MetadataDocument, "entity 기준 문서"),
-        ("hasDomain", EMS.Meter, EMS.MeterDomain, "meter의 계측 domain vocabulary"),
-        ("hasSignConvention", OWL.Thing, EMS.SignConvention, "부호 해석 vocabulary"),
-        ("hasAnomalyPriorityLevel", OWL.Thing, EMS.AnomalyPriorityLevel, "이상탐지 우선순위 vocabulary"),
-        ("usesRedundancyPolicy", EMS.FeatureRule, EMS.RedundancyPolicy, "feature rule이 사용하는 redundancy policy"),
-        ("usesMeterSetRule", EMS.Feature, EMS.FeatureRule, "feature가 사용하는 meter set rule"),
-        ("hasHardwareModel", EMS.Meter, EMS.HardwareModel, "meter의 하드웨어 모델"),
+        ("belongsToGroup", CMS.Meter, CMS.EquipmentGroup, "meter가 equipment group에 속함"),
+        ("locatedInBuilding", CMS.Meter, CMS.Building, "meter가 building 또는 zone에 속함"),
+        ("hasRole", CMS.Meter, CMS.MeterRole, "meter의 분석 역할"),
+        ("redundantWith", CMS.Meter, CMS.Meter, "중복 계량 관계"),
+        ("hasPrimaryMeter", CMS.RedundancyPair, CMS.Meter, "redundancy pair의 primary meter"),
+        ("hasRedundantMeter", CMS.RedundancyPair, CMS.Meter, "redundancy pair의 redundant meter"),
+        ("hasGroup", CMS.RedundancyPair, CMS.EquipmentGroup, "redundancy pair가 속한 group"),
+        ("visualizedBy", OWL.Thing, CMS.VisualizationView, "entity를 확인할 수 있는 view"),
+        ("definedBy", OWL.Thing, CMS.MetadataDocument, "entity 기준 문서"),
+        ("hasDomain", CMS.Meter, CMS.MeterDomain, "meter의 계측 domain vocabulary"),
+        ("hasSignConvention", OWL.Thing, CMS.SignConvention, "부호 해석 vocabulary"),
+        ("hasAnomalyPriorityLevel", OWL.Thing, CMS.AnomalyPriorityLevel, "이상탐지 우선순위 vocabulary"),
+        ("usesRedundancyPolicy", CMS.FeatureRule, CMS.RedundancyPolicy, "feature rule이 사용하는 redundancy policy"),
+        ("usesMeterSetRule", CMS.Feature, CMS.FeatureRule, "feature가 사용하는 meter set rule"),
+        ("hasHardwareModel", CMS.Meter, CMS.HardwareModel, "meter의 하드웨어 모델"),
     ]:
         add_object_property(graph, name, domain, range_, label)
-    graph.add((EMS.redundantWith, RDF.type, OWL.SymmetricProperty))
+    graph.add((CMS.redundantWith, RDF.type, OWL.SymmetricProperty))
 
     for name, domain, range_, label in [
-        ("meterUrn", EMS.Meter, XSD.string, "DB meter identifier"),
-        ("meterDomain", EMS.Meter, XSD.string, "계측 domain"),
-        ("meterRoleCode", EMS.Meter, XSD.string, "계량기 role code"),
+        ("meterUrn", CMS.Meter, XSD.string, "DB meter identifier"),
+        ("meterDomain", CMS.Meter, XSD.string, "계측 domain"),
+        ("meterRoleCode", CMS.Meter, XSD.string, "계량기 role code"),
         ("equipmentGroupCode", OWL.Thing, XSD.string, "equipment group code"),
         ("equipmentName", OWL.Thing, XSD.string, "equipment name"),
-        ("equipmentLayer", EMS.Meter, XSD.string, "equipment layer within a group"),
+        ("equipmentLayer", CMS.Meter, XSD.string, "equipment layer within a group"),
         ("buildingCode", OWL.Thing, XSD.string, "building 또는 zone code"),
         ("signConvention", OWL.Thing, XSD.string, "계량값 부호 해석 규칙"),
         ("anomalyPriority", OWL.Thing, XSD.integer, "이상탐지 검토 우선순위"),
-        ("primaryView", EMS.EquipmentGroup, XSD.string, "group 기본 검토 view"),
+        ("primaryView", CMS.EquipmentGroup, XSD.string, "group 기본 검토 view"),
         ("noteFile", OWL.Thing, XSD.string, "project-relative note path"),
-        ("sourcePath", EMS.MetadataDocument, XSD.string, "project-relative source path"),
-        ("meterCount", EMS.EquipmentGroup, XSD.integer, "group meter count"),
+        ("sourcePath", CMS.MetadataDocument, XSD.string, "project-relative source path"),
+        ("meterCount", CMS.EquipmentGroup, XSD.integer, "group meter count"),
         ("hardwareModelCode", OWL.Thing, XSD.string, "계량기 하드웨어 모델 코드"),
-        ("manufacturer", EMS.HardwareModel, XSD.string, "계량기 제조사"),
-        ("modelName", EMS.HardwareModel, XSD.string, "계량기 모델명"),
+        ("manufacturer", CMS.HardwareModel, XSD.string, "계량기 제조사"),
+        ("modelName", CMS.HardwareModel, XSD.string, "계량기 모델명"),
         ("sourceName", OWL.Thing, XSD.string, "metadata source name"),
         ("sourceTable", OWL.Thing, XSD.string, "metadata source table"),
         ("sourceDescription", OWL.Thing, XSD.string, "metadata source description"),
     ]:
         add_data_property(graph, name, domain, range_, label)
-    graph.add((EMS.meterUrn, RDF.type, OWL.FunctionalProperty))
+    graph.add((CMS.meterUrn, RDF.type, OWL.FunctionalProperty))
 
     for name, source in {
         "meter_metadata": "docs/specs/meter_metadata.md",
@@ -320,13 +320,13 @@ def build_graph(source: str = "db") -> Graph:
     }.items():
         uri = RES[f"doc_{name}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
-        graph.add((uri, RDF.type, EMS.MetadataDocument))
+        graph.add((uri, RDF.type, CMS.MetadataDocument))
         graph.add((uri, RDFS.label, Literal(source)))
-        graph.add((uri, EMS.sourcePath, Literal(source)))
+        graph.add((uri, CMS.sourcePath, Literal(source)))
 
     for key, source in {
-        "ems_meter_system_overview": "docs/specs/meter_metadata.md",
-        "ems_meter_system_all": "docs/specs/meter_metadata.md",
+        "cms_condition_monitoring_overview": "docs/specs/meter_metadata.md",
+        "cms_condition_monitoring_all": "docs/specs/meter_metadata.md",
         "focus_central_cooling": "docs/specs/meter_metadata.md",
         "focus_server_power": "docs/specs/meter_metadata.md",
         "focus_emission_lab": "docs/specs/meter_metadata.md",
@@ -336,89 +336,89 @@ def build_graph(source: str = "db") -> Graph:
     }.items():
         uri = RES[f"view_{key}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
-        graph.add((uri, RDF.type, EMS.VisualizationView))
+        graph.add((uri, RDF.type, CMS.VisualizationView))
         graph.add((uri, RDFS.label, Literal(key)))
-        graph.add((uri, EMS.sourcePath, Literal(source)))
+        graph.add((uri, CMS.sourcePath, Literal(source)))
 
     for domain in ["electricity", "thermal", "weather"]:
         uri = RES[f"domain_{slug(domain)}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
-        graph.add((uri, RDF.type, EMS.MeterDomain))
+        graph.add((uri, RDF.type, CMS.MeterDomain))
         graph.add((uri, RDFS.label, Literal(domain)))
-        graph.add((uri, EMS.meterDomain, Literal(domain)))
-        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
+        graph.add((uri, CMS.meterDomain, Literal(domain)))
+        graph.add((uri, CMS.definedBy, RES.doc_meter_metadata))
 
     for sign in sorted(set(ROLE_SIGN_CONVENTIONS.values())):
         uri = RES[f"sign_{slug(sign)}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
-        graph.add((uri, RDF.type, EMS.SignConvention))
+        graph.add((uri, RDF.type, CMS.SignConvention))
         graph.add((uri, RDFS.label, Literal(sign)))
-        graph.add((uri, EMS.signConvention, Literal(sign)))
-        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
+        graph.add((uri, CMS.signConvention, Literal(sign)))
+        graph.add((uri, CMS.definedBy, RES.doc_meter_metadata))
 
     for priority in [1, 2, 3, 4]:
         uri = RES[f"priority_{priority}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
-        graph.add((uri, RDF.type, EMS.AnomalyPriorityLevel))
+        graph.add((uri, RDF.type, CMS.AnomalyPriorityLevel))
         graph.add((uri, RDFS.label, Literal(f"priority {priority}")))
-        graph.add((uri, EMS.anomalyPriority, Literal(priority, datatype=XSD.integer)))
-        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
+        graph.add((uri, CMS.anomalyPriority, Literal(priority, datatype=XSD.integer)))
+        graph.add((uri, CMS.definedBy, RES.doc_meter_metadata))
 
     for key, label in REDUNDANCY_POLICIES.items():
         uri = RES[f"policy_{slug(key)}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
-        graph.add((uri, RDF.type, EMS.RedundancyPolicy))
+        graph.add((uri, RDF.type, CMS.RedundancyPolicy))
         graph.add((uri, RDFS.label, Literal(label, lang="ko")))
-        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
+        graph.add((uri, CMS.definedBy, RES.doc_meter_metadata))
 
     for key, label in FEATURE_RULES.items():
         uri = RES[f"rule_{slug(key)}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
-        graph.add((uri, RDF.type, EMS.FeatureRule))
+        graph.add((uri, RDF.type, CMS.FeatureRule))
         graph.add((uri, RDFS.label, Literal(label, lang="ko")))
-        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
-    graph.add((RES.rule_aggregate_excludes_redundant, EMS.usesRedundancyPolicy, RES.policy_exclude_redundant_endpoint))
+        graph.add((uri, CMS.definedBy, RES.doc_meter_metadata))
+    graph.add((RES.rule_aggregate_excludes_redundant, CMS.usesRedundancyPolicy, RES.policy_exclude_redundant_endpoint))
 
     for role in sorted({str(m["meter_role"]) for m in meter_records}):
         uri = RES[f"role_{slug(role)}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
-        graph.add((uri, RDF.type, EMS.MeterRole))
+        graph.add((uri, RDF.type, CMS.MeterRole))
         graph.add((uri, RDFS.label, Literal(role)))
-        graph.add((uri, EMS.meterRoleCode, Literal(role)))
-        graph.add((uri, EMS.signConvention, Literal(ROLE_SIGN_CONVENTIONS[role])))
-        graph.add((uri, EMS.hasSignConvention, RES[f"sign_{slug(ROLE_SIGN_CONVENTIONS[role])}"]))
-        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
+        graph.add((uri, CMS.meterRoleCode, Literal(role)))
+        graph.add((uri, CMS.signConvention, Literal(ROLE_SIGN_CONVENTIONS[role])))
+        graph.add((uri, CMS.hasSignConvention, RES[f"sign_{slug(ROLE_SIGN_CONVENTIONS[role])}"]))
+        graph.add((uri, CMS.definedBy, RES.doc_meter_metadata))
 
     for building in sorted({str(m["building_code"]) for m in meter_records}):
         uri = RES[f"building_{slug(building)}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
-        graph.add((uri, RDF.type, EMS.Building))
+        graph.add((uri, RDF.type, CMS.Building))
         graph.add((uri, RDFS.label, Literal(building)))
-        graph.add((uri, EMS.buildingCode, Literal(building)))
-        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
+        graph.add((uri, CMS.buildingCode, Literal(building)))
+        graph.add((uri, CMS.definedBy, RES.doc_meter_metadata))
 
     for rec in group_records:
         code = str(rec["equipment_group"])
         uri = RES[f"group_{slug(code)}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
-        graph.add((uri, RDF.type, EMS.EquipmentGroup))
+        graph.add((uri, RDF.type, CMS.EquipmentGroup))
         graph.add((uri, RDFS.label, Literal(code)))
-        graph.add((uri, EMS.equipmentGroupCode, Literal(code)))
+        graph.add((uri, CMS.equipmentGroupCode, Literal(code)))
         meter_count = rec.get("meter_count")
         if str(meter_count).isdigit():
-            graph.add((uri, EMS.meterCount, Literal(int(str(meter_count)), datatype=XSD.integer)))
+            graph.add((uri, CMS.meterCount, Literal(int(str(meter_count)), datatype=XSD.integer)))
         if rec.get("primary_view"):
-            graph.add((uri, EMS.primaryView, Literal(str(rec["primary_view"]))))
-        graph.add((uri, EMS.anomalyPriority, Literal(GROUP_ANOMALY_PRIORITIES[code], datatype=XSD.integer)))
-        graph.add((uri, EMS.hasAnomalyPriorityLevel, RES[f"priority_{GROUP_ANOMALY_PRIORITIES[code]}"]))
-        graph.add((uri, EMS.noteFile, Literal(str(rec["note_file"]))))
-        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
-        graph.add((uri, EMS.visualizedBy, RES.view_ems_meter_system_overview))
-        graph.add((uri, EMS.visualizedBy, RES.view_meter_inventory_graph))
+            graph.add((uri, CMS.primaryView, Literal(str(rec["primary_view"]))))
+        graph.add((uri, CMS.anomalyPriority, Literal(GROUP_ANOMALY_PRIORITIES[code], datatype=XSD.integer)))
+        graph.add((uri, CMS.hasAnomalyPriorityLevel, RES[f"priority_{GROUP_ANOMALY_PRIORITIES[code]}"]))
+        graph.add((uri, CMS.noteFile, Literal(str(rec["note_file"]))))
+        graph.add((uri, CMS.definedBy, RES.doc_meter_metadata))
+        graph.add((uri, CMS.visualizedBy, RES.view_cms_meter_system_overview))
+        graph.add((uri, CMS.visualizedBy, RES.view_meter_inventory_graph))
         if code in FOCUSED_VIEW_BY_GROUP:
-            graph.add((uri, EMS.visualizedBy, FOCUSED_VIEW_BY_GROUP[code]))
+            graph.add((uri, CMS.visualizedBy, FOCUSED_VIEW_BY_GROUP[code]))
         if code in redundancy_group_codes:
-            graph.add((uri, EMS.visualizedBy, RES.view_focus_redundancy))
+            graph.add((uri, CMS.visualizedBy, RES.view_focus_redundancy))
 
     hardware_by_urn = {str(rec["meter_urn"]): rec for rec in hardware_records}
     hardware_model_records = {
@@ -428,13 +428,13 @@ def build_graph(source: str = "db") -> Graph:
     for model_code, rec in sorted(hardware_model_records.items()):
         uri = RES[f"hardware_{slug(model_code)}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
-        graph.add((uri, RDF.type, EMS.HardwareModel))
+        graph.add((uri, RDF.type, CMS.HardwareModel))
         graph.add((uri, RDFS.label, Literal(model_code)))
-        graph.add((uri, EMS.hardwareModelCode, Literal(model_code)))
-        graph.add((uri, EMS.manufacturer, Literal(str(rec.get("manufacturer", "")))))
-        graph.add((uri, EMS.modelName, Literal(str(rec.get("model_name", "")))))
-        graph.add((uri, EMS.meterDomain, Literal(str(rec.get("meter_category", "")))))
-        graph.add((uri, EMS.definedBy, RES.doc_nature_scientific_data_2025))
+        graph.add((uri, CMS.hardwareModelCode, Literal(model_code)))
+        graph.add((uri, CMS.manufacturer, Literal(str(rec.get("manufacturer", "")))))
+        graph.add((uri, CMS.modelName, Literal(str(rec.get("model_name", "")))))
+        graph.add((uri, CMS.meterDomain, Literal(str(rec.get("meter_category", "")))))
+        graph.add((uri, CMS.definedBy, RES.doc_nature_scientific_data_2025))
 
     meter_uri_by_urn = {}
     for rec in meter_records:
@@ -445,45 +445,45 @@ def build_graph(source: str = "db") -> Graph:
         building = str(rec["building_code"])
         uri = RES[f"meter_{slug(urn)}"]
         meter_uri_by_urn[urn] = uri
-        meter_class = {"electricity": EMS.ElectricityMeter, "thermal": EMS.ThermalMeter, "weather": EMS.WeatherMeter}.get(domain, EMS.Meter)
+        meter_class = {"electricity": CMS.ElectricityMeter, "thermal": CMS.ThermalMeter, "weather": CMS.WeatherMeter}.get(domain, CMS.Meter)
         graph.add((uri, RDF.type, OWL.NamedIndividual))
-        graph.add((uri, RDF.type, EMS.Meter))
+        graph.add((uri, RDF.type, CMS.Meter))
         graph.add((uri, RDF.type, meter_class))
         graph.add((uri, RDFS.label, Literal(urn)))
-        graph.add((uri, EMS.meterUrn, Literal(urn)))
-        graph.add((uri, EMS.meterDomain, Literal(domain)))
-        graph.add((uri, EMS.hasDomain, RES[f"domain_{slug(domain)}"]))
-        graph.add((uri, EMS.meterRoleCode, Literal(role)))
-        graph.add((uri, EMS.equipmentGroupCode, Literal(group_code)))
-        graph.add((uri, EMS.equipmentName, Literal(str(rec.get("equipment_name", "")))))
+        graph.add((uri, CMS.meterUrn, Literal(urn)))
+        graph.add((uri, CMS.meterDomain, Literal(domain)))
+        graph.add((uri, CMS.hasDomain, RES[f"domain_{slug(domain)}"]))
+        graph.add((uri, CMS.meterRoleCode, Literal(role)))
+        graph.add((uri, CMS.equipmentGroupCode, Literal(group_code)))
+        graph.add((uri, CMS.equipmentName, Literal(str(rec.get("equipment_name", "")))))
         if rec.get("equipment_layer"):
-            graph.add((uri, EMS.equipmentLayer, Literal(str(rec["equipment_layer"]))))
-        graph.add((uri, EMS.buildingCode, Literal(building)))
-        graph.add((uri, EMS.signConvention, Literal(ROLE_SIGN_CONVENTIONS[role])))
-        graph.add((uri, EMS.hasSignConvention, RES[f"sign_{slug(ROLE_SIGN_CONVENTIONS[role])}"]))
-        graph.add((uri, EMS.anomalyPriority, Literal(GROUP_ANOMALY_PRIORITIES[group_code], datatype=XSD.integer)))
-        graph.add((uri, EMS.hasAnomalyPriorityLevel, RES[f"priority_{GROUP_ANOMALY_PRIORITIES[group_code]}"]))
-        graph.add((uri, EMS.noteFile, Literal(str(rec["note_file"]))))
-        graph.add((uri, EMS.belongsToGroup, RES[f"group_{slug(group_code)}"]))
-        graph.add((uri, EMS.locatedInBuilding, RES[f"building_{slug(building)}"]))
-        graph.add((uri, EMS.hasRole, RES[f"role_{slug(role)}"]))
-        graph.add((uri, EMS.definedBy, RES.doc_meter_metadata))
+            graph.add((uri, CMS.equipmentLayer, Literal(str(rec["equipment_layer"]))))
+        graph.add((uri, CMS.buildingCode, Literal(building)))
+        graph.add((uri, CMS.signConvention, Literal(ROLE_SIGN_CONVENTIONS[role])))
+        graph.add((uri, CMS.hasSignConvention, RES[f"sign_{slug(ROLE_SIGN_CONVENTIONS[role])}"]))
+        graph.add((uri, CMS.anomalyPriority, Literal(GROUP_ANOMALY_PRIORITIES[group_code], datatype=XSD.integer)))
+        graph.add((uri, CMS.hasAnomalyPriorityLevel, RES[f"priority_{GROUP_ANOMALY_PRIORITIES[group_code]}"]))
+        graph.add((uri, CMS.noteFile, Literal(str(rec["note_file"]))))
+        graph.add((uri, CMS.belongsToGroup, RES[f"group_{slug(group_code)}"]))
+        graph.add((uri, CMS.locatedInBuilding, RES[f"building_{slug(building)}"]))
+        graph.add((uri, CMS.hasRole, RES[f"role_{slug(role)}"]))
+        graph.add((uri, CMS.definedBy, RES.doc_meter_metadata))
         if urn in hardware_by_urn:
             hardware = hardware_by_urn[urn]
             model_code = str(hardware["hardware_model_code"])
-            graph.add((uri, EMS.hasHardwareModel, RES[f"hardware_{slug(model_code)}"]))
-            graph.add((uri, EMS.hardwareModelCode, Literal(model_code)))
-            graph.add((uri, EMS.sourceName, Literal(str(hardware.get("source_name", "")))))
-            graph.add((uri, EMS.sourceTable, Literal(str(hardware.get("source_table", "")))))
-            graph.add((uri, EMS.sourceDescription, Literal(str(hardware.get("source_description", "")))))
-            graph.add((uri, EMS.definedBy, RES.doc_nature_scientific_data_2025))
-        graph.add((uri, EMS.visualizedBy, RES.view_ems_meter_system_all))
+            graph.add((uri, CMS.hasHardwareModel, RES[f"hardware_{slug(model_code)}"]))
+            graph.add((uri, CMS.hardwareModelCode, Literal(model_code)))
+            graph.add((uri, CMS.sourceName, Literal(str(hardware.get("source_name", "")))))
+            graph.add((uri, CMS.sourceTable, Literal(str(hardware.get("source_table", "")))))
+            graph.add((uri, CMS.sourceDescription, Literal(str(hardware.get("source_description", "")))))
+            graph.add((uri, CMS.definedBy, RES.doc_nature_scientific_data_2025))
+        graph.add((uri, CMS.visualizedBy, RES.view_cms_meter_system_all))
         if group_code == "central_cooling":
-            graph.add((uri, EMS.visualizedBy, RES.view_focus_central_cooling))
+            graph.add((uri, CMS.visualizedBy, RES.view_focus_central_cooling))
         if group_code == "server_power":
-            graph.add((uri, EMS.visualizedBy, RES.view_focus_server_power))
+            graph.add((uri, CMS.visualizedBy, RES.view_focus_server_power))
         if group_code == "emission_lab":
-            graph.add((uri, EMS.visualizedBy, RES.view_focus_emission_lab))
+            graph.add((uri, CMS.visualizedBy, RES.view_focus_emission_lab))
 
     for rec in redundancy_records:
         primary_urn = rec["primary_meter_urn"]
@@ -492,24 +492,24 @@ def build_graph(source: str = "db") -> Graph:
         primary = meter_uri_by_urn[primary_urn]
         redundant = meter_uri_by_urn[redundant_urn]
         graph.add((pair_uri, RDF.type, OWL.NamedIndividual))
-        graph.add((pair_uri, RDF.type, EMS.RedundancyPair))
+        graph.add((pair_uri, RDF.type, CMS.RedundancyPair))
         graph.add((pair_uri, RDFS.label, Literal(f"{primary_urn} - {redundant_urn}")))
-        graph.add((pair_uri, EMS.hasPrimaryMeter, primary))
-        graph.add((pair_uri, EMS.hasRedundantMeter, redundant))
-        graph.add((pair_uri, EMS.hasGroup, RES[f"group_{slug(rec['equipment_group'])}"]))
-        graph.add((pair_uri, EMS.equipmentName, Literal(rec["equipment_name"])))
-        graph.add((pair_uri, EMS.definedBy, RES.doc_meter_metadata))
-        graph.add((pair_uri, EMS.visualizedBy, RES.view_focus_redundancy))
-        graph.add((primary, EMS.redundantWith, redundant))
-        graph.add((redundant, EMS.redundantWith, primary))
-        graph.add((primary, EMS.visualizedBy, RES.view_focus_redundancy))
-        graph.add((redundant, EMS.visualizedBy, RES.view_focus_redundancy))
+        graph.add((pair_uri, CMS.hasPrimaryMeter, primary))
+        graph.add((pair_uri, CMS.hasRedundantMeter, redundant))
+        graph.add((pair_uri, CMS.hasGroup, RES[f"group_{slug(rec['equipment_group'])}"]))
+        graph.add((pair_uri, CMS.equipmentName, Literal(rec["equipment_name"])))
+        graph.add((pair_uri, CMS.definedBy, RES.doc_meter_metadata))
+        graph.add((pair_uri, CMS.visualizedBy, RES.view_focus_redundancy))
+        graph.add((primary, CMS.redundantWith, redundant))
+        graph.add((redundant, CMS.redundantWith, primary))
+        graph.add((primary, CMS.visualizedBy, RES.view_focus_redundancy))
+        graph.add((redundant, CMS.visualizedBy, RES.view_focus_redundancy))
 
     return graph
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate CMS/EMS ontology artifacts")
+    parser = argparse.ArgumentParser(description="Generate CMS ontology artifacts")
     parser.add_argument(
         "--source",
         choices=["markdown", "db"],

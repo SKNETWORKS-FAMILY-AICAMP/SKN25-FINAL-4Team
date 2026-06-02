@@ -295,19 +295,21 @@ LangGraph는 bulk ETL, Mongo write, canonical promotion write, index 생성, fea
 
 ## 8. Mermaid diagram 파일
 
-Mermaid diagram은 본문에 길게 붙이지 않고 파일별로 분리한다. GitHub에서는 `.md` 파일의 Mermaid block이 바로 렌더링되고, `.mmd` 파일은 Mermaid CLI용 원본으로 사용한다.
+Mermaid diagram은 본문에 길게 붙이지 않고 파일별로 분리한다. GitHub에서는 `.md` 파일의 Mermaid block이 바로 렌더링되고, `.mmd` 파일은 Mermaid CLI용 원본으로 사용한다. `.svg`는 현재 source에서 재생성한 shareable render이며, sequence SVG에는 message label 뒤 흰 배경 박스를 적용한다.
 
-| Diagram | GitHub render | Mermaid source |
+| 범위 | 일반 diagram | Sequence diagram |
 |---|---|---|
-| 전체 pipeline | [`docs/specs/diagrams/01_pre_model_pipeline.md`](diagrams/01_pre_model_pipeline.md) | [`docs/specs/diagrams/01_pre_model_pipeline.mmd`](diagrams/01_pre_model_pipeline.mmd) |
-| Latency-aware sequence | [`docs/specs/diagrams/02_latency_sequence.md`](diagrams/02_latency_sequence.md) | [`docs/specs/diagrams/02_latency_sequence.mmd`](diagrams/02_latency_sequence.mmd) |
-| Chat routing skeleton | [`docs/specs/diagrams/03_chat_routing.md`](diagrams/03_chat_routing.md) | [`docs/specs/diagrams/03_chat_routing.mmd`](diagrams/03_chat_routing.mmd) |
-| Airflow report skeleton | [`docs/specs/diagrams/04_airflow_report.md`](diagrams/04_airflow_report.md) | [`docs/specs/diagrams/04_airflow_report.mmd`](diagrams/04_airflow_report.mmd) |
+| 전체 pipeline | [`flow_00_overall_pipeline.md`](diagrams/flow_00_overall_pipeline.md) / [`.mmd`](diagrams/flow_00_overall_pipeline.mmd) / [`.svg`](diagrams/flow_00_overall_pipeline.svg) | [`sequence_00_overall_pipeline.md`](diagrams/sequence_00_overall_pipeline.md) / [`.mmd`](diagrams/sequence_00_overall_pipeline.mmd) / [`.svg`](diagrams/sequence_00_overall_pipeline.svg) |
+| DB pipeline | [`flow_01_database_pipeline.md`](diagrams/flow_01_database_pipeline.md) / [`.mmd`](diagrams/flow_01_database_pipeline.mmd) / [`.svg`](diagrams/flow_01_database_pipeline.svg) | [`sequence_01_database_pipeline.md`](diagrams/sequence_01_database_pipeline.md) / [`.mmd`](diagrams/sequence_01_database_pipeline.mmd) / [`.svg`](diagrams/sequence_01_database_pipeline.svg) |
+| Airflow pipeline | [`flow_02_airflow_pipeline.md`](diagrams/flow_02_airflow_pipeline.md) / [`.mmd`](diagrams/flow_02_airflow_pipeline.mmd) / [`.svg`](diagrams/flow_02_airflow_pipeline.svg) | [`sequence_02_airflow_pipeline.md`](diagrams/sequence_02_airflow_pipeline.md) / [`.mmd`](diagrams/sequence_02_airflow_pipeline.mmd) / [`.svg`](diagrams/sequence_02_airflow_pipeline.svg) |
+| LangGraph pipeline | [`flow_03_langgraph_pipeline.md`](diagrams/flow_03_langgraph_pipeline.md) / [`.mmd`](diagrams/flow_03_langgraph_pipeline.mmd) / [`.svg`](diagrams/flow_03_langgraph_pipeline.svg) | [`sequence_03_langgraph_pipeline.md`](diagrams/sequence_03_langgraph_pipeline.md) / [`.mmd`](diagrams/sequence_03_langgraph_pipeline.mmd) / [`.svg`](diagrams/sequence_03_langgraph_pipeline.svg) |
+| App pipeline | [`flow_04_app_pipeline.md`](diagrams/flow_04_app_pipeline.md) / [`.mmd`](diagrams/flow_04_app_pipeline.mmd) / [`.svg`](diagrams/flow_04_app_pipeline.svg) | [`sequence_04_app_pipeline.md`](diagrams/sequence_04_app_pipeline.md) / [`.mmd`](diagrams/sequence_04_app_pipeline.mmd) / [`.svg`](diagrams/sequence_04_app_pipeline.svg) |
 
-Diagram index는 다음 파일이다.
+Diagram index와 설명은 다음 파일이다.
 
 ```text
 docs/specs/diagrams/README.md
+docs/specs/diagrams/pipeline_explanations.md
 ```
 
 ---

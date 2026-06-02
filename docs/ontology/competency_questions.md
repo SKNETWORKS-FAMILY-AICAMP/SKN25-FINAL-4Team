@@ -10,7 +10,7 @@
 **검증 경로:**
 
 ```python
-EMSOntology.from_default().get_meter_context("H2.Z64")
+CMSOntology.from_default().get_meter_context("H2.Z64")
 ```
 
 **기대 기준:**
@@ -32,7 +32,7 @@ anomaly_priority = 2
 **검증 경로:**
 
 ```python
-EMSOntology.from_default().get_feature_meter_set(
+CMSOntology.from_default().get_feature_meter_set(
     group="server_power",
     domain="electricity",
     role="consumption",
@@ -49,7 +49,7 @@ EMSOntology.from_default().get_feature_meter_set(
 **검증 경로:**
 
 ```python
-EMSOntology.from_default().get_sign_interpretation("V.Z84")
+CMSOntology.from_default().get_sign_interpretation("V.Z84")
 ```
 
 **기대 기준:**
@@ -70,7 +70,7 @@ positive_value_interpretation = noise_or_reverse_flow_candidate
 **검증 경로:**
 
 ```python
-EMSOntology.from_default().get_aggregate_policy(
+CMSOntology.from_default().get_aggregate_policy(
     group="server_power",
     domain="electricity",
     role="consumption",
@@ -132,7 +132,7 @@ interpolation / forward-fill / backfill / corrected substitution -> canonical ob
 ```text
 Tier 0: Nature Scientific Data DOI 10.1038/s41597-025-05186-3, Tables 2-3
 Tier 0: Dryad DOI 10.5061/dryad.73n5tb363
-Tier 1: docs/specs/meter_metadata.md, docs/ontology/ems.ttl
+Tier 1: docs/specs/meter_metadata.md, docs/ontology/cms.ttl
 Tier 2: selected archive sanity-check tables only
 ```
 
