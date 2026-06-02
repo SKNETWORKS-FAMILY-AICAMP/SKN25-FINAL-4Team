@@ -110,7 +110,7 @@ cms_layer = archive | staging | reference | canonical | qa | ops | mart | servic
 
 ## 6. AWS PostgreSQL pgvector 준비
 
-실제 AWS DDL은 production/canonical write와 별개지만 DB side effect이므로 실행 전에 접속 대상, 계정 권한, rollback/teardown 기준을 확인한다. 기준 DDL은 다음이다.
+2026-06-02 AWS read-only inventory 기준으로 현재 `cms` database에는 `timescaledb 2.27.1`은 설치되어 있으나 `vector` extension은 설치되어 있지 않다. 또한 `vector` schema와 `vector.document_chunk` table도 없다. 따라서 아래 DDL은 **적용 후보**이며, 실행 전 접속 대상, 계정 권한, rollback/teardown 기준, embedding model/dimension을 다시 확인해야 한다.
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS vector;
@@ -151,7 +151,7 @@ Graph DB server는 구축하지 않는다. Graphify artifact는 `docs/specs` con
 권장 생성 방식:
 
 ```text
-docs/specs mirror -> graphify update --no-cluster -> graphify-out/graph.json, graph_tree.html
+docs/specs mirror -> graphify update --no-cluster -> wiki/graphify/skn25_cms/graph.json, graph_tree.html
 ```
 
 포함:
@@ -177,7 +177,7 @@ Graphify output은 `docs/specs` 후보 knowledge다. 중요한 claim은 Graphify
 
 1. Graphify package의 MCP extra 또는 upstream MCP entrypoint가 확인되면 Hermes native MCP에 등록한다.
 2. MCP entrypoint가 없으면 작은 stdio MCP wrapper를 별도 구현해 `graphify query/path/explain`을 tool로 노출한다.
-3. MCP가 준비되기 전에는 Hermes built-in terminal/file tool로 `graphify query --graph graphify-out/graph.json`를 호출한다.
+3. MCP가 준비되기 전에는 Hermes built-in terminal/file tool로 `graphify query --graph /home/viowlet/wiki/graphify/skn25_cms/graph.json`를 호출한다.
 
 Hermes native MCP 설정 예시는 entrypoint가 확인된 뒤 다음 형태를 따른다.
 
@@ -185,7 +185,7 @@ Hermes native MCP 설정 예시는 entrypoint가 확인된 뒤 다음 형태를 
 mcp_servers:
   graphify_cms:
     command: "/home/viowlet/.local/bin/graphify"
-    args: ["mcp", "--graph", "/home/viowlet/Projects/SKN25-FINAL-4Team/graphify-out/graph.json"]
+    args: ["mcp", "--graph", "/home/viowlet/wiki/graphify/skn25_cms/graph.json"]
     timeout: 120
     connect_timeout: 60
 ```
@@ -215,12 +215,12 @@ hermes gateway restart
 ```bash
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python scripts/verify/verify_skeleton_contracts.py
 
-test -f graphify-out/graph.json
-graphify query "CMS data boundary" --graph graphify-out/graph.json
+test -f /home/viowlet/wiki/graphify/skn25_cms/graph.json
+graphify query "CMS data boundary" --graph /home/viowlet/wiki/graphify/skn25_cms/graph.json
 python - <<'PY'
 import json
 from pathlib import Path
-graph = json.loads(Path('graphify-out/graph.json').read_text(encoding='utf-8'))
+graph = json.loads(Path('/home/viowlet/wiki/graphify/skn25_cms/graph.json').read_text(encoding='utf-8'))
 for item in graph.get('nodes', []) + graph.get('links', []):
     source_file = item.get('source_file')
     if source_file:

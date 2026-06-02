@@ -32,8 +32,8 @@
 | 로컬 시간대 | Europe/Berlin |
 | 계측 범위 | 전력, 열·냉방, PV, CHP, 기상 |
 | 계량기 수 | 81개 URN |
-| current physical DB | PostgreSQL database/user `cms`로 cutover 완료. 기존 `fems` role은 legacy compatibility로 남아 있음 |
-| runtime convention | PostgreSQL database/user `cms`, `canonical.measurement_15min/1h` after controlled promotion |
+| current physical DB | AWS PostgreSQL `cms` database/user 확인됨. `timescaledb 2.27.1` 설치, `vector` extension은 아직 미설치 |
+| runtime convention | PostgreSQL database/user `cms`, observed canonical tables `canonical.measurement_1min/15min/1h`, reference corrected/resampled tables `reference.corrected_resampled_15min/1h` |
 | legacy 분석 저장소 | `ems` schema, `ems.cr_measurement_15min/1h` mart |
 
 분석 grain은 다음 조합을 기본으로 둡니다.
@@ -63,7 +63,7 @@ Source archive / live input
 
 FastAPI는 일반 사용자 요청의 낮은 latency를 위해 lightweight router와 read-only service 중심으로 둡니다. LangGraph는 일반 `/chat` path에 기본 삽입하지 않고, report review, QA evidence packet review, replay planning, approval review, incident review, model inference dry-run 같은 비동기 workflow에만 선택적으로 사용합니다.
 
-DB naming cutover는 완료된 상태를 기준으로 합니다. 원격 PostgreSQL의 current database/user smoke 기준은 `current_database=cms`, `current_user=cms`입니다. 비밀번호 값은 repository 문서와 evidence file에 저장하지 않습니다.
+DB naming cutover는 완료된 상태를 기준으로 합니다. 2026-06-02 AWS read-only smoke 기준은 `current_database=cms`, `current_user=cms`, PostgreSQL `16.14`입니다. `vector` extension과 `archive`/`mart` schema는 아직 적용되지 않은 target contract입니다. 비밀번호 값은 repository 문서와 evidence file에 저장하지 않습니다.
 
 정기 report와 replay/backfill은 FastAPI가 아니라 Airflow, scheduler, report worker가 소유합니다. FastAPI는 report 상태 조회, artifact download, manual job registration interface를 제공합니다.
 
@@ -85,28 +85,35 @@ SKN25-FINAL-4Team/
 │   ├── reference/          # domain and policy references
 │   └── ontology/           # RDF/OWL/SHACL ontology artifacts
 ├── reports/
-│   └── mermaid_20260601/  # Mermaid source/rendered diagram report package
+│   └── mermaid_20260601/  # active shareable Mermaid report package
 ├── scripts/
 │   ├── ontology/           # ontology generation, validation, query scripts
 │   ├── live/               # live/replay dry-run and QA latency smoke scripts
 │   ├── migrations/         # offline migration draft generators
 │   ├── scratch/            # local scratch DB integration scripts
-│   └── verify/             # skeleton contract verification scripts
+│   └── verify/             # skeleton/query/migration verification scripts
 ├── src/
 │   └── cms/                # active CMS package (plane-separated subpackages)
-│       ├── contracts/      # data/agent contract models (core, measurement, job, qa)
-│       ├── data/           # Data plane: live/replay + scratch DB
-│       ├── service/        # Service plane: FastAPI
+│       ├── contracts/      # data/agent/timestamp contract models
+│       ├── data/           # Data plane: live/replay, timestamp QA, scratch DB
+│       ├── service/        # Service plane: FastAPI/query planner
 │       ├── workflow/       # Workflow plane: Airflow / LangGraph skeletons
 │       └── ontology/       # ontology helper module
 └── tests/                  # unit and integration tests
-    ├── data/               # Data plane unit tests
-    └── integration/        # scratch DB integration tests
+    ├── contracts/
+    ├── data/
+    ├── integration/
+    ├── live/
+    ├── migrations/
+    ├── service/
+    ├── verify/
+    ├── workflow/
+    └── test_api_dry_run.py
 ```
 
 Folder-local `.hermes.md` navigation maps are not active project files. If local agents regenerate them, Git ignores them and they should not be treated as shared deliverables. `HERMES.md` is kept in `.gitignore` only as a legacy safety net.
 
-Project-root `images/` is not an active folder. `graphify-out/` is generated `docs/specs`-only candidate context for Graphify MCP/CLI and remains local/ignored; the synced wiki copy is kept under `/home/viowlet/wiki/graphify/skn25_cms/`.
+Project-root `images/` is not an active folder. `graphify-out/` is generated scratch output only; durable Graphify MCP/CLI candidate context is the `docs/specs`-only wiki copy under `/home/viowlet/wiki/graphify/skn25_cms/`.
 
 ---
 
@@ -114,7 +121,7 @@ Project-root `images/` is not an active folder. `graphify-out/` is generated `do
 
 | 경로 | 기준 |
 |---|---|
-| `docs/specs/`, `docs/qa/`, `docs/reference/`, `docs/ontology/` | 공유 기준 문서, QA contract, reference, ontology artifact |
+| `docs/specs/`, `docs/qa/`, `docs/reference/`, `docs/ontology/` | 공유 기준 문서, QA contract, reference, ontology artifact. `docs/specs/diagrams/*.svg` render는 active spec source가 아니므로 local/generated로 분리 |
 | `reports/mermaid_20260601/` | Mermaid source/rendered diagram report package |
 | `scripts/ontology/`, `scripts/live/`, `scripts/migrations/`, `scripts/scratch/`, `scripts/verify/` | ontology, dry-run, migration draft, smoke, scratch guard, contract verification code |
 | `src/cms/` | active CMS Python package |

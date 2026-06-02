@@ -1,8 +1,8 @@
 # CMS Mermaid Diagram 모음
 
-이 폴더는 CMS pre-model pipeline skeleton의 Mermaid source와 render 산출물을 보관한다.
+이 폴더는 CMS pre-model pipeline skeleton의 Mermaid source와 GitHub-renderable Markdown wrapper를 보관한다.
 
-GitHub에서는 `.md` 파일의 Mermaid block이 바로 렌더링된다. `.mmd` 파일은 Mermaid CLI, 문서 변환, 이미지 렌더링용 원본이다. `.svg`와 `.png`는 일반 Markdown viewer preview를 위해 함께 재생성해 둔다.
+GitHub에서는 `.md` 파일의 Mermaid block이 바로 렌더링된다. `.mmd` 파일은 Mermaid CLI, 문서 변환, 이미지 렌더링용 원본이다. Generated `.svg`/`.png` render는 이 폴더의 active source가 아니며, 필요 시 임시 output 또는 shareable report package에만 둔다.
 
 ## Diagram 읽는 방법
 
@@ -32,10 +32,10 @@ GitHub에서는 `.md` 파일의 Mermaid block이 바로 렌더링된다. `.mmd` 
 
 ## Local render
 
-이미지 산출물이 필요하면 Mermaid CLI로 SVG를 만든 뒤, text background 후처리를 적용하고 PNG를 생성한다. 현재 render 설정은 `foreignObject`를 쓰지 않도록 `htmlLabels=false`를 지정한다.
+이미지 산출물이 필요하면 Mermaid CLI로 임시 SVG를 만든 뒤, text background 후처리를 적용하고 PNG를 생성한다. 현재 render 설정은 `foreignObject`를 쓰지 않도록 `htmlLabels=false`를 지정한다. Active `docs/specs/diagrams/`에는 generated SVG/PNG를 남기지 않는다.
 
 ```bash
-npx -y @mermaid-js/mermaid-cli@latest -c docs/specs/diagrams/mermaid_render_config.json -i docs/specs/diagrams/01_pre_model_pipeline.mmd -o docs/specs/diagrams/01_pre_model_pipeline.svg -b white
-PYTHONDONTWRITEBYTECODE=1 python scripts/verify/apply_svg_text_backgrounds.py
-rsvg-convert -b white -f png -o docs/specs/diagrams/01_pre_model_pipeline.png docs/specs/diagrams/01_pre_model_pipeline.svg
+mkdir -p /tmp/cms_spec_diagram_render
+npx -y @mermaid-js/mermaid-cli@latest -c docs/specs/diagrams/mermaid_render_config.json -i docs/specs/diagrams/01_pre_model_pipeline.mmd -o /tmp/cms_spec_diagram_render/01_pre_model_pipeline.svg -b white
+rsvg-convert -b white -f png -o /tmp/cms_spec_diagram_render/01_pre_model_pipeline.png /tmp/cms_spec_diagram_render/01_pre_model_pipeline.svg
 ```

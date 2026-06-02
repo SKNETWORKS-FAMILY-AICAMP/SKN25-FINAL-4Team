@@ -1,6 +1,6 @@
 # CMS Database Schema
 
-**Updated:** 2026-06-01
+**Updated:** 2026-06-02
 **Status:** 현재 활성 database contract
 
 ## 1. 목적
@@ -9,7 +9,7 @@
 
 ## 2. Database 및 schema layout
 
-활성 PostgreSQL database 이름은 `cms`다. 활성 schema layout은 다음과 같다.
+활성 PostgreSQL database 이름은 `cms`다. 아래 layout은 CMS target contract이며, AWS read-only inventory 결과를 함께 기록한다.
 
 ```text
 cms
@@ -24,6 +24,34 @@ cms
 
 Canonical table은 raw buffer나 live scratch space로 사용하지 않는다. 승인된 promotion의 controlled output이다.
 
+### AWS read-only inventory evidence
+
+2026-06-02에 AWS host의 Docker-local PostgreSQL을 read-only로 확인했다. 비밀번호, `.env`, key material은 읽거나 기록하지 않았다.
+
+| 항목 | 확인 결과 |
+|---|---|
+| PostgreSQL identity | `current_database = cms`, `current_user = cms`, `server_version = 16.14` |
+| Containers | `cms-postgres`, `cms-mongo`가 실행 중이며 DB ports는 host `127.0.0.1`에 bind됨 |
+| Installed extensions | `plpgsql`, `timescaledb 2.27.1` |
+| Not installed yet | `vector` extension, `vector` schema, `vector.document_chunk` table |
+| Present target schemas | `canonical`, `ops`, `qa`, `reference`, `staging` |
+| Target schemas not yet present | `archive`, `mart` |
+| Scratch schemas present | `cms_scratch_scratch_20260601085020`, `cms_scratch_scratch_20260601095903` |
+
+AWS에 이미 존재하는 shared data tables는 다음이다.
+
+| Schema | Table | AWS state |
+|---|---|---|
+| `canonical` | `measurement_1min` | observed canonical contract table, small/empty table size |
+| `canonical` | `measurement_15min` | observed canonical contract table, small/empty table size |
+| `canonical` | `measurement_1h` | observed canonical contract table, small/empty table size |
+| `reference` | `corrected_resampled_15min` | populated reference table, estimated rows `272,679,360`, total size about `46 GB` |
+| `reference` | `corrected_resampled_1h` | populated reference table, estimated rows `68,169,984`, total size about `11 GB` |
+| `ops` | `resampled_batch_run`, `resampled_file_state` | corrected/resampled load/run state |
+| `qa` | `bad_row`, `meter_tag` | QA/reject/tag support tables |
+
+Scratch schemas are cleanup candidates only after separate destructive-DDL approval. They must not be confused with active canonical/reference contract tables.
+
 ## 3. Reference 및 canonical facts
 
 ### Reference corrected_resampled data
@@ -31,9 +59,12 @@ Canonical table은 raw buffer나 live scratch space로 사용하지 않는다. �
 기존 gap/leap/zero-corrected/resampled product는 `reference` schema 아래에 둔다. 이 product는 audit, comparison, historical reproduction을 위해 external corrected/resampled lineage를 보존한다. production service/anomaly input contract로 사용하지 않는다.
 
 ```text
-reference.corrected_resampled_1min
+# AWS present / populated
 reference.corrected_resampled_15min
 reference.corrected_resampled_1h
+
+# Target only; not present in 2026-06-02 AWS inventory
+reference.corrected_resampled_1min
 ```
 
 Reference row는 correction provenance, source file/run lineage, source-layer label을 유지해야 한다. canonical로 promotion하려면 corrected value가 어떻게 선택되었는지 기록하는 명시적 policy가 필요하다.
@@ -48,24 +79,32 @@ canonical.measurement_15min
 canonical.measurement_1h
 ```
 
-Minimum column contract:
+AWS canonical column contract:
 
-| Column | Meaning |
-|---|---|
-| `ts` | bucket timestamp |
-| `meter_id` or `meter_urn` | 안정적인 meter identifier |
-| `measurement` | measurement code 또는 family |
-| `observed_value` or `value` | 승인된 observed numeric value; NULL은 유효한 gap marker |
-| `unit` | 사용 가능한 경우 unit |
-| `coverage_ratio` | 0과 1 사이의 bucket coverage |
-| `gap_mask` | bucket의 missingness/gap mask를 나타내는 machine-readable 값 |
-| `provenance` | source, interval logic, policy decision에 대한 JSON 또는 structured lineage |
-| `quality_flag` | QA 이후 quality status |
-| `source_run_id` | load/replay/batch run으로 이어지는 lineage |
-| `promotion_id` | controlled promotion request identifier |
-| `loaded_at` | canonical write timestamp |
+| Column | Type | Meaning |
+|---|---|---|
+| `bucket_ts` | `timestamptz` | bucket timestamp |
+| `resolution` | `text` | `1min`, `15min`, `1h` 등 table grain label |
+| `meter_urn` | `text` | 안정적인 meter identifier |
+| `measurement` | `text` | measurement code 또는 family |
+| `value` | `double precision`, nullable | 승인된 observed numeric value; `NULL`은 유효한 gap marker |
+| `unit` | `text`, nullable | unit label |
+| `aggregation_policy` | `text` | value aggregation 또는 native cadence policy |
+| `expected_points` | `integer` | bucket 안에서 기대되는 source point 수 |
+| `observed_points` | `integer` | 실제 observed source point 수 |
+| `gap_points` | `integer` | missing/gap point 수 |
+| `coverage_ratio` | `double precision` | `observed_points / expected_points` 기준 coverage |
+| `mask_code` | `text` | missingness/gap/mask code |
+| `quality_code` | `text` | QA 이후 quality status |
+| `quality_summary` | `jsonb` | QA summary evidence |
+| `provenance` | `jsonb` | source, interval logic, policy decision lineage |
+| `source_event_ids` | `text[]` | source event IDs |
+| `source_run_id` | `text` | load/replay/batch run lineage |
+| `promotion_id` | `text` | controlled promotion request identifier |
+| `lineage_key` | `text` | row-level lineage key |
+| `loaded_at` | `timestamptz` | canonical write timestamp |
 
-이 문서는 활성 prose contract다. Scratch-test DDL은 `src/cms/data/scratch_ddl.py`에서 생성된다. production DDL은 reviewed migration 또는 scope가 명확한 SQL artifact로 도입해야 한다.
+이 문서는 AWS에서 확인한 활성 prose contract다. Scratch-test DDL은 `src/cms/data/scratch_ddl.py`에서 생성된다. production DDL은 reviewed migration 또는 scope가 명확한 SQL artifact로 도입해야 한다.
 
 ## 4. Candidate 및 promotion boundary
 

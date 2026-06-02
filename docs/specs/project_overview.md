@@ -39,7 +39,7 @@ Folder-local `.hermes.md` navigation map은 local-only이며 active shared proje
 
 Active Python package는 `src/cms`이다. Project-facing prose에서는 `CMS`를 사용한다. `EMS`라는 용어는 original dataset, legacy database schema, ontology namespace, historical artifact를 가리킬 때만 유지할 수 있다. Active `src/ems` package를 다시 도입하지 않는다.
 
-PostgreSQL runtime convention은 `cms` database와 `archive`, `staging`, `reference`, `canonical`, `qa`, `ops`, `mart` 같은 schema다. 현재 canonical observed fact는 `canonical.measurement_1min`, `canonical.measurement_15min`, `canonical.measurement_1h`이다. Corrected/resampled product는 `reference.corrected_resampled_*`에 속한다. 문서가 `ems.cr_measurement_*`를 언급한다면 반드시 legacy analysis context라고 표시해야 한다.
+PostgreSQL runtime convention은 `cms` database와 `staging`, `reference`, `canonical`, `qa`, `ops` schema를 기준으로 한다. 2026-06-02 AWS inventory에서 `archive`와 `mart`는 아직 없는 target schema이며, 필요 시 별도 승인된 DDL로 추가한다. 현재 canonical observed fact table은 `canonical.measurement_1min`, `canonical.measurement_15min`, `canonical.measurement_1h`이고, corrected/resampled product는 `reference.corrected_resampled_15min/1h`에 적재되어 있다. 문서가 `ems.cr_measurement_*`를 언급한다면 반드시 legacy analysis context라고 표시해야 한다.
 
 ## 5. 검증 baseline
 
