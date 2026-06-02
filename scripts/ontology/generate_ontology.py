@@ -4,10 +4,10 @@
 Default source:
 - PostgreSQL/TimescaleDB approved metadata tables under the `ems` schema.
 
-Optional legacy source:
-- docs/_archive/notes/meter_graph/계량기_*.md frontmatter
-- docs/_archive/notes/meter_graph/그룹_*.md frontmatter
-- docs/specs/계량기_메타데이터.md redundancy table
+Optional local markdown source, only when source files are restored manually:
+- docs/ontology/source_graph/계량기_*.md frontmatter
+- docs/ontology/source_graph/그룹_*.md frontmatter
+- docs/specs/meter_metadata.md redundancy table
 
 Output:
 - docs/ontology/ems.ttl
@@ -23,8 +23,8 @@ from rdflib import Graph, Namespace, Literal, URIRef
 from rdflib.namespace import RDF, RDFS, OWL, XSD
 
 ROOT = Path(__file__).resolve().parents[2]
-GRAPH_DIR = ROOT / "docs/_archive/notes/meter_graph"
-SPEC_PATH = ROOT / "docs/specs/계량기_메타데이터.md"
+GRAPH_DIR = ROOT / "docs/ontology/source_graph"  # optional local source; absent in the active tree by default
+SPEC_PATH = ROOT / "docs/specs/meter_metadata.md"
 OUTPUT_PATH = ROOT / "docs/ontology/ems.ttl"
 PROTEGE_OUTPUT_PATH = ROOT / "docs/ontology/ems_protege.owl"
 
@@ -313,9 +313,9 @@ def build_graph(source: str = "db") -> Graph:
     graph.add((EMS.meterUrn, RDF.type, OWL.FunctionalProperty))
 
     for name, source in {
-        "meter_metadata": "docs/specs/계량기_메타데이터.md",
-        "ontology_lite": "docs/_archive/notes/meter_graph/온톨로지_요약.md",
-        "ontology_schema": "docs/specs/온톨로지_스키마.md",
+        "meter_metadata": "docs/specs/meter_metadata.md",
+        "ontology_lite": "docs/specs/ontology_schema.md",
+        "ontology_schema": "docs/specs/ontology_schema.md",
         "nature_scientific_data_2025": "https://doi.org/10.1038/s41597-025-05186-3",
     }.items():
         uri = RES[f"doc_{name}"]
@@ -325,14 +325,14 @@ def build_graph(source: str = "db") -> Graph:
         graph.add((uri, EMS.sourcePath, Literal(source)))
 
     for key, source in {
-        "ems_meter_system_overview": "docs/_archive/notes/meter_graph/EMS_계량기_시스템_개요.canvas",
-        "ems_meter_system_all": "docs/_archive/notes/meter_graph/EMS_계량기_시스템_전체.canvas",
-        "focus_central_cooling": "docs/_archive/notes/meter_graph/집중보기_중앙냉방.canvas",
-        "focus_server_power": "docs/_archive/notes/meter_graph/집중보기_서버전원.canvas",
-        "focus_emission_lab": "docs/_archive/notes/meter_graph/집중보기_배출실험실.canvas",
-        "focus_redundancy": "docs/_archive/notes/meter_graph/집중보기_중복계량.canvas",
-        "meter_inventory_graph": "docs/_archive/notes/meter_graph/계량기_목록_그래프.md",
-        "redundancy_graph": "docs/_archive/notes/meter_graph/중복계량_그래프.md",
+        "ems_meter_system_overview": "docs/specs/meter_metadata.md",
+        "ems_meter_system_all": "docs/specs/meter_metadata.md",
+        "focus_central_cooling": "docs/specs/meter_metadata.md",
+        "focus_server_power": "docs/specs/meter_metadata.md",
+        "focus_emission_lab": "docs/specs/meter_metadata.md",
+        "focus_redundancy": "docs/specs/meter_metadata.md",
+        "meter_inventory_graph": "docs/specs/meter_metadata.md",
+        "redundancy_graph": "docs/specs/meter_metadata.md",
     }.items():
         uri = RES[f"view_{key}"]
         graph.add((uri, RDF.type, OWL.NamedIndividual))
@@ -509,7 +509,7 @@ def build_graph(source: str = "db") -> Graph:
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate EMS ontology artifacts")
+    parser = argparse.ArgumentParser(description="Generate CMS/EMS ontology artifacts")
     parser.add_argument(
         "--source",
         choices=["markdown", "db"],

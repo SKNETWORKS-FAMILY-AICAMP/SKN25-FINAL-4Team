@@ -1,12 +1,12 @@
-name: ems
+name: cms
 
 services:
-  ems:
+  cms:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    image: ems:3.12
-    container_name: ems
+    image: cms:3.12
+    container_name: cms
     env_file:
       - path: .env
         required: false
@@ -14,9 +14,9 @@ services:
       MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI:-http://192.168.0.34:5000}
     volumes:
       - .:/workspace
-      - ems_pip_cache:/root/.cache/pip
+      - cms_pip_cache:/root/.cache/pip
     working_dir: /workspace
     command: sleep infinity
 
 volumes:
-  ems_pip_cache:
+  cms_pip_cache:

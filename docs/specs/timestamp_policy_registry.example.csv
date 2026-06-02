@@ -1,0 +1,3 @@
+meter_urn,measurement,source_id,file_pattern,timestamp_policy_id,timestamp_column,source_timezone,source_timestamp_type,native_interval_seconds,target_grain_minutes,timestamp_origin_rule,cadence_policy_id,aggregation_policy
+urn:meter:example:001,active_power,example_source,example_*.csv,tp_example_001,timestamp,UTC,utc_instant,60,1,exact_boundary,native_1min,mean_non_cumulative
+urn:meter:example:002,active_power,example_source,example_*.csv,tp_example_002,local_ts,Asia/Seoul,local_wall_time,300,15,reject_off_boundary,native_5min_to_15min,mean_non_cumulative

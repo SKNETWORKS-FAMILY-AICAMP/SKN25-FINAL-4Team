@@ -186,13 +186,13 @@ ems:visualizedBy a owl:ObjectProperty ;
 
 emsres:doc_ontology_lite a owl:NamedIndividual,
         ems:MetadataDocument ;
-    rdfs:label "docs/_archive/notes/meter_graph/온톨로지_요약.md" ;
-    ems:sourcePath "docs/_archive/notes/meter_graph/온톨로지_요약.md" .
+    rdfs:label "docs/specs/meter_metadata.md" ;
+    ems:sourcePath "docs/specs/meter_metadata.md" .
 
 emsres:doc_ontology_schema a owl:NamedIndividual,
         ems:MetadataDocument ;
-    rdfs:label "docs/specs/온톨로지_스키마.md" ;
-    ems:sourcePath "docs/specs/온톨로지_스키마.md" .
+    rdfs:label "docs/specs/ontology_schema.md" ;
+    ems:sourcePath "docs/specs/ontology_schema.md" .
 
 emsres:meter_H1_K11 a owl:NamedIndividual,
         ems:Meter,
@@ -1962,7 +1962,7 @@ emsres:rule_live_replay_no_future a owl:NamedIndividual,
 emsres:view_redundancy_graph a owl:NamedIndividual,
         ems:VisualizationView ;
     rdfs:label "redundancy_graph" ;
-    ems:sourcePath "docs/_archive/notes/meter_graph/중복계량_그래프.md" .
+    ems:sourcePath "docs/specs/meter_metadata.md" .
 
 ems:Feature a owl:Class ;
     rdfs:label "향후 feature 정의"@ko .
@@ -2958,7 +2958,7 @@ emsres:hardware_Janitza_UMG_96_RM_E a owl:NamedIndividual,
 emsres:view_focus_central_cooling a owl:NamedIndividual,
         ems:VisualizationView ;
     rdfs:label "focus_central_cooling" ;
-    ems:sourcePath "docs/_archive/notes/meter_graph/집중보기_중앙냉방.canvas" .
+    ems:sourcePath "docs/specs/meter_metadata.md" .
 
 ems:Building a owl:Class ;
     rdfs:label "건물 또는 구역"@ko .
@@ -3076,7 +3076,7 @@ emsres:group_emission_lab a owl:NamedIndividual,
 emsres:view_focus_server_power a owl:NamedIndividual,
         ems:VisualizationView ;
     rdfs:label "focus_server_power" ;
-    ems:sourcePath "docs/_archive/notes/meter_graph/집중보기_서버전원.canvas" .
+    ems:sourcePath "docs/specs/meter_metadata.md" .
 
 ems:RedundancyPair a owl:Class ;
     rdfs:label "중복 계량 pair"@ko .
@@ -3084,7 +3084,7 @@ ems:RedundancyPair a owl:Class ;
 emsres:view_focus_emission_lab a owl:NamedIndividual,
         ems:VisualizationView ;
     rdfs:label "focus_emission_lab" ;
-    ems:sourcePath "docs/_archive/notes/meter_graph/집중보기_배출실험실.canvas" .
+    ems:sourcePath "docs/specs/meter_metadata.md" .
 
 emsres:building_H3 a owl:NamedIndividual,
         ems:Building ;
@@ -3116,12 +3116,12 @@ emsres:group_server_power a owl:NamedIndividual,
 emsres:view_ems_meter_system_overview a owl:NamedIndividual,
         ems:VisualizationView ;
     rdfs:label "ems_meter_system_overview" ;
-    ems:sourcePath "docs/_archive/notes/meter_graph/EMS_계량기_시스템_개요.canvas" .
+    ems:sourcePath "docs/specs/meter_metadata.md" .
 
 emsres:view_meter_inventory_graph a owl:NamedIndividual,
         ems:VisualizationView ;
     rdfs:label "meter_inventory_graph" ;
-    ems:sourcePath "docs/_archive/notes/meter_graph/계량기_목록_그래프.md" .
+    ems:sourcePath "docs/specs/meter_metadata.md" .
 
 emsres:hardware_Janitza_UMG_96_PA_MID a owl:NamedIndividual,
         ems:HardwareModel ;
@@ -3156,7 +3156,7 @@ emsres:priority_2 a owl:NamedIndividual,
 emsres:view_focus_redundancy a owl:NamedIndividual,
         ems:VisualizationView ;
     rdfs:label "focus_redundancy" ;
-    ems:sourcePath "docs/_archive/notes/meter_graph/집중보기_중복계량.canvas" .
+    ems:sourcePath "docs/specs/meter_metadata.md" .
 
 emsres:hardware_ABB_B24 a owl:NamedIndividual,
         ems:HardwareModel ;
@@ -3202,7 +3202,7 @@ emsres:domain_electricity a owl:NamedIndividual,
 emsres:view_ems_meter_system_all a owl:NamedIndividual,
         ems:VisualizationView ;
     rdfs:label "ems_meter_system_all" ;
-    ems:sourcePath "docs/_archive/notes/meter_graph/EMS_계량기_시스템_전체.canvas" .
+    ems:sourcePath "docs/specs/meter_metadata.md" .
 
 emsres:doc_nature_scientific_data_2025 a owl:NamedIndividual,
         ems:MetadataDocument ;
@@ -3214,6 +3214,6 @@ ems:Meter a owl:Class ;
 
 emsres:doc_meter_metadata a owl:NamedIndividual,
         ems:MetadataDocument ;
-    rdfs:label "docs/specs/계량기_메타데이터.md" ;
-    ems:sourcePath "docs/specs/계량기_메타데이터.md" .
+    rdfs:label "docs/specs/meter_metadata.md" ;
+    ems:sourcePath "docs/specs/meter_metadata.md" .
 

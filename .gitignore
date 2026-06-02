@@ -5,7 +5,9 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 uv.lock
-tests/
+tests/*
+!tests/**/
+!tests/**/*.py
 
 # Jupyter local cache
 .ipynb_checkpoints/
@@ -17,26 +19,46 @@ tests/
 !.env.example
 docker/*.env
 
-# Hermes local plans/session helpers
+# Hermes local navigation/session helpers. Root `HERMES.md` and hidden `.hermes.md` maps are local-only.
 .hermes/
+.hermes.md
+**/.hermes.md
 HERMES.md
 .github/
 
+# Superseded planning history and local work notes
+# Current shared specs live under docs/specs/.
+docs/plans/
+
 # External source data and local cache
 data/
+!src/**/data/
+!src/**/data/*.py
+!tests/**/data/
+!tests/**/data/*.py
 .cache/
 tmp/
 
 # Generated analysis/modeling artifacts
+outputs/
 outputs/modeling/
 outputs/runpod/
 outputs/logs/
+outputs/cms_live_qa/
+outputs/cms_live_db/
+outputs/cms_live_db_aws/
 outputs/figures/*
 !outputs/figures/energy_flow/
 !outputs/figures/energy_flow/**
 outputs/tables/*
 !outputs/tables/profiling/
 !outputs/tables/profiling/**
+# Generated report/spec renders
+docs/specs/diagrams/*.png
+docs/specs/diagrams/*.svg
+reports/*
+!reports/mermaid_20260601/
+!reports/mermaid_20260601/**
 *.log
 *.zip
 *.joblib
@@ -48,8 +70,10 @@ outputs/tables/*
 *.[Hh][Tt][Mm][Ll]
 *.[Xx][Ll][Ss][Xx]
 
-# Local preserved history; not shared through Git
+# Local preserved history and generated project graph; not shared through Git
+_archive/
 **/_archive/
+graphify-out/
 
 # Frontend/package-manager caches that may appear inside report drafts
 node_modules/

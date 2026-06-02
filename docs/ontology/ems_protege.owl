@@ -489,8 +489,8 @@
   <rdf:Description rdf:about="https://nousresearch.local/ems/resource/doc_meter_metadata">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="https://nousresearch.local/ems/ontology#MetadataDocument"/>
-    <rdfs:label>docs/specs/계량기_메타데이터.md</rdfs:label>
-    <ems:sourcePath>docs/specs/계량기_메타데이터.md</ems:sourcePath>
+    <rdfs:label>docs/specs/meter_metadata.md</rdfs:label>
+    <ems:sourcePath>docs/specs/meter_metadata.md</ems:sourcePath>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/ems/resource/meter_H1_Z18">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
@@ -1657,7 +1657,7 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="https://nousresearch.local/ems/ontology#VisualizationView"/>
     <rdfs:label>focus_central_cooling</rdfs:label>
-    <ems:sourcePath>docs/_archive/notes/meter_graph/집중보기_중앙냉방.canvas</ems:sourcePath>
+    <ems:sourcePath>docs/specs/meter_metadata.md</ems:sourcePath>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/ems/resource/meter_H4_ZE51">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
@@ -2780,7 +2780,7 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="https://nousresearch.local/ems/ontology#VisualizationView"/>
     <rdfs:label>focus_server_power</rdfs:label>
-    <ems:sourcePath>docs/_archive/notes/meter_graph/집중보기_서버전원.canvas</ems:sourcePath>
+    <ems:sourcePath>docs/specs/meter_metadata.md</ems:sourcePath>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/ems/resource/group_weather_station">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
@@ -2867,7 +2867,7 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="https://nousresearch.local/ems/ontology#VisualizationView"/>
     <rdfs:label>focus_emission_lab</rdfs:label>
-    <ems:sourcePath>docs/_archive/notes/meter_graph/집중보기_배출실험실.canvas</ems:sourcePath>
+    <ems:sourcePath>docs/specs/meter_metadata.md</ems:sourcePath>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/ems/resource/meter_H1_K15">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
@@ -2916,7 +2916,7 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="https://nousresearch.local/ems/ontology#VisualizationView"/>
     <rdfs:label>redundancy_graph</rdfs:label>
-    <ems:sourcePath>docs/_archive/notes/meter_graph/중복계량_그래프.md</ems:sourcePath>
+    <ems:sourcePath>docs/specs/meter_metadata.md</ems:sourcePath>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/ems/ontology#MetadataDocument">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
@@ -3068,8 +3068,8 @@
   <rdf:Description rdf:about="https://nousresearch.local/ems/resource/doc_ontology_schema">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="https://nousresearch.local/ems/ontology#MetadataDocument"/>
-    <rdfs:label>docs/specs/온톨로지_스키마.md</rdfs:label>
-    <ems:sourcePath>docs/specs/온톨로지_스키마.md</ems:sourcePath>
+    <rdfs:label>docs/specs/ontology_schema.md</rdfs:label>
+    <ems:sourcePath>docs/specs/ontology_schema.md</ems:sourcePath>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/ems/resource/hardware_ABB_B24">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
@@ -3291,7 +3291,7 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="https://nousresearch.local/ems/ontology#VisualizationView"/>
     <rdfs:label>meter_inventory_graph</rdfs:label>
-    <ems:sourcePath>docs/_archive/notes/meter_graph/계량기_목록_그래프.md</ems:sourcePath>
+    <ems:sourcePath>docs/specs/meter_metadata.md</ems:sourcePath>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/ems/ontology#hasAnomalyPriorityLevel">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
@@ -3302,8 +3302,8 @@
   <rdf:Description rdf:about="https://nousresearch.local/ems/resource/doc_ontology_lite">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="https://nousresearch.local/ems/ontology#MetadataDocument"/>
-    <rdfs:label>docs/_archive/notes/meter_graph/온톨로지_요약.md</rdfs:label>
-    <ems:sourcePath>docs/_archive/notes/meter_graph/온톨로지_요약.md</ems:sourcePath>
+    <rdfs:label>docs/specs/meter_metadata.md</rdfs:label>
+    <ems:sourcePath>docs/specs/meter_metadata.md</ems:sourcePath>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/ems/resource/doc_nature_scientific_data_2025">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
@@ -3315,7 +3315,7 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="https://nousresearch.local/ems/ontology#VisualizationView"/>
     <rdfs:label>focus_redundancy</rdfs:label>
-    <ems:sourcePath>docs/_archive/notes/meter_graph/집중보기_중복계량.canvas</ems:sourcePath>
+    <ems:sourcePath>docs/specs/meter_metadata.md</ems:sourcePath>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/ems/ontology#HardwareModel">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
@@ -3363,7 +3363,7 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="https://nousresearch.local/ems/ontology#VisualizationView"/>
     <rdfs:label>ems_meter_system_all</rdfs:label>
-    <ems:sourcePath>docs/_archive/notes/meter_graph/EMS_계량기_시스템_전체.canvas</ems:sourcePath>
+    <ems:sourcePath>docs/specs/meter_metadata.md</ems:sourcePath>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/ems/ontology#hasRedundantMeter">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
@@ -3407,7 +3407,7 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="https://nousresearch.local/ems/ontology#VisualizationView"/>
     <rdfs:label>ems_meter_system_overview</rdfs:label>
-    <ems:sourcePath>docs/_archive/notes/meter_graph/EMS_계량기_시스템_개요.canvas</ems:sourcePath>
+    <ems:sourcePath>docs/specs/meter_metadata.md</ems:sourcePath>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/ems/ontology#hasHardwareModel">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>

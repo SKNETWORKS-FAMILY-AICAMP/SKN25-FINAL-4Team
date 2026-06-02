@@ -1,0 +1,24 @@
+%%{init: {"theme": "base", "flowchart": {"htmlLabels": true, "nodeSpacing": 70, "rankSpacing": 85, "curve": "basis", "padding": 18}, "themeVariables": {"background": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "lineColor": "#475569", "edgeLabelBackground": "#ffffff", "fontFamily": "Arial, sans-serif", "fontSize": "15px", "clusterBkg": "#ffffff", "clusterBorder": "#cbd5e1"}} }%%
+flowchart TB
+    classDef source fill:#f8fafc,stroke:#64748b,stroke-width:1.4px,color:#0f172a,font-size:15px;
+    classDef buffer fill:#eef2ff,stroke:#6366f1,stroke-width:1.4px,color:#111827,font-size:15px;
+    classDef worker fill:#ecfdf5,stroke:#059669,stroke-width:1.4px,color:#064e3b,font-size:15px;
+    classDef qa fill:#fff7ed,stroke:#ea580c,stroke-width:1.4px,color:#7c2d12,font-size:15px;
+    classDef ops fill:#fdf2f8,stroke:#db2777,stroke-width:1.4px,color:#831843,font-size:15px;
+    classDef canon fill:#f0f9ff,stroke:#0284c7,stroke-width:1.6px,color:#0c4a6e,font-size:15px;
+    classDef service fill:#f5f3ff,stroke:#7c3aed,stroke-width:1.4px,color:#4c1d95,font-size:15px;
+    classDef hold fill:#f8fafc,stroke:#94a3b8,stroke-dasharray:5 4,color:#475569,font-size:15px;
+
+    tc0["<b>TC0 inventory</b><br/>source mapping<br/>meter and series scope"]:::source
+    tc3["<b>TC3 family policy</b><br/>corrected_resampled<br/>15min and 1h match"]:::worker
+    tc5["<b>TC5 QA state</b><br/>representative gate<br/>mask classification"]:::qa
+    tc6["<b>TC6 scale gate</b><br/>1603 series<br/>1h window"]:::qa
+    tc7["<b>TC7 aggregate soak</b><br/>24h aggregate<br/>limited evidence"]:::qa
+    tc8["<b>TC8 restart</b><br/>checkpoint resume<br/>representative"]:::ops
+    tc9["<b>TC9 idempotency</b><br/>duplicate replay<br/>serving key check"]:::ops
+    tc10["<b>TC10 failure injection</b><br/>bad value, late event<br/>rollback and retry"]:::qa
+    tc11["<b>TC11 latency</b><br/>finite daemon loop<br/>not production SLA"]:::worker
+    tc12["<b>TC12 write guard</b><br/>canonical protected<br/>scratch only"]:::ops
+    tc13["<b>TC13 blocked</b><br/>model artifact and<br/>registry missing"]:::hold
+
+    tc0 --> tc3 --> tc5 --> tc6 --> tc7 --> tc8 --> tc9 --> tc10 --> tc11 --> tc12 --> tc13
