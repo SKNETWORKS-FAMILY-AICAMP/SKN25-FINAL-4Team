@@ -74,7 +74,7 @@ PostgreSQL + TimescaleDB + pgvector
 - Docker 23.0 이상 + Docker Compose v2 (권장)
 - 또는 Python 3.11 이상 + Node.js 18 이상 (로컬 직접 실행 시)
 - PostgreSQL 접속 정보 (팀 NAS 서버)
-- LLM API 키 (OpenAI / Anthropic / Gemini 중 하나)
+- LLM API 키 (OpenAI / Anthropic / Gemini 중 하나), 또는 Ollama 엔드포인트 (로컬/RunPod)
 
 ---
 
@@ -104,12 +104,16 @@ DB_PASSWORD=YOUR_DB_PASSWORD
 DB_NAME=YOUR_DB_NAME
 DATABASE_URL=postgresql://YOUR_DB_USER:YOUR_DB_PASSWORD@YOUR_DB_HOST:5432/YOUR_DB_NAME
 
-# LLM 프로바이더 (openai | anthropic | gemini)
+# LLM 프로바이더 (openai | anthropic | gemini | ollama)
 LLM_PROVIDER=openai
 LLM_MODEL=gpt-4o
 OPENAI_API_KEY=
 ANTHROPIC_API_KEY=
 GEMINI_API_KEY=
+
+# Ollama (로컬 sLLM) — LLM_PROVIDER=ollama 시 사용
+# OLLAMA_URL=http://localhost:11434/v1           # 로컬
+# OLLAMA_URL=https://{pod-id}-11434.proxy.runpod.net/v1  # RunPod
 ```
 
 ---
@@ -186,6 +190,17 @@ npm run dev                      # http://localhost:5173
 | POST | `/simulator/{start\|pause\|reset\|seek\|speed}` | 가상 시계 제어 |
 | GET | `/notifications/stream` | 실시간 알림 SSE |
 
+### 시스템 설정 / 사용자 관리
+| 메서드 | 경로 | 설명 |
+|--------|------|------|
+| GET | `/settings` | 현재 설정 조회 (LLM·프로파일·스케줄·알림 임계값) |
+| POST | `/settings` | 설정 변경 — LLM 재로드·스케줄러 즉시 반영 |
+| POST | `/settings/test-llm` | LLM 엔드포인트 연결 테스트 (지연시간 반환) |
+| GET | `/users` | 사용자 목록 조회 |
+| POST | `/users` | 사용자 추가 (이메일 중복 체크) |
+| PATCH | `/users/{id}` | 이름·역할·상태 변경 |
+| DELETE | `/users/{id}` | 사용자 삭제 |
+
 ### 이상탐지 / 예측 / 보고서
 | 메서드 | 경로 | 설명 |
 |--------|------|------|
@@ -216,6 +231,7 @@ SKN25-FINAL-4Team/
 │   │   ├── main.py · db.py(풀+rollback) · scheduler.py · report_export.py
 │   │   └── routers/                    # cms · control · simulator · notifications
 │   │   │                               #  + chat · anomalies · forecast · report
+│   │   │                               #  + settings(LLM·스케줄·알림) · users(CRUD)
 │   ├── data/loader.py                  # ems 스키마 로더 (전기 계측 포함)
 │   ├── knowledge/                      # domain_knowledge · embedding(pgvector) · meter_metadata
 │   └── models/
@@ -228,7 +244,8 @@ SKN25-FINAL-4Team/
 │       ├── DashboardPanel · EquipmentPanel · MaintenancePanel   # CMS 핵심
 │       ├── AnomalyPanel · ControlPanel · ForecastPanel · BillingPanel · ReportPanel
 │       ├── ChatPanel · ChatWorkspacePanel(AI 대화) · SimulatorClock
-│       └── TopologyPanel · SettingsPanel · UsersPanel
+│       └── TopologyPanel
+│           SettingsPanel(LLM·스케줄·알림·프로파일 설정) · UsersPanel(사용자 CRUD)
 ├── .env.example
 └── docker-compose.yml
 ```
@@ -240,7 +257,7 @@ SKN25-FINAL-4Team/
 - **백엔드**: FastAPI · LangGraph · psycopg2 · APScheduler
 - **DB**: PostgreSQL + TimescaleDB + pgvector
 - **프론트**: React (Vite) · Recharts · lucide-react · react-markdown
-- **LLM**: OpenAI / Anthropic / Gemini (env 전환) — 최종 단계에 Ollama(sLLM) 전환 예정(데이터 보안)
+- **LLM**: OpenAI / Anthropic / Gemini / **Ollama** (env 1줄 전환) — 공장 배포 시 Ollama(EXAONE/Qwen2.5) 로컬 sLLM으로 플립 (데이터 보안)
 - **ML(팀)**: VMD-LSTM(예측) · 잔차+IsolationForest(이상탐지)
 
 ---
