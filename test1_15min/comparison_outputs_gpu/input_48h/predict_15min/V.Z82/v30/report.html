@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>V.Z82 v30 P-max report</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 28px; line-height: 1.5; color: #222; }
+    table { border-collapse: collapse; margin: 16px 0; width: 100%; font-size: 13px; }
+    th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: right; }
+    th:first-child, td:first-child { text-align: left; }
+    th { background: #f2f2f2; }
+    code { background: #f6f6f6; padding: 2px 4px; }
+    img { max-width: 100%; border: 1px solid #ddd; margin: 12px 0; }
+  </style>
+</head>
+<body>
+  <h1>V.Z82 v30 P-max Forecast Report</h1>
+  <p>이 모델은 <code>mart.peak_feature_15min</code>에서 15분 단위 <code>P.max_value</code>를 타깃으로 사용해 다음 15min 피크 전력값을 예측합니다. 입력은 과거 48시간의 15분 feature입니다.</p>
+  <h2>Persistence 대비 성능</h2>
+  <p>Persistence baseline은 직전 15분 <code>P_max</code>를 이후 예측값으로 반복하는 기준선입니다. Test RMSE 개선율은 <strong>11.70%</strong>, MAE 개선율은 <strong>4.51%</strong>입니다.</p>
+  <h2>Metrics</h2>
+  <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>split</th>
+      <th>mae</th>
+      <th>rmse</th>
+      <th>mape_pct</th>
+      <th>n_values</th>
+      <th>series</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>train</td>
+      <td>10878.945312</td>
+      <td>16794.117188</td>
+      <td>152.580231</td>
+      <td>131750</td>
+      <td>model</td>
+    </tr>
+    <tr>
+      <td>train</td>
+      <td>13022.293945</td>
+      <td>21420.617188</td>
+      <td>213.962967</td>
+      <td>131750</td>
+      <td>persistence</td>
+    </tr>
+    <tr>
+      <td>validation</td>
+      <td>10741.280273</td>
+      <td>16156.994141</td>
+      <td>89.980988</td>
+      <td>33739</td>
+      <td>model</td>
+    </tr>
+    <tr>
+      <td>validation</td>
+      <td>11887.597656</td>
+      <td>18573.230469</td>
+      <td>124.448669</td>
+      <td>33739</td>
+      <td>persistence</td>
+    </tr>
+    <tr>
+      <td>test</td>
+      <td>16746.322266</td>
+      <td>24756.195312</td>
+      <td>132.580566</td>
+      <td>35035</td>
+      <td>model</td>
+    </tr>
+    <tr>
+      <td>test</td>
+      <td>17537.945312</td>
+      <td>28036.095703</td>
+      <td>156.845337</td>
+      <td>35035</td>
+      <td>persistence</td>
+    </tr>
+  </tbody>
+</table>
+  <h2>Peak Metrics</h2>
+  <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>metric</th>
+      <th>series</th>
+      <th>quantile</th>
+      <th>actual_threshold</th>
+      <th>candidate_threshold</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1</th>
+      <th>overlap_count</th>
+      <th>actual_peak_count</th>
+      <th>candidate_peak_count</th>
+      <th>mae_minutes</th>
+      <th>median_minutes</th>
+      <th>within_15min_pct</th>
+      <th>within_30min_pct</th>
+      <th>within_60min_pct</th>
+      <th>days</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>top_5pct_peak_capture</td>
+      <td>model</td>
+      <td>0.950</td>
+      <td>116849.146875</td>
+      <td>111077.857812</td>
+      <td>0.769977</td>
+      <td>0.769977</td>
+      <td>0.769977</td>
+      <td>1349.0</td>
+      <td>1752.0</td>
+      <td>1752.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>top_5pct_peak_capture</td>
+      <td>persistence</td>
+      <td>0.950</td>
+      <td>116849.146875</td>
+      <td>116849.146875</td>
+      <td>0.764269</td>
+      <td>0.764269</td>
+      <td>0.764269</td>
+      <td>1339.0</td>
+      <td>1752.0</td>
+      <td>1752.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>top_3pct_peak_capture</td>
+      <td>model</td>
+      <td>0.975</td>
+      <td>151606.455469</td>
+      <td>145328.071875</td>
+      <td>0.746575</td>
+      <td>0.746575</td>
+      <td>0.746575</td>
+      <td>654.0</td>
+      <td>876.0</td>
+      <td>876.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>top_3pct_peak_capture</td>
+      <td>persistence</td>
+      <td>0.975</td>
+      <td>151606.455469</td>
+      <td>151606.455469</td>
+      <td>0.750000</td>
+      <td>0.750000</td>
+      <td>0.750000</td>
+      <td>657.0</td>
+      <td>876.0</td>
+      <td>876.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>top_1pct_peak_capture</td>
+      <td>model</td>
+      <td>0.990</td>
+      <td>193547.383437</td>
+      <td>174501.093125</td>
+      <td>0.615385</td>
+      <td>0.615385</td>
+      <td>0.615385</td>
+      <td>216.0</td>
+      <td>351.0</td>
+      <td>351.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>top_1pct_peak_capture</td>
+      <td>persistence</td>
+      <td>0.990</td>
+      <td>193547.383437</td>
+      <td>193547.383437</td>
+      <td>0.689459</td>
+      <td>0.689459</td>
+      <td>0.689459</td>
+      <td>242.0</td>
+      <td>351.0</td>
+      <td>351.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>daily_t_plus_1_peak_time</td>
+      <td>model</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>129.246575</td>
+      <td>15.0</td>
+      <td>51.232877</td>
+      <td>61.095890</td>
+      <td>68.493151</td>
+      <td>365.0</td>
+    </tr>
+    <tr>
+      <td>daily_t_plus_1_peak_time</td>
+      <td>persistence</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>21.657534</td>
+      <td>15.0</td>
+      <td>98.630137</td>
+      <td>98.630137</td>
+      <td>98.904110</td>
+      <td>365.0</td>
+    </tr>
+  </tbody>
+</table>
+  <h2>Top 5% Peak Capture Summary</h2>
+  <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>metric</th>
+      <th>series</th>
+      <th>quantile</th>
+      <th>actual_threshold</th>
+      <th>candidate_threshold</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1</th>
+      <th>overlap_count</th>
+      <th>actual_peak_count</th>
+      <th>candidate_peak_count</th>
+      <th>mae_minutes</th>
+      <th>median_minutes</th>
+      <th>within_15min_pct</th>
+      <th>within_30min_pct</th>
+      <th>within_60min_pct</th>
+      <th>days</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>top_5pct_peak_capture</td>
+      <td>model</td>
+      <td>0.95</td>
+      <td>116849.146875</td>
+      <td>111077.857812</td>
+      <td>0.769977</td>
+      <td>0.769977</td>
+      <td>0.769977</td>
+      <td>1349.0</td>
+      <td>1752.0</td>
+      <td>1752.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>top_5pct_peak_capture</td>
+      <td>persistence</td>
+      <td>0.95</td>
+      <td>116849.146875</td>
+      <td>116849.146875</td>
+      <td>0.764269</td>
+      <td>0.764269</td>
+      <td>0.764269</td>
+      <td>1339.0</td>
+      <td>1752.0</td>
+      <td>1752.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+  <h2>Daily Peak Time Summary</h2>
+  <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>metric</th>
+      <th>series</th>
+      <th>quantile</th>
+      <th>actual_threshold</th>
+      <th>candidate_threshold</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1</th>
+      <th>overlap_count</th>
+      <th>actual_peak_count</th>
+      <th>candidate_peak_count</th>
+      <th>mae_minutes</th>
+      <th>median_minutes</th>
+      <th>within_15min_pct</th>
+      <th>within_30min_pct</th>
+      <th>within_60min_pct</th>
+      <th>days</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>daily_t_plus_1_peak_time</td>
+      <td>model</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>129.246575</td>
+      <td>15.0</td>
+      <td>51.232877</td>
+      <td>61.095890</td>
+      <td>68.493151</td>
+      <td>365.0</td>
+    </tr>
+    <tr>
+      <td>daily_t_plus_1_peak_time</td>
+      <td>persistence</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>21.657534</td>
+      <td>15.0</td>
+      <td>98.630137</td>
+      <td>98.630137</td>
+      <td>98.904110</td>
+      <td>365.0</td>
+    </tr>
+  </tbody>
+</table>
+  <h2>Ensemble Weights</h2>
+  <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>method</th>
+      <th>candidate_version</th>
+      <th>validation_rmse</th>
+      <th>weight</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>v30</td>
+      <td>v16</td>
+      <td>17411.621094</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <td>v30</td>
+      <td>v20</td>
+      <td>16295.486328</td>
+      <td>0.151591</td>
+    </tr>
+    <tr>
+      <td>v30</td>
+      <td>v23</td>
+      <td>16257.772461</td>
+      <td>0.301459</td>
+    </tr>
+    <tr>
+      <td>v30</td>
+      <td>v25</td>
+      <td>16264.118164</td>
+      <td>0.337860</td>
+    </tr>
+    <tr>
+      <td>v30</td>
+      <td>v27</td>
+      <td>16415.050781</td>
+      <td>0.209090</td>
+    </tr>
+  </tbody>
+</table>
+  <h2>Manifest</h2>
+  <pre>{
+  &quot;table&quot;: &quot;mart.peak_feature_15min&quot;,
+  &quot;logical_meter&quot;: &quot;V.Z82&quot;,
+  &quot;target&quot;: &quot;measurement=&#x27;P&#x27;.max_value as P_max&quot;,
+  &quot;input_hours&quot;: 48,
+  &quot;output_range&quot;: &quot;15min&quot;,
+  &quot;horizon_steps&quot;: 1,
+  &quot;step_minutes&quot;: 15,
+  &quot;feature_columns&quot;: [
+    &quot;P_mean&quot;,
+    &quot;P_max&quot;,
+    &quot;P_std&quot;,
+    &quot;U1_mean&quot;,
+    &quot;PF_mean&quot;,
+    &quot;Ta_mean&quot;,
+    &quot;Igm_mean&quot;,
+    &quot;hour_sin&quot;,
+    &quot;hour_cos&quot;,
+    &quot;dayofweek_sin&quot;,
+    &quot;dayofweek_cos&quot;,
+    &quot;month_sin&quot;,
+    &quot;month_cos&quot;,
+    &quot;is_weekend&quot;
+  ],
+  &quot;candidate_versions&quot;: [
+    &quot;v16&quot;,
+    &quot;v20&quot;,
+    &quot;v23&quot;,
+    &quot;v25&quot;,
+    &quot;v27&quot;
+  ],
+  &quot;best_single_candidate&quot;: &quot;v23&quot;,
+  &quot;training_device&quot;: &quot;gpu&quot;,
+  &quot;max_fit_windows&quot;: 10000,
+  &quot;split_policy&quot;: &quot;train=2018-2021, validation=2022, test=2023 by target timestamp&quot;,
+  &quot;dropped_rows&quot;: 5006,
+  &quot;skipped_windows&quot;: 0,
+  &quot;method&quot;: &quot;v30&quot;
+}</pre>
+  <h2>Plots</h2>
+  <img src="actual_vs_predicted.png" alt="Actual vs predicted">
+  <img src="peak_focus.png" alt="Peak focus">
+  <img src="residual_histogram.png" alt="Residual histogram">
+</body>
+</html>

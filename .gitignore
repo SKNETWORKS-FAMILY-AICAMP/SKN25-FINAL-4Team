@@ -43,6 +43,9 @@ outputs/**
 !outputs/
 !outputs/raw_eda/
 !outputs/raw_eda/README.md
+test1_15min/**/_candidate_models/
+test1_15min/**/test_predictions.csv
+test1_15min/**/validation_predictions.csv
 
 # OS
 .DS_Store
