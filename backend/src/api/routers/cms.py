@@ -231,7 +231,7 @@ def _build_diag_prompt(eq, window_days, total, by_type, examples, sig_str="") ->
         f"[이상 요약] 총 {total}건",
     ]
     for atype, c in by_type.items():
-        lines.append(f"- {atype}: HIGH {c['HIGH']} / MEDIUM {c['MEDIUM']} / LOW {c['LOW']}")
+        lines.append(f"- {atype}: 심각(HIGH) {c['HIGH']}건 / 주의(MEDIUM) {c['MEDIUM']}건 / 경미(LOW) {c['LOW']}건")
     if sig_str:
         lines.append(
             f"\n[전기 시그니처 (최근 {window_days}일, 미터별 평균)] {sig_str}\n"
@@ -301,11 +301,69 @@ def run_diagnosis(eq_id: str, window_days: int = _WINDOW_DAYS, regenerate: bool 
         from knowledge.domain_knowledge import ANOMALY_DOMAIN_PROMPT
         system = (
             "당신은 에너지 설비 고장 진단 전문가입니다. 데이터에 근거해 간결하고 "
-            "실행 가능한 진단을 한국어로 작성합니다.\n\n" + ANOMALY_DOMAIN_PROMPT
+            "실행 가능한 진단을 작성합니다. 질문 언어와 관계없이 항상 한국어로만 답변하세요.\n\n" + ANOMALY_DOMAIN_PROMPT
         )
+        # 발전 설비(PV·CHP)는 역률 음수/저값이 정상 — 오진단 방지
+        if eq.get("id") in ("pv", "chp"):
+            system += (
+                "\n\n⚠️ 현재 진단 대상은 발전 설비(태양광/열병합)입니다. "
+                "역률이 음수이거나 낮은 값이면 전력을 역송(생산)하고 있는 정상 상태입니다. "
+                "반드시 '정상(역송)' 으로 명시하고, 역률 저하 문제로 기술하지 마세요."
+            )
         prompt = _build_diag_prompt(eq, window_days, total, by_type, examples, sig_str)
+
+        # ── few-shot: 설비 유형별 예시 선택 ──────────────────────────
+        if eq.get("id") in ("pv", "chp"):
+            # 발전 설비: 역률 음수 = 정상(역송) 예시
+            fs_user = (
+                "다음은 '태양광(PV)' 설비의 최근 30일 이상 탐지 결과입니다.\n"
+                "[이상 요약] 총 1건\n"
+                "- PVNightNonZero: 심각(HIGH) 0건 / 주의(MEDIUM) 0건 / 경미(LOW) 1건\n"
+                "[전기 시그니처] 전압 401V, 역률 -0.94 (역송 상태), 발전량 8,800kWh/월\n"
+                "위 데이터와 도메인 지식을 근거로 이 설비의 상태를 진단하세요."
+            )
+            fs_assistant = (
+                "### 🩺 진단 요약\n"
+                "역률 -0.94는 태양광 인버터가 전력을 계통으로 역송(발전) 중인 정상 상태입니다. "
+                "경미한 야간 발전 감지 1건을 제외하면 전반적으로 정상 운영 중입니다.\n\n"
+                "### 🔍 추정 원인\n"
+                "- 역률 -0.94: 발전 설비 정상 상태 — 인버터가 전력을 계통으로 공급 중 (이상 아님)\n"
+                "- PVNightNonZero 경미(LOW) 1건: 야간 미세 발전 감지 — 인버터 절전 모드 점검 권고\n\n"
+                "### ✅ 권장 조치\n"
+                "- 역률 관련 조치 불필요 (정상 역송 상태)\n"
+                "- 야간 인버터 출력 로그 확인 (경미 우선순위, 즉각 조치 불필요)"
+            )
+        else:
+            # 소비 설비: 역률 저하·전류 과부하 예시
+            fs_user = (
+                "다음은 '냉방 시스템' 설비의 최근 30일 이상 탐지 결과입니다.\n"
+                "[이상 요약] 총 8건\n"
+                "- COPDrop: 심각(HIGH) 2건 / 주의(MEDIUM) 3건 / 경미(LOW) 3건\n"
+                "[전기 시그니처] 전압 381V(-4.8%), 전류 42A(+10.5%), 역률 0.72\n"
+                "위 데이터와 도메인 지식을 근거로 이 설비의 상태를 진단하세요."
+            )
+            fs_assistant = (
+                "### 🩺 진단 요약\n"
+                "최근 30일간 총 8건의 이상이 감지됐으며, 이 중 심각(HIGH) 2건이 발생했습니다. "
+                "역률 0.72 저하와 전류 +10.5% 과부하가 동시 발생 중으로, "
+                "역률개선 콘덴서 열화 또는 과부하 운전이 의심됩니다.\n\n"
+                "### 🔍 추정 원인\n"
+                "- 역률 0.72 (기준 0.85↑): 역률개선 콘덴서 열화 또는 탈락 — 무효전력 과다\n"
+                "- 전류 42A (+10.5%): 권선 부분 단락 또는 과부하 운전 가능성\n"
+                "- 전압 381V (-4.8%): 계통 전압 저하로 인한 전류 상승 연쇄 추정\n\n"
+                "### ✅ 권장 조치\n"
+                "- 역률개선 콘덴서 커패시턴스 측정 및 교체 여부 확인\n"
+                "- 절연 저항 측정으로 권선 단락 여부 점검\n"
+                "- 부하 감소 후 전류 재측정하여 정격 복귀 확인"
+            )
+
         diagnosis = llm_chat(
-            [{"role": "system", "content": system}, {"role": "user", "content": prompt}],
+            [
+                {"role": "system", "content": system},
+                {"role": "user",      "content": fs_user},
+                {"role": "assistant", "content": fs_assistant},
+                {"role": "user",      "content": prompt},
+            ],
             max_tokens=600,
         ).strip()
         llm_used = True

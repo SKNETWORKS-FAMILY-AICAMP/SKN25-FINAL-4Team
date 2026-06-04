@@ -18,8 +18,8 @@ _EQ_KEYWORDS = [
     ("chp",     re.compile(r"열병합|chp")),
     ("pv",      re.compile(r"태양|pv|솔라|solar")),
 ]
-_WO_KW   = re.compile(r"작업\s*지시|정비|수리|work\s*order|미해결|조치\s*내역|점검\s*이력")
-_DIAG_KW = re.compile(r"진단|원인|왜|이유|점검|조치")
+_WO_KW   = re.compile(r"작업\s*지시.*(목록|현황|조회|확인|있어|보여|알려)|미해결|조치\s*내역|점검\s*이력|work\s*order")
+_DIAG_KW = re.compile(r"진단|원인|왜|이유|점검|조치|분석|해석|평가|검토|어때|어떤가|살펴|어떻게\s*됐")
 _PRED_KW = re.compile(r"예지보전|언제.*고장|잔여\s*수명|수명|추세|악화|예측.*위험|위험.*예측")
 
 # ── 행동(액션) 트리거 — 코파일럿이 실제로 실행 ───────────────────

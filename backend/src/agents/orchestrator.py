@@ -37,24 +37,38 @@ import cms_agent
 
 # ── 노드 1: 의도 분류 (키워드 룰 → LLM 폴백) ───────────────────
 
-_KW_ANOMALY  = re.compile(r"이상|비정상|스파이크|급등|급락|오류|센서|탐지|경보|알람|fault|anomal")
-_KW_REPORT   = re.compile(r"보고서|리포트|report|kpi|월간|요약|통계|실적|집계|월별\s*현황")
+# q.lower()로 매칭하므로 이상 유형명도 소문자로 작성
+_KW_ANOMALY  = re.compile(r"이상|비정상|스파이크|급등|급락|오류|센서|탐지|경보|알람|fault|anomal"
+                          r"|chpoutage|powerspike|copdrop|nightconsumption|pvnightnonzero"
+                          r"|사건|빈도|심각도|발생\s*건수|몇\s*건|이상\s*탐지|이상\s*발생|이상\s*이력"
+                          r"|잔차|급등\s*이벤트|게이트웨이\s*장애")
+_KW_REPORT   = re.compile(r"보고서|리포트|report|kpi|월간|요약|통계|실적|집계|월별\s*현황|요금|비용|cost|전력\s*비용|얼마나\s*나")
 _KW_FORECAST = re.compile(r"예측|전망|앞으로|내일|다음\s*주|장기|예상|forecast|미래|될\s*것")
 _KW_CMS      = re.compile(r"설비|헬스|진단|작업\s*지시|정비|수리|예지보전|상태\s*감시|계통|열병합|냉방|태양광|시뮬|시뮬레이터|시연")
 
 INTENT_PROMPT = """사용자 질문을 읽고 아래 중 하나로만 답하세요. 다른 말은 하지 마세요.
 
 - cms      : 설비 상태, 설비 헬스, 설비 진단, 작업지시, 정비, 예지보전, 특정 설비(계통/열병합/냉방/태양광) 상태
-- anomaly  : 이상탐지 결과, 이상 목록, 스파이크, 급등, 급락 통계 관련
-- report   : 보고서, 리포트, KPI, 월간, 요약, 통계, 실적 관련
+- anomaly  : 이상탐지 결과·건수·원인 분석. 이상 유형명(CHPOutage/PowerSpike/COPDrop/NightConsumption/PVNightNonZero)이 나오면 무조건 anomaly.
+- report   : 보고서, 리포트, KPI, 월간, 요약, 통계, 실적, 요금, 비용, 전력 비용 관련
 - forecast : 예측, 전망, 앞으로, 내일, 다음주, 장기, ~할 것 같아, 예상
-- rag      : 개념 설명, 방법, 권장사항, 그 외 모든 질문
+- rag      : 개념 설명, 방법, 특정 계량기(V.Z84 등) 값 의미, 그 외 모든 질문
+
+규칙: 특정 이상 유형명이 보이면 anomaly. "건수/발생/빈도/원인"이 이상과 함께 나오면 anomaly.
 
 질문: {question}"""
 
 
+# 특정 계량기 URN 패턴 (V.Z84, H1.Z16 등) → rag로 직행
+_METER_URN_PAT = re.compile(r"[A-Z]\d?\.(?:[A-Z]\.)?Z\d+", re.IGNORECASE)
+
+
 def _rule_classify(question: str) -> str | None:
     """키워드 룰로 명확히 분류 가능하면 반환, 애매하면 None."""
+    # 특정 계량기 URN이 보이면 무조건 rag (미터 실측값 조회)
+    if _METER_URN_PAT.search(question):
+        return "rag"
+
     q = question.lower()
     scores = {
         "anomaly":  len(_KW_ANOMALY.findall(q)),

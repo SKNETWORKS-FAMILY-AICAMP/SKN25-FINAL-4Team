@@ -4,6 +4,7 @@ LangGraph StateGraph의 노드로 호출되거나 단독으로 사용 가능.
 """
 
 import os
+import re
 import sys
 from dataclasses import dataclass, field
 from typing import Optional
@@ -22,11 +23,78 @@ from db import get_conn
 
 TOP_K = 5  # 검색할 문서 수
 
+# 미터 URN 패턴 (예: V.Z84, H1.Z16, H2.T.Z310) — 뒤에 한글이 붙어도 매칭되도록 \b 미사용
+_METER_PAT      = re.compile(r"([A-Z]\d?\.(?:[A-Z]\.)?Z\d+)", re.IGNORECASE)
+_MEASUREMENT_PAT = re.compile(r"\b(PF[123]?|P[123]|U[123]|I[123]|W_in|W_out|Igm|Ta)\b")
+
+
+# 한글 measurement 표현 → 코드 (전류 I1~I3 중 대표값으로 I2 사용 등)
+_KOR_MEASUREMENT = [
+    (re.compile(r"역률|전력\s*팩터|파워\s*팩터"), ["PF1", "PF2", "PF3"]),
+    (re.compile(r"전류"),                       ["I1", "I2", "I3"]),
+    (re.compile(r"전압"),                       ["U1", "U2", "U3"]),
+    (re.compile(r"유효\s*전력|순간\s*전력|소비\s*전력|전력\s*소비"), ["P"]),
+    (re.compile(r"무효\s*전력"),                 ["Q"]),
+    (re.compile(r"적산|누적\s*전력량|에너지\s*소비량"), ["W"]),
+]
+
+# measurement 코드 → 단위 (LLM이 올바른 단위로 답하도록)
+_UNIT_MAP = {
+    "PF1": "(역률, 무차원)", "PF2": "(역률, 무차원)", "PF3": "(역률, 무차원)", "PF": "(역률, 무차원)",
+    "I1": "A", "I2": "A", "I3": "A",
+    "U1": "V", "U2": "V", "U3": "V",
+    "P": "kW", "P1": "kW", "P2": "kW", "P3": "kW",
+    "Q": "kVAR", "W": "kWh", "W_in": "kWh", "W_out": "kWh",
+    "Igm": "W/m²", "Ta": "°C",
+}
+
+
+def lookup_meter_measurements(question: str) -> list[str]:
+    """질문에서 미터 URN과 measurement를 추출해 실제 DB 통계를 반환.
+
+    예: 'V.Z84 계량기의 PF1 값' → ['V.Z84 PF1: 최신 -0.97, 평균 -0.95 ...']
+    """
+    meters = _METER_PAT.findall(question)
+    if not meters:
+        return []
+    measurements = _MEASUREMENT_PAT.findall(question)
+    # 영문 약자가 없으면 한글 표현에서 추론
+    if not measurements:
+        for pat, codes in _KOR_MEASUREMENT:
+            if pat.search(question):
+                measurements = codes
+                break
+    if not measurements:
+        measurements = ["P"]
+    try:
+        sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent.parent / "data"))
+        from loader import get_meter_measurement_stats
+    except Exception:
+        return []
+
+    facts = []
+    for meter in meters[:3]:           # 미터 최대 3개
+        for meas in measurements[:3]:  # measurement 최대 3개
+            try:
+                stats = get_meter_measurement_stats(meter.upper(), meas)
+                if stats:
+                    unit = _UNIT_MAP.get(meas, "")
+                    facts.append(
+                        f"{stats['meter_urn']} {stats['measurement']} {unit}: "
+                        f"최신값 {stats['latest_value']} ({stats['latest_ts'][:10]}), "
+                        f"평균 {stats['avg']}, 범위 {stats['min']}~{stats['max']} "
+                        f"(최근 {stats['count']}개 측정)"
+                    )
+            except Exception:
+                pass
+    return facts
+
 
 @dataclass
 class RAGState:
     question: str
     doc_context: list[str] = field(default_factory=list)
+    meter_facts: list[str] = field(default_factory=list)
     answer: str = ""
     sources: list[str] = field(default_factory=list)
 
@@ -66,11 +134,19 @@ def build_prompt(state: RAGState, history: list | None = None) -> str:
             lines.append(f"{role}: {m.content}")
         history_block = "\n## 이전 대화\n" + "\n".join(lines) + "\n"
 
+    meter_block = ""
+    if state.meter_facts:
+        meter_block = (
+            "\n## 계량기 실측 데이터 (DB 조회 결과 — 이 수치를 근거로 답하세요)\n"
+            + "\n".join(f"- {f}" for f in state.meter_facts) + "\n"
+        )
+
     return f"""당신은 에너지 관리 전문 AI 분석가입니다.
 Honda R&D 에너지 데이터 분석 시스템의 에이전트로서, 아래 지식을 바탕으로 정확하고 간결하게 답하세요.
+질문 언어와 관계없이 항상 한국어로만 답변하세요.
 
 {DOMAIN_KNOWLEDGE_PROMPT}
-
+{meter_block}
 ## 참고 문서
 {doc_block}
 {history_block}
@@ -92,6 +168,9 @@ def run(question: str, history: list | None = None) -> RAGState:
 
     # 1. 문서 검색
     state.doc_context = search_documents(question)
+
+    # 1-b. 미터 실측값 조회 (V.Z84 PF1 같은 특정 계량기 질문)
+    state.meter_facts = lookup_meter_measurements(question)
 
     # 2. LLM 답변 생성
     prompt = build_prompt(state, history=history)

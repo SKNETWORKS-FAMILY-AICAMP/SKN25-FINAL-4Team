@@ -316,6 +316,7 @@ def run(state: dict) -> dict:
 
     prompt = f"""당신은 EMS Agent — 에너지 시설 이상을 감지하고 운영자에게 조치를 안내하는 AI입니다.
 시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력망: 독일 공공 전력망.
+질문 언어와 관계없이 항상 한국어로만 답변하세요.
 전력 용어: "계통 전력" 또는 "외부 계통 전력"만 사용 (한전·수전량 등 한국 용어 사용 금지).
 {history_block}
 
@@ -336,7 +337,38 @@ def run(state: dict) -> dict:
 
 {ANOMALY_RECOMMENDATION_PROMPT}"""
 
-    answer = llm_chat([{"role": "user", "content": prompt}], max_tokens=1024)
+    # ── few-shot: 이상적인 이상탐지 분석 형식 예시 ──
+    fs_user = (
+        "## 이상탐지 결과 (4건)\n"
+        "- 2023-11-12 10:00 MEDIUM PowerSpike\n"
+        "- 2023-11-15 14:00 MEDIUM PowerSpike\n"
+        "- 2023-11-20 09:00 MEDIUM PowerSpike\n"
+        "- 2023-11-22 11:00 MEDIUM PowerSpike\n\n"
+        "## 사용자 질문\n2023년 11월의 PowerSpike 발생 건수를 분석하고 관리 방안을 추천해 주세요."
+    )
+    fs_assistant = (
+        "### 🚨 핵심 요약\n"
+        "2023년 11월에 총 4건의 PowerSpike가 발생했으며, 모두 MEDIUM 등급입니다. "
+        "대형 설비의 동시 기동이 주원인으로 판단됩니다.\n\n"
+        "### 🔍 유형별 분석\n"
+        "**[PowerSpike] 4건 (MEDIUM: 4)**\n"
+        "- 대표 시각: 2023-11-12 10:00\n"
+        "- 추정 원인: 대형 설비 동시 기동에 의한 부하 급증 가능성\n"
+        "- ⬆ 부하 분산 절차 개선 필요\n\n"
+        "### ✅ 즉시 조치 목록\n"
+        "1. 설비 스케줄 확인 후 동시 기동 설비를 순차 분산\n"
+        "2. 역률 개선 콘덴서 작동 상태 점검\n\n"
+        "### 📋 배경 참고\n게이트웨이 장애 구간과 무관한 정상 측정 구간입니다."
+    )
+
+    answer = llm_chat(
+        [
+            {"role": "user",      "content": fs_user},
+            {"role": "assistant", "content": fs_assistant},
+            {"role": "user",      "content": prompt},
+        ],
+        max_tokens=1024,
+    )
 
     return {
         **state,

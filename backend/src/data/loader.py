@@ -193,6 +193,46 @@ def get_meter_list() -> pd.DataFrame:
     return _query("SELECT meter_urn, meter_group FROM ems.full_meter ORDER BY meter_urn;", ())
 
 
+def get_meter_measurement_stats(
+    meter_urn: str,
+    measurement: str = "P",
+    months: int = 12,
+) -> dict | None:
+    """특정 미터·measurement의 최근 통계(최신값·평균·최소·최대) 조회.
+
+    RAG 에이전트가 'V.Z84 계량기의 PF1 값' 같은 질문에 실제 수치로 답하기 위함.
+    반환 None이면 데이터 없음.
+    """
+    sql = """
+        SELECT value, ts
+        FROM ems.cr_measurement_1h
+        WHERE meter_urn = %s AND measurement = %s
+        ORDER BY ts DESC
+        LIMIT %s;
+    """
+    limit = months * 31 * 24
+    df = _query(sql, (meter_urn, measurement, limit))
+    if df.empty:
+        return None
+    latest_row = df.iloc[0]
+    return {
+        "meter_urn":    meter_urn,
+        "measurement":  measurement,
+        "latest_value": round(float(latest_row["value"]), 4),
+        "latest_ts":    str(latest_row["ts"])[:19],
+        "avg":          round(float(df["value"].mean()), 4),
+        "min":          round(float(df["value"].min()), 4),
+        "max":          round(float(df["value"].max()), 4),
+        "count":        int(len(df)),
+    }
+
+
+def list_meter_urns() -> list[str]:
+    """존재하는 모든 meter_urn 목록 (질문에서 미터 식별용)."""
+    df = _query("SELECT DISTINCT meter_urn FROM ems.cr_measurement_1h ORDER BY meter_urn;", ())
+    return df["meter_urn"].tolist() if not df.empty else []
+
+
 def get_anomaly_window(
     meter_urn: str,
     start: datetime,

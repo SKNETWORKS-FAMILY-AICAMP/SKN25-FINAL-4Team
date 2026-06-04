@@ -14,7 +14,19 @@ _pool: pool.ThreadedConnectionPool | None = None
 def _get_pool() -> pool.ThreadedConnectionPool:
     global _pool
     if _pool is None:
-        _pool = pool.ThreadedConnectionPool(2, 25, os.getenv("DATABASE_URL"))
+        db_url = os.getenv("DATABASE_URL")
+        if db_url:
+            _pool = pool.ThreadedConnectionPool(2, 25, db_url)
+        else:
+            # DATABASE_URL 없을 때 개별 변수로 연결 (비밀번호 특수문자 자동 처리)
+            _pool = pool.ThreadedConnectionPool(
+                2, 25,
+                host=os.getenv("DB_HOST", "localhost"),
+                port=int(os.getenv("DB_PORT", "5432")),
+                dbname=os.getenv("DB_NAME"),
+                user=os.getenv("DB_USER"),
+                password=os.getenv("DB_PASSWORD"),
+            )
     return _pool
 
 

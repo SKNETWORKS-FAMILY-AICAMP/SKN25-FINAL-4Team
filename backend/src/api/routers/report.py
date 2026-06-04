@@ -505,10 +505,36 @@ def _generate_daily_summary(kpi: dict) -> tuple[str, str]:
 ---ACTIONS---
 (오늘 운영자가 실행할 체크리스트. 이상탐지 건이 있으면 해당 설비 점검을 포함.
  없으면 "이상 없음 — 정상 운영 유지" 한 줄.
- 최대 3개 항목, 각 항목은 "· " 로 시작.)"""
+ 최대 3개 항목, 각 항목은 "· "(중간점 1개+공백) 으로만 시작. "··"처럼 두 번 쓰지 마세요.)"""
 
+    few_shot_user = (
+        "당신은 EMS Agent — 공장 에너지 일일 운영 브리핑을 작성하는 AI입니다.\n"
+        "시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력 용어는 '계통 전력'만 사용.\n\n"
+        "## 2024-01-10 일일 KPI\n"
+        "- 총 소비: 38,500 kWh\n- 자급률: 42.1%  (기준: 39.6%)\n"
+        "- 평균 COP: 2.31  (기준: 2.06)\n- 그리드 의존도: 57.9%\n"
+        "- PV 발전: 9,100 kWh | CHP 발전: 7,100 kWh\n"
+        "- 피크: 10시 1,520 kW\n- 이상탐지: 0건\n  없음\n\n"
+        "다음 두 섹션을 정확히 아래 형식으로 출력하세요. 다른 텍스트 없이.\n\n"
+        "---SUMMARY---\n(3~4문장)\n\n---ACTIONS---\n(체크리스트)"
+    )
+    few_shot_assistant = (
+        "---SUMMARY---\n"
+        "2024-01-10 일일 총 소비량은 38,500 kWh이며, 자급률 42.1%로 6년 평균(39.6%)을 상회했습니다. "
+        "평균 COP 2.31은 중앙값 2.06을 크게 웃돌아 냉방 효율이 양호합니다. "
+        "이상탐지 건수는 0건으로 정상 운영 상태입니다.\n\n"
+        "---ACTIONS---\n"
+        "이상 없음 — 정상 운영 유지"
+    )
     try:
-        raw = llm_chat([{"role": "user", "content": prompt}], max_tokens=500).strip()
+        raw = llm_chat(
+            [
+                {"role": "user",      "content": few_shot_user},
+                {"role": "assistant", "content": few_shot_assistant},
+                {"role": "user",      "content": prompt},
+            ],
+            max_tokens=500,
+        ).strip()
     except Exception:
         return "", ""
 

@@ -6,6 +6,7 @@ CLAUDE.md
 /docs/
 /notebook/
 /outputs/
+/eval/
 honda_energy_eda.ipynb
 
 # ── 환경변수 / 시크릿 (절대 커밋 금지) ──────────────────────────────
