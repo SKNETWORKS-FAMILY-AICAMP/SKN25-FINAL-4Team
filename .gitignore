@@ -54,6 +54,10 @@ test3_15min/**/_candidate_models/
 test3_15min/**/test_predictions.csv
 test3_15min/**/validation_predictions.csv
 test3_15min/smoke_outputs_gpu/
+test4_15min/**/_candidate_models/
+test4_15min/**/test_predictions.csv
+test4_15min/**/validation_predictions.csv
+test4_15min/smoke_outputs_gpu/
 
 # OS
 .DS_Store
