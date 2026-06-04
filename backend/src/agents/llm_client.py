@@ -44,14 +44,29 @@ def _get_client():
             base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
         )
 
+    elif LLM_PROVIDER == "ollama":
+        from openai import OpenAI  # Ollama도 OpenAI 호환 API(/v1) 제공
+        client = OpenAI(
+            base_url=os.getenv("OLLAMA_URL", "http://localhost:11434/v1"),
+            api_key="ollama",  # 더미 (Ollama는 키 불필요)
+        )
+
     else:
         raise ValueError(
             f"지원하지 않는 LLM_PROVIDER: '{LLM_PROVIDER}'. "
-            "openai / anthropic / gemini 중 하나를 사용하세요."
+            "openai / anthropic / gemini / ollama 중 하나를 사용하세요."
         )
 
     _cache[LLM_PROVIDER] = client
     return client
+
+
+def reload():
+    """설정 변경 후 전역 변수 및 클라이언트 캐시 재초기화."""
+    global LLM_PROVIDER, LLM_MODEL, _cache
+    _cache.clear()
+    LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai").lower()
+    LLM_MODEL    = os.getenv("LLM_MODEL", "gpt-4o")
 
 
 def chat(messages: list[dict], max_tokens: int = 1024) -> str:

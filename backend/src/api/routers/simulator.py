@@ -241,8 +241,14 @@ def _check_window_sync(start: datetime, end: datetime) -> dict:
                 res["_ts"] = pd.to_datetime(res["ts"], utc=True)
                 # 새 구간(start 이후)의 HIGH/CRITICAL만 — 이전 검사분 재알림 방지
                 new_cut = pd.Timestamp(start, tz="UTC")
+                try:
+                    from api.routers.settings import get_alert_min_level
+                    min_lvl = get_alert_min_level()
+                    alert_levels = ["CRITICAL"] if min_lvl == "CRITICAL" else ["HIGH", "CRITICAL"]
+                except Exception:
+                    alert_levels = ["HIGH", "CRITICAL"]
                 high = res[
-                    res["anomaly_level"].isin(["HIGH", "CRITICAL"]) &
+                    res["anomaly_level"].isin(alert_levels) &
                     (res["_ts"] > new_cut)
                 ]
                 for _, r in high.iterrows():
