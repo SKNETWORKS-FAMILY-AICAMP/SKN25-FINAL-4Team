@@ -12,3 +12,24 @@ scrape_configs:
     static_configs:
       - targets:
           - cms-kafka-exporter:9308
+
+  - job_name: node-exporter-stream
+    static_configs:
+      - targets:
+          - cms-node-exporter:9100
+        labels:
+          node: cms-stream
+
+  - job_name: node-exporter-db
+    static_configs:
+      - targets:
+          - 172.31.47.236:9100
+        labels:
+          node: cms-db
+
+  - job_name: postgres-exporter
+    static_configs:
+      - targets:
+          - 172.31.47.236:9187
+        labels:
+          node: cms-db

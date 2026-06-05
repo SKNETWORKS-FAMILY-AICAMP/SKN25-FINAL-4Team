@@ -10,6 +10,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 COMPOSE = ROOT / "docker" / "compose.aws.phase1.yml"
+DB_OBSERVABILITY_COMPOSE = ROOT / "docker" / "compose.aws.db.observability.yml"
 CONSUMER_SCRIPT = ROOT / "scripts" / "live" / "run_consumer_service.py"
 ENV_EXAMPLE = ROOT / "docker" / "aws_phase1.env.example"
 
@@ -45,13 +46,39 @@ def test_aws_phase1_compose_adds_private_prometheus_and_kafka_exporter() -> None
     assert "prom/prometheus:v2.55.1" in text
     assert "./prometheus/phase1.yml:/etc/prometheus/prometheus.yml:ro" in text
     assert "${PROMETHEUS_BIND:-127.0.0.1}:${PROMETHEUS_PORT:-9090}:9090" in text
+    assert "cms-node-exporter:" in text
+    assert "prom/node-exporter:v1.8.2" in text
     assert "9090:9090" not in text
     assert "9308:9308" not in text
+    assert "9100:9100" not in text
 
     prometheus_text = prometheus.read_text(encoding="utf-8")
     assert "cms-kafka-exporter:9308" in prometheus_text
     assert "job_name: kafka-exporter" in prometheus_text
+    assert "job_name: node-exporter-stream" in prometheus_text
+    assert "cms-node-exporter:9100" in prometheus_text
+    assert "job_name: node-exporter-db" in prometheus_text
+    assert "172.31.47.236:9100" in prometheus_text
+    assert "job_name: postgres-exporter" in prometheus_text
+    assert "172.31.47.236:9187" in prometheus_text
     assert "measurement_raw_v1" not in prometheus_text
+
+
+def test_aws_db_observability_compose_adds_private_node_and_postgres_exporters() -> None:
+    text = DB_OBSERVABILITY_COMPOSE.read_text(encoding="utf-8")
+
+    assert "cms-db-node-exporter:" in text
+    assert "prom/node-exporter:v1.8.2" in text
+    assert "${NODE_EXPORTER_BIND:-127.0.0.1}:${NODE_EXPORTER_PORT:-9100}:9100" in text
+    assert "cms-postgres-exporter:" in text
+    assert "prometheuscommunity/postgres-exporter:v0.15.0" in text
+    assert "${POSTGRES_EXPORTER_BIND:-127.0.0.1}:${POSTGRES_EXPORTER_PORT:-9187}:9187" in text
+    assert "DATA_SOURCE_NAME" in text
+    assert "${POSTGRES_PASSWORD:-}" in text
+    assert "depends_on" not in text
+    assert "0.0.0.0:9100" not in text
+    assert "0.0.0.0:9187" not in text
+    assert "postgresql://cms:" not in text
 
 
 def test_aws_phase1_compose_uses_lean_phase1_image_not_full_ml_image() -> None:
@@ -197,5 +224,9 @@ def test_aws_phase1_env_example_documents_required_non_secret_shape() -> None:
     assert "PROMETHEUS_BIND=127.0.0.1" in text
     assert "PROMETHEUS_PORT=9090" in text
     assert "PROMETHEUS_RETENTION_TIME=7d" in text
+    assert "NODE_EXPORTER_BIND=127.0.0.1" in text
+    assert "NODE_EXPORTER_PORT=9100" in text
+    assert "POSTGRES_EXPORTER_BIND=127.0.0.1" in text
+    assert "POSTGRES_EXPORTER_PORT=9187" in text
     assert "REPLACE_ME" not in text
     assert "postgresql://" not in text

@@ -1,0 +1,34 @@
+name: cms
+
+services:
+  cms-db-node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: cms-db-node-exporter
+    restart: unless-stopped
+    pid: host
+    command:
+      - --path.rootfs=/host/root
+      - --web.listen-address=:9100
+    ports:
+      - "${NODE_EXPORTER_BIND:-127.0.0.1}:${NODE_EXPORTER_PORT:-9100}:9100"
+    volumes:
+      - /:/host/root:ro,rslave
+    networks:
+      - cms-net
+
+  cms-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: cms-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-cms}:${POSTGRES_PASSWORD:-}@postgres:5432/${POSTGRES_DB:-cms}?sslmode=${POSTGRES_SSLMODE:-disable}"
+      PG_EXPORTER_AUTO_DISCOVER_DATABASES: "false"
+    ports:
+      - "${POSTGRES_EXPORTER_BIND:-127.0.0.1}:${POSTGRES_EXPORTER_PORT:-9187}:9187"
+    networks:
+      - cms-net
+
+networks:
+  cms-net:
+    external: true
+    name: cms_cms-net

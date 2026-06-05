@@ -105,12 +105,26 @@ services:
     networks:
       - cms_stream
 
+  cms-node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: cms-node-exporter
+    restart: unless-stopped
+    pid: host
+    command:
+      - --path.rootfs=/host/root
+      - --web.listen-address=:9100
+    volumes:
+      - /:/host/root:ro,rslave
+    networks:
+      - cms_stream
+
   cms-prometheus:
     image: prom/prometheus:v2.55.1
     container_name: cms-prometheus
     restart: unless-stopped
     depends_on:
       - cms-kafka-exporter
+      - cms-node-exporter
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
