@@ -92,6 +92,9 @@ def test_aws_phase1_compose_uses_lean_phase1_image_not_full_ml_image() -> None:
     assert text.count("dockerfile: docker/Dockerfile.phase1") == 1
     assert "dockerfile: docker/Dockerfile\n" not in text
     requirements_text = requirements.read_text(encoding="utf-8")
+    dockerfile_text = dockerfile.read_text(encoding="utf-8")
+    assert "COPY scripts/live/run_consumer_service.py" in dockerfile_text
+    assert "COPY scripts/live/run_live_stream_injector.py" in dockerfile_text
     for heavy_dependency in ("torch", "transformers", "mlflow", "jupyterlab", "xgboost"):
         assert heavy_dependency not in requirements_text
     for phase1_dependency in ("fastapi", "uvicorn", "psycopg", "pydantic", "confluent-kafka"):
