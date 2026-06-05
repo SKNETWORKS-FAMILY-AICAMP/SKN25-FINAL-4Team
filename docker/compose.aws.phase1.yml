@@ -67,7 +67,7 @@ services:
     ports:
       - "${CMS_API_BIND:-127.0.0.1}:${CMS_API_PORT:-8000}:8000"
     volumes:
-      - ./data/live_source:/home/ubuntu/cms-stream-deploy/data/live_source:ro
+      - ../data/live_source:/home/ubuntu/cms-stream-deploy/data/live_source:ro
     networks:
       - cms_stream
 
