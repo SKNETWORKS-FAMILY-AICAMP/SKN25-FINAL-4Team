@@ -20,6 +20,7 @@ DATASOURCE_PATH = ROOT / "docker/grafana/provisioning/datasources/postgres_cms_l
 PROMETHEUS_DATASOURCE_PATH = ROOT / "docker/grafana/provisioning/datasources/prometheus_cms_stream.yaml"
 KAFKA_EXPORTER_DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_phase1b_kafka_exporter.json"
 SYSTEM_POSTGRES_DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_phase1c_system_postgres.json"
+SOAK_GATES_DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_live_soak_gates.json"
 ALERT_PATH = ROOT / "docker/grafana/provisioning/alerting/live_pipeline_alerts.yaml"
 CONTACT_POINT_PATH = ROOT / "docker/grafana/provisioning/alerting/contact_points.yaml"
 QUERY_DOC_PATH = ROOT / "docs/qa/grafana_ops_query_contract.md"
@@ -148,6 +149,45 @@ def test_system_postgres_dashboard_uses_prometheus_datasource_and_promql() -> No
         "pg_stat_activity_count",
         "pg_stat_database_xact_commit",
         "pg_stat_database_deadlocks",
+    ]:
+        assert token in raw
+
+
+def test_live_soak_gates_dashboard_uses_postgres_datasource_and_ops_metrics() -> None:
+    dashboard = json.loads(SOAK_GATES_DASHBOARD_PATH.read_text(encoding="utf-8"))
+
+    assert dashboard["uid"] == "cms-live-soak-gates"
+    assert dashboard["title"] == "CMS Live Soak Gates"
+    assert dashboard["refresh"] == "15s"
+    titles = {panel["title"] for panel in dashboard["panels"]}
+    assert {
+        "Latest gate status",
+        "Latest consumer lag",
+        "Latest DLQ",
+        "Latest retry",
+        "Soak run summary",
+        "Producer/consumer events by run",
+        "Retry / DLQ / lag after",
+        "Recent soak metrics",
+    } <= titles
+    for panel in dashboard["panels"]:
+        assert panel["datasource"]["uid"] == GRAFANA_POSTGRES_DATASOURCE_UID
+        for target in panel["targets"]:
+            sql = target["rawSql"].strip().upper()
+            assert sql.startswith(("SELECT", "WITH"))
+            assert not sql.startswith(("INSERT", "UPDATE", "DELETE"))
+    raw = json.dumps(dashboard)
+    for token in [
+        "ops.pipeline_metric",
+        "live_soak_%",
+        "producer_accepted",
+        "consumer_processed",
+        "consumer_inserted",
+        "consumer_committed",
+        "consumer_retry",
+        "consumer_dlq",
+        "consumer_lag_after",
+        "gate_status_warning",
     ]:
         assert token in raw
 
