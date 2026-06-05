@@ -33,6 +33,27 @@ def test_aws_phase1_compose_keeps_kafka_private_and_uses_phase1_topics() -> None
     assert "${CMS_API_BIND:-127.0.0.1}:${CMS_API_PORT:-8000}:8000" in text
 
 
+def test_aws_phase1_compose_adds_private_prometheus_and_kafka_exporter() -> None:
+    text = COMPOSE.read_text(encoding="utf-8")
+    prometheus = ROOT / "docker" / "prometheus" / "phase1.yml"
+
+    assert prometheus.exists()
+    assert "cms-kafka-exporter:" in text
+    assert "danielqsj/kafka-exporter:v1.8.0" in text
+    assert "--kafka.server=cms-kafka:9092" in text
+    assert "cms-prometheus:" in text
+    assert "prom/prometheus:v2.55.1" in text
+    assert "./prometheus/phase1.yml:/etc/prometheus/prometheus.yml:ro" in text
+    assert "${PROMETHEUS_BIND:-127.0.0.1}:${PROMETHEUS_PORT:-9090}:9090" in text
+    assert "9090:9090" not in text
+    assert "9308:9308" not in text
+
+    prometheus_text = prometheus.read_text(encoding="utf-8")
+    assert "cms-kafka-exporter:9308" in prometheus_text
+    assert "job_name: kafka-exporter" in prometheus_text
+    assert "measurement_raw_v1" not in prometheus_text
+
+
 def test_aws_phase1_compose_uses_lean_phase1_image_not_full_ml_image() -> None:
     text = COMPOSE.read_text(encoding="utf-8")
     dockerfile = ROOT / "docker" / "Dockerfile.phase1"
@@ -173,5 +194,8 @@ def test_aws_phase1_env_example_documents_required_non_secret_shape() -> None:
     assert "POSTGRES_DB=cms" in text
     assert "POSTGRES_USER=cms" in text
     assert "POSTGRES_PASSWORD=" in text
+    assert "PROMETHEUS_BIND=127.0.0.1" in text
+    assert "PROMETHEUS_PORT=9090" in text
+    assert "PROMETHEUS_RETENTION_TIME=7d" in text
     assert "REPLACE_ME" not in text
     assert "postgresql://" not in text

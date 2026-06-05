@@ -93,6 +93,36 @@ services:
     networks:
       - cms_stream
 
+  cms-kafka-exporter:
+    image: danielqsj/kafka-exporter:v1.8.0
+    container_name: cms-kafka-exporter
+    restart: unless-stopped
+    depends_on:
+      - cms-kafka-init
+    command:
+      - --kafka.server=cms-kafka:9092
+      - --web.listen-address=:9308
+    networks:
+      - cms_stream
+
+  cms-prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: cms-prometheus
+    restart: unless-stopped
+    depends_on:
+      - cms-kafka-exporter
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=${PROMETHEUS_RETENTION_TIME:-7d}
+    ports:
+      - "${PROMETHEUS_BIND:-127.0.0.1}:${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./prometheus/phase1.yml:/etc/prometheus/prometheus.yml:ro
+      - cms_prometheus_data:/prometheus
+    networks:
+      - cms_stream
+
 networks:
   cms_stream:
     name: cms_stream
@@ -100,3 +130,5 @@ networks:
 volumes:
   cms_kafka_data:
     name: cms_kafka_data
+  cms_prometheus_data:
+    name: cms_prometheus_data

@@ -17,6 +17,8 @@ from cms.contracts.observability import (
 ROOT = Path(__file__).resolve().parents[2]
 DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_live_pipeline_overview.json"
 DATASOURCE_PATH = ROOT / "docker/grafana/provisioning/datasources/postgres_cms_live.yaml"
+PROMETHEUS_DATASOURCE_PATH = ROOT / "docker/grafana/provisioning/datasources/prometheus_cms_stream.yaml"
+KAFKA_EXPORTER_DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_phase1b_kafka_exporter.json"
 ALERT_PATH = ROOT / "docker/grafana/provisioning/alerting/live_pipeline_alerts.yaml"
 CONTACT_POINT_PATH = ROOT / "docker/grafana/provisioning/alerting/contact_points.yaml"
 QUERY_DOC_PATH = ROOT / "docs/qa/grafana_ops_query_contract.md"
@@ -73,18 +75,46 @@ def test_grafana_dashboard_json_is_valid_and_uses_postgres_datasource():
 
 def test_grafana_provisioning_uses_placeholders_not_secrets():
     datasource = DATASOURCE_PATH.read_text(encoding="utf-8")
+    prometheus_datasource = PROMETHEUS_DATASOURCE_PATH.read_text(encoding="utf-8")
     contact_point = CONTACT_POINT_PATH.read_text(encoding="utf-8")
     compose = COMPOSE_PATH.read_text(encoding="utf-8")
 
     assert "uid: postgres-cms-live" in datasource
     assert "${GRAFANA_POSTGRES_PASSWORD}" in datasource
+    assert "uid: prometheus-cms-stream" in prometheus_datasource
+    assert "${GRAFANA_PROMETHEUS_URL}" in prometheus_datasource
     assert "${GRAFANA_DISCORD_WEBHOOK_URL}" in contact_point
     assert "profiles:" in compose
     assert "observability" in compose
     assert "grafana/grafana" in compose
+    assert "GRAFANA_PROMETHEUS_URL" in compose
     for text in (datasource, contact_point):
         assert "discord.com/api/webhooks/" not in text
         assert "password:" not in text.lower() or "${GRAFANA_POSTGRES_PASSWORD}" in text
+
+
+def test_kafka_exporter_dashboard_uses_prometheus_datasource_and_promql() -> None:
+    dashboard = json.loads(KAFKA_EXPORTER_DASHBOARD_PATH.read_text(encoding="utf-8"))
+
+    assert dashboard["uid"] == "cms-phase1b-kafka-exporter"
+    assert dashboard["refresh"] == "15s"
+    titles = {panel["title"] for panel in dashboard["panels"]}
+    assert {
+        "Kafka brokers",
+        "measurement_raw_v1 log end offset",
+        "postgres-live-ingest consumer lag",
+        "DLQ log end offset",
+    } <= titles
+    for panel in dashboard["panels"]:
+        assert panel["datasource"]["uid"] == "prometheus-cms-stream"
+        for target in panel["targets"]:
+            assert "expr" in target
+            assert not target["expr"].strip().upper().startswith(("SELECT", "INSERT", "UPDATE", "DELETE"))
+    raw = json.dumps(dashboard)
+    assert "kafka_consumergroup_lag" in raw
+    assert "kafka_topic_partition_current_offset" in raw
+    assert "measurement_raw_v1" in raw
+    assert "measurement_dead_letter_v1" in raw
 
 
 def test_alert_rules_and_docs_cover_p0_operational_cases():
