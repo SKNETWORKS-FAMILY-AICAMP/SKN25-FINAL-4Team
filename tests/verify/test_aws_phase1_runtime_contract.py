@@ -33,6 +33,11 @@ def test_aws_phase1_compose_keeps_kafka_private_and_uses_phase1_topics() -> None
     assert "0.0.0.0:9092" not in text
     assert "${CMS_API_BIND:-127.0.0.1}:${CMS_API_PORT:-8000}:8000" in text
     assert "../data/live_source:/home/ubuntu/cms-stream-deploy/data/live_source:ro" in text
+    assert "${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR:-1}" in text
+    assert "${KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR:-1}" in text
+    assert "${KAFKA_TRANSACTION_STATE_LOG_MIN_ISR:-1}" in text
+    assert "--replication-factor ${KAFKA_RAW_REPLICATION_FACTOR:-1}" in text
+    assert "--replication-factor ${KAFKA_DLQ_REPLICATION_FACTOR:-1}" in text
 
 
 def test_aws_phase1_compose_adds_private_prometheus_and_kafka_exporter() -> None:

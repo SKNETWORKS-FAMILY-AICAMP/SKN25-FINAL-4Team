@@ -17,9 +17,9 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
       KAFKA_LOG_RETENTION_HOURS: "${KAFKA_LOG_RETENTION_HOURS:-24}"
       KAFKA_LOG_RETENTION_BYTES: "${KAFKA_LOG_RETENTION_BYTES:-1073741824}"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR:-1}"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "${KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR:-1}"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "${KAFKA_TRANSACTION_STATE_LOG_MIN_ISR:-1}"
     volumes:
       - cms_kafka_data:/var/lib/kafka/data
     networks:
@@ -39,8 +39,8 @@ services:
           /opt/kafka/bin/kafka-topics.sh --bootstrap-server cms-kafka:9092 --list >/dev/null 2>&1 && break
           sleep 2
         done
-        /opt/kafka/bin/kafka-topics.sh --bootstrap-server cms-kafka:9092 --create --if-not-exists --topic measurement_raw_v1 --partitions ${KAFKA_RAW_PARTITIONS:-3} --replication-factor 1
-        /opt/kafka/bin/kafka-topics.sh --bootstrap-server cms-kafka:9092 --create --if-not-exists --topic measurement_dead_letter_v1 --partitions ${KAFKA_DLQ_PARTITIONS:-1} --replication-factor 1
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server cms-kafka:9092 --create --if-not-exists --topic measurement_raw_v1 --partitions ${KAFKA_RAW_PARTITIONS:-3} --replication-factor ${KAFKA_RAW_REPLICATION_FACTOR:-1}
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server cms-kafka:9092 --create --if-not-exists --topic measurement_dead_letter_v1 --partitions ${KAFKA_DLQ_PARTITIONS:-1} --replication-factor ${KAFKA_DLQ_REPLICATION_FACTOR:-1}
     networks:
       - cms_stream
 

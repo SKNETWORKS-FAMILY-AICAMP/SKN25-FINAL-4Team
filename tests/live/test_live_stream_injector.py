@@ -12,9 +12,11 @@ from pathlib import Path
 
 from scripts.live.run_live_stream_injector import (
     build_payload,
+    compute_replay_delay,
     discover_harmonized_files,
     merged_rows,
     parse_meter_measurement,
+    select_source_files,
 )
 
 
@@ -50,6 +52,62 @@ class LiveStreamInjectorTests(unittest.TestCase):
                 "2024-01-01T00:03:00+00:00",
             ])
             self.assertEqual([row.meter_urn for row in rows], ["meter_a", "meter_b", "meter_a", "meter_b"])
+
+    def test_meter_balanced_selection_covers_meters_before_second_series(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files: list[Path] = []
+            for meter in ("meter_a", "meter_b", "meter_c"):
+                for measurement in ("P", "W"):
+                    path = root / meter / f"{meter}.{measurement}_harmonized.csv.gz"
+                    write_gzip_csv(path, header=f"{meter}.{measurement}", rows=(("2024-01-01T00:00:00+00:00", "1.0"),))
+                    files.append(path)
+
+            selected = select_source_files(sorted(files), max_files=3, selection_mode="meter-balanced")
+
+            self.assertEqual({path.parent.name for path in selected}, {"meter_a", "meter_b", "meter_c"})
+            self.assertEqual(len(selected), 3)
+
+    def test_event_time_replay_delay_preserves_source_gaps(self) -> None:
+        times = [
+            datetime(2024, 1, 1, 0, 0, 1, tzinfo=UTC),
+            datetime(2024, 1, 1, 0, 0, 2, tzinfo=UTC),
+            datetime(2024, 1, 1, 0, 0, 3, tzinfo=UTC),
+            datetime(2024, 1, 1, 0, 0, 10, tzinfo=UTC),
+        ]
+
+        delays = [compute_replay_delay(previous, current, time_scale=1.0) for previous, current in zip(times, times[1:])]
+        scaled = [compute_replay_delay(times[2], times[3], time_scale=10.0)]
+
+        self.assertEqual(delays, [1.0, 1.0, 7.0])
+        self.assertEqual(scaled, [0.7])
+
+    def test_required_meter_gate_fails_when_selection_is_too_narrow(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_gzip_csv(root / "meter_a" / "meter_a.P_harmonized.csv.gz", header="meter_a.P", rows=(("2024-01-01T00:00:00+00:00", "1.0"),))
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/live/run_live_stream_injector.py",
+                    "--source-root",
+                    str(root),
+                    "--selection-mode",
+                    "meter-balanced",
+                    "--required-meters",
+                    "2",
+                    "--max-files",
+                    "1",
+                    "--max-events",
+                    "1",
+                ],
+                cwd=REPO_ROOT,
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertNotEqual(completed.returncode, 0)
+            self.assertIn("selected_meter_count 1 is below --required-meters 2", completed.stderr)
 
     def test_payload_uses_ingestion_contract_fields_and_no_db_write(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

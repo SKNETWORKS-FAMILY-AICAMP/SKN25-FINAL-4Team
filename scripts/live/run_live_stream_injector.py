@@ -16,7 +16,8 @@ import json
 import time
 import urllib.error
 import urllib.request
-from collections.abc import Iterator
+from collections import defaultdict
+from collections.abc import Callable, Iterator
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -53,6 +54,11 @@ class InjectorSummary:
     eligible_file_count: int
     excluded_backup_file_count: int
     selected_file_count: int
+    selected_meter_count: int
+    required_meter_count: int
+    selection_mode: str
+    replay_clock: str
+    time_scale: float
     emitted_count: int
     accepted_count: int
     error_count: int
@@ -79,7 +85,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--source-system", default=DEFAULT_SOURCE_SYSTEM, help="source_system field for idempotency.")
     parser.add_argument("--max-files", type=int, default=16, help="Maximum source files to open for a bounded live run.")
     parser.add_argument("--max-events", type=int, default=100, help="Maximum events to emit.")
-    parser.add_argument("--events-per-second", type=float, default=0.0, help="Optional wall-clock throttle. 0 means no sleep.")
+    parser.add_argument("--selection-mode", choices=("first-files", "meter-balanced"), default="first-files", help="Source file selection policy.")
+    parser.add_argument("--required-meters", type=int, default=0, help="Fail if selected unique meter count is below this value.")
+    parser.add_argument("--replay-clock", choices=("fixed-rate", "event-time"), default="fixed-rate", help="Use fixed event rate or preserve source event_ts gaps.")
+    parser.add_argument("--time-scale", type=float, default=1.0, help="Event-time replay scale. 1 preserves real gaps; 10 makes a 10s source gap wait 1s.")
+    parser.add_argument("--events-per-second", type=float, default=0.0, help="Optional fixed-rate throttle. 0 means no sleep.")
     parser.add_argument("--runtime-post", action="store_true", help="Actually POST events to FastAPI. Default is dry-run only.")
     args = parser.parse_args()
     if args.max_files <= 0:
@@ -88,24 +98,38 @@ def parse_args() -> argparse.Namespace:
         raise SystemExit("--max-events must be positive")
     if args.events_per_second < 0:
         raise SystemExit("--events-per-second must be non-negative")
+    if args.required_meters < 0:
+        raise SystemExit("--required-meters must be non-negative")
+    if args.time_scale <= 0:
+        raise SystemExit("--time-scale must be positive")
+    if args.replay_clock == "event-time" and args.events_per_second > 0:
+        raise SystemExit("--events-per-second is only valid with --replay-clock fixed-rate")
     return args
 
 
-def run(args: argparse.Namespace) -> InjectorSummary:
+def run(args: argparse.Namespace, *, sleep_fn: Callable[[float], None] = time.sleep) -> InjectorSummary:
     source_root = Path(args.source_root).expanduser().resolve()
     all_files = discover_harmonized_files(source_root, include_backup=True)
     files = discover_harmonized_files(source_root)
-    selected = files[: args.max_files]
+    selected = select_source_files(files, max_files=args.max_files, selection_mode=args.selection_mode)
+    selected_meter_count = len(meter_urns_for_files(selected))
+    if selected_meter_count < args.required_meters:
+        raise SystemExit(f"selected_meter_count {selected_meter_count} is below --required-meters {args.required_meters}")
     emitted = 0
     accepted = 0
     errors = 0
     first_event_ts: str | None = None
     last_event_ts: str | None = None
-    delay_sec = 1.0 / args.events_per_second if args.events_per_second > 0 else 0.0
+    fixed_delay_sec = 1.0 / args.events_per_second if args.events_per_second > 0 else 0.0
+    previous_sort_ts: datetime | None = None
 
     for row in merged_rows(selected):
         if emitted >= args.max_events:
             break
+        if args.replay_clock == "event-time" and previous_sort_ts is not None:
+            delay_sec = compute_replay_delay(previous_sort_ts, row.sort_ts, time_scale=args.time_scale)
+            if delay_sec:
+                sleep_fn(delay_sec)
         payload = build_payload(row, source_system=args.source_system)
         emitted += 1
         first_event_ts = first_event_ts or row.event_ts
@@ -116,8 +140,9 @@ def run(args: argparse.Namespace) -> InjectorSummary:
                 accepted += 1
             else:
                 errors += 1
-        if delay_sec:
-            time.sleep(delay_sec)
+        if args.replay_clock == "fixed-rate" and fixed_delay_sec:
+            sleep_fn(fixed_delay_sec)
+        previous_sort_ts = row.sort_ts
 
     mode = "runtime_post" if args.runtime_post else "dry_run"
     return InjectorSummary(
@@ -127,6 +152,11 @@ def run(args: argparse.Namespace) -> InjectorSummary:
         eligible_file_count=len(files),
         excluded_backup_file_count=len(all_files) - len(files),
         selected_file_count=len(selected),
+        selected_meter_count=selected_meter_count,
+        required_meter_count=args.required_meters,
+        selection_mode=args.selection_mode,
+        replay_clock=args.replay_clock,
+        time_scale=args.time_scale,
         emitted_count=emitted,
         accepted_count=accepted,
         error_count=errors,
@@ -149,6 +179,53 @@ def discover_harmonized_files(source_root: Path, *, include_backup: bool = False
         for path in source_root.rglob("*_harmonized.csv.gz")
         if include_backup or "/backup/" not in path.as_posix()
     )
+
+
+def select_source_files(paths: list[Path], *, max_files: int, selection_mode: str) -> list[Path]:
+    if selection_mode == "first-files":
+        return paths[:max_files]
+    if selection_mode != "meter-balanced":
+        raise ValueError(f"unsupported selection_mode: {selection_mode}")
+    groups: dict[str, list[Path]] = defaultdict(list)
+    for path in paths:
+        groups[meter_urn_for_file(path)].append(path)
+    selected: list[Path] = []
+    ordered_meters = sorted(groups)
+    round_index = 0
+    while len(selected) < max_files:
+        added = False
+        for meter in ordered_meters:
+            series = groups[meter]
+            if round_index < len(series):
+                selected.append(series[round_index])
+                added = True
+                if len(selected) >= max_files:
+                    break
+        if not added:
+            break
+        round_index += 1
+    return selected
+
+
+def meter_urns_for_files(paths: list[Path]) -> set[str]:
+    return {meter_urn_for_file(path) for path in paths}
+
+
+def meter_urn_for_file(path: Path) -> str:
+    try:
+        with gzip.open(path, "rt", newline="") as handle:
+            reader = csv.reader(handle)
+            header = next(reader)
+    except (OSError, StopIteration):
+        return path.parent.name
+    meter_urn, _ = parse_meter_measurement(header)
+    return meter_urn
+
+
+def compute_replay_delay(previous_ts: datetime, current_ts: datetime, *, time_scale: float) -> float:
+    if time_scale <= 0:
+        raise ValueError("time_scale must be positive")
+    return max(0.0, (current_ts - previous_ts).total_seconds() / time_scale)
 
 
 def merged_rows(paths: list[Path]) -> Iterator[SourceRow]:
