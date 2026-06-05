@@ -6,11 +6,13 @@
     "live",
     "pipeline",
     "latency",
-    "queue"
+    "queue",
+    "meter",
+    "coverage"
   ],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "30s",
   "time": {
     "from": "now-1h",
@@ -561,6 +563,286 @@
         "overrides": []
       },
       "options": {}
+    },
+    {
+      "id": 14,
+      "type": "stat",
+      "title": "Active meters last 5m",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 36
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT count(DISTINCT meter_urn) AS value FROM live.measurement_event WHERE received_at >= now() - interval '5 minutes';"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "id": 15,
+      "type": "stat",
+      "title": "Active series last 5m",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 36
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT count(DISTINCT meter_urn || '|' || measurement) AS value FROM live.measurement_event WHERE received_at >= now() - interval '5 minutes';"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "id": 16,
+      "type": "table",
+      "title": "Meter collection by series",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 44
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT\n  meter_urn,\n  measurement,\n  count(*) AS events_in_range,\n  max(event_ts) AS latest_event_ts,\n  max(received_at) AS latest_received_at,\n  EXTRACT(EPOCH FROM now() - max(event_ts)) AS event_age_sec,\n  count(*) FILTER (WHERE policy_lookup_status = 'resolved') AS resolved_events,\n  count(*) FILTER (WHERE policy_lookup_status <> 'resolved') AS unresolved_events\nFROM live.measurement_event\nWHERE event_ts BETWEEN $__timeFrom() AND $__timeTo()\nGROUP BY meter_urn, measurement\nORDER BY latest_event_ts DESC, events_in_range DESC, meter_urn, measurement\nLIMIT 200;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 17,
+      "type": "table",
+      "title": "Stale meter series",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 52
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH latest AS (\n  SELECT\n    meter_urn,\n    measurement,\n    max(event_ts) AS latest_event_ts,\n    max(received_at) AS latest_received_at,\n    count(*) AS events_in_range\n  FROM live.measurement_event\n  WHERE event_ts BETWEEN $__timeFrom() AND $__timeTo()\n  GROUP BY meter_urn, measurement\n)\nSELECT\n  meter_urn,\n  measurement,\n  latest_event_ts,\n  latest_received_at,\n  EXTRACT(EPOCH FROM now() - latest_event_ts) AS event_age_sec,\n  events_in_range\nFROM latest\nWHERE latest_event_ts < now() - interval '10 minutes'\nORDER BY event_age_sec DESC, meter_urn, measurement\nLIMIT 100;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 18,
+      "type": "table",
+      "title": "Policy status by series",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 52
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH event_status AS (\n  SELECT\n    meter_urn,\n    measurement,\n    policy_lookup_status,\n    count(*) AS events_in_range,\n    max(event_ts) AS latest_event_ts\n  FROM live.measurement_event\n  WHERE event_ts BETWEEN $__timeFrom() AND $__timeTo()\n  GROUP BY meter_urn, measurement, policy_lookup_status\n), active_policy AS (\n  SELECT\n    meter_urn,\n    measurement,\n    bool_or(enabled) AS any_enabled_policy,\n    max(policy_version) AS latest_policy_version\n  FROM live.measurement_policy\n  WHERE effective_from <= now()\n    AND (effective_to IS NULL OR effective_to > now())\n  GROUP BY meter_urn, measurement\n)\nSELECT\n  e.meter_urn,\n  e.measurement,\n  COALESCE(p.any_enabled_policy, false) AS any_enabled_policy,\n  p.latest_policy_version,\n  e.policy_lookup_status,\n  e.events_in_range,\n  e.latest_event_ts\nFROM event_status e\nLEFT JOIN active_policy p USING (meter_urn, measurement)\nORDER BY any_enabled_policy ASC, policy_lookup_status, events_in_range DESC, meter_urn, measurement\nLIMIT 200;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 19,
+      "type": "table",
+      "title": "Processed / inserted / duplicate / retry / DLQ invariant",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 60
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH recent_runs AS (\n  SELECT run_id\n  FROM ops.pipeline_metric\n  WHERE metric_name IN ('consumer_processed','consumer_inserted','consumer_duplicate','consumer_retry','consumer_dlq')\n  GROUP BY run_id\n  ORDER BY max(metric_ts) DESC\n  LIMIT 10\n), wide AS (\n  SELECT\n    run_id,\n    max(metric_ts) AS last_metric_ts,\n    COALESCE(max(CASE WHEN metric_name = 'consumer_processed' THEN metric_value END), 0)::bigint AS processed,\n    COALESCE(max(CASE WHEN metric_name = 'consumer_inserted' THEN metric_value END), 0)::bigint AS inserted,\n    COALESCE(max(CASE WHEN metric_name = 'consumer_duplicate' THEN metric_value END), 0)::bigint AS duplicate,\n    COALESCE(max(CASE WHEN metric_name = 'consumer_retry' THEN metric_value END), 0)::bigint AS retry,\n    COALESCE(max(CASE WHEN metric_name = 'consumer_dlq' THEN metric_value END), 0)::bigint AS dlq\n  FROM ops.pipeline_metric\n  WHERE run_id IN (SELECT run_id FROM recent_runs)\n    AND metric_name IN ('consumer_processed','consumer_inserted','consumer_duplicate','consumer_retry','consumer_dlq')\n  GROUP BY run_id\n)\nSELECT\n  run_id,\n  last_metric_ts,\n  processed,\n  inserted,\n  duplicate,\n  retry,\n  dlq,\n  processed - inserted - duplicate - retry - dlq AS invariant_delta,\n  CASE WHEN processed = inserted + duplicate + retry + dlq THEN 'PASS' ELSE 'CHECK' END AS invariant_status\nFROM wide\nORDER BY last_metric_ts DESC\nLIMIT 10;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
     }
   ]
 }

@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_live_pipeline_overview.json"
 DATASOURCE_PATH = ROOT / "docker/grafana/provisioning/datasources/postgres_cms_live.yaml"
 PROMETHEUS_DATASOURCE_PATH = ROOT / "docker/grafana/provisioning/datasources/prometheus_cms_stream.yaml"
+PROMETHEUS_CONFIG_PATH = ROOT / "docker/prometheus/phase1.yml"
 KAFKA_EXPORTER_DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_phase1b_kafka_exporter.json"
 SYSTEM_POSTGRES_DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_phase1c_system_postgres.json"
 SOAK_GATES_DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_live_soak_gates.json"
@@ -34,6 +35,8 @@ def test_observability_contract_constants_cover_live_pipeline_monitoring():
     assert GRAFANA_LIVE_PIPELINE_DASHBOARD_UID == "cms-live-pipeline"
     assert "ops.worker_heartbeat" in LIVE_OPS_TABLES
     assert "ops.pipeline_latency_event" in LIVE_OPS_TABLES
+    assert "ops.pipeline_metric" in LIVE_OPS_TABLES
+    assert "live.measurement_policy" in LIVE_OPS_TABLES
     assert "end_to_end_sec" in LATENCY_METRICS
     assert "source_to_mongo_sec" not in LATENCY_METRICS
     assert "mongo_to_event_sec" not in LATENCY_METRICS
@@ -47,7 +50,14 @@ def test_observability_contract_constants_cover_live_pipeline_monitoring():
     assert "kafka_produce_error_count" in KAFKA_METRICS
     assert "fastapi_ingest_5xx_count" in FASTAPI_METRICS
     assert {rule.name for rule in ALERT_RULE_CONTRACTS} == set(GRAFANA_ALERT_RULES)
-    assert {panel.source_table for panel in DASHBOARD_PANEL_CONTRACTS} >= {"live.bucket_queue", "qa.live_measurement_issue", "ops.pipeline_latency_event"}
+    assert {panel.source_table for panel in DASHBOARD_PANEL_CONTRACTS} >= {
+        "live.bucket_queue",
+        "live.measurement_event",
+        "live.measurement_policy",
+        "ops.pipeline_latency_event",
+        "ops.pipeline_metric",
+        "qa.live_measurement_issue",
+    }
 
 
 def test_grafana_dashboard_json_is_valid_and_uses_postgres_datasource():
@@ -68,11 +78,57 @@ def test_grafana_dashboard_json_is_valid_and_uses_postgres_datasource():
         "FastAPI ingest health",
         "Kafka consumer lag",
         "Kafka DLQ and produce errors",
+        "Active meters last 5m",
+        "Active series last 5m",
+        "Meter collection by series",
+        "Stale meter series",
+        "Policy status by series",
+        "Processed / inserted / duplicate / retry / DLQ invariant",
     } <= titles
     for panel in dashboard["panels"]:
         assert panel["datasource"]["uid"] == GRAFANA_POSTGRES_DATASOURCE_UID
         for target in panel["targets"]:
-            assert target["rawSql"].strip().upper().startswith("SELECT")
+            assert target["rawSql"].strip().upper().startswith(("SELECT", "WITH"))
+
+
+def test_live_pipeline_meter_coverage_panels_are_bounded_and_contract_aligned():
+    dashboard = json.loads(DASHBOARD_PATH.read_text(encoding="utf-8"))
+    panels = {panel["title"]: panel for panel in dashboard["panels"]}
+
+    raw = json.dumps(dashboard)
+    for token in [
+        "live.measurement_event",
+        "live.measurement_policy",
+        "ops.pipeline_metric",
+        "meter_urn",
+        "measurement",
+        "event_age_sec",
+        "active",
+        "policy_lookup_status",
+        "consumer_processed",
+        "consumer_inserted",
+        "consumer_duplicate",
+        "consumer_retry",
+        "consumer_dlq",
+        "invariant_delta",
+        "invariant_status",
+    ]:
+        assert token in raw
+
+    for title in [
+        "Meter collection by series",
+        "Stale meter series",
+        "Policy status by series",
+        "Processed / inserted / duplicate / retry / DLQ invariant",
+    ]:
+        sql = panels[title]["targets"][0]["rawSql"]
+        assert "LIMIT" in sql.upper()
+        assert "GROUP BY" in sql.upper()
+
+    for title in ["Active meters last 5m", "Active series last 5m"]:
+        sql = panels[title]["targets"][0]["rawSql"]
+        assert "count(DISTINCT" in sql
+        assert "GROUP BY" not in sql.upper()
 
 
 def test_grafana_provisioning_uses_placeholders_not_secrets():
@@ -128,12 +184,18 @@ def test_system_postgres_dashboard_uses_prometheus_datasource_and_promql() -> No
     assert {
         "Node exporter targets",
         "CPU busy by node",
-        "Memory available by node",
-        "Filesystem free by node",
+        "Memory available % by node",
+        "Filesystem free % by node",
+        "Disk read/write bytes by node",
+        "Network rx/tx bytes by node",
         "PostgreSQL exporter up",
         "PostgreSQL active connections",
-        "PostgreSQL transactions per second",
-        "PostgreSQL deadlocks",
+        "PostgreSQL cache hit ratio",
+        "PostgreSQL temp bytes/files",
+        "PostgreSQL locks by mode",
+        "PostgreSQL deadlocks last 5m",
+        "Kafka lag current",
+        "Kafka consumer lag vs CPU busy",
     } <= titles
     for panel in dashboard["panels"]:
         assert panel["datasource"]["uid"] == "prometheus-cms-stream"
@@ -144,13 +206,37 @@ def test_system_postgres_dashboard_uses_prometheus_datasource_and_promql() -> No
     for token in [
         "node_cpu_seconds_total",
         "node_memory_MemAvailable_bytes",
+        "node_memory_MemTotal_bytes",
         "node_filesystem_avail_bytes",
+        "node_filesystem_size_bytes",
+        "node_disk_read_bytes_total",
+        "node_disk_written_bytes_total",
+        "node_network_receive_bytes_total",
+        "node_network_transmit_bytes_total",
         "pg_up",
         "pg_stat_activity_count",
-        "pg_stat_database_xact_commit",
+        "pg_stat_database_blks_hit",
+        "pg_stat_database_blks_read",
+        "pg_stat_database_temp_bytes",
+        "pg_stat_database_temp_files",
+        "pg_locks_count",
         "pg_stat_database_deadlocks",
+        "kafka_consumergroup_lag_sum",
+        "postgres-live-ingest",
+        "measurement_raw_v1",
     ]:
         assert token in raw
+
+    prometheus_config = PROMETHEUS_CONFIG_PATH.read_text(encoding="utf-8")
+    for token in [
+        "job_name: node-exporter-stream",
+        "job_name: node-exporter-db",
+        "job_name: postgres-exporter",
+        "job_name: kafka-exporter",
+        "node: cms-stream",
+        "node: cms-db",
+    ]:
+        assert token in prometheus_config
 
 
 def test_live_soak_gates_dashboard_uses_postgres_datasource_and_ops_metrics() -> None:

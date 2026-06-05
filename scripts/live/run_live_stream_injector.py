@@ -250,8 +250,25 @@ def compute_replay_delay(previous_ts: datetime, current_ts: datetime, *, time_sc
 
 
 def merged_rows(paths: list[Path]) -> Iterator[SourceRow]:
-    streams = [iter_source_rows(path, sequence=index) for index, path in enumerate(paths)]
-    yield from heapq.merge(*streams, key=lambda row: (row.sort_ts, row.sequence, row.row_number))
+    heap: list[tuple[datetime, int, int, SourceRow]] = []
+    for sequence, path in enumerate(paths):
+        row = next_source_row(path, sequence=sequence, after_row_number=0)
+        if row is not None:
+            heapq.heappush(heap, (row.sort_ts, row.sequence, row.row_number, row))
+
+    while heap:
+        _, _, _, row = heapq.heappop(heap)
+        yield row
+        next_row = next_source_row(Path(row.path), sequence=row.sequence, after_row_number=row.row_number)
+        if next_row is not None:
+            heapq.heappush(heap, (next_row.sort_ts, next_row.sequence, next_row.row_number, next_row))
+
+
+def next_source_row(path: Path, *, sequence: int, after_row_number: int) -> SourceRow | None:
+    for row in iter_source_rows(path, sequence=sequence):
+        if row.row_number > after_row_number:
+            return row
+    return None
 
 
 def iter_source_rows(path: Path, *, sequence: int) -> Iterator[SourceRow]:

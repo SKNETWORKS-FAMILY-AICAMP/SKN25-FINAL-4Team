@@ -69,9 +69,11 @@ WORKER_NAMES = (
 LIVE_OPS_TABLES = (
     "ops.worker_heartbeat",
     "ops.pipeline_latency_event",
+    "ops.pipeline_metric",
     "ops.kafka_consumer_lag",
     "ops.fastapi_ingest_metric",
     "live.measurement_event",
+    "live.measurement_policy",
     "live.bucket_queue",
     "qa.live_measurement_issue",
     "live.promotion_check",
@@ -150,6 +152,12 @@ DASHBOARD_PANEL_CONTRACTS = (
     DashboardPanelContract("Latency p95 by stage", "ops.pipeline_latency_event", "stage latency", "P0"),
     DashboardPanelContract("Worker heartbeat", "ops.worker_heartbeat", "worker liveness", "P0"),
     DashboardPanelContract("Promotion readiness", "live.promotion_check", "approval-gated promotion state", None),
+    DashboardPanelContract("Active meters last 5 minutes", "live.measurement_event", "bounded active meter count", "P1"),
+    DashboardPanelContract("Active series last 5 minutes", "live.measurement_event", "bounded active meter-measurement count", "P1"),
+    DashboardPanelContract("Meter collection by series", "live.measurement_event", "per-series collection volume and freshness", "P1"),
+    DashboardPanelContract("Stale meter series", "live.measurement_event", "stale series freshness triage", "P1"),
+    DashboardPanelContract("Policy status by series", "live.measurement_policy", "policy lookup and active policy visibility", "P1"),
+    DashboardPanelContract("Consumer invariant", "ops.pipeline_metric", "processed/inserted/duplicate/retry/DLQ reconciliation", "P1"),
 )
 
 

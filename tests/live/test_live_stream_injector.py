@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import gzip
 import json
+import resource
 import subprocess
 import sys
 import tempfile
@@ -52,6 +53,30 @@ class LiveStreamInjectorTests(unittest.TestCase):
                 "2024-01-01T00:03:00+00:00",
             ])
             self.assertEqual([row.meter_urn for row in rows], ["meter_a", "meter_b", "meter_a", "meter_b"])
+
+    def test_merge_rows_preserves_order_under_low_nofile_limit(self) -> None:
+        soft_limit, hard_limit = resource.getrlimit(resource.RLIMIT_NOFILE)
+        target_limit = min(soft_limit, 32)
+        try:
+            resource.setrlimit(resource.RLIMIT_NOFILE, (target_limit, hard_limit))
+            with tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                paths = []
+                for index in range(target_limit + 8):
+                    path = root / f"meter_{index:03d}" / f"meter_{index:03d}.P_harmonized.csv.gz"
+                    write_gzip_csv(
+                        path,
+                        header=f"meter_{index:03d}.P",
+                        rows=((f"2024-01-01T00:{index % 60:02d}:00+00:00", str(index)),),
+                    )
+                    paths.append(path)
+
+                rows = list(merged_rows(paths))
+
+                self.assertEqual([row.event_ts for row in rows], sorted(row.event_ts for row in rows))
+                self.assertEqual(len(rows), len(paths))
+        finally:
+            resource.setrlimit(resource.RLIMIT_NOFILE, (soft_limit, hard_limit))
 
     def test_meter_balanced_selection_covers_meters_before_second_series(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

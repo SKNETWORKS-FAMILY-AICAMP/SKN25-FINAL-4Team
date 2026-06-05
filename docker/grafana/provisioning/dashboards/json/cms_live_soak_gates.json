@@ -395,6 +395,56 @@
       "options": {
         "showHeader": true
       }
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Duplicate / reprocessed events",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 30
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT metric_ts AS time, metric_value AS value, run_id || ' / ' || metric_name AS metric\nFROM ops.pipeline_metric\nWHERE stage LIKE 'live_soak_%'\n  AND metric_name IN ('consumer_duplicate','consumer_reprocessed')\n  AND metric_ts BETWEEN $__timeFrom() AND $__timeTo()\nORDER BY metric_ts;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "events",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      }
     }
   ]
 }
