@@ -10,7 +10,7 @@ SK Networks AI Family 25기 4팀 파이널 프로젝트.
 **핵심 차별점** — 경쟁사(진동/다센서 기반 예지보전)는 물리 센서 증설이 전제다.
 우리는 이미 있는 전기·성능 데이터에 **LLM 진단 코파일럿**을 얹어, *왜 이상한지·무엇을 할지·언제 고장날지* 를 설명한다.
 
-- **데이터**: Honda R&D Europe GmbH (독일 오펜바흐) — 다수 계량기(전압/전류/역률/전력 등), 2017~2024년
+- **데이터**: Honda R&D Europe GmbH (독일 오펜바흐) — 81개 계량기(전압/전류/역률/전력 등), 2018~2024년
 - **GitHub**: https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN25-FINAL-4Team (브랜치 `app/ems-agent`)
 
 ---
@@ -22,23 +22,23 @@ SK Networks AI Family 25기 4팀 파이널 프로젝트.
 |------|------|
 | 🏭 **설비 상태 감시** | 설비별 헬스 스코어(노출시간 정규화) + 상태등급 · 현재 전력/COP 지표 · 최근 이상 요약 |
 | 🩺 **AI 고장 원인 진단** | LLM이 이상 이력 + **전기 시그니처(3상 불평형·역률·주파수)** + 도메인 지식으로 원인·근거·조치 생성 |
-| 🔮 **예지보전** | COP·이상 발생률 **추세 외삽**으로 "현 추세면 N개월 후 기준치 도달" 위험 예측 (추세 기반·참고용) |
+| 🔮 **예지보전** | COP·이상 발생률 **추세 외삽**으로 "현 추세면 N개월 후 기준치 도달" 위험 예측 |
 | 🔧 **정비 작업지시** | 진단 → 작업지시 생성 → 진행/완료 칸반 → 조치 결과 기록 (이력 루프) |
-| 🚨 **이상탐지** | 2경로 — ① VMD-LSTM 예측 잔차 + Isolation Forest(주력) ② 통계·IF·LSTM-AE 3단 투표(폴백) · HIGH/MEDIUM/LOW |
+| 🚨 **이상탐지** | 2경로 — ① residual 기반 + Isolation Forest(주력) ② 통계·IF·LSTM-AE 3단 투표(폴백) |
 
 ### AI 코파일럿
 | 기능 | 설명 |
 |------|------|
-| 💬 **대화형 + 에이전트** | 자연어 질의(LangGraph) + **실제 행동**(작업지시 생성·시뮬 제어 실행) · 현재 보던 설비 **컨텍스트 자동 인지** · 알림 → 자동 분석 |
+| 💬 **대화형 + 에이전트** | 자연어 질의(LangGraph) + **실제 행동**(작업지시 생성·시뮬 제어 실행) · 현재 보던 설비 **컨텍스트 자동 인지** |
 | 🧠 **적응형 학습** | 권고의 과거 성공/실패(outcome)로 우선순위 재랭킹 + 신뢰도 표시 |
 
 ### 운영 보조 (에너지)
 | 기능 | 설명 |
 |------|------|
-| 📈 **수요 예측** | VMD-LSTM(주력 사전학습) + XGBoost(폴백/백테스트) · 모델 비교 |
+| 📈 **수요 예측** | v84 앙상블 (계량기별 개인화 — LSTM×6 + CatBoost + LightGBM + Ridge + Naive) |
 | ⚡ **제어 및 최적화** | 피크 시프트·야간부하·효율 권고 (승인/거부 + 적응형 학습) |
 | 💰 **목표 요금 관리** | 월말 요금 추정 · 피크 위험 모니터링 |
-| 📄 **보고서** | 월간 KPI(YoY·MoM, 냉방-외기온 상관) + 일일 운영 브리핑(PDF/DOCX/HWPX) |
+| 📄 **보고서** | 월간 KPI(YoY·MoM) + 일일 운영 브리핑(PDF/DOCX/HWPX) |
 | 🔌 **계량기 토폴로지** | 미터 에너지 흐름·집계 구조 시각화 |
 
 ---
@@ -52,20 +52,15 @@ Orchestrator (키워드 룰 → LLM 폴백으로 의도 분류)
     ├── cms      → CMS Agent      → 설비 상태/진단/예지보전/작업지시 (+ 행동 실행)  ◀ 주력
     ├── anomaly  → 이상탐지 Agent → 답변
     ├── report   → 보고서 Agent   → 답변 + PDF
-    ├── forecast → 예측 Agent     → 답변 (보조)
+    ├── forecast → 예측 Agent     → v84 앙상블 추론 (계량기별)
     └── rag      → RAG Agent      → pgvector 검색 + 답변
     ↓
 Critic (용어 교정 — 문자열 치환)
 
 FastAPI (8000)  ←→  React 대시보드 (Docker: 8080, 라이트 엔터프라이즈 UI)
-PostgreSQL + TimescaleDB + pgvector
+PostgreSQL(TimescaleDB) + pgvector  ←  reference.corrected_resampled_1h
 시뮬레이터: 가상 시계가 과거 데이터를 "실시간"으로 재생 → 워커가 이상 자동 탐지·알림
 ```
-
-> **안정화 설계** — 모든 동기 라우터를 `def`로 두어 FastAPI 스레드풀에서 병렬 처리(이벤트 루프 블록 방지),
-> DB 커넥션 풀(2~25)+반환 시 rollback, DDL 1회 실행(락 데드락 방지). 의도 분류는 키워드 룰 우선으로 LLM 호출 절감.
-
-> **팀 분담** — ML 모델(VMD-LSTM 예측, 잔차+IF 이상탐지)은 팀원 담당. 모델 교체용 인터페이스 계약 문서는 팀에 별도 공유.
 
 ---
 
@@ -73,8 +68,8 @@ PostgreSQL + TimescaleDB + pgvector
 
 - Docker 23.0 이상 + Docker Compose v2 (권장)
 - 또는 Python 3.11 이상 + Node.js 18 이상 (로컬 직접 실행 시)
-- PostgreSQL 접속 정보 (팀 NAS 서버)
-- LLM API 키 (OpenAI / Anthropic / Gemini 중 하나), 또는 Ollama 엔드포인트 (로컬/RunPod)
+- PostgreSQL 접속 정보 (팀 서버: 13.209.98.228 / cms DB)
+- LLM API 키 (OpenAI / Anthropic / Gemini 중 하나), 또는 Ollama 엔드포인트
 
 ---
 
@@ -97,24 +92,23 @@ cp .env.example .env
 `.env`에 DB 접속 정보와 LLM API 키를 입력합니다:
 
 ```env
-DB_HOST=YOUR_DB_HOST
+DB_HOST=13.209.98.228
 DB_PORT=5432
-DB_USER=YOUR_DB_USER
+DB_USER=cms
 DB_PASSWORD=YOUR_DB_PASSWORD
-DB_NAME=YOUR_DB_NAME
-DATABASE_URL=postgresql://YOUR_DB_USER:YOUR_DB_PASSWORD@YOUR_DB_HOST:5432/YOUR_DB_NAME
+DB_NAME=cms
+DATABASE_URL=postgresql://cms:YOUR_DB_PASSWORD%40@13.209.98.228:5432/cms
 
 # LLM 프로바이더 (openai | anthropic | gemini | ollama)
 LLM_PROVIDER=openai
 LLM_MODEL=gpt-4o
 OPENAI_API_KEY=
-ANTHROPIC_API_KEY=
-GEMINI_API_KEY=
 
 # Ollama (로컬 sLLM) — LLM_PROVIDER=ollama 시 사용
-# OLLAMA_URL=http://localhost:11434/v1           # 로컬
-# OLLAMA_URL=https://{pod-id}-11434.proxy.runpod.net/v1  # RunPod
+# OLLAMA_URL=http://localhost:11434/v1
 ```
+
+> **주의**: DB 비밀번호에 `@` 등 특수문자가 포함된 경우 `DATABASE_URL`에서 `%40`으로 인코딩하세요.
 
 ---
 
@@ -131,8 +125,6 @@ docker compose up --build -d
 | API 문서 (Swagger) | http://localhost:8000/docs |
 | 헬스체크 | http://localhost:8000/health |
 
-> 첫 빌드 약 5~8분(CPU-only torch + BuildKit 캐시), 이후 재빌드는 수십 초.
-
 ---
 
 ## 실행 방법 B — 로컬 직접 실행 (개발용)
@@ -140,7 +132,7 @@ docker compose up --build -d
 ### 백엔드
 ```bash
 cd backend
-python -m venv .venv && source .venv/bin/activate    # Windows: .venv\Scripts\activate
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.backend.txt
 cd src && uvicorn api.main:app --reload --port 8000
 ```
@@ -149,8 +141,44 @@ cd src && uvicorn api.main:app --reload --port 8000
 ```bash
 cd frontend
 npm install
-npm run dev                      # http://localhost:5173
+npm run dev    # http://localhost:5173
 ```
+
+---
+
+## ML 학습 파이프라인 (v84 앙상블)
+
+예측 모델은 별도 Python 환경에서 학습합니다. 학습 후 생성된 artifacts를 백엔드가 로드합니다.
+
+### 환경 세팅 (최초 1회)
+
+```bash
+python3.12 -m venv .venv-train
+.venv-train/bin/pip install torch --index-url https://download.pytorch.org/whl/cpu
+.venv-train/bin/pip install numpy pandas scikit-learn joblib catboost lightgbm \
+    sqlalchemy psycopg2-binary python-dotenv matplotlib
+```
+
+> GPU 사용 시 `torch` 설치 URL을 CUDA 버전으로 변경하세요.
+
+### 학습 실행
+
+```bash
+# 1시간 예측 (45개 계량기 전체)
+.venv-train/bin/python -m ml.pipeline.train --horizon 1
+
+# 3시간 예측
+.venv-train/bin/python -m ml.pipeline.train --horizon 3
+
+# 특정 계량기만
+.venv-train/bin/python -m ml.pipeline.train --horizon 1 --meters H2.Z66
+
+# 전기 계량기 그룹만
+.venv-train/bin/python -m ml.pipeline.train --horizon 1 --groups electric
+```
+
+학습 완료 후 `ml/pipeline/artifacts/{1h|3h}/{meter_urn}/` 에 모델 파일이 생성됩니다.
+백엔드 `GET /forecast/predict/v84-ensemble?meter_urn=H2.Z66&horizon=1` 로 추론 확인.
 
 ---
 
@@ -177,7 +205,7 @@ npm run dev                      # http://localhost:5173
 | GET | `/cms/equipment/{id}/diagnose` | LLM 고장 원인 진단 (전기 시그니처 포함) |
 | GET | `/cms/predictive` | 추세 기반 예지보전 위험 예측 |
 | POST/GET | `/cms/work-orders` | 정비 작업지시 생성/목록 |
-| POST | `/cms/work-orders/{id}/status` | 작업지시 상태 전환(open→in_progress→done) |
+| POST | `/cms/work-orders/{id}/status` | 작업지시 상태 전환 |
 
 ### 채팅 / 제어 / 시뮬레이터
 | 메서드 | 경로 | 설명 |
@@ -186,34 +214,32 @@ npm run dev                      # http://localhost:5173
 | GET/DELETE | `/chat/sessions` | 대화 세션 목록 / 전체 삭제 |
 | GET/DELETE | `/control/recommendations` | 운영 권고 조회 / 이력 초기화 |
 | POST | `/control/recommendations/{id}/approve\|reject` | 권고 승인/거부 |
-| GET | `/control/learning-stats` | 적응형 학습 통계 |
 | POST | `/simulator/{start\|pause\|reset\|seek\|speed}` | 가상 시계 제어 |
 | GET | `/notifications/stream` | 실시간 알림 SSE |
 
 ### 시스템 설정 / 사용자 관리
 | 메서드 | 경로 | 설명 |
 |--------|------|------|
-| GET | `/settings` | 현재 설정 조회 (LLM·프로파일·스케줄·알림 임계값) |
-| POST | `/settings` | 설정 변경 — LLM 재로드·스케줄러 즉시 반영 |
-| POST | `/settings/test-llm` | LLM 엔드포인트 연결 테스트 (지연시간 반환) |
-| GET | `/users` | 사용자 목록 조회 |
-| POST | `/users` | 사용자 추가 (이메일 중복 체크) |
-| PATCH | `/users/{id}` | 이름·역할·상태 변경 |
-| DELETE | `/users/{id}` | 사용자 삭제 |
+| GET/POST | `/settings` | 설정 조회·변경 (LLM·스케줄·알림 임계값) |
+| POST | `/settings/test-llm` | LLM 연결 테스트 |
+| GET/POST | `/users` | 사용자 목록 / 추가 |
+| PATCH/DELETE | `/users/{id}` | 사용자 수정 / 삭제 |
 
 ### 이상탐지 / 예측 / 보고서
 | 메서드 | 경로 | 설명 |
 |--------|------|------|
-| GET | `/anomalies`, `/anomalies/summary`, `/anomalies/events` | 결과 목록(유형 필터)·요약·이벤트 |
-| POST/GET | `/anomalies/run`, `/anomalies/run/status/{job}` | 백그라운드 탐지 실행/상태 |
-| GET | `/forecast/compare`, `/forecast/predict/{model}`, `/forecast/backtest` | 예측 비교/단일/백테스트 |
+| GET | `/anomalies`, `/anomalies/summary` | 결과 목록(유형 필터)·요약 |
+| POST/GET | `/anomalies/run`, `/anomalies/run/status/{job}` | 탐지 실행/상태 |
+| GET | `/forecast/models` | 등록 모델 목록 + artifacts 유무 |
+| POST | `/forecast/train/v84-ensemble` | 학습 트리거 (`?horizon=1&meters=H2.Z66`) |
+| GET | `/forecast/train/status` | 학습 진행 상태 |
+| GET | `/forecast/predict/v84-ensemble` | 추론 (`?meter_urn=H2.Z66&horizon=1`) |
 | GET | `/report`, `/report/daily`, `/report/billing` | 월간/일일/요금 보고서 |
 
-> **이상탐지 2경로** — `/anomalies/run` 실행 시 모델 파일 유무로 자동 분기:
-> - **주력**: VMD-LSTM 예측 **잔차(\|실제−예측\|)** 임계 초과 + IsolationForest 합산. 둘 다=HIGH, 잔차 1.5배 초과=MEDIUM, 한쪽=LOW.
-> - **폴백**: 통계(Z·IQR·STL) + IsolationForest + LSTM-AE **3단 투표**. 2표↑=HIGH, 1표=MEDIUM.
-> - 공통: 유형(COPDrop·CHPOutage·NightConsumption·PVNightNonZero·PowerSpike) 분류 후 `anomaly_results` 저장.
-> - **CMS 연동**: 모든 CMS 기능(헬스·진단·예지보전·작업지시)이 `anomaly_results`를 소비 → 이상탐지 모델 교체 시 CMS 전체가 자동 개선.
+> **이상탐지 2경로**  
+> - **주력**: 예측 잔차(|실제−예측|) 임계 초과 + IsolationForest 합산. 둘 다=HIGH, 잔차 1.5배=MEDIUM, 한쪽=LOW.  
+> - **폴백**: 통계(Z·IQR·STL) + IsolationForest + LSTM-AE 3단 투표. 2표↑=HIGH, 1표=MEDIUM.  
+> - 유형 분류(COPDrop·CHPOutage·NightConsumption·PVNightNonZero·PowerSpike) → `anomaly_results` 저장 → CMS 전체 소비.
 
 ---
 
@@ -221,31 +247,33 @@ npm run dev                      # http://localhost:5173
 
 ```
 SKN25-FINAL-4Team/
+├── ml/                                     # v84 앙상블 ML 파이프라인
+│   └── pipeline/
+│       ├── train.py                        # 학습 진입점 (--horizon 1|3)
+│       ├── inference.py                    # 추론 진입점 (predict_meter)
+│       └── common/                         # config · preprocessing · model
+│                                           #  · catboost · lightgbm · ridge · naive
+│                                           #  · ensemble · router · artifacts · db
 ├── backend/src/
-│   ├── agents/                         # LangGraph 멀티 에이전트
-│   │   ├── orchestrator.py             # 의도 분류(cms/anomaly/report/forecast/rag) + 라우팅
-│   │   ├── cms_agent.py                # 설비 상태/진단/예지보전/작업지시 + 행동 실행
-│   │   ├── anomaly_agent.py · forecast_agent.py · reporting_agent.py · rag_agent.py
-│   │   └── state.py                    # 공유 AgentState (context 포함)
+│   ├── agents/                             # LangGraph 멀티 에이전트
+│   │   ├── orchestrator.py                 # 의도 분류 + 라우팅
+│   │   ├── cms_agent.py                    # 설비 상태/진단/예지보전/작업지시
+│   │   ├── forecast_agent.py               # v84 앙상블 추론 + 자연어 설명
+│   │   └── anomaly_agent · reporting_agent · rag_agent · state
 │   ├── api/
-│   │   ├── main.py · db.py(풀+rollback) · scheduler.py · report_export.py
-│   │   └── routers/                    # cms · control · simulator · notifications
-│   │   │                               #  + chat · anomalies · forecast · report
-│   │   │                               #  + settings(LLM·스케줄·알림) · users(CRUD)
-│   ├── data/loader.py                  # ems 스키마 로더 (전기 계측 포함)
-│   ├── knowledge/                      # domain_knowledge · embedding(pgvector) · meter_metadata
+│   │   ├── main.py · db.py · scheduler.py · report_export.py
+│   │   └── routers/   cms · control · forecast · anomalies · report
+│   │                  chat · simulator · notifications · settings · users
+│   ├── data/loader.py                      # reference.corrected_resampled_1h 로더
+│   ├── knowledge/                          # domain_knowledge · embedding(pgvector)
 │   └── models/
 │       ├── anomaly/   residual_model(주력) · ensemble/statistical/isolation/lstm_ae(폴백)
-│       └── forecasting/ vmd_lstm_model(주력) · xgboost_model · (prophet/lstm)
+│       └── forecasting/ vmd_lstm_model · xgboost_model  ← 이상탐지 연동용 유지
 ├── frontend/src/
-│   ├── theme.js · EquipIcon.jsx        # 라이트 엔터프라이즈 디자인 토큰 + 설비 아이콘
-│   ├── App.jsx                         # 셸(사이드바·탑바, lucide 아이콘)
-│   └── components/
-│       ├── DashboardPanel · EquipmentPanel · MaintenancePanel   # CMS 핵심
-│       ├── AnomalyPanel · ControlPanel · ForecastPanel · BillingPanel · ReportPanel
-│       ├── ChatPanel · ChatWorkspacePanel(AI 대화) · SimulatorClock
-│       └── TopologyPanel
-│           SettingsPanel(LLM·스케줄·알림·프로파일 설정) · UsersPanel(사용자 CRUD)
+│   ├── App.jsx · theme.js · EquipIcon.jsx
+│   └── components/   Dashboard · Equipment · Maintenance · Anomaly · Control
+│                     Forecast · Billing · Report · Chat · Topology
+│                     Settings · Users · SimulatorClock
 ├── .env.example
 └── docker-compose.yml
 ```
@@ -255,10 +283,11 @@ SKN25-FINAL-4Team/
 ## 기술 스택
 
 - **백엔드**: FastAPI · LangGraph · psycopg2 · APScheduler
-- **DB**: PostgreSQL + TimescaleDB + pgvector
+- **DB**: PostgreSQL + TimescaleDB + pgvector (`reference.corrected_resampled_1h`)
 - **프론트**: React (Vite) · Recharts · lucide-react · react-markdown
-- **LLM**: OpenAI / Anthropic / Gemini / **Ollama** (env 1줄 전환) — 공장 배포 시 Ollama(EXAONE/Qwen2.5) 로컬 sLLM으로 플립 (데이터 보안)
-- **ML(팀)**: VMD-LSTM(예측) · 잔차+IsolationForest(이상탐지)
+- **LLM**: OpenAI / Anthropic / Gemini / **Ollama** (env 1줄 전환) — 공장 배포 시 Ollama(EXAONE/Qwen2.5) 로컬 sLLM
+- **ML 예측**: v84 앙상블 — LSTM(v1~v7) + CatBoost + LightGBM + Ridge + Seasonal Naive, 잔차 타겟(P(t)−P(t-1)), 45개 계량기 개인화
+- **ML 이상탐지**: residual 기반 + IsolationForest(주력) / 통계+IF+LSTM-AE 투표(폴백)
 
 ---
 
