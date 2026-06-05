@@ -12,6 +12,12 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
 # Virtual environment
 .venv/
@@ -29,6 +35,7 @@ env/
 *.pth
 *.onnx
 *.joblib
+!artifacts/import_pmax_v29_60min/**/*.joblib
 
 # MLflow
 mlflow/
@@ -43,13 +50,11 @@ outputs/**
 !outputs/
 !outputs/raw_eda/
 !outputs/raw_eda/README.md
+test2_15min/
+test4_15min_no_v16/
 test1_15min/**/_candidate_models/
 test1_15min/**/test_predictions.csv
 test1_15min/**/validation_predictions.csv
-test2_15min/**/_candidate_models/
-test2_15min/**/test_predictions.csv
-test2_15min/**/validation_predictions.csv
-test2_15min/smoke_outputs_gpu/
 test3_15min/**/_candidate_models/
 test3_15min/**/test_predictions.csv
 test3_15min/**/validation_predictions.csv
@@ -58,6 +63,12 @@ test4_15min/**/_candidate_models/
 test4_15min/**/test_predictions.csv
 test4_15min/**/validation_predictions.csv
 test4_15min/smoke_outputs_gpu/
+
+# Local archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
 
 # OS
 .DS_Store
