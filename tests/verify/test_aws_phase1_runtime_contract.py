@@ -32,6 +32,7 @@ def test_aws_phase1_compose_keeps_kafka_private_and_uses_phase1_topics() -> None
     assert "9092:9092" not in text
     assert "0.0.0.0:9092" not in text
     assert "${CMS_API_BIND:-127.0.0.1}:${CMS_API_PORT:-8000}:8000" in text
+    assert "./data/live_source:/home/ubuntu/cms-stream-deploy/data/live_source:ro" in text
 
 
 def test_aws_phase1_compose_adds_private_prometheus_and_kafka_exporter() -> None:
