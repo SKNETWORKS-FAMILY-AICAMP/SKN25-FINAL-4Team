@@ -13,7 +13,6 @@ scikit-learn
 torch
 
 # 예측
-prophet
 xgboost
 lightgbm
 catboost
@@ -24,9 +23,6 @@ matplotlib
 langchain
 langgraph
 langchain-community
-
-# 실험 추적
-mlflow
 
 # API
 fastapi

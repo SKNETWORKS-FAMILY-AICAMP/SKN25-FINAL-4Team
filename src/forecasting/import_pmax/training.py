@@ -18,7 +18,6 @@ import pandas as pd
 from catboost import CatBoostRegressor
 from dotenv import load_dotenv
 from lightgbm import LGBMRegressor, early_stopping, log_evaluation
-from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.multioutput import MultiOutputRegressor
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import URL
@@ -115,7 +114,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--meters", nargs="*", default=list(LOGICAL_METERS), choices=list(LOGICAL_METERS))
     parser.add_argument("--input-hours", nargs="*", type=int, default=INPUT_WINDOW_HOURS, choices=INPUT_WINDOW_HOURS)
     parser.add_argument("--outputs", nargs="*", default=list(OUTPUT_HORIZON_STEPS), choices=list(OUTPUT_HORIZON_STEPS))
-    parser.add_argument("--methods", nargs="*", default=["v29"])
     parser.add_argument("--device", choices=["cpu", "gpu"], default="cpu")
     parser.add_argument("--seed", type=int, default=42)
     return parser.parse_args()
@@ -420,18 +418,6 @@ def predict_model(model: Any, x: np.ndarray) -> np.ndarray:
     if pred.ndim == 1:
         pred = pred.reshape(-1, 1)
     return pred.astype(np.float32)
-
-
-def make_v16(seed: int) -> MultiOutputRegressor:
-    base = HistGradientBoostingRegressor(
-        loss="squared_error",
-        learning_rate=0.05,
-        max_iter=50,
-        max_leaf_nodes=15,
-        l2_regularization=0.05,
-        random_state=seed,
-    )
-    return MultiOutputRegressor(base)
 
 
 def make_v20(seed: int) -> MultiOutputRegressor:
@@ -853,7 +839,6 @@ def train_candidates(bundle: DatasetBundle, model_dir: Path, seed: int, device: 
     models: dict[str, Any] = {}
     rows = []
     factories = {
-        "v16": lambda: make_v16(seed),
         "v20": lambda: make_v20(seed),
         "v25": lambda: make_v25(seed, device),
         "v27": lambda: make_v27(seed, device),
@@ -904,30 +889,6 @@ def prediction_stack(predictions: dict[str, np.ndarray], versions: list[str], ro
     return np.stack(arrays, axis=1)
 
 
-def actual_vector(actual: np.ndarray, row_idx: np.ndarray | None = None) -> np.ndarray:
-    if row_idx is not None:
-        actual = actual[row_idx]
-    return actual.reshape(-1)
-
-
-def compute_rmse(actual: np.ndarray, pred: np.ndarray) -> float:
-    return float(np.sqrt(np.mean((actual - pred) ** 2)))
-
-
-def inverse_rmse_weights(
-    val_predictions: dict[str, np.ndarray], actual: np.ndarray, versions: list[str], row_idx: np.ndarray | None = None
-) -> np.ndarray:
-    raw = []
-    actual_vec = actual_vector(actual, row_idx)
-    for version in versions:
-        pred = val_predictions[version]
-        if row_idx is not None:
-            pred = pred[row_idx]
-        raw.append(1.0 / max(compute_rmse(actual_vec, pred.reshape(-1)), 1e-9) ** 2)
-    weights = np.array(raw, dtype=np.float64)
-    return weights / weights.sum()
-
-
 def constrained_simplex_least_squares(pred: np.ndarray, actual: np.ndarray) -> tuple[np.ndarray, float]:
     n_candidates = pred.shape[1]
     best_weights = np.full(n_candidates, 1.0 / n_candidates, dtype=np.float64)
@@ -956,42 +917,10 @@ def constrained_simplex_least_squares(pred: np.ndarray, actual: np.ndarray) -> t
     return best_weights, float(np.sqrt(best_mse))
 
 
-def v28_weights(val_predictions: dict[str, np.ndarray], actual: np.ndarray, versions: list[str]) -> np.ndarray:
-    return inverse_rmse_weights(val_predictions, actual, versions)
-
-
 def v29_weights(val_predictions: dict[str, np.ndarray], actual: np.ndarray, versions: list[str]) -> np.ndarray:
     stack = prediction_stack(val_predictions, versions)
     weights, _ = constrained_simplex_least_squares(stack, actual.reshape(-1))
     return weights
-
-
-def v30_weights(val_predictions: dict[str, np.ndarray], actual: np.ndarray, meta: pd.DataFrame, versions: list[str]) -> np.ndarray:
-    ordered = meta.copy()
-    ordered["target_end_ts"] = pd.to_datetime(ordered["target_end_ts"], utc=True)
-    ordered = ordered.sort_values("target_end_ts").reset_index()
-    if len(ordered) < 4:
-        return inverse_rmse_weights(val_predictions, actual, versions)
-    midpoint = len(ordered) // 2
-    fit_idx = ordered.iloc[:midpoint]["index"].to_numpy(dtype=int)
-    tune_idx = ordered.iloc[midpoint:]["index"].to_numpy(dtype=int)
-    inverse = inverse_rmse_weights(val_predictions, actual, versions, fit_idx)
-    fit_stack = prediction_stack(val_predictions, versions, fit_idx)
-    fit_actual = actual_vector(actual, fit_idx)
-    stacked, _ = constrained_simplex_least_squares(fit_stack, fit_actual)
-    tune_stack = prediction_stack(val_predictions, versions, tune_idx)
-    tune_actual = actual_vector(actual, tune_idx)
-    best_alpha = 0.0
-    best_tune_rmse = float("inf")
-    for alpha in np.linspace(0.0, 1.0, 21):
-        weights = (1.0 - alpha) * inverse + alpha * stacked
-        weights = weights / weights.sum()
-        tune_rmse = compute_rmse(tune_actual, tune_stack @ weights)
-        if tune_rmse < best_tune_rmse:
-            best_alpha = float(alpha)
-            best_tune_rmse = tune_rmse
-    weights = (1.0 - best_alpha) * inverse + best_alpha * stacked
-    return weights / weights.sum()
 
 
 def weighted_predictions(predictions: dict[str, np.ndarray], versions: list[str], weights: np.ndarray) -> np.ndarray:
@@ -1036,7 +965,6 @@ def run_one(
     input_hours: int,
     output_range: str,
     weather: pd.DataFrame,
-    methods: list[str],
     seed: int,
     device: str,
     data_cache: dict[str, pd.DataFrame],
@@ -1073,53 +1001,23 @@ def run_one(
         "dropped_rows": bundle.dropped_rows,
         "skipped_windows": bundle.skipped_windows,
     }
-    rows = []
-    for method in methods:
-        method_dir = meter_dir / method
-        manifest = {**manifest_common, "method": method}
-        if method == "best_single":
-            version = best_single
-            rows.append(
-                write_method_artifacts(
-                    method_dir,
-                    method,
-                    meter,
-                    input_hours,
-                    output_range,
-                    bundle,
-                    train_preds[version],
-                    val_preds[version],
-                    test_preds[version],
-                    None,
-                    {**manifest, "candidate_version": version},
-                )
-            )
-            continue
-        if method == "v28":
-            weights = v28_weights(val_preds, bundle.y_val, CANDIDATE_VERSIONS)
-        elif method == "v29":
-            weights = v29_weights(val_preds, bundle.y_val, CANDIDATE_VERSIONS)
-        elif method == "v30":
-            weights = v30_weights(val_preds, bundle.y_val, bundle.meta_val, CANDIDATE_VERSIONS)
-        else:
-            raise ValueError(f"Unsupported method: {method}")
-        weights_df = weight_table(method, CANDIDATE_VERSIONS, weights, val_preds, bundle.y_val)
-        rows.append(
-            write_method_artifacts(
-                method_dir,
-                method,
-                meter,
-                input_hours,
-                output_range,
-                bundle,
-                weighted_predictions(train_preds, CANDIDATE_VERSIONS, weights),
-                weighted_predictions(val_preds, CANDIDATE_VERSIONS, weights),
-                weighted_predictions(test_preds, CANDIDATE_VERSIONS, weights),
-                weights_df,
-                manifest,
-            )
-        )
-    return rows
+    method = "v29"
+    weights = v29_weights(val_preds, bundle.y_val, CANDIDATE_VERSIONS)
+    weights_df = weight_table(method, CANDIDATE_VERSIONS, weights, val_preds, bundle.y_val)
+    row = write_method_artifacts(
+        meter_dir / method,
+        method,
+        meter,
+        input_hours,
+        output_range,
+        bundle,
+        weighted_predictions(train_preds, CANDIDATE_VERSIONS, weights),
+        weighted_predictions(val_preds, CANDIDATE_VERSIONS, weights),
+        weighted_predictions(test_preds, CANDIDATE_VERSIONS, weights),
+        weights_df,
+        {**manifest_common, "method": method},
+    )
+    return [row]
 
 
 def write_summary(rows: list[dict[str, Any]], output_dir: Path) -> None:
@@ -1206,7 +1104,6 @@ def main() -> None:
                         input_hours=input_hours,
                         output_range=output_range,
                         weather=weather,
-                        methods=args.methods,
                         seed=args.seed,
                         device=args.device,
                         data_cache=data_cache,
