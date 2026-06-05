@@ -142,6 +142,7 @@ def test_live_schema_draft_includes_ops_observability_tables():
         "CREATE TABLE IF NOT EXISTS ops.pipeline_latency_event",
         "CREATE TABLE IF NOT EXISTS ops.kafka_consumer_lag",
         "CREATE TABLE IF NOT EXISTS ops.fastapi_ingest_metric",
+        "business_idempotency_key TEXT NOT NULL",
         "worker_heartbeat_status_check",
         "pipeline_latency_nonnegative_check",
         "kafka_consumer_lag_nonnegative_check",

@@ -53,6 +53,7 @@ CREATE INDEX IF NOT EXISTS measurement_policy_lookup_idx
 
 CREATE TABLE IF NOT EXISTS live.measurement_event (
     event_id TEXT PRIMARY KEY,
+    business_idempotency_key TEXT NOT NULL,
     source_event_id TEXT,
     meter_urn TEXT NOT NULL,
     measurement TEXT NOT NULL,
@@ -81,7 +82,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS measurement_event_business_idempotency_uq
     ON live.measurement_event (source_layer, source_event_id)
     WHERE source_event_id IS NOT NULL;
 
--- Transport/progress dedup only; business idempotency remains source_event_id/raw_payload_hash based.
+-- Transport/progress dedup only; business idempotency remains event_id/business_idempotency_key based.
 CREATE UNIQUE INDEX IF NOT EXISTS measurement_event_kafka_offset_uq
     ON live.measurement_event (kafka_topic, kafka_partition, kafka_offset)
     WHERE kafka_topic IS NOT NULL AND kafka_partition IS NOT NULL AND kafka_offset IS NOT NULL;

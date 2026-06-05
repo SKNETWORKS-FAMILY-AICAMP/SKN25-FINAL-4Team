@@ -83,9 +83,10 @@ def build_postgres_insert_payload(
     """Build the idempotent live.measurement_event insert shape."""
 
     consumed = consumed_at or datetime.now(UTC).isoformat()
+    business_key = "|".join(idempotency_key(event))
     return {
         "target_table": "live.measurement_event",
-        "event_id": "|".join(idempotency_key(event)),
+        "event_id": business_key,
         "source_event_id": event.source_event_id,
         "meter_urn": event.meter_urn,
         "measurement": event.measurement,
@@ -106,7 +107,7 @@ def build_postgres_insert_payload(
         "consumer_group": consumer_group,
         "consumed_at": consumed,
         "schema_version": event.schema_version,
-        "business_idempotency_key": idempotency_key(event),
+        "business_idempotency_key": business_key,
     }
 
 

@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+from pathlib import Path
+import re
+
 from cms.data.postgres_event_writer import (
     InMemoryPostgresEventWriter,
     PostgresWriteResult,
     make_measurement_event_insert_command,
 )
+
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def _postgres_payload(**overrides: object) -> dict[str, object]:
@@ -31,7 +37,7 @@ def _postgres_payload(**overrides: object) -> dict[str, object]:
         "consumer_group": "postgres-live-ingest",
         "consumed_at": "2026-06-04T00:00:02+00:00",
         "schema_version": "measurement_raw_v1",
-        "business_idempotency_key": ("source_event", "sensor_gateway", "evt-001"),
+        "business_idempotency_key": "source_event|sensor_gateway|evt-001",
     }
     payload.update(overrides)
     return payload
@@ -45,7 +51,21 @@ def test_measurement_event_insert_command_is_live_only_and_idempotent() -> None:
     assert "ON CONFLICT (event_id) DO NOTHING" in command.sql
     assert "canonical." not in command.sql
     assert command.params["event_id"] == "source_event|sensor_gateway|evt-001"
-    assert command.params["business_idempotency_key"] == ("source_event", "sensor_gateway", "evt-001")
+    assert command.params["business_idempotency_key"] == "source_event|sensor_gateway|evt-001"
+
+
+def test_measurement_event_insert_columns_exist_in_live_schema_draft() -> None:
+    command = make_measurement_event_insert_command(_postgres_payload())
+    ddl = (ROOT / "scripts/migrations/live_schema_draft.sql").read_text(encoding="utf-8")
+    match = re.search(r"CREATE TABLE IF NOT EXISTS live\.measurement_event \((.*?)\n\);", ddl, re.S)
+    assert match is not None
+    ddl_columns = {
+        line.strip().split()[0]
+        for line in match.group(1).splitlines()
+        if line.strip() and not line.strip().startswith("CONSTRAINT")
+    }
+
+    assert set(command.params) <= ddl_columns
 
 
 def test_measurement_event_insert_command_rejects_non_live_target() -> None:

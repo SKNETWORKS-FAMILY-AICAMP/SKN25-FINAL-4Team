@@ -40,7 +40,18 @@ def test_parse_kafka_envelope_and_build_postgres_payload_shape() -> None:
     assert payload["kafka_partition"] == 2
     assert payload["kafka_offset"] == 42
     assert payload["consumer_group"] == "postgres-live-ingest"
-    assert payload["business_idempotency_key"] == ("source_event", "sensor_gateway", "evt-001")
+    assert payload["business_idempotency_key"] == "source_event|sensor_gateway|evt-001"
+
+
+def test_postgres_payload_uses_text_business_key_for_hash_fallback() -> None:
+    envelope = parse_kafka_envelope(_message(source_event_id=None))
+    event = decide_consumer_action(envelope, db_transaction_succeeded=True).event
+    assert event is not None
+
+    payload = build_postgres_insert_payload(event, envelope, consumed_at="2026-06-04T00:00:02+00:00")
+
+    assert payload["event_id"] == "payload_hash|" + "b" * 64 + "|meter:001|P|2026-06-04T00:00:00+00:00"
+    assert payload["business_idempotency_key"] == payload["event_id"]
 
 
 def test_db_transaction_success_commits_offset() -> None:
