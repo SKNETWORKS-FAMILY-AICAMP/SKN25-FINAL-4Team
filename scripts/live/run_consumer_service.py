@@ -69,7 +69,7 @@ def build_dry_run_report(config: ConsumerServiceConfig) -> dict[str, object]:
     }
 
 
-def run_runtime_report(*, max_messages: int | None = None, poll_timeout: float = 1.0) -> dict[str, object]:
+def run_runtime_report(*, max_messages: int | None = None, poll_timeout: float = 1.0, max_idle_polls: int = 60) -> dict[str, object]:
     """Run the runtime consumer loop with lazy Kafka/PostgreSQL adapters."""
 
     from cms.data.runtime_consumer_loop import run_consumer_loop
@@ -85,6 +85,7 @@ def run_runtime_report(*, max_messages: int | None = None, poll_timeout: float =
         dlq_producer=dlq_producer,
         max_messages=max_messages,
         poll_timeout=poll_timeout,
+        max_idle_polls=max_idle_polls,
     )
     return {
         "service": "kafka_to_postgres_consumer",
@@ -101,7 +102,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--idle-seconds", type=int, default=0, help="optional idle duration after dry-run report for container smoke")
     parser.add_argument("--max-messages", type=int, default=None, help="optional bounded message count for smoke runs")
     parser.add_argument("--poll-timeout", type=float, default=1.0, help="Kafka poll timeout in seconds")
-    return parser.parse_args()
+    parser.add_argument("--max-idle-polls", type=int, default=60, help="stop after this many consecutive empty polls in runtime mode")
+    args = parser.parse_args()
+    if args.max_idle_polls <= 0:
+        raise SystemExit("--max-idle-polls must be positive")
+    return args
 
 
 def main() -> int:
@@ -110,7 +115,7 @@ def main() -> int:
 
     runtime_enabled = args.runtime or os.getenv("CMS_ENABLE_RUNTIME_CONSUMER") == "1"
     if runtime_enabled and not args.dry_run:
-        print(json.dumps(run_runtime_report(max_messages=args.max_messages, poll_timeout=args.poll_timeout), ensure_ascii=False, sort_keys=True), flush=True)
+        print(json.dumps(run_runtime_report(max_messages=args.max_messages, poll_timeout=args.poll_timeout, max_idle_polls=args.max_idle_polls), ensure_ascii=False, sort_keys=True), flush=True)
         return 0
 
     print(json.dumps(build_dry_run_report(config), ensure_ascii=False, sort_keys=True), flush=True)

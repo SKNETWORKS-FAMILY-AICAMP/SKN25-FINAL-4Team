@@ -8,7 +8,7 @@ from cms.data.runtime_consumer_loop import ConsumerLoopStats, run_consumer_loop
 
 
 class FakeConsumer:
-    def __init__(self, messages: list[dict[str, object]]) -> None:
+    def __init__(self, messages: list[dict[str, object] | None]) -> None:
         self.messages = messages
         self.committed: list[object] = []
         self.closed = False
@@ -17,6 +17,8 @@ class FakeConsumer:
         if not self.messages:
             return None
         message = self.messages.pop(0)
+        if message is None:
+            return None
         return message, message
 
     def commit(self, message: object) -> None:
@@ -61,6 +63,25 @@ def test_consumer_loop_commits_after_dlq_success() -> None:
     assert stats.committed == 1
     assert consumer.committed == [message]
     assert dlq.to_kafka_message(0)["topic"] == "measurement_dead_letter_v1"
+
+
+def test_consumer_loop_tolerates_initial_idle_polls_before_assignment() -> None:
+    message = _message()
+    consumer = FakeConsumer([None, message])
+
+    stats = run_consumer_loop(
+        consumer=consumer,
+        writer=InMemoryPostgresEventWriter(),
+        dlq_producer=InMemoryKafkaProducer(),
+        max_messages=1,
+        max_idle_polls=2,
+    )
+
+    assert stats.polled == 1
+    assert stats.processed == 1
+    assert stats.inserted == 1
+    assert stats.committed == 1
+    assert consumer.committed == [message]
 
 
 def test_consumer_loop_stops_after_idle_poll_without_committing() -> None:

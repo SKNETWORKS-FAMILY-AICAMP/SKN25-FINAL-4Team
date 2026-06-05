@@ -34,15 +34,21 @@ def run_consumer_loop(
     dlq_producer: KafkaProducerLike,
     max_messages: int | None = None,
     poll_timeout: float = 1.0,
+    max_idle_polls: int = 1,
 ) -> ConsumerLoopStats:
     """Poll messages and commit offsets only after runner-approved success."""
 
     stats = ConsumerLoopStats()
+    idle_polls = 0
     try:
         while max_messages is None or stats.processed < max_messages:
             polled = consumer.poll_message(timeout=poll_timeout)
             if polled is None:
-                break
+                idle_polls += 1
+                if idle_polls >= max_idle_polls:
+                    break
+                continue
+            idle_polls = 0
             raw_message, envelope = polled
             stats = stats.bump(polled=1)
             result = process_kafka_message(envelope, writer=writer, dlq_producer=dlq_producer)
