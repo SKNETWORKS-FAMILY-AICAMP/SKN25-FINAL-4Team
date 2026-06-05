@@ -170,7 +170,7 @@ def _electrical_signature(eq_id: str, anchor, window_days: int) -> dict | None:
             cur.execute(
                 """
                 SELECT meter_urn, measurement, AVG(value)
-                FROM ems.cr_measurement_1h
+                FROM reference.corrected_resampled_1h
                 WHERE meter_urn = ANY(%s)
                   AND measurement IN ('U1','U2','U3','I1','I2','I3','PF','f')
                   AND ts > %s AND ts <= %s

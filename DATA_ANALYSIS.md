@@ -1,7 +1,7 @@
 # 데이터 분석 및 앱 업그레이드 가이드
 
 > 출처: `data/energy_agent_project_plan.pdf`, `data/energy_agent_project_supplement.pdf`, `paper.pdf` (Gruner et al. Scientific Data 2025)  
-> 작성 기준: 2026-05-22
+> 작성 기준: 2026-06-05
 
 ---
 
@@ -12,12 +12,14 @@
 | 항목 | 내용 |
 |------|------|
 | 시설 | Honda R&D Europe GmbH, 독일 오펜바흐 암 마인 |
-| 기간 | 2018-01-01 ~ 2023-12-31 (6년) |
+| 기간 | 2018-01-01 ~ 2024-01-01 (6년) |
 | 전기 계량기 | 72개 (Z/ZE 접두사) |
 | 열/냉각 계량기 | 9개 (K/W 접두사) |
 | 기상 관측소 | 1개 (WeatherStation.Weather) |
-| DB 테이블 | `ems.cr_measurement_1h` / `ems.cr_measurement_15min` |
+| DB 호스트 | `13.209.98.228` / DB명: `cms` |
+| DB 테이블 | `reference.corrected_resampled_1h` / `reference.corrected_resampled_15min` |
 | 해상도 | 1분(원시), 15분, 1시간 집계 제공 |
+| 총 계량기 (DB) | 81개 (ml 파이프라인 대상: 45개) |
 
 ### 1.2 측정 변수 분류
 
@@ -64,11 +66,10 @@
 | 계량기 | 의미 | 활용 | 주의 |
 |--------|------|------|------|
 | V.Z81, V.Z82 | 주차장 변압기 (H1·H2·H3 담당) | 전체 전력 집계, 피크 분석 | V.Z81의 W_in = 오버플로우 (-55억 kWh) — P 컬럼만 사용 |
-| H2.Z35/Z36 | 오피스 변압기 구형 | 2020.9 이전 전력 | H2.Z351/Z361로 교체됨, 합산 시 둘 다 포함해야 이중계산 없음 |
+| H2.Z35/Z36 | 오피스 변압기 구형 | 2020.9 이전 전력 | H2.Z351/Z361로 교체됨 |
 | H2.Z351/Z361 | 오피스 변압기 교체 버전 | 2020.9 이후 전력 | 동일 ts에 구형+신형이 공존하지 않으므로 합산 가능 |
 
-**그리드 집계 공식**: `V.Z81 + V.Z82 + H2.Z35 + H2.Z36 + H2.Z351 + H2.Z361`  
-(구형/신형은 동일 ts에 동시 존재하지 않아 이중계산 없음)
+**그리드 집계 공식**: `V.Z81 + V.Z82 + H2.Z35 + H2.Z36 + H2.Z351 + H2.Z361`
 
 ### 2.2 에너지 생산 (자급률 계산)
 
@@ -99,14 +100,20 @@
 **COP 공식**: `V.K21.P / (H1.Z11 + H1.Z12 + H1.Z16 + H1.Z24 + H1.Z25)`  
 > COP 중앙값 ≈ 2.06 (논문 기준). COP < 1.5이면 효율 저하 의심.
 
-### 2.4 기상 데이터
+### 2.4 v84 파이프라인 대상 계량기 (45개)
+
+| 그룹 | 역할 | 계량기 수 | 특징 |
+|------|------|-----------|------|
+| electric / representative | 클러스터 대표 | 15개 | C1~C13, P1~P2 클러스터 |
+| electric / singleton | 독립 예측 | 21개 | 클러스터 편입 불가 계량기 |
+| thermal / singleton | 열/냉방 | 9개 | 냉방 6개, 난방 2개, K15 1개 |
+
+### 2.5 기상 데이터
 
 | 변수 | 의미 | 활용 |
 |------|------|------|
 | Ta (°C) | 외기온 | 냉난방 부하 예측, 날씨 영향 분리 |
 | Igm (W/m²) | 평균 일사량 | PV 발전 예측, 냉방 부하 보정 |
-| Igc (W/m²) | 일사량 | PV 발전 이상탐지 |
-| Ua (m/s) | 상대습도 | 냉방 부하 보조 feature |
 
 ---
 
@@ -137,164 +144,197 @@
 
 ---
 
-## 5. 현재 앱 구현 현황 vs. 계획 대비 갭 분석
+## 5. ML 파이프라인 구조 (v84 앙상블)
 
-### 5.1 예측 (Forecast)
+### 5.1 위치 및 실행
+
+```
+ml/
+└── pipeline/
+    ├── train.py        ← 학습 진입점
+    ├── inference.py    ← 추론 진입점
+    └── common/
+        ├── config.py        ← 계량기 스펙 45개, 하이퍼파라미터
+        ├── preprocessing.py ← 잔차 타겟 생성, 슬라이딩 윈도우
+        ├── model.py         ← LSTM/GRU 모델 정의
+        ├── catboost_model.py
+        ├── lightgbm_model.py
+        ├── ridge.py
+        ├── naive.py         ← seasonal naive
+        ├── ensemble.py      ← median 앙상블 + bias 보정
+        ├── router.py        ← v63 그룹 라우팅
+        ├── artifacts.py     ← 저장/로드
+        └── db.py            ← DB 조회
+```
+
+**학습 실행:**
+```bash
+.venv-train/bin/python -m ml.pipeline.train --horizon 1   # 1시간 예측
+.venv-train/bin/python -m ml.pipeline.train --horizon 3   # 3시간 예측
+.venv-train/bin/python -m ml.pipeline.train --horizon 1 --meters H2.Z66  # 단일 계량기
+```
+
+### 5.2 모델 구성 (v84 앙상블)
+
+| 단계 | 모델 | 설명 |
+|------|------|------|
+| 패스 1 | LSTM v1~v7 | window 24h/168h, LSTM/GRU, dropout/smooth_l1 variant |
+| v10/v12/v15 | LSTM 앙상블 | top-2/3 가중 평균, stepwise topk |
+| v19 | 그룹 선택 | electric/thermal × representative/singleton 별 최적 앙상블 |
+| v24 | convex grid | v10/v12/v15 볼록 조합 최적화 |
+| v52 | broad-source gate | LSTM 계열 중 최적 + bias 보정 |
+| v53 | CatBoost | flattened window (24h × n_features) |
+| v57 | 계량기별 라우팅 | v52/v53/v36 중 val MAE 기준 선택 |
+| v61 | LightGBM | step별 독립 모델 (horizon=1: 1개, horizon=3: 3개) |
+| v63 | 그룹 라우팅 | v57 vs v61 (그룹 단위 결정) |
+| v67 | Ridge | flattened window |
+| v71 | Seasonal Naive | 24h 전 같은 시각 P |
+| **v84** | **최종 앙상블** | **median(v63, v67, v71) + shrunk hour bias 보정** |
+
+**타겟**: `P(t) - P(t-1)` (잔차) → 복원: `P̂(t) = P(t-1) + ŷ`
+
+### 5.3 아티팩트 구조 (계량기별)
+
+```
+ml/pipeline/artifacts/{1h|3h}/{meter_urn}/
+├── lstm_v1.pt ~ lstm_v7.pt
+├── catboost.cbm
+├── lightgbm_t_plus_1.txt (~ t_plus_3.txt)
+├── ridge.joblib
+├── input_scaler.joblib
+├── target_scaler.joblib
+├── routing.json           ← v19/v57/v63/lstm_top2/anomaly_threshold
+├── hour_bias_corrections.csv
+├── feature_columns.json
+├── validation_predictions.csv
+├── test_predictions.csv
+└── metrics.csv
+```
+
+---
+
+## 6. 현재 앱 구현 현황 vs. 계획 대비 갭 분석
+
+### 6.1 예측 (Forecast)
 
 | 항목 | 계획 | 현재 구현 | 갭 |
 |------|------|-----------|-----|
-| 예측 target | 전체 전력 P (최우선) → 냉방 P → PV | Prophet/XGBoost/LSTM/VMD-LSTM (범용) | 냉방 P 별도 예측 없음 |
-| 해상도 | 15분 또는 1시간 권장 | 1시간 | 15분 옵션 없음 |
-| Feature | lag, 기상, 운영 이벤트 포함 | 모델 내부 (외부 미노출) | Feature importance 미표시 |
-| 모델 추천 | LightGBM/XGBoost 강력 추천 | XGBoost 포함 | LightGBM 미구현 |
-| Baseline 비교 | Seasonal Naive 필수 | 모델 간 비교 (backtest) | Naive baseline 없음 |
+| 예측 target | 전체 전력 P → 냉방 P → PV | **계량기별 P (45개)** — v84 앙상블 | 냉방 P는 thermal 계량기로 커버됨 ✅ |
+| 해상도 | 15분 또는 1시간 | **1h / 3h** | 15분 옵션 없음 |
+| 모델 | LightGBM/XGBoost 강력 추천 | **LSTM+CatBoost+LightGBM+Ridge+Naive** | ✅ 초과 달성 |
+| Baseline 비교 | Seasonal Naive 필수 | **v71 Naive 앙상블 내 포함** | ✅ 구현됨 |
+| 잔차 타겟 | — | **P(t)-P(t-1) 잔차 학습** | lag-1 자기상관 높은 계량기 개선 목적 |
+| 이상탐지 연동 | residual 기반 threshold | **anomaly_threshold 학습 시 결정** | 추론 시 is_anomaly 플래그 필요 |
 
-### 5.2 이상탐지 (Anomaly)
-
-| 항목 | 계획 | 현재 구현 | 갭 |
-|------|------|-----------|-----|
-| 탐지 방식 | residual 기반 (예측 → 잔차 → 동적 threshold) | Isolation Forest + VMD-LSTM 앙상블 | 물리 관계 검증(P-qv-Tdiff, P-I-PF) 없음 |
-| 결과 형식 | **이벤트 단위** (start/end, 원인 후보, 조치) | **포인트 단위** (개별 타임스탬프) | 연속 이상을 하나의 이벤트로 묶는 로직 없음 |
-| 원인 분류 | 데이터 품질 / 설비 운전 / 물리 불일치 / 외부 요인 | HIGH/MEDIUM/LOW 심각도만 | 원인 유형 분류 없음 |
-| 컨텍스트 | qv, Tdiff, I, PF, Ta 함께 표시 | `/anomalies/{id}/context` 있음 (raw) | 물리 관계 해석이 없는 raw 데이터 |
-| 대상 계량기 | 냉방 설비(V.K21) 중심 권장 | 전체 계량기 (anomaly_results 테이블) | 핵심 계량기 필터링 UI 없음 |
-
-### 5.3 보고서 (Report)
+### 6.2 이상탐지 (Anomaly)
 
 | 항목 | 계획 | 현재 구현 | 갭 |
 |------|------|-----------|-----|
-| KPI | 총 소비, 자급률, COP, 이상 건수, 그리드 의존도 | 월별 KPI 5가지 + PDF | ✅ 잘 구현됨 |
-| 냉방-외기온 상관 | 냉방 P vs. Ta 산점도/추세 | ❌ 없음 | 추가 필요 |
-| 절감 인사이트 | 피크 절감, 대기전력 감소, COP 개선 제안 | ❌ 없음 | 핵심 누락 |
-| 전월 대비 변화 | MoM, YoY 비교 | 월별 데이터 있음 (차트 없음) | 비교 차트 없음 |
-| 이상 이벤트 요약 | 이벤트별 시간, 심각도, 원인 | 이상 건수만 표시 | 이벤트 상세 없음 |
-| 설비별 에너지 비중 | 냉동기, 서버, 실험실 분해 | ❌ 없음 | 계층적 drill-down 없음 |
+| 탐지 방식 | residual 기반 동적 threshold | Isolation Forest + LSTM AE 앙상블 | 물리 관계 검증(P-qv-Tdiff) 없음 |
+| 결과 형식 | **이벤트 단위** (start/end, 원인 후보) | **포인트 단위** (타임스탬프별) | 연속 이상 → 이벤트 병합 로직 없음 |
+| 원인 분류 | 데이터 품질 / 설비 / 물리 불일치 | HIGH/MEDIUM/LOW 심각도만 | 원인 유형 분류 없음 |
+| 대상 계량기 | 냉방 설비(V.K21) 중심 | 전체 (anomaly_results 테이블) | 핵심 계량기 필터링 UI 없음 |
 
-### 5.4 대시보드 (Dashboard)
+### 6.3 보고서 (Report)
+
+| 항목 | 계획 | 현재 구현 | 갭 |
+|------|------|-----------|-----|
+| KPI | 총 소비, 자급률, COP, 이상 건수 | 월별 KPI 5가지 + PDF | ✅ 잘 구현됨 |
+| 냉방-외기온 상관 | 냉방 P vs. Ta 산점도 | ❌ 없음 | 추가 필요 |
+| 절감 인사이트 | 피크 절감, COP 개선 제안 | ❌ 없음 | 핵심 누락 |
+| 전월 대비 | MoM, YoY 비교 차트 | 데이터 있음, 차트 없음 | 비교 차트 없음 |
+
+### 6.4 대시보드 (Dashboard)
 
 | 항목 | 계획 | 현재 구현 | 갭 |
 |------|------|-----------|-----|
 | COP 실시간 | 냉동기 효율 live 표시 | 보고서 내 avg_cop만 | 대시보드 위젯 없음 |
-| 자급률 트렌드 | PV+CHP / 총 소비 추이 | 요약 수치만 | 시계열 차트 없음 |
-| 피크 전력 경보 | 현재 전력이 최대수요전력 임박 시 경보 | ❌ 없음 | 실시간 알림 없음 |
+| 피크 전력 경보 | 임박 시 실시간 경보 | ❌ 없음 | 미구현 |
+| 계량기별 예측 차트 | v84 결과 시각화 | ❌ (학습 완료 후 연결 필요) | inference 연결 후 추가 필요 |
 
 ---
 
-## 6. 앱 업그레이드 우선순위
+## 7. 업그레이드 우선순위
 
-### 🔴 HIGH — MVP 완성도에 직결
+### 🔴 HIGH
 
-#### 6-1. 이상탐지: 포인트 → 이벤트 단위 변환
+#### 7-1. v84 학습 완료 → 백엔드 연결 검증
 
-**문제**: 현재 이상탐지는 타임스탬프별 개별 레코드. 연속된 이상이 수백 개의 row로 표시되어 현장 담당자가 이해하기 어렵다.
+학습 완료 후 `GET /forecast/predict/v84-ensemble?meter_urn=H2.Z66&horizon=1` 로 추론 동작 확인.  
+프론트엔드 예측 차트에 새 모델 결과 연결.
 
-**해결 방향**:
-- DB 또는 API 레이어에서 연속된 이상 포인트를 하나의 이벤트로 묶기  
-- 이벤트 결과: `{ start, end, duration_h, meter_id, severity, peak_residual, cause_candidates }`
-- `/anomalies/events` 엔드포인트 추가 또는 기존 응답 구조 변경
+#### 7-2. 이상탐지: 포인트 → 이벤트 단위 변환
+
+연속된 이상 포인트를 하나의 이벤트로 묶기. gap ≤ 2h이면 동일 이벤트.
 
 ```python
-# 예시 로직 (backend)
+# 예시 로직
 def consolidate_events(df, gap_hours=2):
-    # 같은 meter_id, severity의 연속 이상을 하나의 이벤트로 묶기
-    # gap이 2시간 이하면 같은 이벤트로 처리
+    # meter_id, severity 기준 연속 이상 → {start, end, duration_h, peak_residual}
 ```
 
-#### 6-2. 보고서: 냉방-외기온 상관 차트 추가
+#### 7-3. 3h 학습 실행
 
-**문제**: 냉방 부하가 날씨 때문인지 설비 이상 때문인지 구분하는 핵심 분석이 없다.
-
-**해결 방향**:
-- `/report` 응답에 `cooling_vs_temp` 배열 추가 (월별 또는 주별 Ta 평균 vs. cool_output_P)
-- FrontEnd: 산점도 or 이중축 라인 차트 (Recharts)
-
-#### 6-3. 대시보드: COP 위젯 추가
-
-**문제**: COP는 `loader.py`에서 이미 계산되고 있지만 대시보드에 표시되지 않는다.
-
-**해결 방향**:
-- `/report` 또는 별도 `/dashboard/kpi` 엔드포인트에서 최근 COP 반환
-- DashboardPanel에 COP 카드 추가 (기준값: 중앙값 2.06, 임계값: 1.5 이하 경보)
+1h 학습 완료 후 3h도 실행:
+```bash
+.venv-train/bin/python -m ml.pipeline.train --horizon 3
+```
 
 ---
 
-### 🟡 MEDIUM — 발표/시연 품질 향상
+### 🟡 MEDIUM
 
-#### 6-4. 채팅: 예시 질문 빠른 입력 버튼
+#### 7-4. 보고서: 냉방-외기온 상관 차트
 
-계획서 7.2절에 정의된 사용자 질문 예시를 ChatPanel에 quick-prompt 버튼으로 추가:
+`/report` 응답에 `cooling_vs_temp` 배열 추가 (월별 Ta 평균 vs. cool_output_P).
 
-```
-"이번 주 전력 사용량을 요약해줘"
-"다음 주 피크 전력을 예측해줘"
-"이상 사용량이 발생한 시간대를 찾아줘"
-"냉방 부하가 평소보다 높았던 이유를 알려줘"
-"월간 에너지 리포트를 생성해줘"
-```
+#### 7-5. 대시보드: COP 위젯
 
-#### 6-5. 이상탐지: 원인 유형 분류 뱃지
+`loader.py`에서 이미 계산됨. 대시보드에 카드만 추가하면 됨.  
+기준값: 중앙값 2.06 / 임계값: 1.5 이하 경보.
 
-현재 `anomaly_type` 필드가 있지만 UI에서 구분이 안 됨.  
-- 데이터 품질 이상 (gap/zero/leap) → 회색 뱃지
-- 운영 이상 (과소비/효율저하) → 주황 뱃지
-- 물리 불일치 (P-W, P-qv) → 빨간 뱃지
+#### 7-6. 보고서: 전월 대비 MoM 비교 차트
 
-#### 6-6. 보고서: 전월 대비 MoM 비교 차트
-
-`monthly_report` 테이블에 이미 월별 데이터가 있음. 이를 바 차트로 시각화.
-
-#### 6-7. 계량기 토폴로지: 데이터 품질 레이어 추가
-
-TopologyPanel 계량기 목록에 품질 상태 표시:
-- 정상 / 주의 (이슈 기간 존재) / 제외 권장
-- 색상 아이콘으로 표시 (초록/노랑/빨강)
+`monthly_report` 테이블 데이터 이미 있음. 바 차트만 추가.
 
 ---
 
-### 🟢 LOW — 확장 기능
+### 🟢 LOW
 
-#### 6-8. 절감 인사이트 섹션
+#### 7-7. 절감 인사이트 섹션
 
-보고서에 자동 생성되는 절감 제안:
-- 피크 전력 발생 시간대 → "특정 시간대 부하 분산으로 X kW 피크 절감 가능"
-- COP 저하 기간 → "냉동기 점검 시 연간 Y kWh 절감 예상"
-- 대기전력 패턴 → "주말 기저부하 Z kW — 셧다운 스케줄 검토 권장"
+보고서 자동 생성: 피크 절감 시간대, COP 저하 기간 → 연간 절감 kWh 추정.
 
-#### 6-9. 15분 해상도 예측 옵션
+#### 7-8. 15분 해상도 옵션
 
-현재 1시간 단위로 고정. 피크 관리에는 15분이 중요.  
-`loader.py`의 `load_reduced(freq='15min')`은 이미 구현되어 있으므로 프론트엔드 옵션만 추가하면 됨.
+`reference.corrected_resampled_15min` 접근 가능. 프론트엔드 토글만 추가.
 
-#### 6-10. LightGBM 모델 추가
+#### 7-9. 이상탐지 원인 유형 뱃지
 
-계획서에서 XGBoost/LightGBM을 강력 추천. 현재 XGBoost만 있음.  
-`backend/src/models/forecasting/lightgbm_model.py` 추가 + 라우터 등록.
+`anomaly_type` 필드 활용:
+- 데이터 품질 이상 → 회색
+- 운영 이상 → 주황
+- 물리 불일치 → 빨강
 
 ---
 
-## 7. 권장 MVP 범위 (B안)
-
-> 계획서 11절 "추천 MVP 범위 B안" 기준
+## 8. 권장 MVP 범위
 
 | 영역 | 권장 범위 |
 |------|-----------|
-| 전체 계량기 | 81개 품질 스캔 (결측률, 사용 가능 기간 표시) |
-| 예측 target | 전체 전력 P (필수), 냉방 P (권장) |
+| 예측 target | v84 앙상블 계량기별 P (1h/3h) |
 | 이상탐지 target | 냉방 설비 V.K21.P + 냉동기 전력 합계 중심 |
 | 원인 분석 변수 | qv, Tdiff, Trl, Tvl, W, V, 냉동기 전력 P, Ta, Igm |
-| 모델 구조 | LightGBM/XGBoost 예측 + residual 기반 이상탐지 + rule-based 물리 검증 |
-| 최종 산출물 | 예측 그래프, 이상 이벤트 테이블, 원인 분석, 자동 리포트, 대화형 질의응답 데모 |
+| 모델 구조 | v84 앙상블 예측 + residual 기반 이상탐지 + rule-based 물리 검증 |
+| 최종 산출물 | 계량기별 예측 그래프, 이상 이벤트 테이블, 원인 분석, 자동 리포트, 대화형 질의응답 |
 
 ---
 
-## 8. 발표 핵심 메시지
+## 9. 발표 핵심 메시지
 
-> 계획서 14절 참조
-
-- "81개를 모두 깊게 분석하지 않았다"가 아니라 **"전체 계량기를 품질 스캔한 뒤, 목적에 맞게 핵심 계량기를 선별했다"**
-- 예측 모델의 중심은 전체 전력 P — 피크 전력과 에너지 비용 관점의 가치
-- 설비 운전 이상탐지는 냉방 설비를 대표 사례로 선정
-- 냉방 설비는 전력, 열량, 유량, 온도차, 외기온을 함께 볼 수 있어 원인 후보를 설명하기에 가장 적합
+- **81개 중 45개를 목적 기반으로 선별** — 대표 계량기(클러스터 중심)와 독립 계량기로 구분
+- 예측 모델은 계량기별 개인화 v84 앙상블 — `P(t)-P(t-1)` 잔차 학습으로 persistence 편향 제거
+- 설비 운전 이상탐지는 냉방 설비를 대표 사례로 선정 (전력+열량+유량+온도차 복합 분석)
 - 최종 플랫폼은 이상을 탐지하는 데서 끝나지 않고, **원인 후보와 조치 제안을 자동 리포트로 제공**
 
 ---

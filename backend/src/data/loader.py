@@ -58,7 +58,14 @@ _ALL_METERS = (
 
 
 def _get_conn():
-    return psycopg2.connect(DB_URL)
+    import os as _os
+    return psycopg2.connect(
+        host=_os.getenv("DB_HOST", "localhost"),
+        port=int(_os.getenv("DB_PORT", "5432")),
+        dbname=_os.getenv("DB_NAME"),
+        user=_os.getenv("DB_USER"),
+        password=_os.getenv("DB_PASSWORD"),
+    )
 
 
 def _query(sql: str, params: tuple) -> pd.DataFrame:
@@ -78,7 +85,7 @@ def get_data_range() -> tuple[datetime, datetime]:
     """ems 데이터의 실제 시작·종료 시각 반환."""
     conn = _get_conn()
     cur = conn.cursor()
-    cur.execute("SELECT MIN(ts), MAX(ts) FROM ems.cr_measurement_1h;")
+    cur.execute("SELECT MIN(ts), MAX(ts) FROM reference.corrected_resampled_1h;")
     row = cur.fetchone()
     conn.close()
     return row[0], row[1]
@@ -100,7 +107,7 @@ def load_reduced(
       heat_total_P, chp_heat_P, cool_output_P, cool_elec_P,
       Igm, Ta, cop, self_sufficiency
     """
-    table = "ems.cr_measurement_1h" if freq == "1h" else "ems.cr_measurement_15min"
+    table = "reference.corrected_resampled_1h" if freq == "1h" else "reference.corrected_resampled_15min"
 
     meters_sql = ",".join(f"'{m}'" for m in _ALL_METERS)
     sql = f"""
@@ -189,8 +196,8 @@ def load_range(start_str: str, end_str: str, freq: str = "1h") -> pd.DataFrame:
 
 
 def get_meter_list() -> pd.DataFrame:
-    """ems.full_meter 조회 (읽기 전용)."""
-    return _query("SELECT meter_urn, meter_group FROM ems.full_meter ORDER BY meter_urn;", ())
+    """계량기 목록 조회."""
+    return _query("SELECT DISTINCT meter_urn FROM reference.corrected_resampled_1h ORDER BY meter_urn;", ())
 
 
 def get_meter_measurement_stats(
@@ -205,7 +212,7 @@ def get_meter_measurement_stats(
     """
     sql = """
         SELECT value, ts
-        FROM ems.cr_measurement_1h
+        FROM reference.corrected_resampled_1h
         WHERE meter_urn = %s AND measurement = %s
         ORDER BY ts DESC
         LIMIT %s;
@@ -229,7 +236,7 @@ def get_meter_measurement_stats(
 
 def list_meter_urns() -> list[str]:
     """존재하는 모든 meter_urn 목록 (질문에서 미터 식별용)."""
-    df = _query("SELECT DISTINCT meter_urn FROM ems.cr_measurement_1h ORDER BY meter_urn;", ())
+    df = _query("SELECT DISTINCT meter_urn FROM reference.corrected_resampled_1h ORDER BY meter_urn;", ())
     return df["meter_urn"].tolist() if not df.empty else []
 
 
@@ -242,7 +249,7 @@ def get_anomaly_window(
     """특정 미터의 시계열 조회 (이상탐지 모델 입력용)."""
     sql = """
         SELECT ts, value
-        FROM ems.cr_measurement_1h
+        FROM reference.corrected_resampled_1h
         WHERE meter_urn = %s
           AND measurement = %s
           AND ts >= %s AND ts < %s
