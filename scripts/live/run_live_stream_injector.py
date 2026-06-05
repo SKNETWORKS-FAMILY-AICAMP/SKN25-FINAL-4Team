@@ -60,6 +60,7 @@ class InjectorSummary:
     replay_clock: str
     time_scale: float
     duration_minutes: float
+    start_ts: str | None
     emitted_count: int
     accepted_count: int
     error_count: int
@@ -91,6 +92,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--replay-clock", choices=("fixed-rate", "event-time"), default="fixed-rate", help="Use fixed event rate or preserve source event_ts gaps.")
     parser.add_argument("--time-scale", type=float, default=1.0, help="Event-time replay scale. 1 preserves real gaps; 10 makes a 10s source gap wait 1s.")
     parser.add_argument("--duration-minutes", type=float, default=0.0, help="Optional source event-time window length from the first emitted event. 0 disables the window.")
+    parser.add_argument("--start-ts", default=None, help="Optional inclusive source event_ts where the replay window starts.")
     parser.add_argument("--events-per-second", type=float, default=0.0, help="Optional fixed-rate throttle. 0 means no sleep.")
     parser.add_argument("--runtime-post", action="store_true", help="Actually POST events to FastAPI. Default is dry-run only.")
     args = parser.parse_args()
@@ -108,6 +110,11 @@ def parse_args() -> argparse.Namespace:
         raise SystemExit("--duration-minutes must be non-negative")
     if args.replay_clock == "event-time" and args.events_per_second > 0:
         raise SystemExit("--events-per-second is only valid with --replay-clock fixed-rate")
+    if args.start_ts is not None:
+        try:
+            parse_timestamp(args.start_ts)
+        except ValueError as exc:
+            raise SystemExit("--start-ts must be an ISO timestamp") from exc
     return args
 
 
@@ -126,12 +133,14 @@ def run(args: argparse.Namespace, *, sleep_fn: Callable[[float], None] = time.sl
     last_event_ts: str | None = None
     fixed_delay_sec = 1.0 / args.events_per_second if args.events_per_second > 0 else 0.0
     previous_sort_ts: datetime | None = None
-    window_start_ts: datetime | None = None
+    window_start_ts: datetime | None = parse_timestamp(args.start_ts) if args.start_ts is not None else None
     window_seconds = args.duration_minutes * 60.0 if args.duration_minutes else 0.0
 
     for row in merged_rows(selected):
         if emitted >= args.max_events:
             break
+        if window_start_ts is not None and row.sort_ts < window_start_ts:
+            continue
         if window_start_ts is None:
             window_start_ts = row.sort_ts
         elif window_seconds and (row.sort_ts - window_start_ts).total_seconds() > window_seconds:
@@ -168,6 +177,7 @@ def run(args: argparse.Namespace, *, sleep_fn: Callable[[float], None] = time.sl
         replay_clock=args.replay_clock,
         time_scale=args.time_scale,
         duration_minutes=args.duration_minutes,
+        start_ts=args.start_ts,
         emitted_count=emitted,
         accepted_count=accepted,
         error_count=errors,

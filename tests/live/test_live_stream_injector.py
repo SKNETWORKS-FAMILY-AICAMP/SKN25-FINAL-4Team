@@ -150,6 +150,50 @@ class LiveStreamInjectorTests(unittest.TestCase):
             self.assertEqual(payload["last_event_ts"], "2024-01-01T00:20:00+00:00")
             self.assertEqual(payload["duration_minutes"], 30.0)
 
+    def test_start_ts_skips_earlier_rows_before_duration_window(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_gzip_csv(
+                root / "meter_a" / "meter_a.P_harmonized.csv.gz",
+                header="meter_a.P",
+                rows=(
+                    ("2024-01-01T00:00:00+00:00", "1.0"),
+                    ("2024-01-01T01:00:00+00:00", "2.0"),
+                    ("2024-01-01T01:20:00+00:00", "3.0"),
+                    ("2024-01-01T01:40:00+00:00", "4.0"),
+                ),
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/live/run_live_stream_injector.py",
+                    "--source-root",
+                    str(root),
+                    "--max-files",
+                    "1",
+                    "--max-events",
+                    "10",
+                    "--start-ts",
+                    "2024-01-01T01:00:00+00:00",
+                    "--duration-minutes",
+                    "30",
+                    "--replay-clock",
+                    "event-time",
+                    "--time-scale",
+                    "10",
+                ],
+                cwd=REPO_ROOT,
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+
+            payload = json.loads(completed.stdout)
+            self.assertEqual(payload["emitted_count"], 2)
+            self.assertEqual(payload["start_ts"], "2024-01-01T01:00:00+00:00")
+            self.assertEqual(payload["first_event_ts"], "2024-01-01T01:00:00+00:00")
+            self.assertEqual(payload["last_event_ts"], "2024-01-01T01:20:00+00:00")
+
     def test_payload_uses_ingestion_contract_fields_and_no_db_write(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "H1.K11" / "H1.K11.P_harmonized.csv.gz"
