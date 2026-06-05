@@ -11,13 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))   # src 경로 (api.* 임포트용)
 
-# 설비 키워드 → id
-_EQ_KEYWORDS = [
-    ("grid",    re.compile(r"계통|수전|변압기|grid")),
-    ("cooling", re.compile(r"냉방|냉각|칠러|cop|cooling")),
-    ("chp",     re.compile(r"열병합|chp")),
-    ("pv",      re.compile(r"태양|pv|솔라|solar")),
-]
+# 설비 키워드는 api.config 모듈에서 동적으로 불러옵니다.
 _WO_KW   = re.compile(r"작업\s*지시.*(목록|현황|조회|확인|있어|보여|알려)|미해결|조치\s*내역|점검\s*이력|work\s*order")
 _DIAG_KW = re.compile(r"진단|원인|왜|이유|점검|조치|분석|해석|평가|검토|어때|어떤가|살펴|어떻게\s*됐")
 _PRED_KW = re.compile(r"예지보전|언제.*고장|잔여\s*수명|수명|추세|악화|예측.*위험|위험.*예측")
@@ -45,7 +39,8 @@ def _extract_date(q: str) -> str | None:
 
 def _detect_equipment(q: str) -> str | None:
     ql = q.lower()
-    for eq_id, pat in _EQ_KEYWORDS:
+    from api.config import get_eq_keywords
+    for eq_id, pat in get_eq_keywords():
         if pat.search(ql):
             return eq_id
     return None
@@ -53,9 +48,8 @@ def _detect_equipment(q: str) -> str | None:
 
 def _fmt_work_orders() -> str:
     from api.db import get_conn
-    from api.routers.cms import _ensure_wo_table, _wo_row, _WO_COLS
+    from api.routers.cms import _wo_row, _WO_COLS
     with get_conn() as conn:
-        _ensure_wo_table(conn)
         cur = conn.cursor()
         cur.execute("SELECT status, COUNT(*) FROM work_orders GROUP BY status;")
         by = {"open": 0, "in_progress": 0, "done": 0}
@@ -194,7 +188,7 @@ def run(state: dict) -> dict:
     # ── 행동(액션) 우선 ──
     if _ACT_WO.search(q):
         answer = _do_create_work_order(eq_id)
-    elif _ACT_SIM.search(q) or _extract_date(q):
+    elif _ACT_SIM.search(q):
         answer = _do_simulator(q)
     # ── 조회 ──
     elif _WO_KW.search(q):
@@ -212,6 +206,8 @@ def run(state: dict) -> dict:
                 answer = _fmt_diagnosis(items[0]["id"])
             else:
                 answer = _fmt_status_overall()
+    elif _extract_date(q):
+        answer = _do_simulator(q)
     elif eq_id:
         answer = _fmt_status_one(eq_id)
     else:

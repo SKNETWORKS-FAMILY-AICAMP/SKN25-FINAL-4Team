@@ -21,7 +21,7 @@ load_dotenv()
 
 DB_URL = os.getenv("DATABASE_URL")
 
-SEVERITY_MAP = {3: "HIGH", 2: "HIGH", 1: "MEDIUM", 0: "LOW"}  # 2-model fallback 시 2표=HIGH
+SEVERITY_MAP = {3: "HIGH", 2: "MEDIUM", 1: "LOW", 0: "LOW"}
 
 
 def _ensure_table(conn):
@@ -39,9 +39,11 @@ def _ensure_table(conn):
             score_iso    FLOAT,
             score_lstm   FLOAT,
             vote_count   INT,
-            created_at   TIMESTAMPTZ DEFAULT NOW()
+            created_at   TIMESTAMPTZ DEFAULT NOW(),
+            UNIQUE (timestamp, meter_id)
         );
         CREATE INDEX IF NOT EXISTS idx_anomaly_ts ON anomaly_results (timestamp DESC);
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_anomaly_unique ON anomaly_results (timestamp, meter_id);
     """)
     conn.commit()
 
@@ -127,44 +129,46 @@ def _save_results(anomalies: pd.DataFrame) -> None:
     """anomaly_results 테이블에 결과 저장 (중복 방지: timestamp 기준 upsert)."""
     try:
         conn = psycopg2.connect(DB_URL)
-        _ensure_table(conn)
-        cur = conn.cursor()
+        try:
+            _ensure_table(conn)
+            cur = conn.cursor()
 
-        inserted = 0
-        for _, row in anomalies.iterrows():
-            ts = pd.to_datetime(row["ts"])
-            if ts.tzinfo is None:
-                ts = ts.tz_localize("Europe/Berlin")
+            inserted = 0
+            for _, row in anomalies.iterrows():
+                ts = pd.to_datetime(row["ts"])
+                if ts.tzinfo is None:
+                    ts = ts.tz_localize("Europe/Berlin")
 
-            description = (
-                f"vote={row['vote_count']}/3 | "
-                f"stat={'Y' if row.get('anomaly_stat') else 'N'} "
-                f"iso={'Y' if row.get('anomaly_iso') else 'N'} "
-                f"lstm={'Y' if row.get('anomaly_lstm') else 'N'}"
-            )
+                description = (
+                    f"vote={row['vote_count']}/3 | "
+                    f"stat={'Y' if row.get('anomaly_stat') else 'N'} "
+                    f"iso={'Y' if row.get('anomaly_iso') else 'N'} "
+                    f"lstm={'Y' if row.get('anomaly_lstm') else 'N'}"
+                )
 
-            cur.execute("""
-                INSERT INTO anomaly_results
-                    (timestamp, meter_id, anomaly_type, severity, description,
-                     score_stat, score_iso, score_lstm, vote_count)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                ON CONFLICT DO NOTHING;
-            """, (
-                ts.isoformat(),
-                "ensemble",
-                str(row.get("anomaly_type", "Unknown")),
-                str(row.get("severity", "LOW")),
-                description,
-                float(row.get("score_stat", 0)),
-                float(row.get("score_iso", 0)),
-                float(row.get("score_lstm", 0)),
-                int(row.get("vote_count", 0)),
-            ))
-            inserted += cur.rowcount
+                cur.execute("""
+                    INSERT INTO anomaly_results
+                        (timestamp, meter_id, anomaly_type, severity, description,
+                         score_stat, score_iso, score_lstm, vote_count)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (timestamp, meter_id) DO NOTHING;
+                """, (
+                    ts.isoformat(),
+                    "ensemble",
+                    str(row.get("anomaly_type", "Unknown")),
+                    str(row.get("severity", "LOW")),
+                    description,
+                    float(row.get("score_stat", 0)),
+                    float(row.get("score_iso", 0)),
+                    float(row.get("score_lstm", 0)),
+                    int(row.get("vote_count", 0)),
+                ))
+                inserted += cur.rowcount
 
-        conn.commit()
-        conn.close()
-        print(f"[Ensemble] DB 저장: {inserted}건 → anomaly_results")
+            conn.commit()
+            print(f"[Ensemble] DB 저장: {inserted}건 → anomaly_results")
+        finally:
+            conn.close()
     except Exception as e:
         print(f"[Ensemble] DB 저장 실패: {e}")
 

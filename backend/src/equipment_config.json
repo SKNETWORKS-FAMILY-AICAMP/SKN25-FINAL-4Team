@@ -1,0 +1,50 @@
+[
+  {
+    "id": "grid",
+    "name": "계통/수전",
+    "type": "grid",
+    "icon": "⚡",
+    "types": ["PowerSpike", "NightConsumption"],
+    "metric": "grid_P",
+    "metric_label": "수전 전력",
+    "unit": "kW",
+    "scale": 0.001,
+    "keywords": ["계통", "수전", "변압기", "grid"]
+  },
+  {
+    "id": "cooling",
+    "name": "냉방설비",
+    "type": "cooling",
+    "icon": "❄️",
+    "types": ["COPDrop"],
+    "metric": "cop",
+    "metric_label": "COP",
+    "unit": "",
+    "scale": 1.0,
+    "keywords": ["냉방", "냉각", "칠러", "cop", "cooling"]
+  },
+  {
+    "id": "chp",
+    "name": "열병합발전",
+    "type": "chp",
+    "icon": "🔥",
+    "types": ["CHPOutage"],
+    "metric": "chp_P",
+    "metric_label": "발전 출력",
+    "unit": "kW",
+    "scale": 0.001,
+    "keywords": ["열병합", "chp"]
+  },
+  {
+    "id": "pv",
+    "name": "태양광",
+    "type": "pv",
+    "icon": "☀️",
+    "types": ["PVNightNonZero"],
+    "metric": "pv_P",
+    "metric_label": "발전 출력",
+    "unit": "kW",
+    "scale": 0.001,
+    "keywords": ["태양", "pv", "솔라", "solar"]
+  }
+]

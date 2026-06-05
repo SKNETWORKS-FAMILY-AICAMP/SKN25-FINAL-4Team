@@ -78,7 +78,19 @@ def test_llm(body: TestLlmRequest = TestLlmRequest()):
                 base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
             )
         elif provider == "ollama":
-            client = OpenAI(base_url=ollama_url, api_key="ollama")
+            import httpx
+            base = ollama_url.rstrip("/").removesuffix("/v1")
+            t0 = time.time()
+            r = httpx.post(
+                f"{base}/api/chat",
+                json={"model": model, "stream": False, "think": False,
+                      "messages": [{"role": "user", "content": "ping"}],
+                      "options": {"num_predict": 8}},
+                timeout=30,
+            )
+            r.raise_for_status()
+            return {"ok": True, "latency_ms": round((time.time() - t0) * 1000),
+                    "response": r.json()["message"]["content"][:50]}
         else:
             return {"ok": False, "error": f"알 수 없는 프로바이더: {provider}"}
 

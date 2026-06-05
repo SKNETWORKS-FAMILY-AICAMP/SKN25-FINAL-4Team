@@ -19,19 +19,7 @@ from api.db import get_conn as _db_conn  # noqa: E402
 
 router = APIRouter(prefix="/cms", tags=["cms"])
 
-# ── 설비 마스터 (기능별 시스템) ───────────────────────────────────
-# types: 이 설비로 귀속되는 anomaly_type (anomaly_results.anomaly_type 기준)
-# metric: loader 컬럼명 / scale: 표시 변환 (W→kW는 0.001)
-EQUIPMENT = [
-    {"id": "grid",    "name": "계통/수전",   "icon": "⚡", "types": ["PowerSpike", "NightConsumption"],
-     "metric": "grid_P", "metric_label": "수전 전력", "unit": "kW", "scale": 0.001},
-    {"id": "cooling", "name": "냉방설비",     "icon": "❄️", "types": ["COPDrop"],
-     "metric": "cop", "metric_label": "COP", "unit": "", "scale": 1.0},
-    {"id": "chp",     "name": "열병합발전",   "icon": "🔥", "types": ["CHPOutage"],
-     "metric": "chp_P", "metric_label": "발전 출력", "unit": "kW", "scale": 0.001},
-    {"id": "pv",      "name": "태양광",       "icon": "☀️", "types": ["PVNightNonZero"],
-     "metric": "pv_P", "metric_label": "발전 출력", "unit": "kW", "scale": 0.001},
-]
+# 설비 마스터 데이터는 api.config 모듈의 get_equipment_list()를 사용합니다.
 
 # 노출 시간(시간당 발생률) 대비 가중 — 절대 건수가 아니라 비율로 평가해야 변별됨.
 # 데이터가 시간 단위라 window_days*24 시간을 분모로 사용.
@@ -76,7 +64,8 @@ def _latest_metrics(anchor: datetime) -> dict:
         df = load_range(start, end)
         if df is None or df.empty:
             return out
-        for eq in EQUIPMENT:
+        from api.config import get_equipment_list
+        for eq in get_equipment_list():
             col = eq["metric"]
             if col not in df.columns:
                 continue
@@ -90,7 +79,8 @@ def _latest_metrics(anchor: datetime) -> dict:
 
 
 def _equipment_by_id(eq_id: str) -> dict | None:
-    return next((e for e in EQUIPMENT if e["id"] == eq_id), None)
+    from api.config import get_equipment_list
+    return next((e for e in get_equipment_list() if e["id"] == eq_id), None)
 
 
 # 진단 캐시 — (eq_id, window, anchor날짜)별 1회만 LLM 호출
@@ -263,7 +253,20 @@ def _build_diag_prompt(eq, window_days, total, by_type, examples, sig_str="") ->
 ### ✅ 권장 조치
 - 운영자가 실행할 체크리스트 3개 이내. "어디서 무엇을" 형식.
 
-이상이 0건이고 전기 시그니처도 정상 범위면 "현재 정상 — 특이 이상 없음" 한 줄로만 답하세요.""")
+이상이 0건이고 전기 시그니처도 정상 범위면 "현재 정상 — 특이 이상 없음" 한 줄로만 답하세요.
+
+## 📝 모범 진단 예시
+### 🩺 진단 요약
+최근 30일간 PowerSpike 3건이 발생했으며, 3상 전류 불평형이 12.5%로 주의 수준입니다. 변압기 부하 편중으로 인한 효율 저하가 우려됩니다.
+
+### 🔍 추정 원인
+- 특정 상(Phase)에 단상 부하가 집중되어 전류 불평형 12.5% 발생 (10% 정상 범주 초과).
+- 2024-07-18 10:00 실측 1,250kW로 일시적 피크(PowerSpike) 동반 발생.
+
+### ✅ 권장 조치
+- 현장 정비팀: 분전반 단상 부하 결선 상태 확인 후 상별 균등 분배.
+- 시설 관리팀: 역률 보상용 콘덴서 뱅크 정상 동작 여부 점검.
+""")
     return "\n".join(lines)
 
 
@@ -397,15 +400,26 @@ def diagnose_equipment(
     return run_diagnosis(eq_id, window_days, regenerate)
 
 
+def _ensure_anomaly_columns(conn) -> None:
+    """anomaly_results에 v84 컬럼이 없으면 추가 (최초 1회)."""
+    cur = conn.cursor()
+    for col, dtype in [("actual_w", "FLOAT"), ("predicted_w", "FLOAT"),
+                       ("residual_w", "FLOAT"), ("source", "TEXT"), ("gateway_failure", "BOOLEAN")]:
+        cur.execute(f"ALTER TABLE anomaly_results ADD COLUMN IF NOT EXISTS {col} {dtype};")
+    conn.commit()
+
+
 def compute_equipment_status(window_days: int = _WINDOW_DAYS) -> dict:
     """설비별 헬스 스코어 + 상태 + 최근 이상 요약 + 현재 핵심 지표. (라우트·에이전트 공용)"""
+    from api.config import get_equipment_list
     with _db_conn() as conn:
+        _ensure_anomaly_columns(conn)
         anchor = _anchor_now(conn)
         window_start = anchor - timedelta(days=window_days)
         cur = conn.cursor()
 
         items = []
-        for eq in EQUIPMENT:
+        for eq in get_equipment_list():
             cur.execute(
                 """
                 SELECT severity, COUNT(*), MAX(timestamp)
@@ -463,7 +477,8 @@ def compute_equipment_status(window_days: int = _WINDOW_DAYS) -> dict:
 
 
 @router.get("/equipment")
-def equipment_status(window_days: int = Query(_WINDOW_DAYS, ge=1, le=180)):
+def get_equipment(window_days: int = Query(_WINDOW_DAYS, ge=1, le=180)):
+    """프론트엔드 노출용 설비 목록 반환."""
     return compute_equipment_status(window_days)
 
 
@@ -509,8 +524,10 @@ def compute_predictive(months: int = 8) -> dict:
         cop_rows = [(p, float(v)) for p, v in cur.fetchall()][-months:]
 
         # 전 설비: 월별 이상 건수 추세
+        from api.config import get_equipment_list as _get_equipment_list
+        _equipment_list = _get_equipment_list()
         anomaly_series = {}
-        for eq in EQUIPMENT:
+        for eq in _equipment_list:
             cur.execute(
                 """
                 SELECT TO_CHAR(timestamp, 'YYYY-MM') AS m, COUNT(*)
@@ -523,7 +540,7 @@ def compute_predictive(months: int = 8) -> dict:
             )
             anomaly_series[eq["id"]] = [(p, int(c)) for p, c in cur.fetchall()][-months:]
 
-    for eq in EQUIPMENT:
+    for eq in _equipment_list:
         if eq["id"] == "cooling" and len(cop_rows) >= 3:
             series = [{"period": p, "value": round(v, 2)} for p, v in cop_rows]
             vals = [v for _, v in cop_rows]
@@ -645,7 +662,6 @@ def insert_work_order(equipment_id=None, equipment_name=None, title=None,
                       cause=None, action=None, priority="MEDIUM") -> dict:
     """작업지시 1건 생성 (라우트·챗 에이전트 공용)."""
     with _db_conn() as conn:
-        _ensure_wo_table(conn)
         cur = conn.cursor()
         cur.execute(
             f"""
@@ -682,7 +698,6 @@ def list_work_orders(
 ):
     """작업지시 목록."""
     with _db_conn() as conn:
-        _ensure_wo_table(conn)
         cur = conn.cursor()
         clauses, params = [], []
         if status:
@@ -714,7 +729,6 @@ def update_work_order(wo_id: int, body: dict = Body(...)):
         return {"error": f"잘못된 상태: {new_status}"}
     resolved = "NOW()" if new_status == "done" else "NULL"
     with _db_conn() as conn:
-        _ensure_wo_table(conn)
         cur = conn.cursor()
         cur.execute(
             f"""
@@ -740,7 +754,6 @@ def update_work_order(wo_id: int, body: dict = Body(...)):
 def work_order_stats():
     """상태별 작업지시 건수 요약."""
     with _db_conn() as conn:
-        _ensure_wo_table(conn)
         cur = conn.cursor()
         cur.execute("SELECT status, COUNT(*) FROM work_orders GROUP BY status;")
         by = {s: 0 for s in _WO_STATUS}

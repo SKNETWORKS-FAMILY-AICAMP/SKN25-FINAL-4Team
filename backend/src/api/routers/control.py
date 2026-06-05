@@ -61,9 +61,7 @@ def _ensure_control_table(conn):
 
 def _gen_peak_shift(forecast: dict) -> dict | None:
     """피크 부하 시프트 권고."""
-    vmd  = forecast.get("vmd-lstm") if isinstance(forecast.get("vmd-lstm"), list) else None
-    xgb  = forecast.get("xgboost") if isinstance(forecast.get("xgboost"), list) else None
-    data = vmd or xgb
+    data = forecast.get("v84") if isinstance(forecast.get("v84"), list) else None
     if not data or len(data) < 6:
         return None
 
@@ -97,10 +95,8 @@ def _gen_peak_shift(forecast: dict) -> dict | None:
 
 def _gen_night_load(forecast: dict) -> dict | None:
     """야간 대기전력 점검 권고."""
-    data = forecast.get("vmd-lstm") if isinstance(forecast.get("vmd-lstm"), list) else None
+    data = forecast.get("v84") if isinstance(forecast.get("v84"), list) else None
     if not data or len(data) < 12:
-        data = forecast.get("xgboost") if isinstance(forecast.get("xgboost"), list) else None
-    if not data:
         return None
 
     night, day = [], []
@@ -268,42 +264,39 @@ def get_recommendations(hours: int = Query(24, ge=12, le=72)):
 
     recs: list[dict] = []
 
-    # 1. 예측 기반 권고 (XGBoost 폴백)
+    # 1. 예측 기반 권고 (v84 앙상블)
     try:
-        start_dt, end_dt = get_data_range()
-        end_str   = end_dt.strftime("%Y-%m-%d")
-        start_str = (end_dt - __import__("pandas").Timedelta(days=14)).strftime("%Y-%m-%d")
-        df = load_range(start_str, end_str)
+        import pandas as pd
+        from ml.pipeline.inference import predict_meter, is_available
+        from ml.pipeline.common.config import METER_SPECS_BY_URN
+        from ml.pipeline.common.db import build_engine, fetch_meter_window
 
-        forecast = {}
-        try:
-            from models.forecasting.vmd_lstm_model import predict_future, is_available as vmd_ok
-            if vmd_ok():
-                fc = predict_future(df, hours=hours)
-                forecast["vmd-lstm"] = [
-                    {"ts": str(r["ts"])[:16], "yhat": float(r["predicted_kw"])}
-                    for _, r in fc.iterrows()
-                ]
-        except Exception:
-            pass
-        try:
-            from models.forecasting.xgboost_model import predict as xgb_predict
-            fc = xgb_predict(df, hours=hours)
-            forecast["xgboost"] = [
-                {"ts": str(r["ts"])[:16], "yhat": float(r["yhat"]) / 1000}
-                for _, r in fc.iterrows()
-            ]
-        except Exception:
-            pass
+        _CANDIDATES = ["H2.Z66", "H2.Z64", "H1.Z10", "H1.Z12", "H3.Z43", "H4.Z50", "V.Z84"]
+        avail = [m for m in _CANDIDATES if m in METER_SPECS_BY_URN and is_available(m, 1)]
 
-        peak = _gen_peak_shift(forecast)
-        if peak:
-            recs.append(peak)
-        night = _gen_night_load(forecast)
-        if night:
-            recs.append(night)
+        if avail:
+            engine = build_engine()
+            now    = pd.Timestamp.now(tz="UTC")
+            combined: dict[str, float] = {}
+            for urn in avail:
+                spec   = METER_SPECS_BY_URN[urn]
+                raw_df = fetch_meter_window(engine, spec, end_ts=now, window_hours=200)
+                df     = predict_meter(urn, 1, raw_df, spec)
+                for _, row in df.iterrows():
+                    ts = str(row["ts"])[:16]
+                    combined[ts] = combined.get(ts, 0.0) + float(row["pred_t_plus_1"]) / 1000
+
+            forecast_data = [{"ts": ts, "yhat": kw} for ts, kw in sorted(combined.items())][:hours]
+            forecast = {"v84": forecast_data}
+
+            peak = _gen_peak_shift(forecast)
+            if peak:
+                recs.append(peak)
+            night = _gen_night_load(forecast)
+            if night:
+                recs.append(night)
     except Exception as e:
-        print(f"[control] forecast-based rec failed: {e}")
+        print(f"[control] v84 forecast-based rec failed: {e}")
 
     # 2. DB 기반 권고
     try:

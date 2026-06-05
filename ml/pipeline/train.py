@@ -14,6 +14,7 @@ import argparse
 import os
 import sys
 import traceback
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -90,6 +91,9 @@ def parse_args():
     p.add_argument("--epochs", type=int, default=EPOCHS)
     p.add_argument("--batch-size", type=int, default=BATCH_SIZE)
     p.add_argument("--seed", type=int, default=SEED)
+    p.add_argument("--workers", type=int, default=1)
+    p.add_argument("--skip-pass1", action="store_true",
+                   help="저장된 LSTM 파일로 패스1 스킵 (재학습 없이 inference만 재실행)")
     return p.parse_args()
 
 
@@ -208,6 +212,80 @@ def pass1_train_meter(engine, spec: MeterSpec, horizon: int, args) -> dict:
         lstm_intermediate.append(row)
 
     print(" 완료", flush=True)
+    return {
+        "spec": spec, "bundle_24t": bundle_24t, "bundle_168": bundle_168,
+        "y_val": y_val, "y_test": y_test, "lstm_results": lstm_results,
+        "lstm_top2_versions": lstm_top2_versions,
+        "lstm_top2_weights": lstm_top2_weights,
+        "persist_mae_24t": persist_mae_24t,
+        "lstm_intermediate": lstm_intermediate,
+        "v10": {"val_pred": v10_vp, "test_pred": v10_tp},
+        "v12": {"val_pred": v12_vp, "test_pred": v12_tp},
+        "v15": {"val_pred": v15_vp, "test_pred": v15_tp},
+    }
+
+
+def pass1_resume_meter(engine, spec: MeterSpec, horizon: int, args) -> dict:
+    """저장된 LSTM 파일 로드 후 inference만 재실행 — 재학습 없이 패스1 결과 복원."""
+    from ml.pipeline.common.artifacts import load_lstm_model
+    urn = spec.meter_urn
+    print(f"  [패스1 복원] {urn}", end="", flush=True)
+
+    raw = fetch_meter_frame(engine, spec)
+    bundle_24  = _make_bundle(raw, spec, horizon, 24,  False)
+    bundle_24t = _make_bundle(raw, spec, horizon, 24,  True)
+    bundle_168 = _make_bundle(raw, spec, horizon, 168, True)
+
+    variant_bundles = {"v1": bundle_24, "v2": bundle_24t, "v3": bundle_168,
+                       "v4": bundle_24t, "v6": bundle_24t, "v7": bundle_24t}
+
+    lstm_results = {}
+    for variant in LSTM_VARIANTS:
+        b = variant_bundles[variant.version]
+        try:
+            model = load_lstm_model(
+                RecurrentPredictor,
+                input_size=len(b.feature_columns),
+                hidden_size=HIDDEN_SIZE,
+                output_size=horizon,
+                architecture=variant.model_architecture,
+                dropout=variant.model_dropout,
+                meter_urn=urn,
+                horizon=horizon,
+                version=variant.version,
+            )
+        except FileNotFoundError:
+            print(f" {variant.version}✗(없음)", end="", flush=True)
+            continue
+        model.eval()
+        with torch.no_grad():
+            vp = predict_scaled(model, b.x_val, args.batch_size)
+            tp = predict_scaled(model, b.x_test, args.batch_size)
+        # val_loss 없으므로 MAE로 대체
+        mae_val = float(np.mean(np.abs(vp[:, 0] - b.y_val[:, 0])))
+        lstm_results[variant.version] = {"val_pred": vp, "test_pred": tp,
+                                         "val_loss": mae_val, "val_history": []}
+        print(f" {variant.version}✓", end="", flush=True)
+
+    no_v3 = {v: r for v, r in lstm_results.items() if v != "v3"}
+    y_val, y_test = bundle_24t.y_val, bundle_24t.y_test
+
+    scores = {v: _mae(r["val_pred"], y_val) for v, r in no_v3.items()}
+    top2 = sorted(scores.items(), key=lambda x: (x[1], x[0]))[:2]
+    inv = np.array([1.0 / max(m, 1e-9) for _, m in top2])
+    w = inv / inv.sum()
+    v10_vp = sum(w[i] * no_v3[v]["val_pred"]  for i, (v, _) in enumerate(top2))
+    v10_tp = sum(w[i] * no_v3[v]["test_pred"] for i, (v, _) in enumerate(top2))
+    lstm_top2_versions = [v for v, _ in top2]
+    lstm_top2_weights  = w.tolist()
+
+    v12_vp, v12_tp = _stepwise_topk(no_v3, y_val, y_test, 2)
+    v15_vp, v15_tp = _stepwise_topk(no_v3, y_val, y_test, 3)
+
+    persist_mae_24t = _persist_mae_sc(y_val)
+    lstm_intermediate = []
+
+    print(" 복원완료", flush=True)
     return {
         "spec": spec, "bundle_24t": bundle_24t, "bundle_168": bundle_168,
         "y_val": y_val, "y_test": y_test, "lstm_results": lstm_results,
@@ -485,17 +563,43 @@ def main():
     specs = _get_specs(args)
     horizon = args.horizon
 
-    print(f"=== v84 파이프라인 학습 | {horizon}h | {len(specs)}개 계량기 ===\n")
+    n_workers = min(args.workers, len(specs))
+    if n_workers > 1:
+        import torch as _torch
+        _torch.set_num_threads(max(1, (os.cpu_count() or 8) // n_workers))
+
+    # CatBoost/LightGBM OpenMP 스레드 제한 — 다중 worker 시 segfault 방지
+    os.environ.setdefault("OMP_NUM_THREADS", "1")
+    os.environ.setdefault("MKL_NUM_THREADS", "1")
+    os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+
+    skip_p1 = getattr(args, "skip_pass1", False)
+    print(f"=== v84 파이프라인 학습 | {horizon}h | {len(specs)}개 계량기 | workers={n_workers}"
+          f"{' | 패스1 스킵' if skip_p1 else ''} ===\n")
 
     # ── 패스 1 ───────────────────────────────────────────────────────────────
-    print("─── 패스 1: LSTM 학습 ───")
+    p1_fn = pass1_resume_meter if skip_p1 else pass1_train_meter
+    print(f"─── 패스 1: {'LSTM 복원 (저장 파일 로드)' if skip_p1 else 'LSTM 학습'} ───")
     pass1 = {}
-    for spec in specs:
-        try:
-            pass1[spec.meter_urn] = pass1_train_meter(engine, spec, horizon, args)
-        except Exception as e:
-            print(f"  [오류] {spec.meter_urn}: {e}")
-            traceback.print_exc()
+    if n_workers > 1:
+        def _p1(spec):
+            try:
+                return spec.meter_urn, p1_fn(engine, spec, horizon, args), None
+            except Exception as e:
+                return spec.meter_urn, None, traceback.format_exc()
+        with ThreadPoolExecutor(max_workers=n_workers) as pool:
+            for urn, result, err in pool.map(_p1, specs):
+                if err:
+                    print(f"  [오류] {urn}:\n{err}")
+                else:
+                    pass1[urn] = result
+    else:
+        for spec in specs:
+            try:
+                pass1[spec.meter_urn] = p1_fn(engine, spec, horizon, args)
+            except Exception as e:
+                print(f"  [오류] {spec.meter_urn}: {e}")
+                traceback.print_exc()
 
     # ── v19 그룹별 결정 ───────────────────────────────────────────────────────
     print("\n─── v19 그룹 선택 ───")
@@ -509,15 +613,28 @@ def main():
     # ── 패스 2a: v57 + v61 계산 (계량기별) ──────────────────────────────────
     print("\n─── 패스 2a: v57/v61 계산 ───")
     stage1: dict[str, dict] = {}
-    for spec in specs:
-        if spec.meter_urn not in pass1:
-            continue
-        v19 = v19_map.get((spec.group, spec.role), "v10")
-        try:
-            stage1[spec.meter_urn] = pass2_stage1(pass1[spec.meter_urn], args, v19, horizon)
-        except Exception as e:
-            print(f"  [오류] {spec.meter_urn}: {e}")
-            traceback.print_exc()
+    p2a_specs = [s for s in specs if s.meter_urn in pass1]
+    if n_workers > 1:
+        def _p2a(spec):
+            v19 = v19_map.get((spec.group, spec.role), "v10")
+            try:
+                return spec.meter_urn, pass2_stage1(pass1[spec.meter_urn], args, v19, horizon), None
+            except Exception as e:
+                return spec.meter_urn, None, traceback.format_exc()
+        with ThreadPoolExecutor(max_workers=n_workers) as pool:
+            for urn, result, err in pool.map(_p2a, p2a_specs):
+                if err:
+                    print(f"  [오류] {urn}:\n{err}")
+                else:
+                    stage1[urn] = result
+    else:
+        for spec in p2a_specs:
+            v19 = v19_map.get((spec.group, spec.role), "v10")
+            try:
+                stage1[spec.meter_urn] = pass2_stage1(pass1[spec.meter_urn], args, v19, horizon)
+            except Exception as e:
+                print(f"  [오류] {spec.meter_urn}: {e}")
+                traceback.print_exc()
 
     # ── v63 라우팅 (그룹별: v57 vs v61) ──────────────────────────────────────
     print("\n─── v63 그룹 라우팅 ───")
@@ -538,20 +655,32 @@ def main():
     # ── 패스 2b: v84 앙상블 + 저장 (계량기별) ────────────────────────────────
     print("\n─── 패스 2b: 앙상블 + 저장 ───")
     rows = []
-    for spec in specs:
-        if spec.meter_urn not in stage1:
-            continue
+    p2b_specs = [s for s in specs if s.meter_urn in stage1]
+    def _p2b(spec):
         cand    = stage1[spec.meter_urn]
         v63_ver = v63_versions.get(spec.meter_urn, "v57")
         if v63_ver == "v61" and cand.get("v61") is None:
             v63_ver = "v57"
-        v63_vp  = cand[v63_ver]["val_pred_scaled"]
-        v63_tp  = cand[v63_ver]["test_pred_scaled"]
+        v63_vp = cand[v63_ver]["val_pred_scaled"]
+        v63_tp = cand[v63_ver]["test_pred_scaled"]
         try:
-            rows.append(pass2_finalize(pass1[spec.meter_urn], cand, v63_vp, v63_tp, v63_ver, args))
+            return pass2_finalize(pass1[spec.meter_urn], cand, v63_vp, v63_tp, v63_ver, args), None
         except Exception as e:
-            print(f"  [오류] {spec.meter_urn}: {e}")
-            traceback.print_exc()
+            return None, (spec.meter_urn, traceback.format_exc())
+    if n_workers > 1:
+        with ThreadPoolExecutor(max_workers=n_workers) as pool:
+            for result, err in pool.map(_p2b, p2b_specs):
+                if err:
+                    print(f"  [오류] {err[0]}:\n{err[1]}")
+                elif result:
+                    rows.append(result)
+    else:
+        for spec in p2b_specs:
+            result, err = _p2b(spec)
+            if err:
+                print(f"  [오류] {err[0]}:\n{err[1]}")
+            elif result:
+                rows.append(result)
 
     summary = pd.DataFrame(rows)
     summary.to_csv(ARTIFACTS_DIR / f"train_summary_{horizon}h.csv", index=False)

@@ -1,3 +1,4 @@
+import concurrent.futures
 import os
 import sys
 from datetime import datetime, timedelta, timezone
@@ -5,7 +6,7 @@ from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, BackgroundTasks, Query
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Query
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -202,6 +203,7 @@ def anomaly_events(
                 and ts - current["_last_ts"] <= gap):
             current["end"] = ts.isoformat()
             current["_last_ts"] = ts
+            current["_end_ts"] = ts
             current["point_count"] += 1
             if peak_score > current["peak_score"]:
                 current["peak_score"] = round(peak_score, 4)
@@ -211,12 +213,13 @@ def anomaly_events(
             if current:
                 current.pop("_last_ts")
                 current["duration_h"] = round(
-                    (datetime.fromisoformat(current["end"]) -
-                     datetime.fromisoformat(current["start"])).total_seconds() / 3600, 1)
+                    (current.pop("_end_ts") - current.pop("_start_ts")).total_seconds() / 3600, 1)
                 events.append(current)
             current = {
                 "start":           ts.isoformat(),
                 "end":             ts.isoformat(),
+                "_start_ts":       ts,
+                "_end_ts":         ts,
                 "_last_ts":        ts,
                 "meter_id":        meter_id,
                 "anomaly_type":    atype,
@@ -231,8 +234,7 @@ def anomaly_events(
     if current:
         current.pop("_last_ts")
         current["duration_h"] = round(
-            (datetime.fromisoformat(current["end"]) -
-             datetime.fromisoformat(current["start"])).total_seconds() / 3600, 1)
+            (current.pop("_end_ts") - current.pop("_start_ts")).total_seconds() / 3600, 1)
         events.append(current)
 
     events.sort(key=lambda e: e["start"], reverse=True)
@@ -276,7 +278,7 @@ def anomaly_context(anomaly_id: int, hours: int = Query(24, ge=6, le=72)):
         return {"error": str(e)}
 
     if not row:
-        return {"error": "not found"}
+        raise HTTPException(status_code=404, detail="anomaly not found")
 
     cols = ["id","timestamp","meter_id","anomaly_type","severity","description",
             "score_stat","score_iso","score_lstm","vote_count"]
@@ -388,6 +390,10 @@ def _migrate_schema(conn) -> None:
             ALTER TABLE anomaly_results
             ADD COLUMN IF NOT EXISTS {col} {dtype};
         """)
+    cur.execute("""
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_anomaly_unique
+        ON anomaly_results (timestamp, meter_id);
+    """)
     conn.commit()
     _schema_migrated = True
 
@@ -418,8 +424,8 @@ def _save_residual_results(anomalies, job_id: str) -> int:
                         (timestamp, meter_id, anomaly_type, severity, description,
                          score_stat, score_iso, vote_count,
                          actual_w, predicted_w, residual_w, source, gateway_failure)
-                    VALUES (%s,'residual+IF',%s,%s,%s,%s,%s,%s,%s,%s,%s,'vmd-lstm-residual',%s)
-                    ON CONFLICT DO NOTHING;
+                    VALUES (%s,'residual+IF',%s,%s,%s,%s,%s,%s,%s,%s,%s,'v84-residual',%s)
+                    ON CONFLICT (timestamp, meter_id) DO NOTHING;
                 """, (
                     ts.isoformat(), anomaly_type, severity, description,
                     int(row["res_flag"]), int(row["if_flag"]), int(row["vote"]),
@@ -432,6 +438,9 @@ def _save_residual_results(anomalies, job_id: str) -> int:
     except Exception as e:
         _run_status[job_id]["error"] = str(e)
         return 0
+
+
+_DETECTION_TIMEOUT_S = 600  # 10분 초과 시 타임아웃
 
 
 def _do_detection(job_id: str, start: str, end: str, loop=None) -> None:
@@ -458,8 +467,20 @@ def _do_detection(job_id: str, start: str, end: str, loop=None) -> None:
 
         # 잔차 계산을 위해 충분한 컨텍스트 데이터 로드 (400h 여유)
         ctx_start = str((pd.Timestamp(start) - pd.Timedelta(hours=400)).date())
-        df = load_range(ctx_start, end)
-        an = predict_anomaly(df, start, end)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as _ex:
+            _fut = _ex.submit(load_range, ctx_start, end)
+            try:
+                df = _fut.result(timeout=_DETECTION_TIMEOUT_S)
+            except concurrent.futures.TimeoutError:
+                _run_status[job_id].update({"status": "error", "error": f"데이터 로드 타임아웃 ({_DETECTION_TIMEOUT_S}초 초과)"})
+                return
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as _ex:
+            _fut = _ex.submit(predict_anomaly, df, start, end)
+            try:
+                an = _fut.result(timeout=_DETECTION_TIMEOUT_S)
+            except concurrent.futures.TimeoutError:
+                _run_status[job_id].update({"status": "error", "error": f"모델 추론 타임아웃 ({_DETECTION_TIMEOUT_S}초 초과)"})
+                return
 
         if an.empty:
             _run_status[job_id].update({"status": "done", "total": 0, "counts": {}})
@@ -483,7 +504,7 @@ def _do_detection(job_id: str, start: str, end: str, loop=None) -> None:
         inserted = _save_residual_results(flagged, job_id)
         _run_status[job_id].update({
             "status": "done", "total": inserted,
-            "counts": counts, "model": "vmd-lstm-residual",
+            "counts": counts, "model": "v84-residual",
         })
 
         if loop and ("CRITICAL" in counts or "HIGH" in counts):

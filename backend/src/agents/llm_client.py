@@ -15,6 +15,7 @@ LLM 클라이언트 추상화 레이어.
 """
 
 import os
+import httpx
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
@@ -69,8 +70,33 @@ def reload():
     LLM_MODEL    = os.getenv("LLM_MODEL", "gpt-4o")
 
 
+def _ollama_base_url() -> str:
+    """OLLAMA_URL에서 /v1 접미사를 제거해 네이티브 API 베이스 URL 반환."""
+    url = os.getenv("OLLAMA_URL", "http://localhost:11434/v1")
+    return url.rstrip("/").removesuffix("/v1")
+
+
 def chat(messages: list[dict], max_tokens: int = 1024) -> str:
     """통합 LLM 호출 — 텍스트 응답만 반환."""
+
+    # Ollama: thinking 모델(gemma4 등)은 /v1 OpenAI 호환 엔드포인트에서
+    # content가 빈 문자열로 오므로 네이티브 API로 직접 호출 + think:false
+    if LLM_PROVIDER == "ollama":
+        payload = {
+            "model": LLM_MODEL,
+            "messages": messages,
+            "stream": False,
+            "think": False,
+            "options": {"num_predict": max_tokens},
+        }
+        resp = httpx.post(
+            f"{_ollama_base_url()}/api/chat",
+            json=payload,
+            timeout=120,
+        )
+        resp.raise_for_status()
+        return resp.json()["message"]["content"]
+
     client = _get_client()
 
     if LLM_PROVIDER == "anthropic":

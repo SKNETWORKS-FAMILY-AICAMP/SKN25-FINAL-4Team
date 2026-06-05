@@ -154,43 +154,46 @@ def _fetch_anomalies(limit: int = 20,
     """anomaly_results 테이블 조회. 게이트웨이 장애 구간은 기본 제외."""
     try:
         conn = psycopg2.connect(DB_URL)
-        cur  = conn.cursor()
-
-        conds, params = ["severity IN ('HIGH','MEDIUM')"], []
-        if start:
-            conds.append("timestamp >= %s"); params.append(start)
-        if end:
-            conds.append("timestamp <  %s"); params.append(end)
-        if exclude_gateway:
-            conds.append("(gateway_failure IS NULL OR gateway_failure = FALSE)")
-        # 시뮬 활성 시: sim_now 이후 데이터는 챗봇에서도 안 보이게
         try:
-            from api.routers.simulator import clock, SIM_START_DEFAULT
-            sim_now = clock.now
-            if sim_now > SIM_START_DEFAULT:
-                conds.append("timestamp <= %s")
-                params.append(sim_now.strftime("%Y-%m-%d %H:%M:%S"))
-        except Exception:
-            pass
+            cur  = conn.cursor()
 
-        where = "WHERE " + " AND ".join(conds)
-        cur.execute(f"""
-            SELECT timestamp, meter_id, anomaly_type, severity, description,
-                   vote_count, actual_w, predicted_w, residual_w
-            FROM anomaly_results
-            {where}
-            ORDER BY timestamp DESC
-            LIMIT %s;
-        """, params + [limit])
-        rows = cur.fetchall()
-        conn.close()
-        return [
-            {"timestamp": r[0], "meter_id": r[1], "type": r[2],
-             "severity": r[3], "description": r[4], "votes": r[5],
-             "actual_w": r[6], "predicted_w": r[7], "residual_w": r[8]}
-            for r in rows
-        ]
-    except Exception:
+            conds, params = ["severity IN ('HIGH','MEDIUM')"], []
+            if start:
+                conds.append("timestamp >= %s"); params.append(start)
+            if end:
+                conds.append("timestamp <  %s"); params.append(end)
+            if exclude_gateway:
+                conds.append("(gateway_failure IS NULL OR gateway_failure = FALSE)")
+            # 시뮬 활성 시: sim_now 이후 데이터는 챗봇에서도 안 보이게
+            try:
+                from api.routers.simulator import clock, SIM_START_DEFAULT
+                sim_now = clock.now
+                if sim_now > SIM_START_DEFAULT:
+                    conds.append("timestamp <= %s")
+                    params.append(sim_now.strftime("%Y-%m-%d %H:%M:%S"))
+            except Exception:
+                pass
+
+            where = "WHERE " + " AND ".join(conds)
+            cur.execute(f"""
+                SELECT timestamp, meter_id, anomaly_type, severity, description,
+                       vote_count, actual_w, predicted_w, residual_w
+                FROM anomaly_results
+                {where}
+                ORDER BY timestamp DESC
+                LIMIT %s;
+            """, params + [limit])
+            rows = cur.fetchall()
+            return [
+                {"timestamp": r[0], "meter_id": r[1], "type": r[2],
+                 "severity": r[3], "description": r[4], "votes": r[5],
+                 "actual_w": r[6], "predicted_w": r[7], "residual_w": r[8]}
+                for r in rows
+            ]
+        finally:
+            conn.close()
+    except Exception as e:
+        print(f"[AnomalyAgent] DB 조회 실패: {e}")
         return []
 
 

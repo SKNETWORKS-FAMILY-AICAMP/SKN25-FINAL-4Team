@@ -30,7 +30,9 @@ def set_seed(seed: int) -> None:
 
 
 def device() -> torch.device:
-    return torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    if torch.cuda.is_available():
+        return torch.device("cuda:0")
+    return torch.device("cpu")
 
 
 class RecurrentPredictor(nn.Module):

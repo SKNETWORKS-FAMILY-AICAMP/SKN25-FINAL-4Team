@@ -30,19 +30,21 @@ def _fetch_kpi(months: int = 3) -> list[dict]:
     """monthly_report 테이블에서 최근 N개월 KPI 조회."""
     try:
         conn = psycopg2.connect(DB_URL)
-        cur  = conn.cursor()
-        cur.execute("""
-            SELECT period, total_consumption_kwh, self_sufficiency_pct,
-                   avg_cop, anomaly_count, grid_dependency_pct, pv_kwh, chp_kwh
-            FROM monthly_report
-            ORDER BY period DESC LIMIT %s;
-        """, (months,))
-        rows = cur.fetchall()
-        conn.close()
-        if rows:
-            cols = ["period", "consumption", "self_sufficiency", "avg_cop",
-                    "anomaly_count", "grid_dependency", "pv_kwh", "chp_kwh"]
-            return [dict(zip(cols, r)) for r in rows]
+        try:
+            cur  = conn.cursor()
+            cur.execute("""
+                SELECT period, total_consumption_kwh, self_sufficiency_pct,
+                       avg_cop, anomaly_count, grid_dependency_pct, pv_kwh, chp_kwh
+                FROM monthly_report
+                ORDER BY period DESC LIMIT %s;
+            """, (months,))
+            rows = cur.fetchall()
+            if rows:
+                cols = ["period", "consumption", "self_sufficiency", "avg_cop",
+                        "anomaly_count", "grid_dependency", "pv_kwh", "chp_kwh"]
+                return [dict(zip(cols, r)) for r in rows]
+        finally:
+            conn.close()
     except Exception:
         pass
     return []
@@ -78,7 +80,7 @@ def _realtime_kpi(months: int = 3) -> list[dict]:
             avg_cop  = g["cop"].mean(skipna=True) if "cop" in g else None
             result.append({
                 "period": str(period), "consumption": round(total, 1),
-                "self_sufficiency": round(ss_pct, 1), "avg_cop": round(float(avg_cop), 2) if avg_cop else None,
+                "self_sufficiency": round(ss_pct, 1), "avg_cop": round(float(avg_cop), 2) if avg_cop is not None else None,
                 "anomaly_count": 0, "grid_dependency": round(grid_pct, 1),
                 "pv_kwh": round(pv_kwh, 1), "chp_kwh": round(chp_kwh, 1),
             })

@@ -22,11 +22,26 @@ from api.routers import chat, anomalies, report, forecast, notifications, contro
 async def lifespan(app: FastAPI):
     import asyncio
     from api.scheduler import start_scheduler, stop_scheduler
+    from api.db import get_conn
+    from api.routers.chat import _ensure_chat_tables
+    from api.routers.cms import _ensure_wo_table
+
+    def init_db_tables():
+        try:
+            with get_conn() as conn:
+                _ensure_chat_tables(conn)
+                _ensure_wo_table(conn)
+        except Exception as e:
+            print(f"[Init] DB table creation failed: {e}")
+
+    await asyncio.get_running_loop().run_in_executor(None, init_db_tables)
+
     start_scheduler()
     simulator.start_worker(asyncio.get_running_loop())
     yield
     simulator.stop_worker()
     stop_scheduler()
+
 
 
 app = FastAPI(

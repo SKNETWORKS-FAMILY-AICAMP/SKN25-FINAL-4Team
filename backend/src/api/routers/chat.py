@@ -4,7 +4,7 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from langchain_core.messages import HumanMessage, AIMessage
@@ -60,7 +60,6 @@ def _save_user_message(session_id: str, content: str, is_first: bool) -> None:
     """사용자 메시지 저장 + 세션 메타 업데이트."""
     try:
         with _db_conn() as conn:
-            _ensure_chat_tables(conn)
             cur = conn.cursor()
             if is_first:
                 cur.execute("""
@@ -111,7 +110,6 @@ def list_sessions(
     """세션 목록 (최근 갱신 순)."""
     try:
         with _db_conn() as conn:
-            _ensure_chat_tables(conn)
             cur = conn.cursor()
             if search:
                 pat = f"%{search}%"
@@ -152,7 +150,6 @@ def get_session(session_id: str):
     """세션 상세 — 모든 메시지 반환."""
     try:
         with _db_conn() as conn:
-            _ensure_chat_tables(conn)
             cur = conn.cursor()
             cur.execute("""
                 SELECT id, title, created_at, updated_at, message_count, last_intent
@@ -160,7 +157,7 @@ def get_session(session_id: str):
             """, (session_id,))
             row = cur.fetchone()
             if not row:
-                return {"error": "세션 없음"}
+                raise HTTPException(status_code=404, detail="세션 없음")
 
             cur.execute("""
                 SELECT role, content, intent, created_at

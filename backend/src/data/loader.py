@@ -84,11 +84,13 @@ def _query(sql: str, params: tuple) -> pd.DataFrame:
 def get_data_range() -> tuple[datetime, datetime]:
     """ems 데이터의 실제 시작·종료 시각 반환."""
     conn = _get_conn()
-    cur = conn.cursor()
-    cur.execute("SELECT MIN(ts), MAX(ts) FROM reference.corrected_resampled_1h;")
-    row = cur.fetchone()
-    conn.close()
-    return row[0], row[1]
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT MIN(ts), MAX(ts) FROM reference.corrected_resampled_1h;")
+        row = cur.fetchone()
+        return row[0], row[1]
+    finally:
+        conn.close()
 
 
 # ── 핵심 로더 ─────────────────────────────────────────────────────
