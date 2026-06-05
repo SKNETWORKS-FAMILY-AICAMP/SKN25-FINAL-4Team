@@ -7,15 +7,10 @@ import {
   CartesianGrid, Legend, ReferenceLine,
 } from 'recharts'
 import {
-  getReport, getAnomalySummary, getAnomalies, getForecastCompare,
+  getReport, getAnomalySummary, getAnomalies, predictModel,
   getDailyReport, getLatestDataDate, getSimulatorStatus, dailyDownloadUrl,
   getBilling, getLearningStats, getEquipmentStatus, getWorkOrderStats,
 } from '../api/client'
-
-const FC_MODELS = [
-  { key: 'vmd-lstm', label: 'VMD-LSTM', color: '#a371f7' },
-  { key: 'xgboost',  label: 'XGBoost',  color: '#3fb950' },
-]
 
 const SEV_COLOR  = { HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#2563eb' }
 const TYPE_LABEL = {
@@ -367,6 +362,14 @@ export default function DashboardPanel({ onNavigate } = {}) {
 
   const lastBriefDate = useRef(null)
 
+  const loadForecast = () => {
+    setFcLoading(true)
+    predictModel('v84-ensemble', 'H2.Z66', 1)
+      .then(r => setForecast(r.data?.forecast ?? []))
+      .catch(() => setForecast([]))
+      .finally(() => setFcLoading(false))
+  }
+
   useEffect(() => {
     Promise.allSettled([
       getReport(24),
@@ -380,7 +383,10 @@ export default function DashboardPanel({ onNavigate } = {}) {
       if (a.status === 'fulfilled') setRecent(a.value.data.items ?? [])
       if (eq.status === 'fulfilled') setEquipment(eq.value.data.items ?? [])
       if (wo.status === 'fulfilled' && !wo.value.data.error) setWoStats(wo.value.data)
-    }).finally(() => setLoading(false))
+    }).finally(() => {
+      setLoading(false)
+      loadForecast()
+    })
 
     // 브리핑 + 비용 로드 — 시뮬 시각의 어제로 자동 추적
     const loadBrief = async () => {
@@ -418,28 +424,10 @@ export default function DashboardPanel({ onNavigate } = {}) {
     return () => clearInterval(id)
   }, [])
 
-  const loadForecast = () => {
-    setFcLoading(true)
-    getForecastCompare(24)
-      .then(r => setForecast(r.data?.models ?? {}))
-      .catch(() => setForecast({}))
-      .finally(() => setFcLoading(false))
-  }
-
-  const fcValid = forecast
-    ? FC_MODELS.filter(m => Array.isArray(forecast[m.key]) && forecast[m.key].length)
-    : []
-  const fcData = (() => {
-    if (!fcValid.length) return []
-    const len = Math.max(...fcValid.map(m => forecast[m.key].length))
-    const rows = []
-    for (let i = 0; i < len; i++) {
-      const row = { h: `+${i + 1}h` }
-      for (const m of fcValid) row[m.key] = forecast[m.key][i]?.yhat
-      rows.push(row)
-    }
-    return rows
-  })()
+  const fcData = (forecast ?? []).map((row, i) => ({
+    h:      row.ts?.slice(11, 16) || `+${i + 1}h`,
+    yhat:   row.yhat_kw,
+  }))
 
   const latest = report[report.length - 1]
   const prev   = report[report.length - 2]
@@ -529,35 +517,32 @@ export default function DashboardPanel({ onNavigate } = {}) {
             {/* 전력 수요 예측 (24시간) */}
             <div style={s.chartBox}>
               <div style={s.chartHeader}>
-                <div style={s.chartTitle}>🔮 전력 수요 예측 트렌드 (24시간)</div>
-                {!fcLoading && forecast === null && (
-                  <button style={s.btnMicro} onClick={loadForecast}>예측 실행</button>
-                )}
+                <div style={s.chartTitle}>🔮 전력 수요 예측 트렌드 — H2.Z66 (1h 앙상블)</div>
               </div>
               <div style={s.chartContent}>
-                {fcLoading && <div style={s.emptyMsg}>예측 모델 연산 중...</div>}
-                {!fcLoading && forecast !== null && fcValid.length === 0 && <div style={s.emptyMsg}>학습된 예측 모델이 없습니다.</div>}
-                {!fcLoading && fcValid.length > 0 && (
+                {fcLoading && <div style={s.emptyMsg}>예측 중...</div>}
+                {!fcLoading && fcData.length === 0 && (
+                  <div style={s.emptyMsg}>
+                    학습된 artifacts 없음 —{' '}
+                    <code style={{ fontSize: 10 }}>python -m ml.pipeline.train --horizon 1</code>
+                  </div>
+                )}
+                {!fcLoading && fcData.length > 0 && (
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={fcData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <defs>
-                        {fcValid.map(m => (
-                          <linearGradient key={m.key} id={`color${m.key}`} x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor={m.color} stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor={m.color} stopOpacity={0}/>
-                          </linearGradient>
-                        ))}
+                        <linearGradient id="fcGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%"  stopColor="#a371f7" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#a371f7" stopOpacity={0}/>
+                        </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e7ebf1" vertical={false} />
                       <XAxis dataKey="h" tick={{ fontSize: 9, fill: '#5a6675' }} tickLine={false} interval="preserveStartEnd" />
                       <YAxis tick={{ fontSize: 9, fill: '#5a6675' }} tickLine={false} axisLine={false}
-                        tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
-                      <Tooltip {...tt} formatter={(v, n) => [`${Number(v).toLocaleString()} kW`, n]} />
-                      <Legend wrapperStyle={{ fontSize: 10, paddingTop: 4 }} iconSize={8} />
-                      {fcValid.map(m => (
-                        <Area key={m.key} type="monotone" dataKey={m.key} name={m.label}
-                          stroke={m.color} fillOpacity={1} fill={`url(#color${m.key})`} strokeWidth={2} dot={false} />
-                      ))}
+                        tickFormatter={v => `${v.toFixed(1)}k`} />
+                      <Tooltip {...tt} formatter={v => [`${Number(v).toFixed(3)} kW`, 'v84 예측']} />
+                      <Area type="monotone" dataKey="yhat" name="v84 예측"
+                        stroke="#a371f7" fillOpacity={1} fill="url(#fcGrad)" strokeWidth={2} dot={false} />
                     </AreaChart>
                   </ResponsiveContainer>
                 )}
