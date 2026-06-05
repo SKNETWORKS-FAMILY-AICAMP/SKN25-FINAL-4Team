@@ -13,6 +13,8 @@ import csv
 import gzip
 import heapq
 import json
+import os
+import resource
 import time
 import urllib.error
 import urllib.request
@@ -31,6 +33,8 @@ from cms.contracts.ingestion import (
 
 DEFAULT_SOURCE_ROOT = "/home/ubuntu/cms-stream-deploy/data/live_source/harmonized"
 DEFAULT_SOURCE_SYSTEM = "cms_live_source_archive"
+DEFAULT_FAST_MERGE_MAX_FILES = 512
+FAST_MERGE_FD_RESERVE = 64
 
 
 @dataclass(frozen=True)
@@ -250,6 +254,33 @@ def compute_replay_delay(previous_ts: datetime, current_ts: datetime, *, time_sc
 
 
 def merged_rows(paths: list[Path]) -> Iterator[SourceRow]:
+    if should_use_fast_merge(len(paths)):
+        yield from fast_merged_rows(paths)
+        return
+    yield from bounded_merged_rows(paths)
+
+
+def should_use_fast_merge(path_count: int) -> bool:
+    if path_count <= 0:
+        return True
+    configured_limit = int(os.environ.get("CMS_LIVE_INJECTOR_FAST_MERGE_MAX_FILES", str(DEFAULT_FAST_MERGE_MAX_FILES)))
+    try:
+        soft_limit, _ = resource.getrlimit(resource.RLIMIT_NOFILE)
+    except (OSError, ValueError):
+        return path_count <= configured_limit
+    if soft_limit == resource.RLIM_INFINITY:
+        fd_safe_limit = configured_limit
+    else:
+        fd_safe_limit = max(1, min(configured_limit, int(soft_limit) - FAST_MERGE_FD_RESERVE))
+    return path_count <= fd_safe_limit
+
+
+def fast_merged_rows(paths: list[Path]) -> Iterator[SourceRow]:
+    streams = [iter_source_rows(path, sequence=sequence) for sequence, path in enumerate(paths)]
+    yield from heapq.merge(*streams, key=lambda row: (row.sort_ts, row.sequence, row.row_number))
+
+
+def bounded_merged_rows(paths: list[Path]) -> Iterator[SourceRow]:
     heap: list[tuple[datetime, int, int, SourceRow]] = []
     for sequence, path in enumerate(paths):
         row = next_source_row(path, sequence=sequence, after_row_number=0)

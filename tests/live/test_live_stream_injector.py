@@ -10,7 +10,9 @@ import tempfile
 import unittest
 from datetime import UTC, datetime
 from pathlib import Path
+from unittest.mock import patch
 
+from scripts.live import run_live_stream_injector as injector
 from scripts.live.run_live_stream_injector import (
     build_payload,
     compute_replay_delay,
@@ -77,6 +79,28 @@ class LiveStreamInjectorTests(unittest.TestCase):
                 self.assertEqual(len(rows), len(paths))
         finally:
             resource.setrlimit(resource.RLIMIT_NOFILE, (soft_limit, hard_limit))
+
+    def test_merge_rows_uses_fast_path_for_safe_file_count(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            paths = []
+            for index in range(3):
+                path = root / f"meter_{index}" / f"meter_{index}.P_harmonized.csv.gz"
+                write_gzip_csv(
+                    path,
+                    header=f"meter_{index}.P",
+                    rows=(
+                        (f"2024-01-01T00:0{index}:00+00:00", str(index)),
+                        (f"2024-01-01T00:1{index}:00+00:00", str(index + 10)),
+                    ),
+                )
+                paths.append(path)
+
+            with patch.object(injector, "next_source_row", side_effect=AssertionError("slow bounded path used")):
+                rows = list(merged_rows(paths))
+
+            self.assertEqual(len(rows), 6)
+            self.assertEqual([row.event_ts for row in rows], sorted(row.event_ts for row in rows))
 
     def test_meter_balanced_selection_covers_meters_before_second_series(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
