@@ -1,5 +1,0 @@
-candidate_version,fit_windows,fit_device,validation_rmse
-v23,10000,cpu,13167.744140625
-v25,10000,gpu,13193.2763671875
-v20,10000,cpu,13226.0498046875
-v27,10000,gpu,13341.3828125
