@@ -157,8 +157,9 @@ class LatencyMarkers:
 
     source_event_ts: datetime | None = None
     received_at: datetime | None = None
-    mongo_written_at: datetime | None = None
-    mongo_visible_at: datetime | None = None
+    fastapi_received_at: datetime | None = None
+    kafka_ack_at: datetime | None = None
+    kafka_event_visible_at: datetime | None = None
     processor_started_at: datetime | None = None
     eq_1min_done_at: datetime | None = None
     eq_5min_done_at: datetime | None = None
@@ -171,10 +172,10 @@ class LatencyMarkers:
 class LatencySummary:
     """Latency seconds derived only from supplied marker timestamps."""
 
-    mongo_to_1min_sec: float | None
-    mongo_to_5min_sec: float | None
-    mongo_to_15min_sec: float | None
-    mongo_to_1h_sec: float | None
+    kafka_to_1min_sec: float | None
+    kafka_to_5min_sec: float | None
+    kafka_to_15min_sec: float | None
+    kafka_to_1h_sec: float | None
     end_to_end_sec: float | None
     wall_clock_used: bool = False
     db_writes_executed: bool = False
@@ -248,10 +249,10 @@ def summarize_latency(markers: LatencyMarkers) -> LatencySummary:
     """Compute latency seconds from supplied markers only."""
 
     return LatencySummary(
-        mongo_to_1min_sec=_seconds_between(markers.mongo_visible_at, markers.eq_1min_done_at),
-        mongo_to_5min_sec=_seconds_between(markers.mongo_visible_at, markers.eq_5min_done_at),
-        mongo_to_15min_sec=_seconds_between(markers.mongo_visible_at, markers.pg_15min_committed_at),
-        mongo_to_1h_sec=_seconds_between(markers.mongo_visible_at, markers.pg_1h_committed_at),
+        kafka_to_1min_sec=_seconds_between(markers.kafka_event_visible_at, markers.eq_1min_done_at),
+        kafka_to_5min_sec=_seconds_between(markers.kafka_event_visible_at, markers.eq_5min_done_at),
+        kafka_to_15min_sec=_seconds_between(markers.kafka_event_visible_at, markers.pg_15min_committed_at),
+        kafka_to_1h_sec=_seconds_between(markers.kafka_event_visible_at, markers.pg_1h_committed_at),
         end_to_end_sec=_seconds_between(markers.received_at, markers.qa_done_at),
     )
 

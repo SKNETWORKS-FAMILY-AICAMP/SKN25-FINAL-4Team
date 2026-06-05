@@ -1,13 +1,14 @@
-# EMS 계량기 Metadata 명세
+# CMS 계량기 Metadata 명세
 
-**갱신일:** 2026-05-08  
-**범위:** 계량기 classification, 설비 mapping, redundancy, 부호 규약, DB schema 후보.
+**갱신일:** 2026-06-02  
+**상태:** Vector DB 적재 기준 문서  
+**범위:** CMS 계량기 식별자, 계측 도메인, 설비 mapping, redundancy, 부호 규약, 이상탐지 우선순위를 정의한다.
 
----
+## 1. 목적
 
-## 1. 기준
+이 문서는 CMS 계량기 metadata의 기준 vocabulary를 정의한다. Vector DB, ontology, QA, report, service layer는 이 문서의 `meter_urn`, `meter_domain`, `meter_role`, `equipment_group`, `redundancy` 정의를 공통 기준으로 사용한다.
 
-계량기 metadata는 `ems.full_meter` registry의 81개 `meter_urn`을 기준으로 정의한다. DB 조회 결과 `ems.meter_definition`, `ems.meter_redundancy` table은 존재하지 않는다. 이 문서는 두 table을 생성하기 전의 명세와 seed 기준이다.
+## 2. 계량기 수량 기준
 
 | 항목 | 값 |
 |---|---:|
@@ -17,39 +18,33 @@
 | 기상 계량기 | 1 |
 | redundancy pair | 12 |
 
----
+## 3. Metadata field
 
-## 2. 분류 체계
-
-### 2.1 분류 column
-
-| Column | 의미 | 예시 |
+| Field | 의미 | 예시 |
 |---|---|---|
-| `meter_urn` | DB meter identifier | `H1.Z16` |
+| `meter_urn` | 계량기 식별자 | `H1.Z16` |
 | `meter_domain` | 계측 도메인 | `electricity`, `thermal`, `weather` |
 | `meter_role` | 계량기 역할 | `consumption`, `production`, `weather`, `thermal_flow` |
 | `equipment_group` | 설비 또는 계통 그룹 | `central_cooling`, `pv`, `chp`, `server`, `distribution` |
 | `equipment_name` | 세부 설비명 | `CM1`, `PV group 1/2`, `CHP` |
-| `building_code` | meter URN의 건물 또는 구역 prefix | `H1`, `H2`, `H3`, `H4`, `V`, `WeatherStation` |
+| `building_code` | 건물 또는 구역 prefix | `H1`, `H2`, `H3`, `H4`, `V`, `WeatherStation` |
 | `sign_convention` | 부호 해석 규칙 | `positive_consumption_negative_production` |
-| `anomaly_priority` | 이상탐지 우선순위 | `1`, `2`, `3` |
-| `source_basis` | 분류 근거 | `paper_table`, `source_correction`, `db_registry` |
+| `anomaly_priority` | 이상탐지 검토 우선순위 | `1`, `2`, `3`, `4` |
+| `source_basis` | 분류 근거 | `paper_table`, `source_inventory`, `registry` |
 | `note` | 보조 설명 | mapping 정정, 분석 주의점 |
 
-### 2.2 부호 규약
+## 4. 부호 규약
 
 | meter_role | 양수 해석 | 음수 해석 | 분석 기준 |
 |---|---|---|---|
-| `consumption` | 소비 또는 유입 | 계측 오류 후보 | 음수 구간을 품질 flag로 표시한다. |
+| `consumption` | 소비 또는 유입 | 계측 오류 후보 | 음수 구간을 QA flag로 표시한다. |
 | `production` | 미발전 잡음 또는 역방향 미세값 | 발전 또는 유출 | 음수값을 보존한다. |
 | `thermal_flow` | 흡수 또는 유입 | 공급 또는 유출 | 설비 계통 기준으로 해석한다. |
 | `weather` | 측정값 | 측정값 | 부호 규약을 적용하지 않는다. |
 
----
+## 5. 전기 계량기 그룹
 
-## 3. 전기 계량기 그룹
-
-| equipment_group | meter_role | meter_urn | 수량 | 비고 |
+| equipment_group | meter_role | meter_urn | 수량 | 설명 |
 |---|---|---|---:|---|
 | `grid_transformer` | `consumption` | `V.Z82`, `V.Z81`, `H2.Z35`, `H2.Z351`, `H2.Z36`, `H2.Z361` | 6 | 외부 전력망 및 변압기 계통 |
 | `chp` | `production` | `H1.Z20`, `H1.ZE20` | 2 | CHP main 및 redundant |
@@ -65,9 +60,7 @@
 
 전기 계량기 수량 합계는 71개다.
 
----
-
-## 4. 열 및 기상 계량기 그룹
+## 6. 열 및 기상 계량기 그룹
 
 | equipment_group | meter_role | meter_urn | 설명 |
 |---|---|---|---|
@@ -82,13 +75,9 @@
 | `chp_heat_generation` | `thermal_flow` | `H1.W12` | CHP heat generation |
 | `weather_station` | `weather` | `WeatherStation.Weather` | Weather station |
 
----
+## 7. 중앙 냉각기 mapping
 
-## 5. 중앙 냉각기 mapping
-
-중앙 냉각기 전력 계측은 다음 mapping을 사용한다.
-
-| 설비 | meter_urn | anomaly_priority | 비고 |
+| 설비 | meter_urn | anomaly_priority | 설명 |
 |---|---|---:|---|
 | CM1 | `H1.Z16` | 1 | 중앙 냉각기 1 |
 | CM2 | `H1.Z11`, `H1.Z12` | 1 | 중앙 냉각기 2 계측 쌍 |
@@ -99,9 +88,7 @@
 
 CM1, CM2, CM3 분석에서는 `H3.Z45`, `H2.Z66`, `H2.ZE66`, `H2.Z67`, `H2.ZE67`을 중앙 냉각기 집계에서 제외한다.
 
----
-
-## 6. Redundancy mapping
+## 8. Redundancy mapping
 
 | primary_meter_urn | redundant_meter_urn | equipment_group | equipment_name |
 |---|---|---|---|
@@ -118,16 +105,14 @@ CM1, CM2, CM3 분석에서는 `H3.Z45`, `H2.Z66`, `H2.ZE66`, `H2.Z67`, `H2.ZE67`
 | `H2.Z66` | `H2.ZE66` | `local_cooling` | Local cooling 1 |
 | `H2.Z67` | `H2.ZE67` | `local_cooling` | Local cooling 2 |
 
-판정 규칙:
+판정 규칙은 다음과 같다.
 
 1. primary와 redundant가 함께 이상이면 설비 문제 후보로 분류한다.
 2. 한쪽만 이상이면 계량기 문제 후보로 분류한다.
-3. 두 계량기의 결측 구간이 겹치면 source file lineage를 함께 확인한다.
+3. 두 계량기의 missing interval이 겹치면 source file lineage를 함께 확인한다.
 4. production 계량기는 부호 규약을 적용한 뒤 비교한다.
 
----
-
-## 7. 이상탐지 우선순위
+## 9. 이상탐지 우선순위
 
 | priority | 대상 | 기준 |
 |---:|---|---|
@@ -138,116 +123,22 @@ CM1, CM2, CM3 분석에서는 `H3.Z45`, `H2.Z66`, `H2.ZE66`, `H2.Z67`, `H2.ZE67`
 
 우선순위는 이상탐지 결과 정렬과 검토 순서에 사용한다. 모델 학습 가중치로 사용할 때는 별도 실험 기준을 둔다.
 
----
+## 10. Vector DB 적재 기준
 
-## 8. DB schema 후보
+| chunk_id | 내용 | 주요 metadata |
+|---|---|---|
+| `meter.metadata.fields` | metadata field 정의 | `doc_type=spec`, `cms_layer=ontology` |
+| `meter.electric_groups` | 전기 계량기 그룹 | `meter_domain=electricity` |
+| `meter.thermal_weather_groups` | 열·기상 계량기 그룹 | `meter_domain=thermal,weather` |
+| `meter.central_cooling_mapping` | 중앙 냉각기 mapping | `equipment_group=central_cooling` |
+| `meter.redundancy_mapping` | redundancy pair | `relationship=redundant_meter` |
+| `meter.anomaly_priority` | 이상탐지 우선순위 | `cms_layer=qa` |
 
-Meter metadata DDL과 seed SQL은 현재 active 실행 파일로 유지하지 않는다. 아래 구조는 승인 전 inline candidate이며, 실제 DB 적용이 필요하면 별도 migration 파일을 새로 작성하고 schema 변경 승인을 받은 뒤 수행한다. 후보 구조는 다음과 같다.
+## 11. 검증 기준
 
-```sql
-CREATE TABLE ems.meter_definition (
-    meter_urn text PRIMARY KEY REFERENCES ems.full_meter(meter_urn),
-    meter_domain text NOT NULL,
-    meter_role text NOT NULL,
-    equipment_group text NOT NULL,
-    equipment_name text,
-    building_code text,
-    sign_convention text,
-    anomaly_priority integer,
-    source_basis text,
-    note text,
-    created_at timestamptz DEFAULT now(),
-    updated_at timestamptz DEFAULT now()
-);
-
-CREATE TABLE ems.meter_redundancy (
-    primary_meter_urn text NOT NULL REFERENCES ems.full_meter(meter_urn),
-    redundant_meter_urn text NOT NULL REFERENCES ems.full_meter(meter_urn),
-    equipment_group text NOT NULL,
-    equipment_name text,
-    validation_rule text NOT NULL,
-    source_basis text,
-    note text,
-    PRIMARY KEY (primary_meter_urn, redundant_meter_urn)
-);
-```
-
-제약 조건 후보:
-
-```sql
-ALTER TABLE ems.meter_definition
-ADD CONSTRAINT meter_definition_domain_chk
-CHECK (meter_domain IN ('electricity', 'thermal', 'weather'));
-
-ALTER TABLE ems.meter_definition
-ADD CONSTRAINT meter_definition_role_chk
-CHECK (meter_role IN ('consumption', 'production', 'thermal_flow', 'weather'));
-```
-
----
-
-## 9. 검증 쿼리 후보
-
-```sql
-SELECT count(*) AS meters
-FROM ems.full_meter;
-
-SELECT meter_domain, count(*)
-FROM ems.meter_definition
-GROUP BY meter_domain
-ORDER BY meter_domain;
-
-SELECT d.meter_urn
-FROM ems.full_meter m
-LEFT JOIN ems.meter_definition d USING (meter_urn)
-WHERE d.meter_urn IS NULL
-ORDER BY m.meter_urn;
-
-SELECT r.primary_meter_urn, r.redundant_meter_urn
-FROM ems.meter_redundancy r
-LEFT JOIN ems.full_meter p ON p.meter_urn = r.primary_meter_urn
-LEFT JOIN ems.full_meter z ON z.meter_urn = r.redundant_meter_urn
-WHERE p.meter_urn IS NULL OR z.meter_urn IS NULL;
-```
-
----
-
-## 10. DB 승격 결정 기준
-
-`meter_metadata.sql`은 문서 기준 metadata를 DB schema로 승격하기 위한 적용 후보이다. 적용 결정은 다음 기준을 충족한 뒤 수행한다.
-
-| 항목 | 기준 |
-|---|---|
-| 적용 승인 | DB schema 변경 승인 후 실행한다. |
-| 원천 registry | `ems.full_meter`의 81개 `meter_urn`을 기준으로 한다. |
-| seed coverage | `meter_definition` 후보 row는 `full_meter` 대비 누락과 초과가 없어야 한다. |
-| redundancy coverage | `meter_redundancy` 후보 pair의 양쪽 meter는 모두 `full_meter`에 존재해야 한다. |
-| idempotency | `ON CONFLICT ... DO UPDATE` 기준으로 재실행 가능해야 한다. |
-| 계보 | classification과 redundancy의 기준 문서는 이 파일이며, 실행 SQL은 현재 active tree에 두지 않는다. 승인 시 별도 migration으로 생성한다. |
-
-적용 전에는 보존용 DB 적재 SQL의 meter metadata seed를 검토하고, live DB에 write를 수행하기 전 read-only coverage 검증 쿼리를 별도로 실행한다.
-
----
-
-## 11. 적용 후 검증 기준
-
-적용 후 최소 검증 기준은 다음과 같다.
-
-| 검증 항목 | 기대값 |
-|---|---:|
-| `ems.meter_definition` row 수 | 81 |
-| `ems.meter_redundancy` row 수 | 12 |
-| `full_meter` 대비 `meter_definition` 누락 | 0 |
-| `meter_definition` 대비 `full_meter` 초과 | 0 |
-| redundancy pair의 registry 미존재 meter | 0 |
-
-검증 결과가 기대값과 다르면 aggregate query와 redundancy 기반 이상탐지 로직을 작성하지 않는다.
-
----
-
-## 12. 후속 작업
-
-1. Metadata migration을 생성할지 여부를 결정한다.
-2. 승인 시 별도 migration 작성 후 `meter_definition` 81개, `meter_redundancy` 12개 coverage 검증을 수행한다.
-3. CM1, CM2, CM3 aggregate query 기준을 작성한다.
-4. redundancy 기반 이상탐지 판정 로직을 분석 단계에서 작성한다.
+- `meter_urn` 수량은 81개다.
+- `meter_domain`은 `electricity`, `thermal`, `weather` 중 하나다.
+- `meter_role`은 `consumption`, `production`, `thermal_flow`, `weather` 중 하나다.
+- Redundancy pair는 12개다.
+- 모든 redundancy pair의 양쪽 `meter_urn`은 meter registry에 존재해야 한다.
+- Vector DB chunk는 이 문서의 section과 source path를 metadata로 보존해야 한다.

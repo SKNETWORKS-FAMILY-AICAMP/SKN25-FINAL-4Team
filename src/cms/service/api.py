@@ -6,17 +6,25 @@ small dataclass skeleton if FastAPI is not installed.
 
 from __future__ import annotations
 
+import os
 from collections.abc import Callable
 from dataclasses import dataclass
 from importlib import import_module
 from time import perf_counter
-from typing import Any, cast
+from typing import Any, Protocol, cast
 
 from cms.contracts.core import (
     CANONICAL_SOURCE_TABLES,
     AgentRequest,
     SourceTable,
     to_plain_dict,
+)
+from cms.contracts.ingestion import (
+    MEASUREMENT_RAW_TOPIC,
+    kafka_message_key,
+    measurement_raw_event_from_mapping,
+    raw_event_to_kafka_value,
+    validate_raw_event,
 )
 from cms.data.live_replay import build_request, describe_mongo_read, read_live_replay
 from cms.service.query_planner import QueryPlanningError, make_query_plan
@@ -29,6 +37,7 @@ ROUTES = (
     ("GET", "/", "service index and route discovery"),
     ("GET", "/health", "import-safe health contract"),
     ("GET", "/contracts", "canonical source/cache contract"),
+    ("POST", "/ingest/measurements", "validate measurement payload and publish to Kafka; no DB write"),
     ("POST", "/live-replay/plan", "read-only live/replay plan; no DB I/O"),
     ("POST", "/latency/probe", "dry-run request handling latency around live/replay plan"),
     ("POST", "/query/plan", "read-only parameterized SQL plan for evidence_answer requests"),
@@ -43,8 +52,37 @@ ROUTES = (
 _REVIEW_STORE = review_jobs.ReviewJobStore()
 
 
+class KafkaProducerLike(Protocol):
+    """Minimal producer protocol for injection; no Kafka client import required."""
+
+    def produce(self, *, topic: str, key: str, value: dict[str, object]) -> dict[str, object]: ...
+
+
+class UnavailableKafkaProducer:
+    """Fallback producer used unless runtime Kafka is explicitly enabled."""
+
+    def produce(self, *, topic: str, key: str, value: dict[str, object]) -> dict[str, object]:
+        raise RuntimeError("Kafka producer is not configured in import-safe skeleton")
+
+
+def build_ingest_producer_from_env(env: dict[str, str] | None = None) -> KafkaProducerLike:
+    """Build the ingest producer behind an explicit runtime env gate.
+
+    The disabled branch does not import Kafka client packages. The enabled branch
+    lazily imports the runtime adapter, which then lazily imports ``confluent_kafka``.
+    """
+
+    values = env or os.environ
+    if values.get("CMS_ENABLE_RUNTIME_KAFKA_PRODUCER") != "1":
+        return UnavailableKafkaProducer()
+    from cms.data.runtime_kafka import create_confluent_kafka_producer
+
+    return create_confluent_kafka_producer(values)
+
+
 @dataclass(frozen=True)
 class ApiSkeleton:
+
     """Fallback object returned when FastAPI is unavailable."""
 
     title: str = API_TITLE
@@ -136,6 +174,68 @@ def make_query_plan_payload(payload: dict[str, Any]) -> dict[str, Any]:
 
     plan = make_query_plan(payload)
     return to_plain_dict(plan)
+
+
+def make_ingest_measurement_payload(payload: dict[str, Any], *, producer: KafkaProducerLike) -> dict[str, Any]:
+    """Validate an ingest payload and publish to Kafka through an injected producer only.
+
+    This function never writes PostgreSQL, runs workers, or imports a real Kafka
+    client. It returns HTTP-style contract payloads so tests can verify route
+    semantics without FastAPI being installed.
+    """
+
+    event = measurement_raw_event_from_mapping(payload)
+    errors = validate_raw_event(event)
+    if errors:
+        return {
+            "route": "/ingest/measurements",
+            "status_code": 422,
+            "accepted": False,
+            "errors": list(errors),
+            "writes_allowed": False,
+            "postgres_write_attempted": False,
+            "rollup_qa_promotion_attempted": False,
+        }
+
+    key = kafka_message_key(event)
+    value = raw_event_to_kafka_value(event)
+    try:
+        ack = producer.produce(topic=MEASUREMENT_RAW_TOPIC, key=key, value=value)
+    except Exception as exc:  # noqa: BLE001 - contract maps producer failures to 503-style payloads.
+        return {
+            "route": "/ingest/measurements",
+            "status_code": 503,
+            "accepted": False,
+            "producer_error": str(exc),
+            "writes_allowed": False,
+            "postgres_write_attempted": False,
+            "rollup_qa_promotion_attempted": False,
+        }
+
+    acknowledged = bool(ack.get("acknowledged", False))
+    if not acknowledged:
+        return {
+            "route": "/ingest/measurements",
+            "status_code": 503,
+            "accepted": False,
+            "producer_acknowledged": False,
+            "writes_allowed": False,
+            "postgres_write_attempted": False,
+            "rollup_qa_promotion_attempted": False,
+        }
+    return {
+        "route": "/ingest/measurements",
+        "status_code": 202,
+        "accepted": True,
+        "topic": MEASUREMENT_RAW_TOPIC,
+        "key": key,
+        "producer_acknowledged": True,
+        "producer_ack": ack,
+        "raw_payload_hash": event.raw_payload_hash,
+        "writes_allowed": False,
+        "postgres_write_attempted": False,
+        "rollup_qa_promotion_attempted": False,
+    }
 
 
 def make_report_email_dry_run_payload(payload: dict[str, Any]) -> dict[str, Any]:
@@ -263,6 +363,19 @@ def create_app() -> object:
         meter_urns: list[str] = Field(default_factory=list)
         limit: int = 1_000
 
+    class IngestMeasurementRequest(BaseModel):
+        schema_version: str | None = None
+        source_system: str
+        source_event_id: str | None = None
+        meter_urn: str
+        measurement: str
+        event_ts: str
+        value_text: str | None = None
+        value_numeric: float | None = None
+        unit: str | None = None
+        received_at: str
+        raw_payload_hash: str | None = None
+
     class QueryPlanRequest(BaseModel):
         text: str
         context: dict[str, Any] = Field(default_factory=dict)
@@ -298,6 +411,21 @@ def create_app() -> object:
     @app.get("/contracts")
     def _contracts() -> dict[str, object]:
         return contracts()
+
+    ingest_producer = build_ingest_producer_from_env()
+
+    @app.post("/ingest/measurements")
+    def _ingest_measurements(payload: Any = body) -> dict[str, Any]:
+        try:
+            request = IngestMeasurementRequest.model_validate(payload)
+            result = make_ingest_measurement_payload(_model_payload(request), producer=ingest_producer)
+        except ValueError as exc:
+            raise fastapi.HTTPException(status_code=422, detail=str(exc)) from exc
+        if result["status_code"] == 422:
+            raise fastapi.HTTPException(status_code=422, detail=result)
+        if result["status_code"] == 503:
+            raise fastapi.HTTPException(status_code=503, detail=result)
+        return result
 
     @app.post("/live-replay/plan")
     def _live_replay_plan(payload: Any = body) -> dict[str, Any]:
@@ -372,11 +500,14 @@ __all__ = [
     "ROUTES",
     "ApiSkeleton",
     "approve_review_job",
+    "build_ingest_producer_from_env",
     "contracts",
     "create_app",
     "get_review_job",
     "health",
     "index",
+    "KafkaProducerLike",
+    "make_ingest_measurement_payload",
     "make_latency_probe_payload",
     "make_plan_payload",
     "make_query_plan_payload",

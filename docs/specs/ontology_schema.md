@@ -17,14 +17,14 @@
 | Tier 0 | Dryad DOI `10.5061/dryad.73n5tb363` | compressed source archive, file layout, license, checksum provenance | 기준 원천 저장소 |
 | Tier 1 | `docs/reference/source_inventory.md` | CMS-only source tier와 archive 선별 기준 | 기준 문서 |
 | Tier 1 | `docs/specs/meter_metadata.md` | 계량기 classification과 redundancy 기준 | 기준 문서 |
-| Tier 1 | `docs/specs/meter_measurement_cadence_policy.md` | native cadence, expected_points, gap/null policy | 기준 문서 |
-| Tier 1 | `docs/specs/data_contract.md` | source/candidate/QA/canonical/reference boundary | 기준 문서 |
+| Tier 1 | `docs/specs/measurement_processing_policy.md` | native cadence, expected_points, NULL/state-hold, measurement processing policy | 기준 문서 |
+| Tier 1 | `docs/specs/data_platform_contract.md` | source/candidate/QA/canonical/reference boundary | 기준 문서 |
 | Tier 1 | `docs/ontology/cms.ttl` | Protégé와 rdflib에서 읽는 Turtle artifact | 자동 생성 대상 |
 | Tier 1 | `docs/ontology/cms_shapes.ttl` | SHACL closed-world validation artifact | 자동 검증 대상 |
-| Tier 1 | `docs/ontology/competency_questions.md` | ontology helper가 답해야 하는 질문 | 검증 기준 |
+| Tier 1 | `docs/specs/ontology_schema.md` | ontology helper가 답해야 하는 질문 | 검증 기준 |
 | Tier 1 | `scripts/ontology/query_ontology.py` | SPARQL query smoke test | 검증 스크립트 |
 
-Benchmark/model reports, champion model 결과, Huang-style 실험은 ontology source truth에서 제외한다.
+Benchmark/model outputs, champion model 결과, Huang-style 실험은 ontology source truth에서 제외한다.
 
 ## 3. Class 정의
 
@@ -45,7 +45,7 @@ Benchmark/model reports, champion model 결과, Huang-style 실험은 ontology s
 | `DataLayer` | archive, staging, reference, canonical, qa, ops, mart | data/database contract |
 | `QAEvidence` | gap/null/coverage/mask/provenance evidence | QA contract |
 | `FeatureRule` | feature 생성·포함·제외 규칙 | feature spec |
-| `PromptContract` | SQLLM, QA review, anomaly explanation 등 LLM prompt boundary | `llm_pipeline_contract.md` |
+| `PromptContract` | SQLLM, QA review, anomaly explanation 등 LLM prompt boundary | `llm_contract.md` |
 | `MetadataDocument` | ontology/source 기준 문서 | specs/reference/ontology docs |
 
 ## 4. Object property 정의
@@ -130,7 +130,7 @@ Benchmark/model reports, champion model 결과, Huang-style 실험은 ontology s
 3. Redundancy pair는 `hasPrimaryMeter`, `hasRedundantMeter`, `hasGroup`을 각각 하나씩 가진다.
 4. `redundantWith`는 각 redundancy pair에 대해 양방향으로 materialize한다.
 5. 모든 meter는 Nature Tables 2-3 기반 `hasHardwareModel`, `hardwareModelCode`, `sourceName`, `sourceTable`, `sourceDescription` 값을 가진다.
-6. Measurement vocabulary는 Nature Tables 4-6과 `docs/reference/domain_concepts.md`를 함께 참조한다.
+6. Measurement vocabulary는 Nature Tables 4-6과 `docs/reference/measurement_glossary.md`를 함께 참조한다.
 
 ## 8. CMS 분석에서의 사용
 
@@ -158,7 +158,7 @@ meter -> measurement -> equipment group -> building -> role -> redundancy pair -
 
 ### 8.3 LLM grounding
 
-LLM agent는 `docs/ontology/cms.ttl`, `docs/ontology/competency_questions.md`, `scripts/ontology/query_ontology.py`, `docs/reference/source_inventory.md`, 검토된 Wiki/Obsidian project note를 함께 확인한다. Graphify나 Obsidian 자동 생성 note는 후보 지식으로만 사용하고, 중요한 관계는 source artifact와 active spec으로 재확인한다.
+LLM retrieval은 `docs/ontology/cms.ttl`, `docs/specs/ontology_schema.md`, `scripts/ontology/query_ontology.py`, `docs/reference/source_inventory.md`를 우선 근거로 사용한다. Graphify artifact는 후보 관계 탐색에만 사용하고, 중요한 관계는 source artifact와 active spec으로 재확인한다.
 
 ## 9. Protégé 사용 기준
 
@@ -171,3 +171,20 @@ Protégé는 `docs/ontology/cms.ttl` 또는 `docs/ontology/cms_protege.owl`을 �
 3. Benchmark/model performance를 ontology truth로 쓰지 않는다.
 4. Neo4j, Fuseki, GraphDB 같은 server 기반 graph 저장소는 현 단계에서 도입하지 않는다. Graphify artifact와 MCP hook 후보를 사용한다.
 5. DB schema 변경이나 AWS DDL 실행은 이 문서 범위가 아니라 별도 승인된 infra 작업이다.
+
+## 9. 역량질문
+
+Ontology는 다음 질문에 답할 수 있어야 한다.
+
+| 영역 | 질문 | 기준 문서 |
+|---|---|---|
+| Meter context | 특정 meter의 type, role, location, redundancy group은 무엇인가 | `docs/specs/meter_metadata.md` |
+| Aggregate meter set | 집계 meter와 하위 meter의 관계는 무엇인가 | `docs/specs/meter_metadata.md` |
+| Production sign convention | 생산/소비 방향은 어떤 property로 표현되는가 | `docs/specs/measurement_processing_policy.md` |
+| Weather exclusion | weather source가 energy aggregate에 섞이지 않았는가 | `docs/specs/measurement_processing_policy.md` |
+| Redundancy anomaly | redundant meter 간 divergence를 어떻게 해석하는가 | `docs/specs/meter_metadata.md` |
+| Native cadence and coverage | source cadence와 expected/observed coverage는 어디서 확인하는가 | `docs/specs/measurement_processing_policy.md` |
+| Corrected/reference leakage | corrected/reference source가 observed truth로 사용되지 않았는가 | `docs/qa/qa_contract.md` |
+| SQLLM grounding | Text-to-SQL이 ontology와 schema boundary를 지키는가 | `docs/specs/llm_contract.md` |
+
+역량질문은 ontology artifact의 acceptance criteria로 유지한다. Data QA와 runtime policy의 상세 기준은 각 대표 문서가 담당한다.

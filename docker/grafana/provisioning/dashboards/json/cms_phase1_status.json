@@ -1,0 +1,94 @@
+{
+  "uid": "cms-phase1-status",
+  "title": "CMS Phase 1-A Status",
+  "tags": ["cms", "phase1", "postgres", "kafka", "grafana"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": {"from": "now-24h", "to": "now"},
+  "templating": {"list": []},
+  "annotations": {"list": []},
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "PostgreSQL connection",
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "datasource": {"type": "postgres", "uid": "postgres-cms-live"},
+      "targets": [{"refId": "A", "format": "table", "rawSql": "SELECT 1 AS value;"}],
+      "fieldConfig": {"defaults": {"unit": "short", "thresholds": {"mode": "absolute", "steps": [{"color": "green"}]}}, "overrides": []},
+      "options": {"reduceOptions": {"values": false, "calcs": ["lastNotNull"], "fields": ""}, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "none"}
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Timescale hypertables",
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+      "datasource": {"type": "postgres", "uid": "postgres-cms-live"},
+      "targets": [{"refId": "A", "format": "table", "rawSql": "SELECT count(*) AS value FROM timescaledb_information.hypertables;"}],
+      "fieldConfig": {"defaults": {"unit": "short", "thresholds": {"mode": "absolute", "steps": [{"color": "green"}, {"color": "blue", "value": 1}]}}, "overrides": []},
+      "options": {"reduceOptions": {"values": false, "calcs": ["lastNotNull"], "fields": ""}, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "none"}
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Reference 15min estimated rows",
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+      "datasource": {"type": "postgres", "uid": "postgres-cms-live"},
+      "targets": [{"refId": "A", "format": "table", "rawSql": "SELECT COALESCE(s.n_live_tup, c.reltuples)::bigint AS value FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace LEFT JOIN pg_stat_user_tables s ON s.relid = c.oid WHERE n.nspname = 'reference' AND c.relname = 'corrected_resampled_15min';"}],
+      "fieldConfig": {"defaults": {"unit": "short", "thresholds": {"mode": "absolute", "steps": [{"color": "green"}]}}, "overrides": []},
+      "options": {"reduceOptions": {"values": false, "calcs": ["lastNotNull"], "fields": ""}, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "none"}
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Live measurement table exists",
+      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+      "datasource": {"type": "postgres", "uid": "postgres-cms-live"},
+      "targets": [{"refId": "A", "format": "table", "rawSql": "SELECT CASE WHEN to_regclass('live.measurement_event') IS NULL THEN 0 ELSE 1 END AS value;"}],
+      "fieldConfig": {"defaults": {"unit": "short", "thresholds": {"mode": "absolute", "steps": [{"color": "red"}, {"color": "green", "value": 1}]}}, "overrides": []},
+      "options": {"reduceOptions": {"values": false, "calcs": ["lastNotNull"], "fields": ""}, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "none"}
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Capacity throughput by run",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+      "datasource": {"type": "postgres", "uid": "postgres-cms-live"},
+      "targets": [{"refId": "A", "format": "time_series", "rawSql": "SELECT metric_ts AS time, metric_value AS value, run_id || ' / ' || stage AS metric FROM ops.pipeline_metric WHERE metric_name = 'throughput_events_sec' AND metric_ts BETWEEN $__timeFrom() AND $__timeTo() ORDER BY metric_ts;"}],
+      "fieldConfig": {"defaults": {"unit": "eps", "thresholds": {"mode": "absolute", "steps": [{"color": "green"}, {"color": "yellow", "value": 400}, {"color": "red", "value": 800}]}}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "single", "sort": "none"}}
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Capacity latency p95",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+      "datasource": {"type": "postgres", "uid": "postgres-cms-live"},
+      "targets": [{"refId": "A", "format": "time_series", "rawSql": "SELECT metric_ts AS time, metric_value AS value, run_id || ' / ' || stage AS metric FROM ops.pipeline_metric WHERE metric_name = 'latency_ms_p95' AND metric_ts BETWEEN $__timeFrom() AND $__timeTo() ORDER BY metric_ts;"}],
+      "fieldConfig": {"defaults": {"unit": "ms", "thresholds": {"mode": "absolute", "steps": [{"color": "green"}, {"color": "yellow", "value": 500}, {"color": "red", "value": 1000}]}}, "overrides": []},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "single", "sort": "none"}}
+    },
+    {
+      "id": 7,
+      "type": "table",
+      "title": "Main schema sizes",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+      "datasource": {"type": "postgres", "uid": "postgres-cms-live"},
+      "targets": [{"refId": "A", "format": "table", "rawSql": "SELECT n.nspname AS schema_name, count(*) AS objects, pg_size_pretty(sum(pg_total_relation_size(c.oid))) AS total_size FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname IN ('reference','mart','canonical','ops','qa') AND c.relkind IN ('r','p','v','m') GROUP BY n.nspname ORDER BY sum(pg_total_relation_size(c.oid)) DESC;"}],
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "options": {"showHeader": true}
+    },
+    {
+      "id": 8,
+      "type": "table",
+      "title": "Recent pipeline metrics",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+      "datasource": {"type": "postgres", "uid": "postgres-cms-live"},
+      "targets": [{"refId": "A", "format": "table", "rawSql": "SELECT metric_ts, run_id, stage, metric_name, metric_value, unit, labels FROM ops.pipeline_metric WHERE metric_ts BETWEEN $__timeFrom() AND $__timeTo() ORDER BY metric_ts DESC, run_id, stage, metric_name LIMIT 200;"}],
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "options": {"showHeader": true}
+    }
+  ]
+}

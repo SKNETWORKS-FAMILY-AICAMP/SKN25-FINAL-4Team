@@ -8,7 +8,14 @@ MEASUREMENT_TABLE_RESOLUTIONS = {
     "measurement_15min": "15min",
     "measurement_1h": "1h",
 }
-SCRATCH_TABLES = (*MEASUREMENT_TABLE_RESOLUTIONS.keys(), "latency_events", "qa_metrics")
+LIVE_PIPELINE_TABLES = (
+    "measurement_event",
+    "bucket_queue",
+    "peak_feature_15min",
+    "peak_input_15min",
+    "promotion_check",
+)
+SCRATCH_TABLES = ("measurement_event", *MEASUREMENT_TABLE_RESOLUTIONS.keys(), "bucket_queue", "peak_feature_15min", "peak_input_15min", "promotion_check", "latency_events", "qa_metrics")
 
 REQUIRED_COMMON_COLUMNS = (
     "test_run_id",
@@ -44,22 +51,31 @@ REQUIRED_COMMON_COLUMNS = (
 
 LATENCY_MARKERS = (
     "source_event_ts",
-    "received_at",
-    "mongo_written_at",
-    "mongo_visible_at",
-    "processor_started_at",
+    "fastapi_received_at",
+    "kafka_ack_at",
+    "kafka_consumed_at",
+    "event_committed_at",
     "eq_1min_done_at",
-    "eq_5min_done_at",
+    "queue_enqueued_at",
     "pg_15min_committed_at",
     "pg_1h_committed_at",
+    "peak_feature_done_at",
+    "peak_input_done_at",
     "qa_done_at",
 )
 
 _LATENCY_SECONDS_COLUMNS = (
-    "mongo_to_1min_sec",
-    "mongo_to_5min_sec",
-    "mongo_to_15min_sec",
-    "mongo_to_1h_sec",
+    "source_to_fastapi_sec",
+    "fastapi_to_kafka_sec",
+    "kafka_to_event_sec",
+    "event_to_1min_sec",
+    "event_to_queue_sec",
+    "one_min_to_15min_sec",
+    "one_min_to_1h_sec",
+    "one_min_to_peak_feature_sec",
+    "peak_feature_to_peak_input_sec",
+    "qa_eligibility_sec",
+    "promotion_ready_sec",
     "end_to_end_sec",
 )
 
@@ -78,6 +94,7 @@ def render_scratch_ddl(test_run_id: str) -> str:
         f"CREATE SCHEMA IF NOT EXISTS {schema};",
     ]
     parts.extend(_render_measurement_table(schema, table, resolution, test_run_id) for table, resolution in MEASUREMENT_TABLE_RESOLUTIONS.items())
+    parts.extend(_render_live_pipeline_table(schema, table, test_run_id) for table in LIVE_PIPELINE_TABLES)
     parts.append(_render_latency_events_table(schema, test_run_id))
     parts.append(_render_qa_metrics_table(schema, test_run_id))
     return "\n\n".join(parts) + "\n"
@@ -105,13 +122,29 @@ CREATE INDEX IF NOT EXISTS idx_{table}_lineage
 ON {schema}.{table} (lineage_key);"""
 
 
+def _render_live_pipeline_table(schema: str, table: str, test_run_id: str) -> str:
+    return f"""CREATE TABLE IF NOT EXISTS {schema}.{table} (
+    scratch_row_id BIGSERIAL PRIMARY KEY,
+    test_run_id TEXT NOT NULL DEFAULT '{test_run_id}',
+    bucket_ts TIMESTAMPTZ,
+    meter_urn TEXT,
+    measurement TEXT,
+    payload JSONB NOT NULL DEFAULT '{{}}'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT ck_{table}_test_run_id CHECK (test_run_id = '{test_run_id}')
+);
+
+CREATE INDEX IF NOT EXISTS idx_{table}_scratch_lookup
+ON {schema}.{table} (test_run_id, bucket_ts, meter_urn, measurement);"""
+
+
 def _render_latency_events_table(schema: str, test_run_id: str) -> str:
     marker_columns = ",\n    ".join(f"{marker} TIMESTAMPTZ" for marker in LATENCY_MARKERS)
     latency_columns = ",\n    ".join(f"{column} DOUBLE PRECISION" for column in _LATENCY_SECONDS_COLUMNS)
     return f"""CREATE TABLE IF NOT EXISTS {schema}.latency_events (
     latency_event_id BIGSERIAL PRIMARY KEY,
     {_common_columns_sql(test_run_id)},
-    stage TEXT NOT NULL CHECK (stage IN ('ingest', 'mongo_visible', 'eq_1min', 'eq_5min', 'pg_15min', 'pg_1h', 'qa')),
+    stage TEXT NOT NULL CHECK (stage IN ('ingest', 'kafka_ack', 'kafka_to_event', 'eq_1min', 'eq_5min', 'pg_15min', 'pg_1h', 'peak_feature', 'peak_input', 'qa')),
     {marker_columns},
     {latency_columns},
     CONSTRAINT ck_latency_events_test_run_id CHECK (test_run_id = '{test_run_id}'),
@@ -181,6 +214,7 @@ def _common_columns_sql(test_run_id: str) -> str:
 
 __all__ = [
     "LATENCY_MARKERS",
+    "LIVE_PIPELINE_TABLES",
     "MEASUREMENT_TABLE_RESOLUTIONS",
     "REQUIRED_COMMON_COLUMNS",
     "SCRATCH_TABLES",

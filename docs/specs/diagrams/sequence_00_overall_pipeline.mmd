@@ -1,20 +1,91 @@
-%%{init: {"theme": "base", "sequence": {"showSequenceNumbers": true, "wrap": false, "mirrorActors": true, "rightAngles": true, "messageAlign": "center", "actorMargin": 95, "width": 180, "height": 54, "boxMargin": 14, "boxTextMargin": 8, "noteMargin": 12, "messageMargin": 48}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "actorBkg": "#f8fafc", "actorBorder": "#64748b", "actorTextColor": "#0f172a", "actorLineColor": "#64748b", "signalColor": "#334155", "signalTextColor": "#0f172a", "noteBkgColor": "#fff7ed", "noteTextColor": "#0f172a", "noteBorderColor": "#ea580c", "loopTextColor": "#0f172a", "activationBkgColor": "#e0f2fe", "activationBorderColor": "#0284c7", "fontFamily": "Arial, sans-serif", "fontSize": "15px"}} }%%
+%%{init: {"theme": "base", "sequence": {"showSequenceNumbers": true, "wrap": false, "mirrorActors": true, "rightAngles": true, "messageAlign": "center", "actorMargin": 82, "width": 170, "height": 54, "boxMargin": 12, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 44}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "actorBkg": "#f8fafc", "actorBorder": "#64748b", "actorTextColor": "#0f172a", "actorLineColor": "#64748b", "signalColor": "#334155", "signalTextColor": "#0f172a", "noteBkgColor": "#fff7ed", "noteTextColor": "#0f172a", "noteBorderColor": "#ea580c", "loopTextColor": "#0f172a", "activationBkgColor": "#e0f2fe", "activationBorderColor": "#0284c7", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
 sequenceDiagram
     autonumber
-    participant S as Source<br/>Tier0 archive live
-    participant DB as Data store<br/>Mongo PostgreSQL
-    participant Q as QA<br/>evidence
-    participant O as Ops approval<br/>promotion
-    participant K as Knowledge<br/>ontology graph vector
-    participant W as Workflow<br/>Airflow LangGraph
-    participant A as App<br/>FastAPI SQLLM
-    S->>DB: load archive or raw event
-    DB->>Q: expose candidates and references
-    Q->>O: create promotion request
-    O->>DB: approved canonical write only
-    K-->>A: provide grounded context
-    A->>DB: run guarded SELECT evidence query
-    A->>W: register background job
-    W->>DB: run batch replay or report task
-    W-->>A: publish artifact status
-    Note over Q,O: QA pass alone does not promote canonical facts
+
+    box rgb(239, 246, 255) Measurement input
+      participant SRC as live_event_source
+      participant ARCH as source_archive_reference
+    end
+
+    box rgb(236, 253, 245) Kafka live ingestion buffer
+      participant APIING as FastAPI_ingest
+      participant KRAW as measurement_raw_v1
+      participant KDLQ as measurement_dead_letter_v1
+      participant KCG as postgres_live_ingest_group
+    end
+
+    box rgb(255, 247, 237) Measurement workers
+      participant ING as kafka_to_postgres_consumer
+      participant TRG as common_postgres_trigger
+      participant MEAN as mean_rollup_worker
+      participant PEAK as peak_feature_worker
+      participant QG as qa_eligibility_worker
+      participant PROM as promotion_worker
+      participant REP as report_worker
+    end
+
+    box rgb(238, 242, 255) PostgreSQL database: cms
+      participant LIVE as live_schema<br/>event_policy_1min_queue_mean
+      participant QA as qa_schema<br/>issue_evidence
+      participant OPS as ops_schema<br/>job_promotion_artifact
+      participant CAN as canonical_schema<br/>approved_mean_measurements
+      participant MART as mart_schema<br/>peak_features
+      participant REF as reference_schema<br/>comparison_only
+    end
+
+    box rgb(245, 243, 255) Application workflow grounding
+      participant API as FastAPI<br/>read_status_job_chat
+      participant WF as Airflow_scheduler<br/>LangGraph_review
+      participant KNOW as vector_db_ontology_grounding
+      participant RESP as dashboard_report_chat_response
+    end
+
+    SRC->>APIING: POST /ingest/measurements
+    APIING->>KRAW: publish measurement_raw_v1 after validation and ack
+    APIING-->>SRC: invalid API payload returns 422 without Kafka publish
+    KRAW->>ING: consume by postgres-live-ingest group
+    KCG->>ING: track partition offset and lag
+    ING->>LIVE: idempotent insert live.measurement_event then commit offset
+    ING-->>KDLQ: consumer validation failure goes to DLQ then commit offset
+    LIVE->>TRG: fire common trigger
+    TRG->>LIVE: lookup policy upsert 1min enqueue bucket jobs
+    TRG-->>QA: record policy_miss or block issue when needed
+
+    par mean rollup for anomaly and canonical candidate
+        LIVE->>MEAN: claim mean_rollup jobs for 15min and 1h
+        MEAN->>LIVE: write measurement_15min and measurement_1h mean rows
+    and peak feature branch for prediction
+        LIVE->>PEAK: claim peak_feature 15min jobs
+        PEAK->>MART: write peak_feature_15min and peak_input_15min rolling 1h features
+    end
+
+    ARCH-->>REF: load corrected_resampled comparison only when needed
+    REF-->>QG: provide comparison evidence without replacing observed truth
+    LIVE->>QG: provide 1min and mean 15min 1h candidates
+    QA->>QG: provide blocking issue evidence
+    QG->>LIVE: write promotion_check pass warn block
+    QG->>QA: write QA evidence packet
+
+    QA-->>REP: provide QA evidence packet
+    LIVE-->>REP: provide promotion_check evidence
+    REP->>OPS: publish job result_ref artifact status
+    REP->>WF: send artifact for review
+    QA-->>WF: send QA evidence for approval review
+    LIVE-->>WF: send promotion_check for approval review
+    WF-->>API: return review recommendation and artifact status
+
+    API->>OPS: register approved promotion job
+    OPS->>PROM: provide promotion_run id
+    LIVE->>PROM: release eligible mean observed rows
+    PROM->>CAN: controlled upsert canonical.measurement_1min_15min_1h
+
+    CAN-->>API: read-only canonical mean evidence
+    QA-->>API: read-only QA evidence
+    MART-->>API: read-only peak prediction features
+    API->>KNOW: combine DB evidence with specs ontology vector refs
+    KNOW-->>API: grounded response context
+    API-->>RESP: return dashboard report or chat response
+
+    Note over MEAN,MART: mean rollup and peak feature are separate products. Do not store peak as live or canonical value
+    Note over QG,CAN: canonical stores approved observed mean rows only after eligibility and promotion_id
+    Note over API,WF: FastAPI stays lightweight. Airflow and LangGraph handle background review and artifacts

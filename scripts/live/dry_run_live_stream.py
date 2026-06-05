@@ -11,7 +11,7 @@ Run from repository root:
     python scripts/live/dry_run_live_stream.py --data-root /mnt/hgfs/Windows/EMS/data --max-files 6 --sample-rows 1000
 
 The output is a JSON profile with grain evidence for later approved
-live/replay tests.
+live streaming tests.
 """
 
 from __future__ import annotations

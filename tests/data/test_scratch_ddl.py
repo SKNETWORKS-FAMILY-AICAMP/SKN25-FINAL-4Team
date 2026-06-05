@@ -8,6 +8,7 @@ from unittest.mock import patch
 from cms.data.db_scratch_guard import ALLOWED_POSTGRES_TABLES, ScratchGuardError
 from cms.data.scratch_ddl import (
     LATENCY_MARKERS,
+    LIVE_PIPELINE_TABLES,
     MEASUREMENT_TABLE_RESOLUTIONS,
     REQUIRED_COMMON_COLUMNS,
     SCRATCH_TABLES,
@@ -48,10 +49,15 @@ class ScratchDdlTests(unittest.TestCase):
         self.assertEqual(
             SCRATCH_TABLES,
             (
+                "measurement_event",
                 "measurement_1min",
                 "measurement_5min",
                 "measurement_15min",
                 "measurement_1h",
+                "bucket_queue",
+                "peak_feature_15min",
+                "peak_input_15min",
+                "promotion_check",
                 "latency_events",
                 "qa_metrics",
             ),
@@ -70,6 +76,17 @@ class ScratchDdlTests(unittest.TestCase):
                 self.assertIn(f"CHECK (resolution = '{resolution}')", table_sql)
                 self.assertIn("PRIMARY KEY (test_run_id, lane, resolution, bucket_ts, meter_urn, measurement, lineage_key)", table_sql)
 
+    def test_live_pipeline_tables_are_payload_only_scratch_targets(self) -> None:
+        ddl = render_scratch_ddl("pilot_20260530")
+        for table in LIVE_PIPELINE_TABLES:
+            with self.subTest(table=table):
+                start = ddl.index(f"CREATE TABLE IF NOT EXISTS cms_scratch_pilot_20260530.{table}")
+                end = ddl.index("\n);", start)
+                table_sql = ddl[start:end]
+                self.assertIn("payload JSONB NOT NULL", table_sql)
+                self.assertIn("CHECK (test_run_id = 'pilot_20260530')", table_sql)
+                self.assertNotIn("canonical.", table_sql)
+
     def test_latency_events_include_all_latency_markers(self) -> None:
         ddl = render_scratch_ddl("pilot_20260530")
         start = ddl.index("CREATE TABLE IF NOT EXISTS cms_scratch_pilot_20260530.latency_events")
@@ -80,7 +97,20 @@ class ScratchDdlTests(unittest.TestCase):
             self.assertIn(column, table_sql)
         for marker in LATENCY_MARKERS:
             self.assertIn(f"{marker} TIMESTAMPTZ", table_sql)
-        for latency_column in ["mongo_to_1min_sec", "mongo_to_5min_sec", "mongo_to_15min_sec", "mongo_to_1h_sec", "end_to_end_sec"]:
+        for latency_column in [
+            "source_to_fastapi_sec",
+            "fastapi_to_kafka_sec",
+            "kafka_to_event_sec",
+            "event_to_1min_sec",
+            "event_to_queue_sec",
+            "one_min_to_15min_sec",
+            "one_min_to_1h_sec",
+            "one_min_to_peak_feature_sec",
+            "peak_feature_to_peak_input_sec",
+            "qa_eligibility_sec",
+            "promotion_ready_sec",
+                        "end_to_end_sec",
+        ]:
             self.assertIn(f"{latency_column} DOUBLE PRECISION", table_sql)
 
     def test_qa_metrics_include_required_columns_and_metric_fields(self) -> None:

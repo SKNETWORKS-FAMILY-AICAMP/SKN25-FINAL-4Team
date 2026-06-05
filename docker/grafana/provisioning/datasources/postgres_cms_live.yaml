@@ -1,0 +1,21 @@
+apiVersion: 1
+
+datasources:
+  - name: CMS Live PostgreSQL
+    uid: postgres-cms-live
+    type: postgres
+    access: proxy
+    isDefault: true
+    url: ${GRAFANA_POSTGRES_HOST}:${GRAFANA_POSTGRES_PORT}
+    database: ${GRAFANA_POSTGRES_DB}
+    user: ${GRAFANA_POSTGRES_USER}
+    secureJsonData:
+      password: ${GRAFANA_POSTGRES_PASSWORD}
+    jsonData:
+      sslmode: ${GRAFANA_POSTGRES_SSLMODE}
+      postgresVersion: 1500
+      timescaledb: false
+      maxOpenConns: 10
+      maxIdleConns: 2
+      connMaxLifetime: 14400
+      queryTimeout: 60s

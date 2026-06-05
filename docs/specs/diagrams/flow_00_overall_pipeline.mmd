@@ -1,44 +1,173 @@
-%%{init: {"theme": "base", "flowchart": {"htmlLabels": false, "curve": "basis", "nodeSpacing": 60, "rankSpacing": 75}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "secondaryColor": "#f1f5f9", "secondaryBorderColor": "#94a3b8", "secondaryTextColor": "#0f172a", "tertiaryColor": "#ffffff", "tertiaryBorderColor": "#cbd5e1", "tertiaryTextColor": "#0f172a", "clusterBkg": "#ffffff", "clusterBorder": "#94a3b8", "edgeLabelBackground": "#ffffff", "lineColor": "#475569", "fontFamily": "Arial, sans-serif", "fontSize": "15px"}} }%%
+%%{init: {"theme": "base", "layout": "elk", "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 38, "rankSpacing": 54}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#ffffff", "primaryBorderColor": "#475569", "primaryTextColor": "#0f172a", "secondaryColor": "#f8fafc", "secondaryBorderColor": "#94a3b8", "secondaryTextColor": "#0f172a", "tertiaryColor": "#ffffff", "tertiaryBorderColor": "#cbd5e1", "tertiaryTextColor": "#0f172a", "clusterBkg": "#ffffff", "clusterBorder": "#94a3b8", "edgeLabelBackground": "#ffffff", "lineColor": "#475569", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
 flowchart LR
-    subgraph S["Source plane"]
-      A["honda_nature_dryad_tier0"]
-      B["compressed_archive_manifest"]
-      L["live_replay_raw_events"]
+    subgraph SRC["Measurement input"]
+      LIVE["live_event_source\none-month live run"]
+      ARCHIVE["compressed source archive\nreference / backfill input"]
+      REF_SRC["corrected_resampled reference\ncomparison only"]
     end
-    subgraph D["Data plane"]
-      M["mongo_raw_recent_lane"]
-      ST["postgresql_staging_loader"]
-      P["equal_interval_processor"]
-      QA["qa_evidence_coverage_masks"]
-      PR["ops_approval_request"]
-      C["canonical_measurement_1m_15m_1h"]
-      R["reference_corrected_15m_1h"]
-      V["vector_db_pgvector_target"]
-      G["graphify_out_specs_context"]
-      O["cms_ontology_ttl_shacl_owl"]
+
+    subgraph APP["Application and workflow skeleton"]
+      API["FastAPI\nread / status / job / chat"]
+      AIRFLOW["Airflow / scheduler\nbackground batch / report job"]
+      LANG["LangGraph review workflow\nQA / report / approval review"]
+      RESP["dashboard / report / chat response"]
     end
-    subgraph W["Workflow plane"]
-      AF["airflow_batch_report_replay"]
-      LG["langgraph_async_review"]
+
+    subgraph KAFKA["Kafka live ingestion buffer"]
+      RAW_TOPIC["measurement_raw_v1\ningestion payload contract"]
+      DLQ_TOPIC["measurement_dead_letter_v1\npoison message isolation"]
+      CGROUP["postgres-live-ingest\nconsumer group / offset"]
     end
-    subgraph APP["Application plane"]
-      API["fastapi_chat_status_jobs"]
-      SQL["sqllm_select_guard"]
-      ANO["anomaly_grounded_response"]
-      ART["report_artifact_status"]
+
+    subgraph WORKERS["Measurement workers"]
+      INGEST["kafka_to_postgres_consumer\nidempotent event insert"]
+      TRIGGER["common postgres trigger\npolicy lookup / 1min / queue"]
+      MEAN["mean_rollup_worker\n15min / 1h mean observed"]
+      PEAK["peak_feature_worker\n15min peak + rolling 1h features"]
+      QAGATE["qa_eligibility_worker\nsource / policy / coverage / lineage"]
+      PROMOTE["promotion_worker\ncontrolled canonical promotion"]
+      REPORT["report_worker\nevidence packet / artifact"]
     end
-    A --> B --> ST --> QA
-    L --> M --> P --> QA
-    QA --> PR --> C
-    B --> R
-    C --> API
-    R --> API
-    C --> V
-    O --> ANO
-    G --> API
-    API --> SQL --> C
-    API --> AF --> P
-    AF --> ART --> API
-    AF --> LG --> ART
-    API --> LG
-    QA --> ANO
+
+    subgraph PG["PostgreSQL database: cms"]
+      subgraph OPS["ops schema"]
+        APIJOB["api_job"]
+        PROMO_RUN["promotion_run"]
+        ARTREF["job result_ref\nartifact / status"]
+      end
+
+      subgraph LIVE_SCHEMA["live schema"]
+        LEVENT["measurement_event"]
+        MPOL["measurement_policy"]
+        L1["measurement_1min"]
+        BQUEUE["bucket_queue\njob_kind + resolution"]
+        L15["measurement_15min\nmean observed rollup"]
+        L1H["measurement_1h\nmean observed rollup"]
+        PCHECK["promotion_check"]
+      end
+
+      subgraph QA["qa schema"]
+        PMISS["policy_miss"]
+        QISSUE["live_measurement_issue"]
+        QA_PACKET["QA evidence packet"]
+      end
+
+      subgraph CANON["canonical schema"]
+        C1["measurement_1min"]
+        C15["measurement_15min\napproved mean rollup"]
+        C1H["measurement_1h\napproved mean rollup"]
+        C_READY["canonical read set"]
+      end
+
+      subgraph REF["reference schema"]
+        REF_CORR["corrected_resampled\naudit comparison only"]
+      end
+
+      subgraph MART["mart schema"]
+        PEAK_FEATURE["peak_feature_15min"]
+        PEAK_INPUT["peak_input_15min\nrolling_1h_peak_features"]
+      end
+    end
+
+    subgraph KNOW["Knowledge and Ontology grounding"]
+      VDB["Vector DB reference documents\nproject specs / QA / source inventory"]
+      ONT["Ontology\nmeter / equipment / measurement relation"]
+      GROUND["LLM grounded response generation"]
+    end
+
+    LIVE --> API
+    API --> RAW_TOPIC
+    RAW_TOPIC --> INGEST
+    RAW_TOPIC -. validation failure .-> DLQ_TOPIC
+    CGROUP --> INGEST
+    INGEST --> LEVENT
+    LEVENT --> TRIGGER
+    MPOL --> TRIGGER
+    TRIGGER --> L1
+    TRIGGER --> BQUEUE
+    TRIGGER -.-> PMISS
+    PMISS -.-> QISSUE
+
+    BQUEUE --> MEAN
+    L1 --> MEAN
+    MEAN --> L15
+    MEAN --> L1H
+    L15 --> QAGATE
+    L1H --> QAGATE
+    L1 --> QAGATE
+    QISSUE --> QAGATE
+    QAGATE --> PCHECK
+    QAGATE --> QA_PACKET
+
+    BQUEUE --> PEAK
+    L1 --> PEAK
+    PEAK --> PEAK_FEATURE
+    PEAK_FEATURE --> PEAK_INPUT
+
+    PCHECK --> PROMOTE
+    PROMO_RUN --> PROMOTE
+    PROMOTE --> C1
+    PROMOTE --> C15
+    PROMOTE --> C1H
+    C1 --> C_READY
+    C15 --> C_READY
+    C1H --> C_READY
+
+    ARCHIVE --> AIRFLOW
+    REF_SRC --> REF_CORR
+    REF_CORR --> QAGATE
+    API --> APIJOB
+    APIJOB --> AIRFLOW
+    AIRFLOW --> REPORT
+    QA_PACKET --> REPORT
+    REPORT --> ARTREF
+    REPORT --> LANG
+    QA_PACKET --> LANG
+    PCHECK --> LANG
+    LANG --> API
+
+    C_READY --> API
+    QA_PACKET --> API
+    PEAK_INPUT --> API
+    API --> GROUND
+    VDB --> GROUND
+    ONT --> GROUND
+    GROUND --> RESP
+    API --> RESP
+
+    classDef source fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef app fill:#ffffff,stroke:#7c3aed,color:#0f172a,stroke-width:1px;
+    classDef storage fill:#ffffff,stroke:#059669,color:#0f172a,stroke-width:1px;
+    classDef worker fill:#fff7ed,stroke:#ea580c,color:#0f172a,stroke-width:1px;
+    classDef pg fill:#ffffff,stroke:#64748b,color:#0f172a,stroke-width:1px;
+    classDef qa fill:#fff1f2,stroke:#e11d48,color:#0f172a,stroke-width:1px;
+    classDef canonical fill:#ecfdf5,stroke:#16a34a,color:#0f172a,stroke-width:1px;
+    classDef reference fill:#fefce8,stroke:#ca8a04,color:#0f172a,stroke-width:1px;
+    classDef mart fill:#fdf4ff,stroke:#a21caf,color:#0f172a,stroke-width:1px;
+    classDef knowledge fill:#fdf4ff,stroke:#a21caf,color:#0f172a,stroke-width:1px;
+    classDef hub fill:#ffffff,stroke:#334155,color:#0f172a,stroke-width:2px;
+
+    class LIVE,ARCHIVE,REF_SRC source;
+    class API,AIRFLOW,LANG,RESP app;
+    class RAW_TOPIC,DLQ_TOPIC,CGROUP storage;
+    class INGEST,TRIGGER,MEAN,PEAK,QAGATE,PROMOTE,REPORT worker;
+    class APIJOB,PROMO_RUN,ARTREF,LEVENT,MPOL,L1,BQUEUE,L15,L1H,PCHECK pg;
+    class PMISS,QISSUE qa;
+    class QA_PACKET,C_READY hub;
+    class C1,C15,C1H canonical;
+    class REF_CORR reference;
+    class PEAK_FEATURE,PEAK_INPUT mart;
+    class VDB,ONT,GROUND knowledge;
+
+    style SRC fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+    style APP fill:#f5f3ff,stroke:#7c3aed,stroke-width:3px
+    style KAFKA fill:#ecfdf5,stroke:#059669,stroke-width:3px
+    style WORKERS fill:#fff7ed,stroke:#ea580c,stroke-width:3px
+    style PG fill:#eef2ff,stroke:#1d4ed8,stroke-width:4px
+    style OPS fill:#ffffff,stroke:#64748b,stroke-width:1px
+    style LIVE_SCHEMA fill:#ffffff,stroke:#2563eb,stroke-width:1px
+    style QA fill:#fff1f2,stroke:#fecdd3,stroke-width:1px
+    style CANON fill:#f0fdf4,stroke:#bbf7d0,stroke-width:1px
+    style REF fill:#fefce8,stroke:#fde68a,stroke-width:1px
+    style MART fill:#fdf4ff,stroke:#e879f9,stroke-width:1px
+    style KNOW fill:#fdf4ff,stroke:#a21caf,stroke-width:3px

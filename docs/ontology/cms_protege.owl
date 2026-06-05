@@ -828,7 +828,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/cms/ontology#Feature">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-    <rdfs:label xml:lang="ko">향후 feature 정의</rdfs:label>
+    <rdfs:label xml:lang="ko">feature 정의</rdfs:label>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/cms/ontology#equipmentLayer">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
@@ -3327,7 +3327,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/cms/ontology#AnomalyEvent">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-    <rdfs:label xml:lang="ko">향후 anomaly event 정의</rdfs:label>
+    <rdfs:label xml:lang="ko">anomaly event 정의</rdfs:label>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/cms/resource/sign_direction_depends_on_equipment_context">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
@@ -3362,7 +3362,7 @@
   <rdf:Description rdf:about="https://nousresearch.local/cms/resource/view_cms_meter_system_all">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="https://nousresearch.local/cms/ontology#VisualizationView"/>
-    <rdfs:label>ems_meter_system_all</rdfs:label>
+    <rdfs:label>cms_meter_system_all</rdfs:label>
     <cms:sourcePath>docs/specs/meter_metadata.md</cms:sourcePath>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/cms/ontology#hasRedundantMeter">
@@ -3406,7 +3406,7 @@
   <rdf:Description rdf:about="https://nousresearch.local/cms/resource/view_cms_meter_system_overview">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="https://nousresearch.local/cms/ontology#VisualizationView"/>
-    <rdfs:label>ems_meter_system_overview</rdfs:label>
+    <rdfs:label>cms_meter_system_overview</rdfs:label>
     <cms:sourcePath>docs/specs/meter_metadata.md</cms:sourcePath>
   </rdf:Description>
   <rdf:Description rdf:about="https://nousresearch.local/cms/ontology#hasHardwareModel">

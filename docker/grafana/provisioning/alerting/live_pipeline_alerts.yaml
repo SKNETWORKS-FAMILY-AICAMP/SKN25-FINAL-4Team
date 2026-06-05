@@ -1,0 +1,514 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: CMS Live Pipeline Alerts
+    folder: CMS Live Pipeline
+    interval: 1m
+    rules:
+      - uid: no-live-events-5m
+        title: No live events for 5 minutes
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: postgres-cms-live
+            model:
+              format: table
+              rawSql: |
+                SELECT CASE WHEN count(*) = 0 THEN 1 ELSE 0 END AS value
+                FROM live.measurement_event
+                WHERE received_at >= now() - interval '5 minutes';
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [0]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: No accepted live measurement events in the last 5 minutes.
+          runbook_url: docs/qa/grafana_observability_plan.md#alert-runbook
+        labels:
+          severity: P0
+          component: live-ingest
+      - uid: oldest-pending-queue-age-10m
+        title: Oldest pending queue age exceeds 10 minutes
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: postgres-cms-live
+            model:
+              format: table
+              rawSql: |
+                SELECT COALESCE(EXTRACT(EPOCH FROM now() - min(updated_at)), 0) AS value
+                FROM live.bucket_queue
+                WHERE status = 'pending';
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [600]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: Oldest pending bucket_queue job is older than 10 minutes.
+          runbook_url: docs/qa/grafana_observability_plan.md#alert-runbook
+        labels:
+          severity: P0
+          component: live-queue
+      - uid: queue-failed-rows-present
+        title: Failed queue rows present
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 180
+              to: 0
+            datasourceUid: postgres-cms-live
+            model:
+              format: table
+              rawSql: |
+                SELECT count(*) AS value
+                FROM live.bucket_queue
+                WHERE status = 'failed';
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [0]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Alerting
+        for: 3m
+        annotations:
+          summary: One or more failed bucket_queue rows exist.
+          runbook_url: docs/qa/grafana_observability_plan.md#alert-runbook
+        labels:
+          severity: P0
+          component: live-queue
+      - uid: worker-heartbeat-missing-2m
+        title: Worker heartbeat missing for 2 minutes
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 120
+              to: 0
+            datasourceUid: postgres-cms-live
+            model:
+              format: table
+              rawSql: |
+                WITH expected(worker_name) AS (
+                  VALUES
+                    ('kafka_to_postgres_consumer'),
+                    ('mean_rollup_worker'),
+                    ('peak_feature_worker'),
+                    ('qa_eligibility_worker'),
+                    ('promotion_worker'),
+                    ('report_worker')
+                )
+                SELECT max(
+                  CASE
+                    WHEN h.worker_name IS NULL THEN 999999
+                    ELSE EXTRACT(EPOCH FROM now() - h.heartbeat_at)
+                  END
+                ) AS value
+                FROM expected e
+                LEFT JOIN ops.worker_heartbeat h ON h.worker_name = e.worker_name;
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [120]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: A live pipeline worker heartbeat is stale or missing.
+          runbook_url: docs/qa/grafana_observability_plan.md#alert-runbook
+        labels:
+          severity: P0
+          component: live-worker
+      - uid: end-to-end-p95-300s
+        title: End-to-end latency p95 exceeds 300 seconds
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: postgres-cms-live
+            model:
+              format: table
+              rawSql: |
+                SELECT COALESCE(percentile_cont(0.95) WITHIN GROUP (ORDER BY end_to_end_sec), 0) AS value
+                FROM ops.pipeline_latency_event
+                WHERE created_at >= now() - interval '10 minutes'
+                  AND end_to_end_sec IS NOT NULL;
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [300]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: End-to-end latency p95 exceeds 300 seconds.
+          runbook_url: docs/qa/grafana_observability_plan.md#alert-runbook
+        labels:
+          severity: P0
+          component: live-latency
+      - uid: policy-miss-spike-10m
+        title: Policy miss spike in last 10 minutes
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: postgres-cms-live
+            model:
+              format: table
+              rawSql: |
+                SELECT count(*) AS value
+                FROM qa.live_measurement_issue
+                WHERE created_at >= now() - interval '10 minutes'
+                  AND issue_kind = 'policy_miss';
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [10]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: Policy miss count exceeded threshold in the last 10 minutes.
+          runbook_url: docs/qa/grafana_observability_plan.md#alert-runbook
+        labels:
+          severity: P1
+          component: live-policy
+      - uid: peak-branch-lag-gt-mean-branch
+        title: Peak branch lags mean branch
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: postgres-cms-live
+            model:
+              format: table
+              rawSql: |
+                SELECT GREATEST(
+                  COALESCE(percentile_cont(0.95) WITHIN GROUP (ORDER BY one_min_to_peak_feature_sec), 0)
+                  - COALESCE(percentile_cont(0.95) WITHIN GROUP (ORDER BY one_min_to_15min_sec), 0),
+                  0
+                ) AS value
+                FROM ops.pipeline_latency_event
+                WHERE created_at >= now() - interval '10 minutes';
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [300]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        annotations:
+          summary: Peak feature branch p95 latency exceeds mean branch p95 by more than 300 seconds.
+          runbook_url: docs/qa/grafana_observability_plan.md#alert-runbook
+        labels:
+          severity: P1
+          component: live-peak-branch
+      - uid: non-blocking-qa-warning-spike-10m
+        title: Non-blocking QA warning spike
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: postgres-cms-live
+            model:
+              format: table
+              rawSql: |
+                SELECT count(*) AS value
+                FROM qa.live_measurement_issue
+                WHERE created_at >= now() - interval '10 minutes'
+                  AND severity IN ('low', 'medium', 'high');
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [30]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        annotations:
+          summary: Non-blocking QA warnings exceeded review threshold.
+          runbook_url: docs/qa/grafana_observability_plan.md#alert-runbook
+        labels:
+          severity: P2
+          component: live-qa
+      - uid: kafka-consumer-lag-10k
+        title: Kafka consumer lag exceeds threshold
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: postgres-cms-live
+            model:
+              format: table
+              rawSql: |
+                SELECT COALESCE(max(lag), 0) AS value
+                FROM ops.kafka_consumer_lag
+                WHERE observed_at >= now() - interval '5 minutes'
+                  AND consumer_group = 'postgres-live-ingest'
+                  AND topic = 'measurement_raw_v1';
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [10000]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: kafka_consumer_lag for postgres-live-ingest exceeds threshold.
+          runbook_url: docs/qa/grafana_observability_plan.md#alert-runbook
+        labels:
+          severity: P0
+          component: kafka-to-postgres-consumer
+      - uid: kafka-dlq-count-nonzero
+        title: Kafka DLQ count is nonzero
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: postgres-cms-live
+            model:
+              format: table
+              rawSql: |
+                SELECT COALESCE(sum(failed_count), 0) AS value
+                FROM ops.pipeline_latency_event
+                WHERE created_at >= now() - interval '5 minutes'
+                  AND stage = 'kafka_dlq_count';
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [0]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: kafka_dlq_count is nonzero for measurement_dead_letter_v1.
+          runbook_url: docs/qa/grafana_observability_plan.md#alert-runbook
+        labels:
+          severity: P0
+          component: kafka-dlq
+      - uid: kafka-produce-error-count-nonzero
+        title: Kafka produce error count is nonzero
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: postgres-cms-live
+            model:
+              format: table
+              rawSql: |
+                SELECT COALESCE(sum(failed_count), 0) AS value
+                FROM ops.pipeline_latency_event
+                WHERE created_at >= now() - interval '5 minutes'
+                  AND stage = 'kafka_produce_error_count';
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [0]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: kafka_produce_error_count is nonzero on FastAPI ingestion.
+          runbook_url: docs/qa/grafana_observability_plan.md#alert-runbook
+        labels:
+          severity: P0
+          component: fastapi-ingest
+      - uid: fastapi-ingest-5xx-spike-5m
+        title: FastAPI ingest 5xx responses are present
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: postgres-cms-live
+            model:
+              format: table
+              rawSql: |
+                SELECT COALESCE(sum(metric_value), 0) AS value
+                FROM ops.fastapi_ingest_metric
+                WHERE created_at >= now() - interval '5 minutes'
+                  AND metric_name = 'fastapi_ingest_5xx_count';
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [0]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: fastapi_ingest_5xx_count is nonzero.
+          runbook_url: docs/qa/grafana_observability_plan.md#alert-runbook
+        labels:
+          severity: P0
+          component: fastapi-ingest

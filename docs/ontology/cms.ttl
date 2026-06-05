@@ -10,7 +10,7 @@
     rdfs:comment "CMS 계량기 metadata, 설비 group, 건물, 역할, redundancy 관계를 정의한 ontology artifact"@ko .
 
 cms:AnomalyEvent a owl:Class ;
-    rdfs:label "향후 anomaly event 정의"@ko .
+    rdfs:label "anomaly event 정의"@ko .
 
 cms:anomalyPriority a owl:DatatypeProperty ;
     rdfs:label "이상탐지 검토 우선순위"@ko ;
@@ -1965,7 +1965,7 @@ cmsres:view_redundancy_graph a owl:NamedIndividual,
     cms:sourcePath "docs/specs/meter_metadata.md" .
 
 cms:Feature a owl:Class ;
-    rdfs:label "향후 feature 정의"@ko .
+    rdfs:label "feature 정의"@ko .
 
 cmsres:building_WeatherStation a owl:NamedIndividual,
         cms:Building ;
@@ -3115,7 +3115,7 @@ cmsres:group_server_power a owl:NamedIndividual,
 
 cmsres:view_cms_meter_system_overview a owl:NamedIndividual,
         cms:VisualizationView ;
-    rdfs:label "ems_meter_system_overview" ;
+    rdfs:label "cms_meter_system_overview" ;
     cms:sourcePath "docs/specs/meter_metadata.md" .
 
 cmsres:view_meter_inventory_graph a owl:NamedIndividual,
@@ -3201,7 +3201,7 @@ cmsres:domain_electricity a owl:NamedIndividual,
 
 cmsres:view_cms_meter_system_all a owl:NamedIndividual,
         cms:VisualizationView ;
-    rdfs:label "ems_meter_system_all" ;
+    rdfs:label "cms_meter_system_all" ;
     cms:sourcePath "docs/specs/meter_metadata.md" .
 
 cmsres:doc_nature_scientific_data_2025 a owl:NamedIndividual,

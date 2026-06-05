@@ -11,10 +11,15 @@ POSTGRES_DATABASE = "cms"
 POSTGRES_SCHEMA_PREFIX = "cms_scratch_"
 MONGO_COLLECTION_PREFIX = "test_measurement_raw_"
 ALLOWED_POSTGRES_TABLES = (
+    "measurement_event",
     "measurement_1min",
     "measurement_5min",
     "measurement_15min",
     "measurement_1h",
+    "bucket_queue",
+    "peak_feature_15min",
+    "peak_input_15min",
+    "promotion_check",
     "latency_events",
     "qa_metrics",
 )

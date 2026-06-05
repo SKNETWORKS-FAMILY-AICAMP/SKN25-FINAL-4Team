@@ -18,5 +18,28 @@ services:
     working_dir: /workspace
     command: sleep infinity
 
+  grafana:
+    image: grafana/grafana:11.5.2
+    container_name: cms-grafana
+    profiles:
+      - observability
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GRAFANA_POSTGRES_HOST: ${GRAFANA_POSTGRES_HOST:-cms-postgres}
+      GRAFANA_POSTGRES_PORT: ${GRAFANA_POSTGRES_PORT:-5432}
+      GRAFANA_POSTGRES_DB: ${GRAFANA_POSTGRES_DB:-cms}
+      GRAFANA_POSTGRES_USER: ${GRAFANA_POSTGRES_USER:-cms}
+      GRAFANA_POSTGRES_SSLMODE: ${GRAFANA_POSTGRES_SSLMODE:-disable}
+      GRAFANA_POSTGRES_PASSWORD: ${GRAFANA_POSTGRES_PASSWORD:-}
+      GRAFANA_DISCORD_WEBHOOK_URL: ${GRAFANA_DISCORD_WEBHOOK_URL:-}
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - cms_grafana_data:/var/lib/grafana
+    restart: unless-stopped
+
 volumes:
   cms_pip_cache:
+  cms_grafana_data:
