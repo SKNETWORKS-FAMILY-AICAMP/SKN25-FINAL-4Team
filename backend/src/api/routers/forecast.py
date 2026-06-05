@@ -5,11 +5,13 @@ from pathlib import Path
 from fastapi import APIRouter, Query
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-sys.path.insert(0, str(Path(__file__).resolve().parents[4]))  # project root
+# /app (도커) 또는 프로젝트 루트 (로컬) — ml/ 패키지 접근용
+_APP_ROOT = Path(__file__).resolve().parents[3]  # /app/src/../.. → /app
+sys.path.insert(0, str(_APP_ROOT))
 
 router = APIRouter(prefix="/forecast", tags=["forecast"])
 
-_PROJECT_ROOT = Path(__file__).resolve().parents[4]
+_PROJECT_ROOT = _APP_ROOT
 _PROCS: dict[str, "subprocess.Popen"] = {}
 
 # ── 모델 레지스트리 ──────────────────────────────────────────────────

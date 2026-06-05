@@ -15,7 +15,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))  # project root (ml/ 접근용)
+# /app (도커) 또는 프로젝트 루트 (로컬) — ml/ 패키지 접근용
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from domain_knowledge import KFEMS_STANDARD_TERMS, FORECAST_RECOMMENDATION_PROMPT
 
