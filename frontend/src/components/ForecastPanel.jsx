@@ -1,18 +1,59 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import {
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  CartesianGrid, Legend,
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine,
 } from 'recharts'
-import { getForecastModels, getForecastStatus, trainModel, getForecastCompare, getForecastBacktest } from '../api/client'
+import { getForecastModels, getForecastStatus, trainModel, predictModel } from '../api/client'
 
-// 데이터 분할 (4/1/1):
-//   학습: 2018-01-01 ~ 2021-12-31 (4년)
-//   검증: 2022-01-01 ~ 2022-12-31 (1년) — 백테스트 대상
-//   시뮬: 2023-01-01 ~ 2023-12-31 (1년) — 실시간 모사
-const DATA_END    = '2023-01-01'   // 컨텍스트 끝(검증 끝 직후) — sim 시각이 있으면 자동 덮어씀
-const DATA_START  = '2022-10-01'   // 최근 컨텍스트 (3개월)
-const TRAIN_START = '2018-01-01'
-const TRAIN_END   = '2021-12-31'   // 학습은 4년치만
+// 계량기 목록 (v84 파이프라인 대상 45개 — 선택 UI용 그룹화)
+const METER_GROUPS = [
+  {
+    label: '전기 — 대표 계량기',
+    meters: [
+      { urn: 'H2.Z66',   desc: 'C1 클러스터 대표' },
+      { urn: 'H2.ZE66',  desc: 'C2 클러스터 대표' },
+      { urn: 'H1.Z12',   desc: 'C3 클러스터 대표' },
+      { urn: 'H4.Z51',   desc: 'C4 클러스터 대표' },
+      { urn: 'H2.T.Z31', desc: 'C5 클러스터 대표' },
+      { urn: 'H1.Z13',   desc: 'C6 클러스터 대표' },
+      { urn: 'H1.Z21',   desc: 'C7 클러스터 대표' },
+      { urn: 'H1.Z24',   desc: 'C8 클러스터 대표' },
+      { urn: 'H2.Z64',   desc: 'C9 클러스터 대표' },
+      { urn: 'H3.Z43',   desc: 'C10 조건부 대표' },
+      { urn: 'H3.Z44',   desc: 'C11 조건부 대표' },
+      { urn: 'H3.Z48',   desc: 'C12 클러스터 대표' },
+      { urn: 'H4.Z50',   desc: 'C13 클러스터 대표' },
+      { urn: 'V.Z84',    desc: 'P1 생산 클러스터 대표' },
+      { urn: 'H1.Z20',   desc: 'P2 생산 클러스터 대표' },
+    ],
+  },
+  {
+    label: '전기 — 독립 계량기',
+    meters: [
+      { urn: 'H1.Z10' }, { urn: 'H1.Z16' }, { urn: 'H1.Z18' }, { urn: 'H1.Z19' },
+      { urn: 'H1.Z23' }, { urn: 'H1.Z26' }, { urn: 'H1.Z27' }, { urn: 'H2.Z61' },
+      { urn: 'H2.Z62' }, { urn: 'H2.Z63' }, { urn: 'H2.Z65' }, { urn: 'H2.Z68' },
+      { urn: 'H2.Z69' }, { urn: 'H2.ZE65' }, { urn: 'H2.ZE74' }, { urn: 'H3.Z42' },
+      { urn: 'H3.Z45' }, { urn: 'H3.Z46' }, { urn: 'H3.Z47' }, { urn: 'H3.Z71' },
+      { urn: 'H2.Z311' },
+    ],
+  },
+  {
+    label: '열/냉방',
+    meters: [
+      { urn: 'V.K21',  desc: '냉방 통합 (CM1+2+3)' },
+      { urn: 'H1.K11', desc: '실험실 HVAC 3/5' },
+      { urn: 'H1.K12', desc: '실험실 HVAC 1/2' },
+      { urn: 'H1.K14', desc: '실험실→오피스' },
+      { urn: 'H1.K15', desc: '냉방' },
+      { urn: 'H1.K16', desc: '서버룸 O1' },
+      { urn: 'H2.K21', desc: '오피스 HVAC' },
+      { urn: 'H1.W11', desc: '총 열 생산' },
+      { urn: 'H1.W12', desc: 'CHP 열 생산' },
+    ],
+  },
+]
+
+const ALL_METERS = METER_GROUPS.flatMap(g => g.meters)
 
 const tooltip = {
   contentStyle: { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 },
@@ -20,13 +61,15 @@ const tooltip = {
 }
 
 function StatusBadge({ status }) {
-  const isRunning  = status === 'running' || status?.startsWith('running:')
-  const epochMatch = status?.match(/running: epoch (\d+)\/(\d+)/)
-  const color = status === 'done' ? '#3fb950' : isRunning ? '#d29922' : status?.startsWith('error') ? '#f85149' : 'var(--text4)'
+  const isRunning = status === 'running' || status?.startsWith('running')
+  const color = status === 'done' ? '#3fb950'
+    : isRunning ? '#d29922'
+    : status?.startsWith('error') ? '#f85149'
+    : 'var(--text4)'
   const label = status === 'done' ? '학습 완료'
-    : epochMatch ? `학습 중 ${epochMatch[1]}/${epochMatch[2]} 에폭`
-    : isRunning   ? '학습 중...'
-    : status?.startsWith('error') ? '오류' : '미학습'
+    : isRunning ? '학습 중...'
+    : status?.startsWith('error') ? '오류'
+    : '미학습'
   return (
     <span style={{ fontSize: 11, padding: '2px 7px', borderRadius: 4, background: color + '22', color, border: `1px solid ${color}44` }}>
       {label}
@@ -35,331 +78,187 @@ function StatusBadge({ status }) {
 }
 
 export default function ForecastPanel() {
-  const [modelDefs, setModelDefs] = useState([])   // /forecast/models 에서 로드
-  const [tab,       setTab]       = useState('forecast')
-  const [status,    setStatus]    = useState({})
-  const [hours,     setHours]     = useState(24)
-  const [models,    setModels]    = useState({})   // 토글: name → bool
-
-  const [forecast,  setForecast]  = useState(null)
-  const [loading,   setLoading]   = useState(false)
-  const [error,     setError]     = useState('')
-  const [btFreq,    setBtFreq]    = useState('W')
-  const [btData,    setBtData]    = useState(null)
-  const [btLoading, setBtLoading] = useState(false)
-  const [training,  setTraining]  = useState(false)
-  const [trainMsg,  setTrainMsg]  = useState('')
-
-  // 파생 lookup — modelDefs 변경 시 자동 갱신
-  const modelColor     = useMemo(() => Object.fromEntries(modelDefs.map(m => [m.name, m.color])),  [modelDefs])
-  const modelLabel     = useMemo(() => Object.fromEntries(modelDefs.map(m => [m.name, m.label])), [modelDefs])
-  const trainableNames = useMemo(() => modelDefs.filter(m => m.trainable).map(m => m.name),       [modelDefs])
+  const [modelDef,   setModelDef]   = useState(null)
+  const [status,     setStatus]     = useState({})   // { 'v84-1h': 'idle'|'running'|'done', 'v84-3h': ... }
+  const [horizon,    setHorizon]    = useState(1)
+  const [meterUrn,   setMeterUrn]   = useState('H2.Z66')
+  const [forecast,   setForecast]   = useState(null)
+  const [loading,    setLoading]    = useState(false)
+  const [error,      setError]      = useState('')
+  const [training,   setTraining]   = useState(false)
+  const [trainMsg,   setTrainMsg]   = useState('')
 
   // 모델 메타데이터 1회 로드
   useEffect(() => {
     getForecastModels()
       .then(r => {
-        const defs = r.data.models ?? []
-        setModelDefs(defs)
-        setModels(Object.fromEntries(defs.map(m => [m.name, true])))
-        setStatus(prev => ({
-          ...Object.fromEntries(defs.map(m => [m.name, m.status ?? 'idle'])),
-          ...prev,
-        }))
+        const m = (r.data.models ?? []).find(m => m.name === 'v84-ensemble')
+        if (m) setModelDef(m)
       })
       .catch(() => {})
   }, [])
 
-  // max_hours 제약에 따라 토글 자동 조정
+  // 학습 상태 폴링 (10s)
   useEffect(() => {
-    if (!modelDefs.length) return
-    setModels(prev => {
-      const next = { ...prev }
-      for (const m of modelDefs) {
-        if (m.max_hours != null) next[m.name] = hours <= m.max_hours
-      }
-      return next
-    })
-  }, [hours, modelDefs])
-
-  // 학습 상태 폴링 (3s)
-  useEffect(() => {
-    const poll = () => getForecastStatus().then(r => setStatus(r.data.status ?? {})).catch(() => {})
+    const poll = () =>
+      getForecastStatus()
+        .then(r => setStatus(r.data.status ?? {}))
+        .catch(() => {})
     poll()
     const id = setInterval(poll, 10000)
     return () => clearInterval(id)
   }, [])
 
-  const trainAll = async () => {
+  const currentStatus = status[`v84-${horizon}h`] ?? 'idle'
+  const isAvailable   = currentStatus === 'done' || modelDef?.available
+
+  const handleTrain = async () => {
     setTraining(true); setTrainMsg('')
     try {
-      const results = await Promise.allSettled(
-        trainableNames.map(m => trainModel(m, TRAIN_START, TRAIN_END, hours))
-      )
-      const failed = results
-        .map((r, i) => r.status === 'rejected' ? trainableNames[i] : null)
-        .filter(Boolean)
-      if (failed.length > 0) {
-        setTrainMsg(`학습 요청 실패: ${failed.join(', ')}`)
-      } else {
-        setTrainMsg('학습이 시작되었습니다. 완료까지 수 분~20분 소요됩니다.')
-        setStatus(s => ({ ...s, ...Object.fromEntries(trainableNames.map(m => [m, 'running'])) }))
-      }
+      await trainModel('v84-ensemble', horizon)
+      setTrainMsg(`${horizon}h 학습이 시작되었습니다. 완료까지 수십 분 소요됩니다.`)
+      setStatus(s => ({ ...s, [`v84-${horizon}h`]: 'running' }))
     } catch (e) {
-      setTrainMsg('학습 요청 중 오류: ' + (e.message ?? ''))
+      setTrainMsg('학습 요청 실패: ' + (e.message ?? ''))
     } finally {
       setTraining(false)
     }
   }
 
-  const runForecast = async () => {
+  const handlePredict = async () => {
     setLoading(true); setError(''); setForecast(null)
     try {
-      const r = await getForecastCompare(hours, DATA_START, DATA_END)
-      const merged = {}
-      for (const [model, rows] of Object.entries(r.data.models ?? {})) {
-        if (Array.isArray(rows)) {
-          rows.forEach(row => {
-            const key = row.ts?.slice(0, 16)
-            if (!merged[key]) merged[key] = { ts: key }
-            merged[key][model] = row.yhat
-          })
-        }
-      }
-      setForecast({
-        data:   Object.values(merged).sort((a, b) => a.ts > b.ts ? 1 : -1),
-        errors: Object.fromEntries(
-          Object.entries(r.data.models ?? {}).filter(([, v]) => v?.error).map(([k, v]) => [k, v.error])
-        ),
-      })
+      const r = await predictModel('v84-ensemble', meterUrn, horizon)
+      const rows = r.data.forecast ?? []
+      setForecast({ data: rows, meter: r.data.meter_urn, horizon: r.data.horizon })
     } catch (e) {
-      setError('예측 실패: ' + (e.message ?? ''))
+      const msg = e.response?.data?.error ?? e.message ?? '예측 실패'
+      setError(msg)
     } finally {
       setLoading(false)
     }
   }
 
-  const runBacktest = async () => {
-    setBtLoading(true); setBtData(null)
-    try {
-      const r = await getForecastBacktest(undefined, undefined, btFreq)
-      setBtData(r.data)
-    } catch (e) {
-      setBtData({ error: e.message })
-    } finally {
-      setBtLoading(false)
-    }
-  }
-
-  const activeModels = Object.entries(models).filter(([, v]) => v).map(([k]) => k)
-  const allDone      = trainableNames.length > 0 && trainableNames.every(m => status[m] === 'done')
+  const meterDesc = ALL_METERS.find(m => m.urn === meterUrn)?.desc ?? ''
 
   return (
     <div style={s.wrap}>
+      {/* ── 헤더 ── */}
       <div style={s.header}>
-        <span style={s.title}>계통 전력 소비 예측</span>
-        <span style={s.sub}>
-          grid_P (kW) · {modelDefs.map(m => m.label).join(' / ') || '로딩 중...'}
-        </span>
-      </div>
-
-      <div style={s.tabRow}>
-        {[['forecast', '🔮 미래 예측'], ['backtest', '📊 백테스트 (실제 vs 예측)']].map(([id, label]) => (
-          <button key={id} style={{ ...s.tabBtn, ...(tab === id ? s.tabActive : {}) }}
-            onClick={() => setTab(id)}>{label}</button>
-        ))}
+        <span style={s.title}>계량기별 전력 예측</span>
+        <span style={s.sub}>v84 앙상블 — LSTM × 6 + CatBoost + LightGBM + Ridge + Naive</span>
       </div>
 
       <div style={s.body}>
 
-        {/* ── 백테스트 탭 ── */}
-        {tab === 'backtest' && (<>
-          <div style={s.btDesc}>
-            <b style={{ color: 'var(--text)' }}>2018~2021 학습 → 2022 검증</b>하여 실제 전력 수요와 비교합니다.
-            (2023년은 실시간 시뮬레이션 전용 구간 — 학습/검증에서 제외).
+        {/* ── 모델 상태 카드 ── */}
+        <div style={s.cards}>
+          {[1, 3].map(h => {
+            const st = status[`v84-${h}h`] ?? 'idle'
+            return (
+              <div key={h} style={{ ...s.card, ...(horizon === h ? s.cardActive : {}) }}
+                onClick={() => setHorizon(h)}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#a371f7' }}>{h}시간 예측</span>
+                  <StatusBadge status={st} />
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text4)' }}>
+                  t+1{h > 1 ? ` ~ t+${h}` : ''} (1h 간격) · 45개 계량기
+                </div>
+                {modelDef?.badges?.map(b => (
+                  <span key={b.text} style={{ display: 'inline-block', marginTop: 6, fontSize: 10, color: b.color, background: b.bg, borderRadius: 4, padding: '2px 6px' }}>
+                    {b.text}
+                  </span>
+                ))}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* ── 컨트롤 ── */}
+        <div style={s.controls}>
+          {/* 계량기 선택 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 12, color: 'var(--text3)', whiteSpace: 'nowrap' }}>계량기:</span>
+            <select value={meterUrn} onChange={e => setMeterUrn(e.target.value)} style={s.select}>
+              {METER_GROUPS.map(g => (
+                <optgroup key={g.label} label={g.label}>
+                  {g.meters.map(m => (
+                    <option key={m.urn} value={m.urn}>
+                      {m.urn}{m.desc ? ` — ${m.desc}` : ''}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 12, color: 'var(--text3)' }}>집계 단위:</span>
-            {[['D', '일별'], ['W', '주별'], ['ME', '월별']].map(([v, l]) => (
-              <button key={v} style={{ ...s.hBtn, ...(btFreq === v ? s.hBtnActive : {}) }}
-                onClick={() => setBtFreq(v)}>{l}</button>
-            ))}
-            <button style={{ ...s.predictBtn, marginLeft: 'auto', opacity: btLoading ? 0.5 : 1 }}
-              onClick={runBacktest} disabled={btLoading}>
-              {btLoading ? '분석 중... (2~3분 소요)' : '백테스트 실행'}
+
+          {/* 버튼 */}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button style={{ ...s.trainBtn, opacity: training ? 0.6 : 1 }}
+              onClick={handleTrain} disabled={training}>
+              {training ? '요청 중...' : currentStatus === 'done' ? `${horizon}h 재학습` : `${horizon}h 학습 시작`}
+            </button>
+            <button style={{ ...s.predictBtn, opacity: loading || !isAvailable ? 0.5 : 1 }}
+              onClick={handlePredict} disabled={loading || !isAvailable}>
+              {loading ? '예측 중...' : !isAvailable ? '학습 필요' : '예측 실행'}
             </button>
           </div>
+        </div>
 
-          {btData?.mae_kw && (
-            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-              {Object.entries(btData.mae_kw).map(([m, mae]) => (
-                <div key={m} style={s.maeCard}>
-                  <div style={{ fontSize: 11, color: 'var(--text3)' }}>{modelLabel[m] ?? m} MAE</div>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: modelColor[m] ?? 'var(--text)' }}>
-                    {mae} <span style={{ fontSize: 12 }}>kW</span>
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--text4)' }}>평균 절대 오차</div>
-                </div>
-              ))}
-            </div>
-          )}
+        {/* 안내 메시지 */}
+        {trainMsg && (
+          <div style={{ fontSize: 12, padding: '8px 12px', borderRadius: 8,
+            ...(trainMsg.includes('실패') || trainMsg.includes('오류')
+              ? { background: '#fee2e2', border: '1px solid #f85149', color: '#f85149' }
+              : { background: '#dcfce7', border: '1px solid #16a34a', color: '#16a34a' }) }}>
+            {trainMsg}
+          </div>
+        )}
 
-          {btData?.data?.length > 0 && (
-            <div style={s.chartBox}>
-              <div style={s.chartTitle}>
-                실제 vs 예측 — {btData.test_period} ({btFreq === 'D' ? '일별' : btFreq === 'W' ? '주별' : '월별'} 평균 kW)
-              </div>
-              <ResponsiveContainer width="100%" height={320}>
-                <LineChart data={btData.data} margin={{ top: 8, right: 20, left: -10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e7ebf1"/>
-                  <XAxis dataKey="ts" tick={{ fontSize: 10, fill: '#5a6675' }} tickLine={false}
-                    interval={Math.floor(btData.data.length / 10)}
-                    tickFormatter={v => v?.slice(2, 10)}/>
-                  <YAxis tick={{ fontSize: 10, fill: '#5a6675' }} tickLine={false} axisLine={false}
-                    tickFormatter={v => `${v}kW`}/>
-                  <Tooltip {...tooltip}
-                    formatter={(v, n) => [`${v} kW`, n === 'actual' ? '실제값' : modelLabel[n] ?? n]}/>
-                  <Legend wrapperStyle={{ fontSize: 12 }}
-                    formatter={v => v === 'actual'
-                      ? <span style={{ color: 'var(--text)' }}>실제값</span>
-                      : <span style={{ color: modelColor[v] ?? 'var(--text3)' }}>{modelLabel[v] ?? v}</span>}/>
-                  <Line type="monotone" dataKey="actual" stroke="#1b2433" strokeWidth={2} dot={false} connectNulls/>
-                  {Object.keys(btData.mae_kw ?? {}).map((m, i) => (
-                    <Line key={m} type="monotone" dataKey={m}
-                      stroke={modelColor[m] ?? '#5a6675'} strokeWidth={1.5} dot={false}
-                      strokeDasharray={i % 2 === 0 ? '4 2' : '2 3'} connectNulls/>
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          )}
+        {error && <div style={s.errBox}>{error}</div>}
 
-          {btData?.errors && Object.keys(btData.errors).length > 0 && (
-            <div style={s.errBox}>
-              {Object.entries(btData.errors).map(([m, e]) => (
-                <div key={m}><b>{modelLabel[m] ?? m}</b>: {e}</div>
-              ))}
+        {/* ── 예측 차트 ── */}
+        {forecast?.data?.length > 0 && (
+          <div style={s.chartBox}>
+            <div style={s.chartTitle}>
+              {forecast.meter} — 향후 {forecast.horizon}시간 예측 (W)
+              {meterDesc && <span style={{ fontWeight: 400, color: 'var(--text3)', marginLeft: 8 }}>{meterDesc}</span>}
             </div>
-          )}
-        </>)}
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={forecast.data} margin={{ top: 8, right: 20, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" />
+                <XAxis dataKey="ts" tick={{ fontSize: 10, fill: '#5a6675' }} tickLine={false}
+                  tickFormatter={v => v?.slice(11, 16)} />
+                <YAxis tick={{ fontSize: 10, fill: '#5a6675' }} tickLine={false} axisLine={false}
+                  tickFormatter={v => `${v.toFixed(1)}kW`} />
+                <Tooltip {...tooltip}
+                  labelFormatter={v => v}
+                  formatter={(v) => [`${v.toFixed(3)} kW`, '예측값']} />
+                <Line type="monotone" dataKey="yhat_kw" name="yhat_kw"
+                  stroke="#a371f7" strokeWidth={2} dot={{ r: 4, fill: '#a371f7' }} connectNulls />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
 
-        {/* ── 미래 예측 탭 ── */}
-        {tab === 'forecast' && (<>
-          {/* 모델 상태 카드 — 레지스트리에서 동적 렌더링 */}
-          {modelDefs.length > 0 && (
-            <div style={{ ...s.cards, gridTemplateColumns: `repeat(${modelDefs.length}, 1fr)` }}>
-              {modelDefs.map(m => (
-                <div key={m.name} style={s.card}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: m.color }}>{m.label}</span>
-                    <StatusBadge status={status[m.name] ?? m.status}/>
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--text4)' }}>{m.description}</div>
-                  <div style={{ display: 'flex', gap: 4, marginTop: 6, flexWrap: 'wrap' }}>
-                    {(m.badges ?? []).map(b => (
-                      <span key={b.text} style={{ fontSize: 10, color: b.color, background: b.bg, borderRadius: 4, padding: '2px 6px' }}>
-                        {b.text}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
+        {/* 미학습 안내 */}
+        {!isAvailable && !forecast && (
+          <div style={s.guide}>
+            <div style={{ fontSize: 32, marginBottom: 10 }}>🤖</div>
+            <div style={{ fontSize: 14, color: 'var(--text)', marginBottom: 6 }}>
+              {horizon}h 모델 학습이 필요합니다
             </div>
-          )}
-
-          {/* 컨트롤 */}
-          <div style={s.controls}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 12, color: 'var(--text3)' }}>예측 시간:</span>
-              {[24, 48, 72, 168].map(h => (
-                <button key={h} style={{ ...s.hBtn, ...(hours === h ? s.hBtnActive : {}) }}
-                  onClick={() => setHours(h)}>
-                  {h === 168 ? '7일' : `${h}h`}
-                </button>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button style={{ ...s.trainBtn, opacity: training ? 0.6 : 1 }}
-                onClick={trainAll} disabled={training || !trainableNames.length}>
-                {training ? '요청 중...' : allDone ? '재학습' : '모델 학습 시작'}
-              </button>
-              <button style={{ ...s.predictBtn, opacity: loading ? 0.5 : 1 }}
-                onClick={runForecast} disabled={loading}>
-                {loading ? '예측 중...' : '예측 실행'}
-              </button>
+            <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.7 }}>
+              45개 계량기 × LSTM 6종 + CatBoost + LightGBM + Ridge + Naive<br />
+              학습 완료 후 계량기별 1~3시간 예측이 가능합니다.<br />
+              <code style={{ background: 'var(--line)', padding: '2px 6px', borderRadius: 4, fontSize: 11 }}>
+                .venv-train/bin/python -m ml.pipeline.train --horizon {horizon}
+              </code>
             </div>
           </div>
+        )}
 
-          {trainMsg && (
-            <div style={{ fontSize: 12, padding: '8px 12px', borderRadius: 8,
-              ...(trainMsg.includes('실패') || trainMsg.includes('오류')
-                ? { background: '#fee2e2', border: '1px solid #f85149', color: '#f85149' }
-                : { background: '#dcfce7', border: '1px solid #16a34a', color: '#16a34a' }) }}>
-              {trainMsg}
-            </div>
-          )}
-
-          {/* 모델 선택 토글 */}
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-            {modelDefs.map(m => {
-              const disabled = m.max_hours != null && hours > m.max_hours
-              return (
-                <label key={m.name} style={{ display: 'flex', alignItems: 'center', gap: 5, cursor: disabled ? 'not-allowed' : 'pointer', fontSize: 12, opacity: disabled ? 0.4 : 1 }}>
-                  <input type="checkbox" checked={models[m.name] ?? true} disabled={disabled}
-                    onChange={e => setModels(p => ({ ...p, [m.name]: e.target.checked }))}/>
-                  <span style={{ color: m.color }}>{m.label}</span>
-                  {disabled && <span style={{ fontSize: 10, color: 'var(--text3)' }}>(단기 전용)</span>}
-                </label>
-              )
-            })}
-          </div>
-
-          {error && <div style={s.errBox}>{error}</div>}
-
-          {/* 예측 차트 */}
-          {forecast?.data?.length > 0 && (
-            <div style={s.chartBox}>
-              <div style={s.chartTitle}>계통 전력 소비 예측 — 향후 {hours >= 168 ? '7일' : `${hours}시간`} (kW)</div>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={forecast.data} margin={{ top: 8, right: 20, left: -10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e7ebf1"/>
-                  <XAxis dataKey="ts" tick={{ fontSize: 10, fill: '#5a6675' }} tickLine={false}
-                    tickFormatter={v => v?.slice(5, 16)}
-                    interval={Math.floor(forecast.data.length / 8)}/>
-                  <YAxis tick={{ fontSize: 10, fill: '#5a6675' }} tickLine={false} axisLine={false}
-                    tickFormatter={v => `${v}kW`}/>
-                  <Tooltip {...tooltip} labelFormatter={v => v?.slice(0, 16)}
-                    formatter={(v, n) => [`${v} kW`, modelLabel[n] ?? n]}/>
-                  <Legend wrapperStyle={{ fontSize: 12 }}
-                    formatter={v => <span style={{ color: modelColor[v] ?? 'var(--text3)' }}>{modelLabel[v] ?? v}</span>}/>
-                  {activeModels.map(m => (
-                    <Line key={m} type="monotone" dataKey={m} name={m}
-                      stroke={modelColor[m] ?? '#5a6675'} strokeWidth={2} dot={false} connectNulls/>
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          )}
-
-          {forecast?.errors && Object.keys(forecast.errors).length > 0 && (
-            <div style={s.errBox}>
-              {Object.entries(forecast.errors).map(([m, e]) => (
-                <div key={m}><b>{modelLabel[m] ?? m}</b>: {e}</div>
-              ))}
-            </div>
-          )}
-
-          {!allDone && !forecast && modelDefs.length > 0 && (
-            <div style={s.guide}>
-              <div style={{ fontSize: 32, marginBottom: 10 }}>🤖</div>
-              <div style={{ fontSize: 14, color: 'var(--text)', marginBottom: 6 }}>모델 학습이 필요합니다</div>
-              <div style={{ fontSize: 12, color: 'var(--text3)' }}>
-                {trainableNames.map(m => modelLabel[m]).join(' · ')} {trainableNames.length}개 모델을 4년(2018~2021) 데이터로 학습합니다.<br/>
-                Prophet·XGBoost는 수 분, LSTM은 약 10~20분 소요됩니다.
-              </div>
-            </div>
-          )}
-        </>)}
       </div>
     </div>
   )
@@ -370,19 +269,14 @@ const s = {
   header:     { padding: '16px 24px 12px', borderBottom: '1px solid var(--line)', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 },
   title:      { fontWeight: 700, fontSize: 15, color: 'var(--text)' },
   sub:        { fontSize: 12, color: 'var(--text3)' },
-  tabRow:     { display: 'flex', gap: 4, padding: '8px 24px 0', borderBottom: '1px solid var(--line)', flexShrink: 0 },
-  tabBtn:     { padding: '7px 16px', background: 'none', border: 'none', borderBottom: '2px solid transparent', color: 'var(--text3)', fontSize: 13, cursor: 'pointer' },
-  tabActive:  { color: '#2563eb', borderBottomColor: '#2563eb', fontWeight: 600 },
   body:       { flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 },
-  btDesc:     { fontSize: 13, color: 'var(--text3)', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 8, padding: '10px 14px' },
-  maeCard:    { background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 10, padding: '12px 16px', minWidth: 140 },
-  cards:      { display: 'grid', gap: 12 },
-  card:       { background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 10, padding: '14px 16px' },
+  cards:      { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 },
+  card:       { background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 10, padding: '14px 16px', cursor: 'pointer', transition: 'border-color .15s' },
+  cardActive: { borderColor: '#a371f7', boxShadow: '0 0 0 2px #a371f722' },
   controls:   { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 },
-  hBtn:       { padding: '4px 12px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text3)', fontSize: 12, cursor: 'pointer' },
-  hBtnActive: { borderColor: '#2563eb', color: '#2563eb', background: '#2563eb22' },
+  select:     { padding: '5px 10px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text)', fontSize: 12, cursor: 'pointer', maxWidth: 280 },
   trainBtn:   { padding: '7px 16px', background: 'var(--line)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', fontWeight: 600, cursor: 'pointer', fontSize: 13 },
-  predictBtn: { padding: '7px 20px', background: '#2563eb', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 13 },
+  predictBtn: { padding: '7px 20px', background: '#a371f7', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 13 },
   chartBox:   { background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 10, padding: '16px 18px' },
   chartTitle: { fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 },
   errBox:     { background: '#fee2e2', border: '1px solid #f85149', borderRadius: 8, padding: '10px 14px', fontSize: 12, color: '#f85149' },

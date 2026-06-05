@@ -94,11 +94,7 @@ export const testLlm            = (body = {}) => api.post('/settings/test-llm', 
 
 export const getForecastModels  = () => api.get('/forecast/models')
 export const getForecastStatus  = () => api.get('/forecast/train/status')
-export const trainModel         = (model, start = '2018-01-01', end = '2024-01-01', horizon = 24) =>
-  api.post(`/forecast/train/${model}`, null, { params: { start, end, horizon } })
-export const getForecastCompare = (hours = 24, start = '2023-01-01', end = '2024-01-01') =>
-  api.get('/forecast/compare', { params: { hours, start, end } })
-export const getForecastBacktest = (trainEnd = '2020-12-31', testEnd = '2023-12-31', freq = 'W') =>
-  api.get('/forecast/backtest', { params: { train_end: trainEnd, test_end: testEnd, freq }, timeout: 120000 })
-export const predictModel       = (model, hours = 24, start = '2023-01-01', end = '2024-01-01') =>
-  api.get(`/forecast/predict/${model}`, { params: { hours, start, end } })
+export const trainModel         = (model, horizon = 1, meters = null) =>
+  api.post(`/forecast/train/${model}`, null, { params: { horizon, ...(meters ? { meters } : {}) } })
+export const predictModel       = (model, meterUrn, horizon = 1) =>
+  api.get(`/forecast/predict/${model}`, { params: { meter_urn: meterUrn, horizon } })
