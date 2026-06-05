@@ -16,6 +16,13 @@ from cms.data.postgres_event_writer import (
     make_measurement_event_insert_command,
 )
 
+_DUPLICATE_CONSTRAINTS = frozenset(
+    {
+        "measurement_event_business_idempotency_uq",
+        "measurement_event_kafka_offset_uq",
+    }
+)
+
 
 @dataclass(frozen=True)
 class PsycopgConnectionConfig:
@@ -55,6 +62,8 @@ class PsycopgPostgresEventWriter:
                     rows_affected = int(cur.rowcount or 0)
                 conn.commit()
         except Exception as exc:  # noqa: BLE001 - writer maps runtime DB errors to retry/no-commit result.
+            if _is_duplicate_conflict(exc):
+                return PostgresWriteResult(succeeded=True, duplicate_event=True, rows_affected=0)
             return PostgresWriteResult(
                 succeeded=False,
                 duplicate_event=False,
@@ -78,6 +87,14 @@ def load_postgres_config_from_env(env: dict[str, str] | None = None) -> PsycopgC
 
 def create_psycopg_event_writer(env: dict[str, str] | None = None) -> PsycopgPostgresEventWriter:
     return PsycopgPostgresEventWriter(config=load_postgres_config_from_env(env))
+
+
+def _is_duplicate_conflict(exc: Exception) -> bool:
+    constraint_name = getattr(getattr(exc, "diag", None), "constraint_name", None)
+    if constraint_name in _DUPLICATE_CONSTRAINTS:
+        return True
+    message = str(exc)
+    return any(name in message for name in _DUPLICATE_CONSTRAINTS)
 
 
 def _redact(message: str, secret: str | None) -> str:

@@ -109,6 +109,48 @@ def test_runtime_postgres_writer_maps_zero_rowcount_to_duplicate(monkeypatch: py
     assert result.rows_affected == 0
 
 
+def test_runtime_postgres_writer_maps_business_unique_violation_to_duplicate(monkeypatch: pytest.MonkeyPatch) -> None:
+    class FakeDiag:
+        constraint_name = "measurement_event_business_idempotency_uq"
+
+    class FakeUniqueViolation(Exception):
+        diag = FakeDiag()
+
+    class FakeCursor:
+        def execute(self, sql: str, params: dict[str, object]) -> None:
+            raise FakeUniqueViolation("duplicate key value violates unique constraint")
+
+        def __enter__(self) -> FakeCursor:
+            return self
+
+        def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
+            pass
+
+    class FakeConnection:
+        def cursor(self) -> FakeCursor:
+            return FakeCursor()
+
+        def __enter__(self) -> FakeConnection:
+            return self
+
+        def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
+            pass
+
+    module = ModuleType("psycopg")
+    module.connect = lambda **kwargs: FakeConnection()  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "psycopg", module)
+
+    from cms.data.runtime_postgres import create_psycopg_event_writer
+
+    writer = create_psycopg_event_writer({"POSTGRES_HOST": "172.31.47.236"})
+    result = writer.insert_measurement_event({"target_table": "live.measurement_event", "event_id": "event-1"})
+
+    assert result.succeeded is True
+    assert result.duplicate_event is True
+    assert result.rows_affected == 0
+    assert result.error is None
+
+
 def test_runtime_postgres_writer_redacts_errors(monkeypatch: pytest.MonkeyPatch) -> None:
     class FakeConnection:
         def __enter__(self) -> FakeConnection:
