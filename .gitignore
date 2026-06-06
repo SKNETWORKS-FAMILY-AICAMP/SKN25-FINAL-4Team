@@ -36,6 +36,20 @@ env/
 *.onnx
 *.joblib
 !artifacts/import_pmax_v29_60min/**/*.joblib
+artifacts/import_pmax_v29_60min_candidate*/
+artifacts/import_pmax_v29_60min_legacy*/
+artifacts/import_pmax_v29_60min/**/candidate_metrics.csv
+artifacts/import_pmax_v29_60min/**/dataset_summary.csv
+artifacts/import_pmax_v29_60min/**/actual_vs_predicted.png
+artifacts/import_pmax_v29_60min/**/peak_focus.png
+artifacts/import_pmax_v29_60min/**/residual_histogram.png
+artifacts/import_pmax_v29_60min/**/metrics.csv
+artifacts/import_pmax_v29_60min/**/peak_metrics.csv
+artifacts/import_pmax_v29_60min/**/report.html
+artifacts/import_pmax_v29_60min/**/test_predictions.csv
+artifacts/import_pmax_v29_60min/**/validation_predictions.csv
+artifacts/import_pmax_v29_60min/**/v29/README.md
+artifacts/import_pmax_v29_60min/pmax_model_comparison_*
 
 # MLflow
 mlflow/

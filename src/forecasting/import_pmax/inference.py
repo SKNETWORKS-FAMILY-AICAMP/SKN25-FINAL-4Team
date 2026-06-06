@@ -37,6 +37,9 @@ class InferenceWindow:
     input_end_ts: pd.Timestamp
     last_import_p_max: float
     n_input_rows: int
+    imputed_rows: int
+    interpolation_rows: int
+    forward_filled_rows: int
 
 
 def parse_args() -> argparse.Namespace:
@@ -48,10 +51,23 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model-root", type=Path, default=DEFAULT_MODEL_ROOT)
     parser.add_argument(
         "--as-of",
-        help="Use the latest valid 15-minute row at or before this ISO-8601 timestamp. Defaults to latest DB data.",
+        help=(
+            "Forecast request time on a 15-minute boundary. The final input bucket starts "
+            "15 minutes earlier. Defaults to 15 minutes after the latest DB window_ts."
+        ),
     )
     parser.add_argument("--lookback-days", type=int, default=DEFAULT_LOOKBACK_DAYS)
     parser.add_argument("--output", type=Path)
+    parser.add_argument(
+        "--csv-output",
+        type=Path,
+        help="Write four DB-shaped forecast rows to this CSV file.",
+    )
+    parser.add_argument(
+        "--append-csv",
+        action="store_true",
+        help="Append to --csv-output instead of replacing it.",
+    )
     parser.add_argument(
         "--verify-predictions",
         type=Path,
@@ -141,33 +157,13 @@ WHERE meter_urn IN ({placeholders})
     return pd.Timestamp(value).tz_convert("UTC")
 
 
-def fetch_weather_range(engine, table_name: str, start_ts: pd.Timestamp, end_ts: pd.Timestamp) -> pd.DataFrame:
-    weather = training.read_sql_with_retry(
-        engine,
-        training.weather_sql(table_name),
-        {
-            "weather_meter_urn": training.WEATHER_METER_URN,
-            "start_ts": start_ts,
-            "end_ts": end_ts,
-        },
-    )
-    if weather.empty:
-        raise ValueError(f"No weather data found between {start_ts} and {end_ts}")
-    weather["window_ts"] = pd.to_datetime(weather["window_ts"], utc=True)
-    for column in ["Ta_mean", "Igm_mean"]:
-        weather[column] = pd.to_numeric(weather[column], errors="coerce")
-    weather.loc[weather["Ta_mean"] < -273.15, "Ta_mean"] = np.nan
-    weather.loc[weather["Igm_mean"] < 0, "Igm_mean"] = np.nan
-    return weather.sort_values("window_ts").reset_index(drop=True)
-
-
 def fetch_source_range(
     engine,
     table_name: str,
     meter_urn: str,
-    weather: pd.DataFrame,
     start_ts: pd.Timestamp,
     end_ts: pd.Timestamp,
+    expected_input_end: pd.Timestamp,
 ) -> pd.DataFrame:
     meter = training.read_sql_with_retry(
         engine,
@@ -177,18 +173,19 @@ def fetch_source_range(
     if meter.empty:
         return meter
     meter["window_ts"] = pd.to_datetime(meter["window_ts"], utc=True)
-    for column in ["P_mean", "P_max", "P_std", "U1_mean", "PF_mean"]:
+    for column in training.RAW_FEATURE_COLUMNS:
         meter[column] = pd.to_numeric(meter[column], errors="coerce")
     meter["P_mean"] = meter["P_mean"].clip(lower=0)
     meter["P_max"] = meter["P_max"].clip(lower=0)
     meter.loc[meter["U1_mean"] <= 0, "U1_mean"] = np.nan
     meter.loc[meter["U1_mean"] > 1000, "U1_mean"] = np.nan
     meter.loc[meter["PF_mean"].abs() > 1.5, "PF_mean"] = np.nan
-    return (
-        meter.merge(weather, on="window_ts", how="left")
-        .rename(columns={"window_ts": "ts"})
-        .sort_values("ts")
-        .reset_index(drop=True)
+    meter = meter.rename(columns={"window_ts": "ts"}).sort_values("ts").reset_index(drop=True)
+    return training.impute_raw_feature_gaps(
+        meter,
+        meter_urn,
+        end_ts=expected_input_end,
+        allow_trailing_single_bucket=True,
     )
 
 
@@ -199,10 +196,17 @@ def fetch_logical_meter_range(
     start_ts: pd.Timestamp,
     end_ts: pd.Timestamp,
 ) -> pd.DataFrame:
-    weather = fetch_weather_range(engine, table_name, start_ts, end_ts)
     frames = []
+    expected_input_end = end_ts - pd.Timedelta(minutes=training.STEP_MINUTES)
     for source_meter, segment_id in training.LOGICAL_METERS[logical_meter]:
-        frame = fetch_source_range(engine, table_name, source_meter, weather, start_ts, end_ts)
+        frame = fetch_source_range(
+            engine,
+            table_name,
+            source_meter,
+            start_ts,
+            end_ts,
+            expected_input_end,
+        )
         if frame.empty:
             continue
         frame["logical_meter_id"] = logical_meter
@@ -231,9 +235,21 @@ def build_inference_window(
     window_size = input_hours * 60 // training.STEP_MINUTES
     required = training.FEATURE_COLUMNS + [training.TARGET_COLUMN]
     expected_step = pd.Timedelta(minutes=training.STEP_MINUTES)
+    expected_input_end = requested_as_of - expected_step
     candidates: list[pd.DataFrame] = []
 
-    selected = features[features["ts"] <= requested_as_of].copy()
+    selected = features[features["ts"] <= expected_input_end].copy()
+    latest_rows = selected[selected["ts"] == expected_input_end]
+    if latest_rows.empty:
+        raise ValueError(f"Latest input bucket {expected_input_end} is missing")
+    latest_usable = latest_rows[
+        latest_rows[training.INPUT_OBSERVED_COLUMN]
+        | latest_rows[training.FORWARD_FILLED_COLUMN]
+    ]
+    if latest_usable.empty:
+        raise ValueError(
+            f"Latest input bucket {expected_input_end} cannot be recovered from one prior bucket"
+        )
     for _, segment in selected.groupby(["source_meter_urn", "segment_id"], sort=True):
         segment = segment.sort_values("ts").dropna(subset=required).reset_index(drop=True)
         if segment.empty:
@@ -248,18 +264,29 @@ def build_inference_window(
             f"No complete continuous {input_hours}h feature window is available for {logical_meter} "
             f"at or before {requested_as_of}"
         )
-    window = max(candidates, key=lambda frame: frame.iloc[-1]["ts"])
+    exact_candidates = [
+        candidate for candidate in candidates if candidate.iloc[-1]["ts"] == expected_input_end
+    ]
+    if not exact_candidates:
+        latest_available = max(candidate.iloc[-1]["ts"] for candidate in candidates)
+        raise ValueError(
+            f"Expected completed input bucket {expected_input_end} for request {requested_as_of}, "
+            f"but the latest complete window ends at {latest_available}"
+        )
+    window = max(exact_candidates, key=lambda frame: int(frame.iloc[-1]["segment_id"]))
+    if not training.input_imputation_is_allowed(window):
+        raise ValueError(
+            "Input window exceeds the missing-data policy: allow one internal gap and "
+            "at most four imputed rows, with no more than one trailing forward-filled row"
+        )
     timestamps = window["ts"].reset_index(drop=True)
     if len(window) != window_size or not timestamps.diff().iloc[1:].eq(expected_step).all():
         raise ValueError("Selected inference window is not exactly 96 continuous 15-minute rows")
-    if timestamps.iloc[-1] < requested_as_of - expected_step:
-        raise ValueError(
-            f"Latest valid input row {timestamps.iloc[-1]} is stale relative to requested time {requested_as_of}"
-        )
-
     matrix = window[training.FEATURE_COLUMNS].to_numpy(dtype=np.float32)
     if matrix.shape != (window_size, len(training.FEATURE_COLUMNS)) or not np.isfinite(matrix).all():
         raise ValueError(f"Invalid inference feature matrix: shape={matrix.shape}")
+    interpolation_rows = int(window[training.INTERPOLATED_COLUMN].fillna(False).sum())
+    forward_filled_rows = int(window[training.FORWARD_FILLED_COLUMN].fillna(False).sum())
     return InferenceWindow(
         x=matrix.reshape(1, -1),
         logical_meter=logical_meter,
@@ -269,6 +296,14 @@ def build_inference_window(
         input_end_ts=pd.Timestamp(window.iloc[-1]["ts"]),
         last_import_p_max=float(window.iloc[-1][training.TARGET_COLUMN]),
         n_input_rows=len(window),
+        imputed_rows=int(
+            (
+                window[training.INTERPOLATED_COLUMN].fillna(False)
+                | window[training.FORWARD_FILLED_COLUMN].fillna(False)
+            ).sum()
+        ),
+        interpolation_rows=interpolation_rows,
+        forward_filled_rows=forward_filled_rows,
     )
 
 
@@ -294,10 +329,16 @@ def build_result(
     clipped = np.clip(raw_prediction, 0.0, None)
     predictions = []
     for index, (raw_value, clipped_value) in enumerate(zip(raw_prediction, clipped, strict=True), start=1):
+        target_start_ts = requested_as_of + (index - 1) * pd.Timedelta(
+            minutes=training.STEP_MINUTES
+        )
+        target_end_ts = requested_as_of + index * pd.Timedelta(minutes=training.STEP_MINUTES)
         predictions.append(
             {
                 "horizon_minutes": index * training.STEP_MINUTES,
-                "timestamp": (window.input_end_ts + index * pd.Timedelta(minutes=training.STEP_MINUTES)).isoformat(),
+                "target_start_ts": target_start_ts.isoformat(),
+                "target_end_ts": target_end_ts.isoformat(),
+                "timestamp": target_end_ts.isoformat(),
                 "predicted_import_p_max": float(clipped_value),
                 "raw_model_prediction": float(raw_value),
             }
@@ -313,9 +354,25 @@ def build_result(
         "requested_as_of": requested_as_of.isoformat(),
         "input_start_ts": window.input_start_ts.isoformat(),
         "input_end_ts": window.input_end_ts.isoformat(),
-        "data_lag_minutes": float((requested_as_of - window.input_end_ts) / pd.Timedelta(minutes=1)),
+        "data_lag_minutes": float(
+            (
+                requested_as_of
+                - pd.Timedelta(minutes=training.STEP_MINUTES)
+                - window.input_end_ts
+            )
+            / pd.Timedelta(minutes=1)
+        ),
         "input_rows": window.n_input_rows,
         "last_import_p_max": window.last_import_p_max,
+        "data_quality": {
+            "status": "degraded" if window.imputed_rows else "normal",
+            "imputed_rows": window.imputed_rows,
+            "linear_interpolation_rows": window.interpolation_rows,
+            "forward_filled_rows": window.forward_filled_rows,
+            "policy": (
+                "internal_linear_up_to_60min_and_trailing_forward_fill_up_to_15min"
+            ),
+        },
         "model": {
             "method": "v29",
             "output_range": EXPECTED_OUTPUT_RANGE,
@@ -330,6 +387,36 @@ def build_result(
     }
 
 
+def result_to_csv_frame(result: dict[str, Any], created_at: pd.Timestamp | None = None) -> pd.DataFrame:
+    created_at = created_at or pd.Timestamp.now(tz="UTC")
+    rows = []
+    for prediction in result["predictions"]:
+        rows.append(
+            {
+                "logical_meter": result["logical_meter"],
+                "source_meter_urn": result["source_meter_urn"],
+                "base_ts": result["requested_as_of"],
+                "input_end_ts": result["input_end_ts"],
+                "target_ts": prediction["target_end_ts"],
+                "horizon_minutes": prediction["horizon_minutes"],
+                "predicted_p_max": prediction["predicted_import_p_max"],
+                "created_at": created_at.isoformat(),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def write_csv_result(result: dict[str, Any], output_path: Path, append: bool) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    should_append = append and output_path.exists()
+    result_to_csv_frame(result).to_csv(
+        output_path,
+        mode="a" if should_append else "w",
+        header=not should_append,
+        index=False,
+    )
+
+
 def verification_request(args: argparse.Namespace) -> tuple[pd.Timestamp | None, dict[str, Any] | None]:
     if args.verify_predictions is None:
         return None, None
@@ -337,7 +424,9 @@ def verification_request(args: argparse.Namespace) -> tuple[pd.Timestamp | None,
     if frame.empty:
         raise ValueError(f"Verification prediction file is empty: {args.verify_predictions}")
     row = frame.iloc[args.verify_row]
-    timestamp = normalize_timestamp(row["input_end_ts"])
+    timestamp = normalize_timestamp(row["input_end_ts"]) + pd.Timedelta(
+        minutes=training.STEP_MINUTES
+    )
     expected = np.array([row[f"pred_t_plus_{index}"] for index in range(1, 5)], dtype=np.float64)
     return timestamp, {"row_index": int(row.name), "expected": expected}
 
@@ -370,12 +459,20 @@ def main() -> None:
     table_name = training.validate_table_name(args.table)
     verification_as_of, verification = verification_request(args)
     requested_as_of = verification_as_of or (normalize_timestamp(args.as_of) if args.as_of else None)
+    if requested_as_of is not None and (
+        requested_as_of.minute % training.STEP_MINUTES != 0
+        or requested_as_of.second != 0
+        or requested_as_of.microsecond != 0
+    ):
+        raise ValueError("--as-of must be aligned to an exact 15-minute boundary")
 
     artifacts = load_artifacts(args.model_root, args.meter)
     engine = training.build_engine()
     if requested_as_of is None:
-        requested_as_of = latest_source_timestamp(engine, table_name, args.meter)
-    end_ts = requested_as_of + pd.Timedelta(minutes=training.STEP_MINUTES)
+        requested_as_of = latest_source_timestamp(engine, table_name, args.meter) + pd.Timedelta(
+            minutes=training.STEP_MINUTES
+        )
+    end_ts = requested_as_of
     start_ts = requested_as_of - pd.Timedelta(days=args.lookback_days)
     features = fetch_logical_meter_range(engine, table_name, args.meter, start_ts, end_ts)
     window = build_inference_window(features, args.meter, requested_as_of)
@@ -389,6 +486,8 @@ def main() -> None:
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(payload + "\n", encoding="utf-8")
+    if args.csv_output:
+        write_csv_result(result, args.csv_output, args.append_csv)
     print(payload)
     if reproduction is not None and not reproduction["passed"]:
         raise SystemExit(2)

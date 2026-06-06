@@ -31,8 +31,6 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_TABLE = "mart.peak_feature_15min"
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "artifacts" / "import_pmax_v29_60min_candidate"
-WEATHER_METER_URN = "WeatherStation.Weather"
-
 STEP_MINUTES = 15
 INPUT_WINDOW_HOURS = [24]
 OUTPUT_HORIZON_STEPS = {"60min": 4}
@@ -48,23 +46,10 @@ FEATURE_COLUMNS = [
     "P_std",
     "U1_mean",
     "PF_mean",
-    "Ta_mean",
-    "Igm_mean",
     "hour_sin",
     "hour_cos",
     "dayofweek_sin",
-    "dayofweek_cos",
-    "month_sin",
-    "month_cos",
-    "is_weekend",
-    "is_business_hour",
-    "is_morning_ramp",
-    "is_lunch_time",
-    "is_evening",
     "P_max_lag_1",
-    "P_max_lag_2",
-    "P_max_lag_4",
-    "P_max_lag_8",
     "P_max_lag_96",
     "P_max_lag_192",
     "P_max_roll_1h_mean",
@@ -73,7 +58,6 @@ FEATURE_COLUMNS = [
     "P_max_roll_3h_mean",
     "P_max_roll_3h_max",
     "P_max_roll_6h_mean",
-    "P_max_roll_24h_max",
     "P_max_diff_1",
     "P_max_diff_4",
     "P_mean_diff_1",
@@ -81,6 +65,12 @@ FEATURE_COLUMNS = [
     "PF_mean_diff_1",
 ]
 TARGET_COLUMN = "P_max"
+RAW_FEATURE_COLUMNS = ["P_mean", "P_max", "P_std", "U1_mean", "PF_mean"]
+INPUT_OBSERVED_COLUMN = "_input_observed"
+TARGET_OBSERVED_COLUMN = "_target_observed"
+INTERPOLATED_COLUMN = "_was_interpolated"
+FORWARD_FILLED_COLUMN = "_was_forward_filled"
+MAX_IMPUTED_INPUT_ROWS = 4
 
 LOGICAL_METERS = {
     "V.Z81": [("V.Z81", 1)],
@@ -178,34 +168,6 @@ ORDER BY window_ts
 """
 
 
-def weather_sql(table_name: str) -> str:
-    return f"""
-WITH latest AS (
-    SELECT DISTINCT ON (window_ts, meter_urn, measurement)
-        window_ts,
-        meter_urn,
-        measurement,
-        mean_value,
-        coverage_ratio
-    FROM {table_name}
-    WHERE meter_urn = :weather_meter_urn
-      AND measurement IN ('Ta', 'Igm')
-      AND window_ts >= :start_ts
-      AND window_ts < :end_ts
-    ORDER BY window_ts, meter_urn, measurement, created_at DESC, run_id DESC
-)
-SELECT
-    window_ts,
-    MAX(CASE WHEN measurement = 'Ta'  THEN mean_value END) AS "Ta_mean",
-    MAX(CASE WHEN measurement = 'Ta'  THEN coverage_ratio END) AS "Ta_coverage",
-    MAX(CASE WHEN measurement = 'Igm' THEN mean_value END) AS "Igm_mean",
-    MAX(CASE WHEN measurement = 'Igm' THEN coverage_ratio END) AS "Igm_coverage"
-FROM latest
-GROUP BY window_ts
-ORDER BY window_ts
-"""
-
-
 def read_sql_with_retry(engine, sql: str, params: dict[str, Any]) -> pd.DataFrame:
     last_error: Exception | None = None
     for attempt in range(1, 4):
@@ -220,37 +182,127 @@ def read_sql_with_retry(engine, sql: str, params: dict[str, Any]) -> pd.DataFram
     raise last_error
 
 
-def fetch_weather(engine, table_name: str) -> pd.DataFrame:
-    weather = read_sql_with_retry(
-        engine,
-        weather_sql(table_name),
-        {"weather_meter_urn": WEATHER_METER_URN, "start_ts": TRAIN_START, "end_ts": END_TS},
-    )
-    weather["window_ts"] = pd.to_datetime(weather["window_ts"], utc=True)
-    for column in ["Ta_mean", "Igm_mean"]:
-        weather[column] = pd.to_numeric(weather[column], errors="coerce")
-    weather.loc[weather["Ta_mean"] < -273.15, "Ta_mean"] = np.nan
-    weather.loc[weather["Igm_mean"] < 0, "Igm_mean"] = np.nan
-    return weather.sort_values("window_ts").reset_index(drop=True)
-
-
-def fetch_source_meter(engine, table_name: str, meter_urn: str, weather: pd.DataFrame) -> pd.DataFrame:
+def fetch_source_meter(engine, table_name: str, meter_urn: str) -> pd.DataFrame:
     meter = read_sql_with_retry(
         engine,
         feature_sql(table_name, meter_urn),
         {"meter_urn": meter_urn, "start_ts": TRAIN_START, "end_ts": END_TS},
     )
     meter["window_ts"] = pd.to_datetime(meter["window_ts"], utc=True)
-    for column in ["P_mean", "P_max", "P_std", "U1_mean", "PF_mean"]:
+    for column in RAW_FEATURE_COLUMNS:
         meter[column] = pd.to_numeric(meter[column], errors="coerce")
     meter["P_mean"] = meter["P_mean"].clip(lower=0)
     meter["P_max"] = meter["P_max"].clip(lower=0)
     meter.loc[meter["U1_mean"] <= 0, "U1_mean"] = np.nan
     meter.loc[meter["U1_mean"] > 1000, "U1_mean"] = np.nan
     meter.loc[meter["PF_mean"].abs() > 1.5, "PF_mean"] = np.nan
-    merged = meter.merge(weather, on="window_ts", how="left")
-    merged = merged.rename(columns={"window_ts": "ts"}).sort_values("ts").reset_index(drop=True)
-    return merged
+    meter = meter.rename(columns={"window_ts": "ts"}).sort_values("ts").reset_index(drop=True)
+    return impute_raw_feature_gaps(meter, meter_urn)
+
+
+def _limited_internal_interpolation(
+    values: pd.Series,
+    max_gap_rows: int,
+) -> tuple[pd.Series, pd.Series]:
+    filled = values.copy()
+    interpolated = pd.Series(False, index=values.index)
+    missing_group = values.isna().ne(values.isna().shift(fill_value=False)).cumsum()
+
+    for _, gap in values[values.isna()].groupby(missing_group[values.isna()]):
+        gap_index = gap.index
+        if len(gap_index) > max_gap_rows:
+            continue
+        first_pos = values.index.get_loc(gap_index[0])
+        last_pos = values.index.get_loc(gap_index[-1])
+        if first_pos == 0 or last_pos == len(values) - 1:
+            continue
+        before = values.iloc[first_pos - 1]
+        after = values.iloc[last_pos + 1]
+        if pd.isna(before) or pd.isna(after):
+            continue
+        step = (after - before) / (len(gap_index) + 1)
+        for offset, index in enumerate(gap_index, start=1):
+            filled.loc[index] = before + step * offset
+            interpolated.loc[index] = True
+    return filled, interpolated
+
+
+def impute_raw_feature_gaps(
+    df: pd.DataFrame,
+    meter_urn: str,
+    *,
+    end_ts: pd.Timestamp | None = None,
+    allow_trailing_single_bucket: bool = False,
+) -> pd.DataFrame:
+    if df.empty:
+        return df.copy()
+
+    frame = df.sort_values("ts").drop_duplicates("ts", keep="last").copy()
+    range_end = pd.Timestamp(end_ts) if end_ts is not None else frame["ts"].iloc[-1]
+    full_index = pd.date_range(
+        start=frame["ts"].iloc[0],
+        end=range_end,
+        freq=f"{STEP_MINUTES}min",
+    )
+    frame = frame.set_index("ts").reindex(full_index)
+    frame.index.name = "ts"
+    frame["meter_urn"] = meter_urn
+
+    frame[INPUT_OBSERVED_COLUMN] = frame[RAW_FEATURE_COLUMNS].notna().all(axis=1)
+    frame[TARGET_OBSERVED_COLUMN] = frame[TARGET_COLUMN].notna()
+    interpolated = pd.Series(False, index=frame.index)
+    forward_filled = pd.Series(False, index=frame.index)
+
+    for column in RAW_FEATURE_COLUMNS:
+        values = frame[column]
+        filled, column_interpolated = _limited_internal_interpolation(
+            values,
+            MAX_IMPUTED_INPUT_ROWS,
+        )
+        frame[column] = filled
+        interpolated |= column_interpolated
+
+    if allow_trailing_single_bucket and len(frame) >= 2:
+        latest_index = frame.index[-1]
+        previous_index = frame.index[-2]
+        latest_missing = frame.loc[latest_index, RAW_FEATURE_COLUMNS].isna()
+        previous_complete = frame.loc[previous_index, RAW_FEATURE_COLUMNS].notna().all()
+        if latest_missing.any() and previous_complete:
+            missing_columns = latest_missing[latest_missing].index.tolist()
+            frame.loc[latest_index, missing_columns] = frame.loc[
+                previous_index, missing_columns
+            ].to_numpy()
+            forward_filled.loc[latest_index] = True
+
+    frame[INTERPOLATED_COLUMN] = interpolated
+    frame[FORWARD_FILLED_COLUMN] = forward_filled
+    return frame.reset_index()
+
+
+def interpolate_single_internal_bucket(df: pd.DataFrame, meter_urn: str) -> pd.DataFrame:
+    """Backward-compatible alias for the operational gap-imputation policy."""
+    return impute_raw_feature_gaps(df, meter_urn)
+
+
+def input_imputation_is_allowed(window: pd.DataFrame) -> bool:
+    internal = window[INTERPOLATED_COLUMN].fillna(False).astype(bool)
+    trailing = window[FORWARD_FILLED_COLUMN].fillna(False).astype(bool)
+    imputed = internal | trailing
+    if int(imputed.sum()) > MAX_IMPUTED_INPUT_ROWS:
+        return False
+    if int(trailing.sum()) > 1 or (trailing.any() and not bool(trailing.iloc[-1])):
+        return False
+
+    internal_without_trailing = internal & ~trailing
+    if not internal_without_trailing.any():
+        return True
+    run_count = int(
+        (
+            internal_without_trailing
+            & ~internal_without_trailing.shift(1, fill_value=False)
+        ).sum()
+    )
+    return run_count <= 1
 
 
 def add_time_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -298,10 +350,10 @@ def add_lag_rolling_features(df: pd.DataFrame) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True)
 
 
-def fetch_logical_meter(engine, table_name: str, logical_meter: str, weather: pd.DataFrame) -> pd.DataFrame:
+def fetch_logical_meter(engine, table_name: str, logical_meter: str) -> pd.DataFrame:
     frames = []
     for source_meter, segment_id in LOGICAL_METERS[logical_meter]:
-        df = fetch_source_meter(engine, table_name, source_meter, weather)
+        df = fetch_source_meter(engine, table_name, source_meter)
         df["logical_meter_id"] = logical_meter
         df["source_meter_urn"] = source_meter
         df["segment_id"] = segment_id
@@ -353,6 +405,8 @@ def build_windows(df: pd.DataFrame, input_hours: int, output_range: str) -> Data
     for segment in iter_continuous_feature_segments(df, window_size):
         feature_values = segment[FEATURE_COLUMNS].to_numpy(dtype=np.float32)
         target_values = segment[TARGET_COLUMN].to_numpy(dtype=np.float32)
+        input_observed = segment[INPUT_OBSERVED_COLUMN].to_numpy(dtype=bool)
+        target_observed = segment[TARGET_OBSERVED_COLUMN].to_numpy(dtype=bool)
         max_start = len(segment) - window_size - horizon_steps + 1
         for start_idx in range(max_start):
             input_end_idx = start_idx + window_size
@@ -364,7 +418,14 @@ def build_windows(df: pd.DataFrame, input_hours: int, output_range: str) -> Data
                 continue
             x = feature_values[start_idx:input_end_idx]
             y = target_values[target_start_idx:target_end_idx]
-            if np.isnan(x).any() or np.isnan(y).any():
+            input_frame = segment.iloc[start_idx:input_end_idx]
+            if (
+                np.isnan(x).any()
+                or np.isnan(y).any()
+                or not input_observed[input_end_idx - 1]
+                or not target_observed[target_start_idx:target_end_idx].all()
+                or not input_imputation_is_allowed(input_frame)
+            ):
                 skipped_windows += 1
                 continue
             buckets[f"{bucket}_x"].append(x)
@@ -964,7 +1025,6 @@ def run_one(
     meter: str,
     input_hours: int,
     output_range: str,
-    weather: pd.DataFrame,
     seed: int,
     device: str,
     data_cache: dict[str, pd.DataFrame],
@@ -974,7 +1034,7 @@ def run_one(
     model_dir = meter_dir / "_candidate_models"
     model_dir.mkdir(parents=True, exist_ok=True)
     if meter not in data_cache:
-        data_cache[meter] = fetch_logical_meter(engine, table_name, meter, weather)
+        data_cache[meter] = fetch_logical_meter(engine, table_name, meter)
     df = data_cache[meter]
     bundle = build_windows(df, input_hours, output_range)
     models, candidate_metrics = train_candidates(bundle, model_dir, seed, device)
@@ -1088,8 +1148,6 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     write_root_readme(output_dir)
     engine = build_engine()
-    print(f"Fetching weather features from {table_name}", flush=True)
-    weather = fetch_weather(engine, table_name)
     rows: list[dict[str, Any]] = []
     data_cache: dict[str, pd.DataFrame] = {}
     for input_hours in args.input_hours:
@@ -1103,7 +1161,6 @@ def main() -> None:
                         meter=meter,
                         input_hours=input_hours,
                         output_range=output_range,
-                        weather=weather,
                         seed=args.seed,
                         device=args.device,
                         data_cache=data_cache,
