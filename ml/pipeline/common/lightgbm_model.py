@@ -36,7 +36,7 @@ def fit_lightgbm(bundle, horizon: int, seed: int = 42) -> list:
             num_leaves=NUM_LEAVES, max_depth=MAX_DEPTH,
             subsample=SUBSAMPLE, colsample_bytree=COLSAMPLE_BYTREE,
             reg_lambda=REG_LAMBDA, random_state=seed,
-            n_jobs=-1, verbosity=-1,
+            n_jobs=1, verbosity=-1,
         )
         m.fit(
             x_tr, np.ascontiguousarray(bundle.y_train[:, step]),
