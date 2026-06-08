@@ -24,13 +24,14 @@ async def lifespan(app: FastAPI):
     from api.scheduler import start_scheduler, stop_scheduler
     from api.db import get_conn
     from api.routers.chat import _ensure_chat_tables
-    from api.routers.cms import _ensure_wo_table
+    from api.routers.cms import _ensure_wo_table, _ensure_anomaly_columns
 
     def init_db_tables():
         try:
             with get_conn() as conn:
                 _ensure_chat_tables(conn)
                 _ensure_wo_table(conn)
+                _ensure_anomaly_columns(conn)
         except Exception as e:
             print(f"[Init] DB table creation failed: {e}")
 

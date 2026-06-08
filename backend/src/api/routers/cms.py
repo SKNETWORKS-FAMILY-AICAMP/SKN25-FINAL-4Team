@@ -414,7 +414,6 @@ def compute_equipment_status(window_days: int = _WINDOW_DAYS) -> dict:
     """설비별 헬스 스코어 + 상태 + 최근 이상 요약 + 현재 핵심 지표. (라우트·에이전트 공용)"""
     from api.config import get_equipment_list
     with _db_conn() as conn:
-        _ensure_anomaly_columns(conn)
         anchor = _anchor_now(conn)
         window_start = anchor - timedelta(days=window_days)
         cur = conn.cursor()
