@@ -342,5 +342,14 @@ def test_live_schema_draft_includes_ops_observability_tables():
         "source_to_fastapi_sec DOUBLE PRECISION",
         "fastapi_to_kafka_sec DOUBLE PRECISION",
         "kafka_to_event_sec DOUBLE PRECISION",
+        "CREATE TABLE IF NOT EXISTS mart.import_pmax_forecast_15min",
+        "CREATE TABLE IF NOT EXISTS ops.import_pmax_inference_log",
+        "CREATE TABLE IF NOT EXISTS qa.import_pmax_forecast_evaluation",
+        "forecast_target_ts_check",
+        "import_pmax_run_status_check",
+        "actual_window_ts TIMESTAMPTZ NOT NULL",
+        "forecast_actual_window_ts_check CHECK (actual_window_ts = target_ts - interval '15 minutes')",
+        "import_pmax_logical_source_check",
+        "import_pmax_evaluation_actual_window_ts_check CHECK (actual_window_ts = target_ts - interval '15 minutes')",
     ]:
         assert token in ddl

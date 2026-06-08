@@ -386,6 +386,70 @@ CREATE TABLE IF NOT EXISTS mart.peak_input_15min (
     CONSTRAINT peak_input_coverage_check CHECK (rolling_1h_coverage_ratio BETWEEN 0 AND 1)
 );
 
+CREATE TABLE IF NOT EXISTS mart.import_pmax_forecast_15min (
+    logical_meter TEXT NOT NULL,
+    source_meter_urn TEXT NOT NULL,
+    base_ts TIMESTAMPTZ NOT NULL,
+    input_end_ts TIMESTAMPTZ NOT NULL,
+    target_ts TIMESTAMPTZ NOT NULL,
+    actual_window_ts TIMESTAMPTZ NOT NULL,
+    horizon_minutes SMALLINT NOT NULL,
+    predicted_p_max DOUBLE PRECISION NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (logical_meter, base_ts, target_ts),
+    CONSTRAINT import_pmax_horizon_check CHECK (horizon_minutes IN (15, 30, 45, 60)),
+    CONSTRAINT import_pmax_prediction_nonnegative_check CHECK (predicted_p_max >= 0),
+    CONSTRAINT forecast_input_end_ts_check CHECK (input_end_ts = base_ts - interval '15 minutes'),
+    CONSTRAINT forecast_target_ts_check CHECK (target_ts = base_ts + make_interval(mins => horizon_minutes)),
+    CONSTRAINT forecast_actual_window_ts_check CHECK (actual_window_ts = target_ts - interval '15 minutes'),
+    CONSTRAINT import_pmax_logical_source_check CHECK (
+        (logical_meter = 'V.Z81' AND source_meter_urn = 'V.Z81') OR
+        (logical_meter = 'V.Z82' AND source_meter_urn = 'V.Z82') OR
+        (logical_meter = 'H2.Z35x' AND source_meter_urn IN ('H2.Z35', 'H2.Z351')) OR
+        (logical_meter = 'H2.Z36x' AND source_meter_urn IN ('H2.Z36', 'H2.Z361'))
+    )
+);
+
+CREATE INDEX IF NOT EXISTS import_pmax_forecast_target_idx
+    ON mart.import_pmax_forecast_15min (target_ts DESC, logical_meter);
+
+CREATE TABLE IF NOT EXISTS ops.import_pmax_inference_log (
+    run_id TEXT PRIMARY KEY,
+    base_ts TIMESTAMPTZ NOT NULL,
+    status TEXT NOT NULL,
+    quality_status TEXT NOT NULL,
+    logical_meter_count INTEGER NOT NULL,
+    forecast_row_count INTEGER NOT NULL,
+    replacement_row_count INTEGER NOT NULL DEFAULT 0,
+    internal_missing_segment_count INTEGER NOT NULL DEFAULT 0,
+    latest_missing_policy TEXT,
+    error_reason TEXT,
+    details JSONB NOT NULL DEFAULT '{}'::jsonb,
+    started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    completed_at TIMESTAMPTZ,
+    CONSTRAINT import_pmax_run_status_check CHECK (status IN ('success', 'degraded', 'failed')),
+    CONSTRAINT import_pmax_quality_status_check CHECK (quality_status IN ('normal', 'degraded', 'failed')),
+    CONSTRAINT import_pmax_counts_check CHECK (logical_meter_count >= 0 AND forecast_row_count >= 0 AND replacement_row_count >= 0 AND internal_missing_segment_count >= 0)
+);
+
+CREATE TABLE IF NOT EXISTS qa.import_pmax_forecast_evaluation (
+    evaluation_id BIGSERIAL PRIMARY KEY,
+    logical_meter TEXT NOT NULL,
+    source_meter_urn TEXT NOT NULL,
+    base_ts TIMESTAMPTZ NOT NULL,
+    target_ts TIMESTAMPTZ NOT NULL,
+    actual_window_ts TIMESTAMPTZ NOT NULL,
+    horizon_minutes SMALLINT NOT NULL,
+    predicted_p_max DOUBLE PRECISION NOT NULL,
+    actual_p_max DOUBLE PRECISION NOT NULL,
+    absolute_error DOUBLE PRECISION GENERATED ALWAYS AS (abs(actual_p_max - predicted_p_max)) STORED,
+    squared_error DOUBLE PRECISION GENERATED ALWAYS AS ((actual_p_max - predicted_p_max) * (actual_p_max - predicted_p_max)) STORED,
+    evaluated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT import_pmax_evaluation_horizon_check CHECK (horizon_minutes IN (15, 30, 45, 60)),
+    CONSTRAINT import_pmax_evaluation_values_check CHECK (predicted_p_max >= 0 AND actual_p_max >= 0),
+    CONSTRAINT import_pmax_evaluation_actual_window_ts_check CHECK (actual_window_ts = target_ts - interval '15 minutes')
+);
+
 -- Common trigger draft. Review-only: not enabled unless the DDL is approved.
 CREATE OR REPLACE FUNCTION live.handle_measurement_event_insert()
 RETURNS trigger

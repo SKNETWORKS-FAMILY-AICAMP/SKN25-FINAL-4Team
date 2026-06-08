@@ -22,6 +22,9 @@ REQUIRED_CHAMPION_PANEL_TITLES = {
     "Warning by horizon",
     "Post-hoc anomaly/error",
     "Champion inference latency",
+    "Import P-Max prediction freshness",
+    "Import P-Max quality status",
+    "Import P-Max evaluation error",
 }
 
 
@@ -29,7 +32,7 @@ def test_champion_model_observability_contract_imports_without_external_clients(
     code = (
         "import sys;"
         "from cms.contracts.observability import CHAMPION_MODEL_DASHBOARD_PANEL_CONTRACTS;"
-        "assert len(CHAMPION_MODEL_DASHBOARD_PANEL_CONTRACTS) == 6;"
+        "assert len(CHAMPION_MODEL_DASHBOARD_PANEL_CONTRACTS) == 9;"
         "assert 'boto3' not in sys.modules;"
         "assert 'grafana_api' not in sys.modules;"
         "assert 'psycopg' not in sys.modules;"
@@ -61,6 +64,9 @@ def test_champion_model_panel_contracts_cover_required_grafana_views() -> None:
     assert panels["Warning by horizon"].source_table == "mart.champion_prediction_1h"
     assert panels["Post-hoc anomaly/error"].source_table == "qa.champion_prediction_issue"
     assert panels["Champion inference latency"].source_table == "ops.champion_inference_metric"
+    assert panels["Import P-Max prediction freshness"].source_table == "mart.import_pmax_forecast_15min"
+    assert panels["Import P-Max quality status"].source_table == "ops.import_pmax_inference_log"
+    assert panels["Import P-Max evaluation error"].source_table == "qa.import_pmax_forecast_evaluation"
 
     assert {panel.source_table for panel in CHAMPION_MODEL_DASHBOARD_PANEL_CONTRACTS} <= set(CHAMPION_MODEL_SOURCE_TABLES)
     assert {panel.severity for panel in CHAMPION_MODEL_DASHBOARD_PANEL_CONTRACTS} == {"P0", "P1"}
@@ -73,6 +79,9 @@ def test_dashboard_panel_contract_allows_safe_mart_qa_ops_live_sources_only() ->
         "qa.champion_prediction_issue",
         "ops.champion_inference_metric",
         "live.measurement_1h",
+        "mart.import_pmax_forecast_15min",
+        "ops.import_pmax_inference_log",
+        "qa.import_pmax_forecast_evaluation",
     ):
         assert DashboardPanelContract("allowed", source_table, "contract test").source_table == source_table
 
