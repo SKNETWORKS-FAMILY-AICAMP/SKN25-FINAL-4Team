@@ -83,6 +83,16 @@ def _build_input_window(
     return x, anchor_scaled, last_ts
 
 
+def _detect_lstm_input_size(meter_urn: str, horizon: int, version: str, fallback: int) -> int:
+    """저장된 LSTM checkpoint의 실제 입력 크기 감지 (weight mismatch 방지)."""
+    try:
+        pt_path = ARTIFACTS_DIR / f"{horizon}h" / meter_urn / f"lstm_{version}.pt"
+        state = torch.load(pt_path, map_location="cpu", weights_only=True)
+        return state["recurrent.weight_ih_l0"].shape[1]
+    except Exception:
+        return fallback
+
+
 def _lstm_ensemble_pred(
     x: np.ndarray,
     meter_urn: str,
@@ -90,14 +100,17 @@ def _lstm_ensemble_pred(
     top2_versions: list[str],
     top2_weights: list[float],
     feature_columns: list[str],
+    input_scaler=None,
 ) -> np.ndarray:
     """top-2 LSTM 가중 앙상블 예측 (잔차, scaled). shape: (1, horizon)"""
     pred = np.zeros((1, horizon), dtype=np.float32)
     for version, weight in zip(top2_versions, top2_weights):
         variant = _VARIANT_MAP[version]
+        n_features = _detect_lstm_input_size(meter_urn, horizon, version, len(feature_columns))
+        x_lstm = x[:, :, :n_features]
         model = load_lstm_model(
             RecurrentPredictor,
-            input_size=len(feature_columns),
+            input_size=n_features,
             hidden_size=HIDDEN_SIZE,
             output_size=horizon,
             architecture=variant.model_architecture,
@@ -108,7 +121,8 @@ def _lstm_ensemble_pred(
         )
         model.eval()
         with torch.no_grad():
-            pred += weight * predict_scaled(model, x, batch_size=1)
+            pred += weight * predict_scaled(model, x_lstm, batch_size=1)
+        del model
     return pred
 
 
@@ -171,6 +185,7 @@ def predict_meter(
             routing["lstm_top2_versions"],
             routing["lstm_top2_weights"],
             feature_columns,
+            input_scaler=input_scaler,
         )
         if v57_ver == "v53":
             cb = load_catboost(meter_urn, horizon)

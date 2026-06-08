@@ -12,12 +12,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))   # src 경로 (api.* 임포트용)
 
 # 설비 키워드는 api.config 모듈에서 동적으로 불러옵니다.
-_WO_KW   = re.compile(r"작업\s*지시.*(목록|현황|조회|확인|있어|보여|알려)|미해결|조치\s*내역|점검\s*이력|work\s*order")
+_WO_KW   = re.compile(r"작업\s*지시.*(목록|현황|조회|확인|있어|보여|알려|상태|이력)|미해결|조치\s*내역|점검\s*이력|work\s*order")
 _DIAG_KW = re.compile(r"진단|원인|왜|이유|점검|조치|분석|해석|평가|검토|어때|어떤가|살펴|어떻게\s*됐")
 _PRED_KW = re.compile(r"예지보전|언제.*고장|잔여\s*수명|수명|추세|악화|예측.*위험|위험.*예측")
 
 # ── 행동(액션) 트리거 — 코파일럿이 실제로 실행 ───────────────────
-_ACT_WO    = re.compile(r"작업\s*지시.*(생성|만들|등록|발행|추가|올려|작성)|(생성|만들|등록|발행|작성)\s*해.*작업\s*지시")
+_ACT_WO    = re.compile(r"작업\s*지시.*(생성|만들|등록|발행|추가|올려|작성)\s*(해|줘|주세요|주셔|드려|해줘|해주세요|해드려)|(생성|만들|등록|발행|작성)\s*해.*작업\s*지시")
 _ACT_SIM   = re.compile(r"시뮬|시뮬레이터|시연")
 _SIM_START = re.compile(r"시작|재생|돌려|run|play|진행")
 _SIM_PAUSE = re.compile(r"정지|멈춰|일시정지|pause|stop|중단")
@@ -119,13 +119,22 @@ def _fmt_predictive() -> str:
 
 
 def _fmt_diagnosis(eq_id: str) -> str:
-    from api.routers.cms import run_diagnosis
+    from api.routers.cms import run_diagnosis, compute_equipment_status
+    # 헬스 스코어를 진단 텍스트 앞에 명시
+    status_data = compute_equipment_status()
+    it = next((x for x in status_data.get("items", []) if x["id"] == eq_id), None)
+    health_prefix = ""
+    if it:
+        health_prefix = (
+            f"- **헬스 스코어: {it['health_score']} ({it['status']})**\n"
+            f"- 최근 이상: {it['anomaly_total']}건\n\n"
+        )
     res = run_diagnosis(eq_id)
     if res.get("error"):
         return res["error"]
     name = res.get("equipment", {}).get("name", "설비")
     icon = res.get("equipment", {}).get("icon", "🔧")
-    return f"## {icon} {name} AI 진단\n\n{res.get('diagnosis','')}"
+    return f"## {icon} {name} AI 진단\n\n{health_prefix}{res.get('diagnosis','')}"
 
 
 def _do_create_work_order(eq_id: str | None) -> str:

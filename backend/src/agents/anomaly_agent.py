@@ -147,6 +147,37 @@ def _run_ml_anomaly(start: str, end: str) -> list[dict]:
         return []
 
 
+def _count_anomalies_by_type(start: str | None, end: str | None) -> dict:
+    """기간 내 anomaly_type별 전체 건수 집계 (severity 무관)."""
+    try:
+        conn = psycopg2.connect(DB_URL)
+        try:
+            cur = conn.cursor()
+            conds, params = [], []
+            if start:
+                conds.append("timestamp >= %s"); params.append(start)
+            if end:
+                conds.append("timestamp <  %s"); params.append(end)
+            where = ("WHERE " + " AND ".join(conds)) if conds else ""
+            cur.execute(f"""
+                SELECT anomaly_type, severity, COUNT(*)
+                FROM anomaly_results {where}
+                GROUP BY anomaly_type, severity
+                ORDER BY COUNT(*) DESC;
+            """, params)
+            result: dict = {}
+            for atype, sev, cnt in cur.fetchall():
+                if atype not in result:
+                    result[atype] = {"total": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0}
+                result[atype]["total"] += cnt
+                result[atype][sev] = result[atype].get(sev, 0) + cnt
+            return result
+        finally:
+            conn.close()
+    except Exception:
+        return {}
+
+
 def _fetch_anomalies(limit: int = 20,
                      start: str | None = None,
                      end:   str | None = None,
@@ -258,25 +289,30 @@ def run(state: dict) -> dict:
     # 날짜 파싱
     start, end = _parse_date_range(question)
 
-    # ── 이상탐지: ML residual+IF 우선, DB fallback ────────────────
+    # ── 이상탐지: DB 타입별 이상 우선, ML residual+IF 보완 ─────────
+    # DB에 PowerSpike/ResidualSpike 등 타입별 이상이 저장되므로 항상 먼저 조회
     ml_source = False
     sensor_df = None
     if start and end:
-        recent = _run_ml_anomaly(start, end)
-        if recent:
-            ml_source = True
-            # ML 경로: load_range 결과를 재활용하여 센서값 enrichment
-            try:
-                import pandas as pd
-                from data.loader import load_range
-                sensor_df = load_range(
-                    str((pd.Timestamp(start) - pd.Timedelta(hours=2)).date()), end
-                )
-            except Exception:
-                pass
-        else:
-            recent = _fetch_anomalies(limit=50, start=start, end=end)
+        db_anomalies = _fetch_anomalies(limit=200, start=start, end=end)
+        if db_anomalies:
+            recent = db_anomalies
             sensor_df = _load_sensor_df_for_anomalies(recent)
+        else:
+            # DB 결과 없을 때만 ML 사용
+            recent = _run_ml_anomaly(start, end)
+            if recent:
+                ml_source = True
+                try:
+                    import pandas as pd
+                    from data.loader import load_range
+                    sensor_df = load_range(
+                        str((pd.Timestamp(start) - pd.Timedelta(hours=2)).date()), end
+                    )
+                except Exception:
+                    pass
+            else:
+                recent = []
     else:
         # 날짜 미지정: DB 최신 20건 (ML은 기간 필수)
         recent = _fetch_anomalies(limit=20)
@@ -289,6 +325,20 @@ def run(state: dict) -> dict:
     # 날짜 표시
     period_str = f"{start} ~ {end}" if start else "최근 20건"
     source_str = "VMD-LSTM 잔차+IF (실시간)" if ml_source else "anomaly_results DB"
+
+    # 전체 건수 집계 (severity 무관 — 카운트 질문 대응, ML 경로에도 항상 DB에서 집계)
+    type_counts = _count_anomalies_by_type(start, end) if start else {}
+    if type_counts:
+        count_lines = []
+        grand_total = sum(v["total"] for v in type_counts.values())
+        for atype, info in sorted(type_counts.items(), key=lambda x: -x[1]["total"]):
+            count_lines.append(
+                f"  {atype}: 총 {info['total']}건 "
+                f"(HIGH {info.get('HIGH',0)} / MEDIUM {info.get('MEDIUM',0)} / LOW {info.get('LOW',0)})"
+            )
+        count_block = f"## 이상 유형별 전체 건수 (severity 전체 포함, 합계 {grand_total}건)\n" + "\n".join(count_lines)
+    else:
+        count_block = ""
 
     def _fmt_anomaly(r: dict) -> str:
         ts  = str(r["timestamp"])[:16]
@@ -323,15 +373,18 @@ def run(state: dict) -> dict:
 전력 용어: "계통 전력" 또는 "외부 계통 전력"만 사용 (한전·수전량 등 한국 용어 사용 금지).
 {history_block}
 
+## 조회 기간: {period_str}  (출처: {source_str})
+{count_block}
+【중요】건수를 답할 때는 반드시 위 "총 N건"의 숫자를 사용하세요. 아래 상세 목록은 표본이므로 건수 계산에 사용하지 마세요.
+
+## 이상탐지 상세 샘플 ({len(recent)}건, HIGH/MEDIUM 우선 표시)
+각 항목 아래 "센서:" 줄이 있으면 해당 시각의 실측값입니다.
+{anomaly_block}
+
 ## 시설 이벤트 참조
 {_REGIME_EVENTS}
 {_GATEWAY_FAILURES}
 ※ 게이트웨이 장애 구간의 이상은 인공 보정 데이터이므로 반드시 명시하세요.
-
-## 조회 기간: {period_str}  (출처: {source_str})
-## 이상탐지 결과 ({len(recent)}건)
-각 항목 아래 "센서:" 줄이 있으면 해당 시각의 실측값입니다. 수치를 직접 인용하여 원인을 분석하세요.
-{anomaly_block}
 
 {ANOMALY_DOMAIN_PROMPT}
 

@@ -128,8 +128,20 @@ def predict(
 
         engine = build_engine()
         spec   = METER_SPECS_BY_URN[meter_urn]
-        now    = pd.Timestamp.now(tz="UTC")
-        raw_df = fetch_meter_window(engine, spec, end_ts=now, window_hours=200)
+        # DB 최신 데이터 시각 기준으로 조회 (실시간 데이터 없을 때 대비)
+        from sqlalchemy import text as sa_text
+        with engine.connect() as conn:
+            result = conn.execute(
+                sa_text("SELECT MAX(ts) FROM reference.corrected_resampled_1h WHERE meter_urn = :urn"),
+                {"urn": meter_urn},
+            )
+            max_ts = result.scalar()
+        if max_ts:
+            end_ts = pd.Timestamp(max_ts)
+            end_ts = end_ts.tz_convert("UTC") if end_ts.tzinfo else end_ts.tz_localize("UTC")
+        else:
+            end_ts = pd.Timestamp.now(tz="UTC")
+        raw_df = fetch_meter_window(engine, spec, end_ts=end_ts, window_hours=200)
 
         df = predict_meter(meter_urn, horizon, raw_df, spec)
         records = [

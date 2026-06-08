@@ -86,10 +86,7 @@ def _batch_predict_meter(
 
     routing = load_routing(meter_urn, 1)
     input_scaler, target_scaler = load_scalers(meter_urn, 1)
-    all_feature_columns = load_feature_columns(meter_urn, 1)
-    # 스케일러는 학습 당시 피처 수로 고정 → 앞 n_features_in_ 개만 사용
-    n_lstm_features = input_scaler.n_features_in_
-    feature_columns = all_feature_columns[:n_lstm_features]
+    feature_columns = load_feature_columns(meter_urn, 1)
     threshold = float(routing.get("anomaly_threshold") or 5000.0)
 
     top2_versions = routing.get("lstm_top2_versions") or []
@@ -99,6 +96,15 @@ def _batch_predict_meter(
     variant = _VARIANT_MAP.get(version)
     if variant is None:
         return pd.DataFrame()
+
+    # checkpoint weight shape으로 실제 입력 크기 감지 (재학습 전/후 호환)
+    try:
+        pt_path = ARTIFACTS_DIR / f"1h" / meter_urn / f"lstm_{version}.pt"
+        state = torch.load(pt_path, map_location="cpu", weights_only=True)
+        n_lstm_features = state["recurrent.weight_ih_l0"].shape[1]
+    except Exception:
+        n_lstm_features = len(feature_columns)
+    feature_columns = feature_columns[:n_lstm_features]
 
     model = load_lstm_model(
         RecurrentPredictor,
