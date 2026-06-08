@@ -105,6 +105,18 @@ def _parse_date_range(question: str) -> tuple[str | None, str | None]:
         days = int(m.group(1))
         return (now - timedelta(days=days)).strftime("%Y-%m-%d"), now.strftime("%Y-%m-%d")
 
+    # N주 전 / N주일 동안
+    m = re.search(r"(\d+)\s*주(일)?\s*(전|이내|동안)", q)
+    if m:
+        weeks = int(m.group(1))
+        return (now - timedelta(weeks=weeks)).strftime("%Y-%m-%d"), now.strftime("%Y-%m-%d")
+
+    # N개월 전 / N달 동안
+    m = re.search(r"(\d+)\s*(개월|달)\s*(전|이내|동안)", q)
+    if m:
+        months = int(m.group(1))
+        return (now - timedelta(days=months * 30)).strftime("%Y-%m-%d"), now.strftime("%Y-%m-%d")
+
     return None, None
 
 
@@ -425,6 +437,9 @@ def run(state: dict) -> dict:
         ],
         max_tokens=1024,
     )
+
+    if recent:
+        answer += "\n\n[CHART:ANOMALY]"
 
     return {
         **state,

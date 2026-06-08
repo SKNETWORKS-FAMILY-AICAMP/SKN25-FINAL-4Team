@@ -8,6 +8,7 @@ CMS (Condition Monitoring System) 설비 상태 라우터.
 설비 마스터는 손으로 시드하지 않고 로더의 기능별 미터 그룹(계통/PV/CHP/냉방)에서 도출한다.
 """
 import sys
+import math
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -507,6 +508,41 @@ def _months_until(anchor) -> str:
     return anchor.strftime("%Y-%m")
 
 
+def _linreg_fit(values: list[float]) -> tuple[float, float]:
+    """x=[0,1,...]에 대해 y=slope*x + intercept 피팅."""
+    n = len(values)
+    if n < 2:
+        return 0.0, values[0] if values else 0.0
+    xs = list(range(n))
+    mx = sum(xs) / n
+    my = sum(values) / n
+    den = sum((x - mx) ** 2 for x in xs)
+    if den == 0:
+        return 0.0, my
+    slope = sum((xs[i] - mx) * (values[i] - my) for i in range(n)) / den
+    intercept = my - slope * mx
+    return slope, intercept
+
+
+def _exponential_decay_months_until(values: list[float], limit: float) -> float | None:
+    """
+    y = a * e^(-b * x) 피팅 후 y가 limit에 도달하기까지 남은 step 수 반환.
+    ln(y) = ln(a) - b * x
+    """
+    pos_values = [max(v, 1e-5) for v in values]
+    log_values = [math.log(v) for v in pos_values]
+    slope, intercept = _linreg_fit(log_values)
+    if slope >= 0:
+        return None
+    a = math.exp(intercept)
+    b = -slope
+    if a <= limit:
+        return 0.0
+    x_crit = (math.log(a) - math.log(limit)) / b
+    x_curr = len(values) - 1
+    return max(x_crit - x_curr, 0.0)
+
+
 def compute_predictive(months: int = 8) -> dict:
     """설비별 추세 기반 위험 예측. 냉방=COP 추세, 그 외=월 이상 발생률 추세."""
     items = []
@@ -552,12 +588,34 @@ def compute_predictive(months: int = 8) -> dict:
                 direction = "개선"
             else:
                 direction = "안정"
+            
             projection = None
-            if slope < -0.005 and current > _COP_CRITICAL:
-                m = (current - _COP_CRITICAL) / (-slope)
-                if 0 < m <= 36:
-                    projection = f"현 추세 지속 시 약 {round(m)}개월 후 COP {_COP_CRITICAL} 하회 예상"
-            risk = "높음" if (current < 1.7 or (projection and "개월" in projection and direction == "악화" and (current - _COP_CRITICAL) / (-slope) <= 6)) \
+            if current > _COP_CRITICAL:
+                # 1. 선형 외삽 개월 수
+                m_linear = (current - _COP_CRITICAL) / (-slope) if slope < -0.005 else None
+                # 2. 지수 감쇠 외삽 개월 수
+                m_decay = _exponential_decay_months_until(vals, _COP_CRITICAL)
+                
+                # 둘 중 더 보수적인(작은) 남은 수명 선택
+                candidates = [c for c in [m_linear, m_decay] if c is not None and c > 0]
+                if candidates:
+                    m = min(candidates)
+                    if 0 < m <= 36:
+                        # 3. 계절 보수 보정: 예측 범위 내에 여름철(7, 8월)이 낄 때마다 RUL 10%씩 단축 (최대 25%)
+                        try:
+                            curr_month = anchor.month
+                            summer_months = 0
+                            for step in range(1, int(m) + 1):
+                                future_m = (curr_month + step - 1) % 12 + 1
+                                if future_m in (7, 8):
+                                    summer_months += 1
+                            m_adjusted = m * (1.0 - min(summer_months * 0.1, 0.25))
+                            m = round(m_adjusted, 1)
+                        except Exception:
+                            m = round(m, 1)
+                        projection = f"현 추세 지속 시 약 {m}개월 후 COP {_COP_CRITICAL} 하회 예상 (지수감쇠 및 계절보정 적용)"
+            
+            risk = "높음" if (current < 1.7 or (projection and direction == "악화" and ("개월" in projection) and current > _COP_CRITICAL and float(re.search(r"약\s*([\d\.]+)\s*개월", projection).group(1) if re.search(r"약\s*([\d\.]+)\s*개월", projection) else 99) <= 6)) \
                    else ("보통" if direction == "악화" else "낮음")
             note = projection or f"월평균 COP {current:.2f}, 추세 {direction}"
             items.append({

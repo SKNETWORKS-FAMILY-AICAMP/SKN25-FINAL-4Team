@@ -5,6 +5,7 @@ import rehypeKatex from 'rehype-katex'
 import 'katex/dist/katex.min.css'
 import { BASE } from '../api/client'
 import ForecastPanel from './ForecastPanel'
+import AnomalyChartPanel from './AnomalyChartPanel'
 
 const QUICK = [
   { cat: '보고서', color: '#3fb950', questions: ['이번 달 에너지 KPI 요약해줘', '자급률 트렌드를 분석해줘'] },
@@ -294,6 +295,18 @@ const MD_COMPONENTS = {
            </p>
            <div style={{ marginTop: 10, marginBottom: 10, border: '1px solid var(--border)', borderRadius: 8, padding: 10, background: 'var(--bg)', height: 450, overflow: 'hidden' }}>
              <ForecastPanel />
+           </div>
+         </>
+       )
+    }
+    if (textContent.includes('[CHART:ANOMALY]')) {
+       return (
+         <>
+           <p style={{ margin: '0 0 10px', lineHeight: 1.75, color: 'var(--text)' }}>
+             {textContent.replace('[CHART:ANOMALY]', '')}
+           </p>
+           <div style={{ marginTop: 10, marginBottom: 10, borderRadius: 8, overflow: 'hidden', height: 350 }}>
+             <AnomalyChartPanel />
            </div>
          </>
        )

@@ -1,90 +1,87 @@
 """
-일일 보고서 자동 생성 스케줄러.
-
-매일 정해진 시각(기본 06:00)에 ems 데이터의 '가장 최근 완전한 날짜'를 찾아
-일일 보고서를 생성한다. 과거 이력 데이터에서는 마지막 날짜가 고정이지만,
-실시간 데이터가 유입되면 자연히 '어제' 보고서가 매일 생성된다.
-
-환경변수:
-  DAILY_REPORT_ENABLED  : "false"면 스케줄러 비활성화 (기본 활성)
-  DAILY_REPORT_HOUR     : 실행 시각(시), 기본 6
-  DAILY_REPORT_MINUTE   : 실행 시각(분), 기본 0
+FastAPI 백그라운드 자동 스케줄러.
+매월 1일 자정에 v84 앙상블 모델 재학습(train.py)을 서브프로세스로 자동 실행.
 """
 
 import os
-
+import sys
+import subprocess
+from pathlib import Path
+from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
-_scheduler: BackgroundScheduler | None = None
-_last_run: dict = {"date": None, "status": "대기 중", "at": None}
+# 프로젝트 루트 경로 추가
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT))
+
+scheduler = BackgroundScheduler()
 
 
-def _job():
-    """스케줄 실행: 최신 데이터 날짜의 일일 보고서를 생성."""
-    from datetime import datetime
-
-    from api.routers.report import build_daily_report, latest_data_date
-
-    target = latest_data_date()
-    if not target:
-        _last_run.update(status="실패 — 데이터 날짜 확인 불가", at=datetime.now().isoformat())
-        print("[Scheduler] 최신 데이터 날짜를 찾을 수 없음")
-        return
-
-    print(f"[Scheduler] 일일 보고서 생성 시작: {target}")
+def trigger_ml_retraining():
+    """백그라운드에서 python -m ml.pipeline.train 실행"""
+    print(f"[{datetime.now()}] [Scheduler] 자동 ML 재학습(1h/3h) 크론 잡이 시작되었습니다.")
+    
+    # 런팟 또는 로컬 가상환경 파이썬 진입점 찾기
+    venv_python = ROOT / "backend" / ".venv" / "bin" / "python"
+    if not venv_python.exists():
+        # 폴백
+        venv_python = "python"
+    
+    log_dir = ROOT / "backend" / "src" / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_file_path = log_dir / f"auto_train_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    
     try:
-        result = build_daily_report(target, generated_by="scheduler")
-        if result is None:
-            _last_run.update(date=target, status="실패 — 데이터 없음", at=datetime.now().isoformat())
-        else:
-            _last_run.update(date=target, status="성공", at=datetime.now().isoformat())
-            print(f"[Scheduler] 일일 보고서 생성 완료: {target}")
+        # 1시간 예측 및 3시간 예측 모델 순차적 백그라운드 학습 트리거
+        cmd_1h = [str(venv_python), "-m", "ml.pipeline.train", "--horizon", "1"]
+        cmd_3h = [str(venv_python), "-m", "ml.pipeline.train", "--horizon", "3"]
+        
+        print(f"[Scheduler] 1h 모델 학습 커맨드: {' '.join(cmd_1h)}")
+        print(f"[Scheduler] 3h 모델 학습 커맨드: {' '.join(cmd_3h)}")
+        
+        # 로그 파일 스트림 오픈
+        with open(log_file_path, "w", encoding="utf-8") as log_file:
+            log_file.write(f"=== Auto Retraining Start at {datetime.now()} ===\n")
+            log_file.flush()
+            
+            # Non-blocking 실행을 위해 서브프로세스로 비동기 트리거
+            # 1h 완료 후 3h 순차 실행을 셸 스크립트 결합식으로 실행
+            combined_cmd = f"{venv_python} -m ml.pipeline.train --horizon 1 && {venv_python} -m ml.pipeline.train --horizon 3"
+            
+            process = subprocess.Popen(
+                combined_cmd,
+                shell=True,
+                cwd=str(ROOT / "backend"),
+                stdout=log_file,
+                stderr=subprocess.STDOUT
+            )
+            print(f"[Scheduler] 학습 프로세스 트리거 성공 (PID: {process.pid}), 로그: {log_file_path}")
+            
     except Exception as e:
-        _last_run.update(date=target, status=f"오류: {e}", at=datetime.now().isoformat())
-        print(f"[Scheduler] 일일 보고서 생성 오류: {e}")
+        print(f"[Scheduler] ML 재학습 프로세스 실행 중 오류 발생: {e}")
 
 
 def start_scheduler():
-    global _scheduler
-    if os.getenv("DAILY_REPORT_ENABLED", "true").lower() == "false":
-        print("[Scheduler] 비활성화됨 (DAILY_REPORT_ENABLED=false)")
-        return
-    if _scheduler is not None:
-        return
-
-    hour   = int(os.getenv("DAILY_REPORT_HOUR", "6"))
-    minute = int(os.getenv("DAILY_REPORT_MINUTE", "0"))
-
-    _scheduler = BackgroundScheduler(timezone="Europe/Berlin")
-    _scheduler.add_job(
-        _job,
-        trigger=CronTrigger(hour=hour, minute=minute),
-        id="daily_report",
-        replace_existing=True,
-    )
-    _scheduler.start()
-    print(f"[Scheduler] 일일 보고서 스케줄러 시작 — 매일 {hour:02d}:{minute:02d} (Europe/Berlin)")
+    """FastAPI startup_event에서 호출하여 스케줄러 기동"""
+    if not scheduler.running:
+        # 매월 1일 00시 00분에 주기적으로 작동
+        trigger = CronTrigger(day="1", hour="0", minute="0")
+        
+        scheduler.add_job(
+            trigger_ml_retraining,
+            trigger=trigger,
+            id="ml_retraining_job",
+            name="Monthly ML Retraining Job",
+            replace_existing=True
+        )
+        
+        scheduler.start()
+        print(f"[{datetime.now()}] [Scheduler] 백그라운드 크론 스케줄러가 성공적으로 시작되었습니다. (매월 1일 자정 실행)")
 
 
 def stop_scheduler():
-    global _scheduler
-    if _scheduler is not None:
-        _scheduler.shutdown(wait=False)
-        _scheduler = None
-        print("[Scheduler] 종료됨")
-
-
-def scheduler_status() -> dict:
-    """스케줄러 상태 + 다음 실행 시각 + 마지막 실행 결과."""
-    enabled = _scheduler is not None
-    next_run = None
-    if enabled:
-        job = _scheduler.get_job("daily_report")
-        if job and job.next_run_time:
-            next_run = job.next_run_time.isoformat()
-    return {
-        "enabled":  enabled,
-        "next_run": next_run,
-        "last_run": _last_run,
-    }
+    """FastAPI shutdown_event에서 호출하여 안전하게 해제"""
+    if scheduler.running:
+        scheduler.shutdown()
+        print(f"[{datetime.now()}] [Scheduler] 백그라운드 크론 스케줄러가 중지되었습니다.")
