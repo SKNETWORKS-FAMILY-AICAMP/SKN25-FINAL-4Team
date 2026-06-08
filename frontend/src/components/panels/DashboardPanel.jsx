@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Factory, Wrench } from 'lucide-react'
-import { EquipIcon } from '../EquipIcon'
+import { EquipmentIcon } from '../common/EquipmentIcon'
 import {
   BarChart, Bar, LineChart, Line, AreaChart, Area, ComposedChart,
   XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -10,7 +10,7 @@ import {
   getReport, getAnomalySummary, getAnomalies, predictModel,
   getDailyReport, getLatestDataDate, getSimulatorStatus, dailyDownloadUrl,
   getBilling, getLearningStats, getEquipmentStatus, getWorkOrderStats,
-} from '../api/client'
+} from '../../api/client'
 
 const SEV_COLOR  = { HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#2563eb' }
 const TYPE_LABEL = {
@@ -313,7 +313,7 @@ function CmsSummary({ equipment, woStats, onNavigate }) {
             const col = EQ_STATUS_COLOR[eq.status] ?? 'var(--text3)'
             return (
               <div key={eq.id} style={s.eqChip}>
-                <EquipIcon id={eq.id} size={18} />
+                <EquipmentIcon id={eq.id} size={18} />
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 11, color: 'var(--text3)', whiteSpace: 'nowrap' }}>{eq.name}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>

@@ -12,7 +12,7 @@ import {
   Legend,
   CartesianGrid
 } from 'recharts'
-import { BASE } from '../api/client'
+import { BASE } from '../../api/client'
 
 const SEV_COLORS = {
   HIGH: '#f85149',

@@ -6,7 +6,7 @@ import {
 import {
   getDailyReport, getDailyReportList, getLatestDataDate,
   getSchedulerStatus, runSchedulerNow, dailyDownloadUrl,
-} from '../api/client'
+} from '../../api/client'
 
 const tt = {
   contentStyle: { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 },

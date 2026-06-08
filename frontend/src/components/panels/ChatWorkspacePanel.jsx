@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import ChatPanel from './ChatPanel'
-import { listChatSessions, getChatSession, deleteChatSession, deleteAllChatSessions } from '../api/client'
+import { listChatSessions, getChatSession, deleteChatSession, deleteAllChatSessions } from '../../api/client'
 
 const INTENT_COLOR = { rag: '#2563eb', anomaly: '#d29922', report: '#3fb950', forecast: '#a371f7', cms: '#39c5cf' }
 const INTENT_LABEL = { rag: 'RAG', anomaly: '이상탐지', report: '보고서', forecast: '예측', cms: '설비' }

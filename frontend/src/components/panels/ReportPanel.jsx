@@ -5,7 +5,7 @@ import {
   XAxis, YAxis, ZAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
   ReferenceLine,
 } from 'recharts'
-import { getReport, getBalanceReport, getEnergyIntensity } from '../api/client'
+import { getReport, getBalanceReport, getEnergyIntensity } from '../../api/client'
 
 const tooltip = {
   contentStyle: { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 },

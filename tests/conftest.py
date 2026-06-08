@@ -1,11 +1,12 @@
-import os
 import sys
 from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 
-# backend/src 패스를 추가하여 테스트 모듈에서 절대경로 import 가능하게 설정
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+# backend/src를 추가하여 애플리케이션의 절대 import를 그대로 사용한다.
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT / "backend" / "src"))
 
 from api.main import app
 

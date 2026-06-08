@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Wrench } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
-import { listWorkOrders, updateWorkOrderStatus } from '../api/client'
+import { listWorkOrders, updateWorkOrderStatus } from '../../api/client'
 
 const STATUS = {
   open:        { label: '열림',   color: '#2563eb', icon: '📋' },

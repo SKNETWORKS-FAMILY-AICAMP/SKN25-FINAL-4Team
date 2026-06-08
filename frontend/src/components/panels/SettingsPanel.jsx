@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Settings, Cpu, Building2, CalendarClock, Bell, CheckCircle, XCircle, Loader2, Zap } from 'lucide-react'
-import { getSettings, updateSettings, testLlm } from '../api/client'
+import { getSettings, updateSettings, testLlm } from '../../api/client'
 
 const PROVIDERS = [
   { value: 'openai',    label: 'OpenAI' },

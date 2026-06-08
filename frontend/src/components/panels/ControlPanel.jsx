@@ -5,7 +5,7 @@ import {
   approveRecommendation,
   rejectRecommendation,
   clearRecommendations,
-} from '../api/client'
+} from '../../api/client'
 
 const PRIORITY_COLOR = {
   HIGH:   { bg: '#f8514922', border: '#f85149', label: '높음', dot: '#f85149' },

@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { METER_CATALOG } from '../data/meterCatalog'
+import { METER_CATALOG } from '../../data/meterCatalog'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

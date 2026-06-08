@@ -4,7 +4,7 @@ import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid, ReferenceLine,
 } from 'recharts'
-import { getBilling } from '../api/client'
+import { getBilling } from '../../api/client'
 
 const fmtEur = v => (v == null) ? '–' : '€ ' + Math.round(v).toLocaleString('de-DE')
 const fmtKrw = (eur, rate) => (eur == null) ? '' : '≈ ₩ ' + Math.round(eur * rate).toLocaleString('ko-KR')

@@ -8,7 +8,7 @@ const MAP = {
   pv:      { I: Sun,       color: '#16a34a' },  // 태양광 — 그린
 }
 
-export function EquipIcon({ id, size = 20, color, strokeWidth = 2 }) {
+export function EquipmentIcon({ id, size = 20, color, strokeWidth = 2 }) {
   const m = MAP[id] || { I: Box, color: '#5a6675' }
   const Ic = m.I
   return <Ic size={size} color={color || m.color} strokeWidth={strokeWidth} />

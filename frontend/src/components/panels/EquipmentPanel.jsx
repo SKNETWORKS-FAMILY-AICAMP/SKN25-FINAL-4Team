@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Factory, RefreshCw } from 'lucide-react'
-import { EquipIcon } from '../EquipIcon'
-import { getEquipmentStatus, diagnoseEquipment, createWorkOrder, getPredictiveMaintenance } from '../api/client'
+import { EquipmentIcon } from '../common/EquipmentIcon'
+import { getEquipmentStatus, diagnoseEquipment, createWorkOrder, getPredictiveMaintenance } from '../../api/client'
 
 const PRIORITY_BY_STATUS = { 경고: 'HIGH', 주의: 'MEDIUM', 정상: 'LOW' }
 const RISK_STYLE = {
@@ -41,7 +41,7 @@ function PredictiveSection({ items }) {
           const rk = RISK_STYLE[it.risk] ?? RISK_STYLE.낮음
           return (
             <div key={it.id} style={s.predRow}>
-              <span style={{ width: 22, display: 'inline-flex', justifyContent: 'center' }}><EquipIcon id={it.id} size={18} /></span>
+              <span style={{ width: 22, display: 'inline-flex', justifyContent: 'center' }}><EquipmentIcon id={it.id} size={18} /></span>
               <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', width: 88 }}>{it.name}</span>
               <span style={{ ...s.riskBadge, color: rk.color, background: rk.bg, border: `1px solid ${rk.color}55` }}>
                 {DIR_MARK[it.direction] ?? ''} 위험 {it.risk}
@@ -116,7 +116,7 @@ function EquipmentCard({ item, onClick }) {
     >
       <div style={s.cardTop}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-          <EquipIcon id={item.id} size={26} />
+          <EquipmentIcon id={item.id} size={26} />
           <div style={{ minWidth: 0 }}>
             <div style={s.name}>{item.name}</div>
             <span style={{ ...s.statusBadge, color: st.color, background: st.bg, border: `1px solid ${st.color}55` }}>
@@ -297,7 +297,7 @@ function DiagnosisModal({ item, diag, loading, onRegen, onClose, onViewAnomalies
       <div style={s.modal} onClick={e => e.stopPropagation()}>
         <div style={s.modalHeader}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <EquipIcon id={item.id} size={24} />
+            <EquipmentIcon id={item.id} size={24} />
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>{item.name} · AI 진단</div>
               <span style={{ ...s.statusBadge, color: st.color, background: st.bg, border: `1px solid ${st.color}55` }}>

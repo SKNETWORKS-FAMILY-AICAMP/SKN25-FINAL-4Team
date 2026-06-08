@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine,
 } from 'recharts'
-import { getForecastModels, getForecastStatus, trainModel, predictModel } from '../api/client'
+import { getForecastModels, getForecastStatus, trainModel, predictModel } from '../../api/client'
 
 // 계량기 목록 (v84 파이프라인 대상 45개 — 선택 UI용 그룹화)
 const METER_GROUPS = [

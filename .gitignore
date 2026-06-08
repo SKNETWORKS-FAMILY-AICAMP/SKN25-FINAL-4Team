@@ -1,48 +1,37 @@
-# ── 앱 실행 불필요 (개발/학습/분석 전용) ─────────────────────────────
-CLAUDE.md
-/data/
-/lib/
-/team/
-/docs/
-/notebook/
-/outputs/
-/eval/
-/dev/docs/
-/dev/data/
-/dev/eval/
-honda_energy_eda.ipynb
-
-# ── 환경변수 / 시크릿 (절대 커밋 금지) ──────────────────────────────
+# 환경 변수와 로컬 시크릿
 .env
 .env.local
 .env.*.local
 
-# ── Python ───────────────────────────────────────────────────────────
+# Python 캐시와 빌드 결과
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
 .Python
-*.egg-info/
-dist/
-build/
 .eggs/
+*.egg-info/
 *.egg
+build/
+dist/
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.pyright/
 
-# ── 가상환경 ──────────────────────────────────────────────────────────
+# Python 가상환경
 .venv/
 .venv-train/
 venv/
 env/
 ENV/
 
-# ── 모델 / 데이터 (용량 크거나 재현 가능) ────────────────────────────
-src/models/anomaly/saved/
-src/models/forecasting/saved/
-backend/src/models/anomaly/saved/
-backend/src/models/forecasting/saved/
-backend/ml/pipeline/artifacts/
-ml/pipeline/artifacts/
+# 학습 모델과 실험 결과
+/backend/src/models/anomaly/saved/
+/backend/src/models/forecasting/saved/
+/backend/ml/pipeline/artifacts/
 mlruns/
 mlruns.db
 *.pkl
@@ -53,22 +42,36 @@ mlruns.db
 *.onnx
 *.cbm
 
-# ── 생성 보고서 ───────────────────────────────────────────────────────
-docs/reports/*.pdf
-backend/docs/
-# RAG 지식베이스 문서는 예외 (RAG 시스템 필수)
-!backend/docs/kb/
-!backend/docs/kb/**
+# 로컬 개발, 분석, 평가 자료
+CLAUDE.md
+/data/
+/lib/
+/team/
+/docs/
+/notebook/
+/outputs/
+/eval/
+/dev/data/
+/dev/docs/
+/dev/eval/
+honda_energy_eda.ipynb
 
-# ── 노트북 출력 (선택적 — 결과물이 필요하면 주석 처리) ─────────────
-*.ipynb_checkpoints/
+# 생성 보고서와 런타임 파일
+/backend/docs/*
+!/backend/docs/kb/
+!/backend/docs/kb/**
+*.log
+*.pid
 
-# ── Node.js / 프론트엔드 ─────────────────────────────────────────────
-frontend/node_modules/
-frontend/dist/
-frontend/.vite/
+# Jupyter
+.ipynb_checkpoints/
 
-# ── OS / 에디터 ───────────────────────────────────────────────────────
+# Node.js와 프런트엔드 빌드 결과
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.vite/
+
+# 운영체제와 에디터
 .DS_Store
 Thumbs.db
 .idea/

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Users, UserPlus, Trash2, Search, ShieldCheck, Eye, Wrench, X, Loader2 } from 'lucide-react'
-import { listUsers, createUser, updateUser, deleteUser } from '../api/client'
+import { listUsers, createUser, updateUser, deleteUser } from '../../api/client'
 
 const ROLES = {
   admin:    { label: '최고 관리자', color: '#2563eb', bg: '#dbeafe' },

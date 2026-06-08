@@ -132,7 +132,7 @@ docker compose up --build -d
 ```bash
 cd backend
 python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.backend.txt
+pip install -r requirements.txt
 cd src && uvicorn api.main:app --reload --port 8000
 ```
 
@@ -141,6 +141,13 @@ cd src && uvicorn api.main:app --reload --port 8000
 cd frontend
 npm install
 npm run dev    # http://localhost:5173
+```
+
+### 테스트
+프로젝트 루트에서 실행합니다.
+
+```bash
+python -m pytest tests
 ```
 
 ---
@@ -152,6 +159,7 @@ npm run dev    # http://localhost:5173
 ### 환경 세팅 (최초 1회)
 
 ```bash
+cd backend
 python3.12 -m venv .venv-train
 .venv-train/bin/pip install torch --index-url https://download.pytorch.org/whl/cpu
 .venv-train/bin/pip install numpy pandas scikit-learn joblib catboost lightgbm \
@@ -182,7 +190,7 @@ OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
 >
 > **`--skip-pass1`** — LSTM `.pt` 파일이 이미 있으면 Pass 1(LSTM 학습, ~3시간)을 건너뛰고 Pass 2(CatBoost/LightGBM/Ridge 학습)부터 재시작합니다.
 
-학습 완료 후 `ml/pipeline/artifacts/{1h|3h}/{meter_urn}/` 에 모델 파일이 생성됩니다.
+학습 완료 후 `backend/ml/pipeline/artifacts/{1h|3h}/{meter_urn}/` 에 모델 파일이 생성됩니다.
 백엔드 `GET /forecast/predict/v84-ensemble?meter_urn=H2.Z66&horizon=1` 로 추론 확인.
 
 ---
@@ -250,47 +258,39 @@ OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
 
 ## 프로젝트 구조
 
-```
+```text
 SKN25-FINAL-4Team/
-├── backend/                                # FastAPI 백엔드
+├── backend/                         # FastAPI 및 ML 코드
+│   ├── src/
+│   │   ├── agents/                  # LangGraph 에이전트
+│   │   ├── api/                     # 앱 진입점, 서비스, API 라우터
+│   │   ├── data/                    # 데이터 접근
+│   │   ├── knowledge/               # RAG 지식 및 임베딩
+│   │   └── models/anomaly/          # 이상 탐지 모델
+│   ├── ml/pipeline/                 # 예측 학습·추론 파이프라인
+│   ├── docs/kb/                     # RAG 지식베이스 문서
+│   ├── requirements.txt
+│   └── Dockerfile
+├── frontend/                        # React (Vite) 대시보드
 │   └── src/
-│       ├── agents/                         # LangGraph 멀티 에이전트
-│       │   ├── orchestrator.py             # 의도 분류 + 라우팅 (규칙 92% + LLM 폴백)
-│       │   ├── cms_agent.py                # 설비 상태/진단/예지보전/작업지시
-│       │   ├── forecast_agent.py           # v84 앙상블 추론 + 자연어 설명
-│       │   └── anomaly_agent · reporting_agent · rag_agent · state
-│       ├── api/
-│       │   ├── main.py · db.py · scheduler.py · report_export.py
-│       │   └── routers/   cms · control · forecast · anomalies · report
-│       │                  chat · simulator · notifications · settings · users
-│       ├── data/loader.py                  # reference.corrected_resampled_1h 로더
-│       ├── knowledge/                      # domain_knowledge · embedding(pgvector)
-│       └── models/
-│           └── anomaly/   residual_model(주력) · ensemble/statistical/isolation/lstm_ae(폴백)
-├── frontend/                               # React (Vite) 대시보드
-│   └── src/
-│       ├── App.jsx · theme.js · EquipIcon.jsx
-│       └── components/   Dashboard · Equipment · Maintenance · Anomaly · Control
-│                         Forecast · Billing · Report · Chat · Topology
-│                         Settings · Users · SimulatorClock
-├── ml/                                     # v84 앙상블 ML 파이프라인 (gitignored)
-│   └── pipeline/
-│       ├── train.py                        # 학습 진입점 (--horizon 1|3 --workers N --skip-pass1)
-│       ├── inference.py                    # 추론 진입점 (predict_meter)
-│       └── common/                         # config · preprocessing · model
-│                                           #  · catboost · lightgbm · ridge · naive
-│                                           #  · ensemble · router · artifacts · db
-├── dev/                                    # 개발/평가 전용 (gitignored, 앱 실행 불필요)
-│   └── eval/
-│       ├── data/                           # 골든 데이터셋 (chat_qa_golden_100_final.json)
-│       └── scripts/
-│           ├── test_intent_golden.py       # 의도 분류 정확도 테스트 (100문항 골든셋)
-│           └── test_sllm_perf.py           # sLLM 성능 종합 테스트
+│       ├── api/                     # 백엔드 API 클라이언트
+│       ├── components/
+│       │   ├── common/              # 공용 UI 컴포넌트
+│       │   └── panels/              # 화면 단위 패널
+│       ├── data/                    # 정적 카탈로그
+│       ├── App.jsx
+│       └── theme.js
+├── tests/                           # 백엔드 단위·API 테스트
+├── dev/                             # 분석 자료, 평가, 개발 스크립트
+│   ├── data/
+│   ├── docs/
+│   ├── eval/
+│   └── scripts/
 ├── .env.example
 └── docker-compose.yml
 ```
 
-> `ml/`과 `dev/`는 `.gitignore`에 포함됩니다. 앱 실행에는 `frontend/`와 `backend/`만 필요합니다.
+> `dev/data`, `dev/docs`, `dev/eval`과 생성된 모델 artifacts는 Git에서 제외됩니다. 앱 실행 코드는 `backend`와 `frontend`, 자동화 테스트는 `tests`에 둡니다.
 
 ---
 

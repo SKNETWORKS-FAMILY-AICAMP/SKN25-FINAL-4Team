@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import {
   getSimulatorStatus, startSimulator, pauseSimulator,
   resetSimulator, setSimulatorSpeed, seekSimulator,
-} from '../api/client'
+} from '../../api/client'
 
 const SPEEDS = [
   { label: '1×',  value: 3600,  hint: '1초 = 1시간'  },

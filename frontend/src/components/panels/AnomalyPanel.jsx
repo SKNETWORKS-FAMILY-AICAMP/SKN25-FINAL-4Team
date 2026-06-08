@@ -5,7 +5,7 @@ import {
   ReferenceLine, Legend, PieChart, Pie, Cell,
 } from 'recharts'
 import { getAnomalies, getAnomalySummary, getAnomalyTimeline, getAnomalyTypes,
-         getAnomalyContext, getAnomalyEvents, sendChat, runDetection, getDetectionStatus } from '../api/client'
+         getAnomalyContext, getAnomalyEvents, sendChat, runDetection, getDetectionStatus } from '../../api/client'
 
 const SEV_COLOR  = { HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#2563eb' }
 const TYPE_LABEL = {
