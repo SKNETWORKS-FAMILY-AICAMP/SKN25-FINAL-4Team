@@ -25,6 +25,8 @@ async def lifespan(app: FastAPI):
     from api.db import get_conn
     from api.routers.chat import _ensure_chat_tables
     from api.routers.cms import _ensure_wo_table, _ensure_anomaly_columns
+    from api.routers.report import _ensure_monthly_table, _ensure_daily_table
+    from api.routers.control import _ensure_control_table
 
     def init_db_tables():
         try:
@@ -32,10 +34,33 @@ async def lifespan(app: FastAPI):
                 _ensure_chat_tables(conn)
                 _ensure_wo_table(conn)
                 _ensure_anomaly_columns(conn)
+                _ensure_monthly_table(conn)
+                _ensure_daily_table(conn)
+                _ensure_control_table(conn)
         except Exception as e:
             print(f"[Init] DB table creation failed: {e}")
 
+    def warmup_pool():
+        """풀의 모든 최소 커넥션을 미리 검증해 첫 요청 500 방지."""
+        from api.db import _get_pool, _reset_pool
+        import psycopg2
+        for _ in range(3):
+            try:
+                p = _get_pool()
+                conns = [p.getconn() for _ in range(p.minconn)]
+                for c in conns:
+                    try:
+                        c.cursor().execute("SELECT 1")
+                        c.rollback()
+                    except Exception:
+                        pass
+                    p.putconn(c)
+                return
+            except Exception:
+                _reset_pool()
+
     await asyncio.get_running_loop().run_in_executor(None, init_db_tables)
+    await asyncio.get_running_loop().run_in_executor(None, warmup_pool)
 
     start_scheduler()
     simulator.start_worker(asyncio.get_running_loop())

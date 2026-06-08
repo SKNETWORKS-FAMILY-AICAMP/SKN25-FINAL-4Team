@@ -47,18 +47,19 @@ def _reset_pool():
 
 
 def _get_valid_conn(p: pool.ThreadedConnectionPool):
-    """풀에서 커넥션을 꺼내 유효성 검증 후 반환. 죽은 커넥션이면 폐기하고 새로 생성."""
-    conn = p.getconn()
-    try:
-        conn.cursor().execute("SELECT 1")
-        conn.rollback()
-        return conn
-    except OperationalError:
+    """풀에서 살아있는 커넥션을 반환. 죽은 커넥션은 폐기하고 재시도."""
+    for _ in range(p.maxconn):
+        conn = p.getconn()
         try:
-            p.putconn(conn, close=True)
-        except Exception:
-            pass
-        return p.getconn()
+            conn.cursor().execute("SELECT 1")
+            conn.rollback()
+            return conn
+        except OperationalError:
+            try:
+                p.putconn(conn, close=True)
+            except Exception:
+                pass
+    raise OperationalError("pool에 유효한 커넥션 없음")
 
 
 @contextmanager
