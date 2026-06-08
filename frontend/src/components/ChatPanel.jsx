@@ -225,12 +225,7 @@ export default function ChatPanel({ initialSessionId = null, initialMessages = n
                 ? <span>{m.text}</span>
                 : <div style={s.mdWrap}>
                     {m.streaming && !m.text
-                      ? <div style={s.statusBox}>
-                          <div style={s.typing}><span/><span/><span/></div>
-                          {m.statusText && (
-                            <div style={s.statusText}>{m.statusText}</div>
-                          )}
-                        </div>
+                      ? <StepIndicator statusText={m.statusText} />
                       : <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} components={MD_COMPONENTS}>
                           {m.text + (m.streaming ? '▌' : '')}
                         </ReactMarkdown>
@@ -367,3 +362,148 @@ const s = {
   input:      { flex: 1, padding: '10px 16px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text)', fontSize: 14, outline: 'none' },
   sendBtn:    { padding: '10px 20px', background: '#2563eb', border: 'none', borderRadius: 8, color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 14, minWidth: 64 },
 }
+
+const STEPS = [
+  { id: 1, label: '의도 분류', keyword: '의도' },
+  { id: 2, label: '데이터 조회', keyword: '조회' },
+  { id: 3, label: '에이전트 분석', keyword: '분석' },
+  { id: 4, label: '답변 구성', keyword: '정리' },
+  { id: 5, label: '완료 준비', keyword: '거의' }
+]
+
+function StepIndicator({ statusText }) {
+  let activeStep = 1
+  if (statusText) {
+    for (const step of STEPS) {
+      if (statusText.includes(step.keyword)) {
+        activeStep = step.id
+        break
+      }
+    }
+  }
+
+  return (
+    <div style={ss.indicatorContainer}>
+      <style>{`
+        @keyframes statusPulse {
+          0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+          70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(37, 99, 235, 0); }
+          100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+      `}</style>
+      
+      <div style={ss.stepsWrapper}>
+        {STEPS.map((step, idx) => {
+          const isCompleted = step.id < activeStep
+          const isActive = step.id === activeStep
+          
+          return (
+            <div key={step.id} style={ss.stepNode}>
+              {idx > 0 && (
+                <div style={{
+                  ...ss.connectorLine,
+                  background: isCompleted || isActive ? '#2563eb' : 'var(--line)',
+                  ...(isActive ? { backgroundImage: 'linear-gradient(90deg, #2563eb 50%, var(--line) 50%)', backgroundSize: '20px 100%' } : {})
+                }} />
+              )}
+              
+              <div style={{
+                ...ss.nodeCircle,
+                borderColor: isCompleted || isActive ? '#2563eb' : 'var(--border)',
+                background: isCompleted ? '#2563eb' : 'var(--surface)',
+                color: isCompleted ? '#fff' : (isActive ? '#2563eb' : 'var(--text4)'),
+                fontWeight: isActive ? '700' : 'normal',
+                ...(isActive ? { animation: 'statusPulse 2s infinite ease-in-out' } : {})
+              }}>
+                {isCompleted ? '✓' : step.id}
+              </div>
+              
+              <div style={{
+                ...ss.nodeLabel,
+                color: isActive ? '#2563eb' : (isCompleted ? 'var(--text)' : 'var(--text4)'),
+                fontWeight: isActive ? '600' : 'normal'
+              }}>
+                {step.label}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      
+      {statusText && (
+        <div style={ss.currentStatusText}>
+          {statusText}
+        </div>
+      )}
+    </div>
+  )
+}
+
+const ss = {
+  indicatorContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    minWidth: '280px',
+    padding: '12px 14px',
+    background: 'var(--surface)',
+    borderRadius: '10px',
+    border: '1px solid var(--border)',
+    gap: '12px',
+    marginTop: '6px',
+    marginBottom: '6px',
+    boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.02)'
+  },
+  stepsWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    position: 'relative',
+    width: '100%',
+    padding: '0 4px'
+  },
+  stepNode: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    position: 'relative',
+    flex: '1',
+    zIndex: 1
+  },
+  connectorLine: {
+    position: 'absolute',
+    right: '50%',
+    top: '11px',
+    width: '100%',
+    height: '2px',
+    zIndex: -1,
+    transition: 'background 0.3s ease'
+  },
+  nodeCircle: {
+    width: '22px',
+    height: '22px',
+    borderRadius: '50%',
+    border: '2px solid',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '10px',
+    transition: 'all 0.3s ease',
+    boxSizing: 'border-box'
+  },
+  nodeLabel: {
+    fontSize: '9px',
+    marginTop: '6px',
+    textAlign: 'center',
+    whiteSpace: 'nowrap',
+    transition: 'color 0.3s ease'
+  },
+  currentStatusText: {
+    fontSize: '11px',
+    color: 'var(--text3)',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    letterSpacing: '-0.2px'
+  }
+}
+
