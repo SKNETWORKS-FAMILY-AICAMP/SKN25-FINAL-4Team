@@ -57,6 +57,18 @@ _KW_CMS      = re.compile(r"작업\s*지시|정비|수리|예지보전|상태\s*
                           r"|열병합|시뮬|시뮬레이터|시연"
                           r"|설비.*이상\s*건수|설비.*최근\s*이상|태양광.*이상\s*건수|태양광.*최근\s*이상")
 
+# 에너지·설비 관리와 명백히 무관한 주제 → 즉시 off_topic 거절
+_KW_OFFTOPIC = re.compile(
+    r"주식|코인|비트코인|가상\s*화폐|암호\s*화폐"
+    r"|요리|레시피|음식|맛집|식당|배달|점심\s*메뉴|저녁\s*메뉴|아침\s*메뉴|구내식당"
+    r"|연예인|드라마|영화|음악|스포츠|야구|축구|농구|골프|올림픽"
+    r"|정치|선거|국회|대통령|국정|법안"
+    r"|오늘\s*날씨|내일\s*날씨|날씨\s*예보|기상\s*예보"
+    r"|의료|병원|질병|증상|처방전"
+    r"|연애|결혼|이혼|육아|임신"
+    r"|게임|유튜브|틱톡|sns|인스타|트위터"
+)
+
 # 미래 시제 강제 override — anomaly/cms 키워드와 동시에 있어도 forecast로
 _KW_FUTURE   = re.compile(r"계속\s*될까|계속될까|낮아질까|높아질까|늘어날까|줄어들까"
                           r"|떨어질까|올라갈까|계속\s*낮아|계속\s*떨어|계속\s*높아"
@@ -69,17 +81,19 @@ _KW_EQ_ANOMALY_COUNT = re.compile(
 
 INTENT_PROMPT = """사용자 질문을 읽고 아래 중 하나로만 답하세요. 다른 말은 하지 마세요.
 
-- anomaly  : 이상탐지 결과·건수·원인 분석. 이상 유형명(CHPOutage/PowerSpike/COPDrop/NightConsumption/PVNightNonZero)이 나오면 무조건 anomaly. "이상 몇 건?", "이상 발생 이력", "이상 심각도" 등.
-- cms      : 설비 상태 점검, 작업지시, 정비, 예지보전. "CHP 괜찮아?", "태양광 이상 확인해봐", "설비 점검해야 돼?", "냉방 설비 상태".
-- report   : 실적·현황 조회. 보고서, KPI, 월간, 요약, 통계, 자급률, 의존도, 사용량, 비용, 전력 비용. "자급률 왜 떨어졌어?", "외부 전력 의존도?", "이번 달 소비량?".
-- forecast : 미래 예측·전망. "앞으로", "내일", "다음 주", "~될까?", "~낮아질까?", "~떨어질까?", "추세". 이상 키워드가 있어도 미래를 묻는 것이면 forecast. 예: "COP 계속 낮아질까?" = forecast.
-- rag      : 개념 설명, 계량기 값 의미, 실시간 센서값 조회, 그 외.
+- anomaly   : 이상탐지 결과·건수·원인 분석. 이상 유형명(CHPOutage/PowerSpike/COPDrop/NightConsumption/PVNightNonZero)이 나오면 무조건 anomaly.
+- cms       : 설비 상태 점검, 작업지시, 정비, 예지보전. "CHP 괜찮아?", "설비 점검해야 돼?".
+- report    : 실적·현황 조회. 보고서, KPI, 월간, 요약, 통계, 자급률, 의존도, 사용량, 비용.
+- forecast  : 미래 예측·전망. "앞으로", "내일", "~될까?", "~낮아질까?", "추세".
+- rag       : 개념 설명, 계량기 값 의미, 실시간 센서값 조회, 그 외 에너지·설비 관련 질문.
+- off_topic : 에너지 관리, 설비 모니터링, Honda 공장과 전혀 무관한 질문. 주식, 요리, 날씨 예보, 연예, 스포츠, 정치, 의료, SNS 등.
 
 핵심 구분:
-- "이상 있어?" / "이상 발생했어?" → anomaly (현재/과거 탐지 결과)
-- "이상 계속될까?" / "COP 떨어질까?" → forecast (미래 예측)
-- "태양광 이상 확인해봐" / "설비 상태 어때?" → cms (설비 점검)
-- "자급률 왜 떨어졌어?" / "의존도 어때?" → report (실적 현황)
+- "이상 있어?" / "이상 발생했어?" → anomaly
+- "COP 떨어질까?" / "이상 계속될까?" → forecast
+- "설비 상태 어때?" / "태양광 이상 확인해봐" → cms
+- "자급률 왜 떨어졌어?" / "이번 달 비용?" → report
+- "오늘 주식 뭐 살까?" / "점심 뭐 먹을까?" / "날씨 예보 알려줘" → off_topic
 
 질문: {question}"""
 
@@ -95,6 +109,10 @@ def _rule_classify(question: str) -> str | None:
         return "rag"
 
     q = question.lower()
+
+    # 에너지·설비와 무관한 명백 off-topic — LLM 호출 불필요
+    if _KW_OFFTOPIC.search(q):
+        return "off_topic"
 
     # 미래 시제 표현이 있으면 다른 키워드보다 forecast 우선
     if _KW_FUTURE.search(q):
@@ -132,13 +150,28 @@ def classify_intent(state: AgentState) -> AgentState:
         [{"role": "user", "content": INTENT_PROMPT.format(question=question)}],
         max_tokens=10,
     ).strip().lower()
-    intent = raw if raw in ("anomaly", "report", "rag", "forecast", "cms") else "rag"
+    valid = ("anomaly", "report", "rag", "forecast", "cms", "off_topic")
+    intent = raw if raw in valid else "rag"
     print(f"[Orchestrator] 의도 분류 (LLM): '{question}' → {intent}")
     return {**state, "intent": intent}
 
 
 def route(state: AgentState) -> str:
     return state.get("intent", "rag")
+
+
+# ── 거절 응답 (off_topic) — LLM 호출 없이 템플릿으로 반환 ──────────
+
+_REJECTION_MSG = (
+    "저는 Honda R&D 에너지·설비 관리 전문 AI 코파일럿입니다.\n"
+    "에너지 데이터 분석, 설비 상태 모니터링, 이상탐지, 예지보전 등 "
+    "설비 운영 관련 질문을 도와드릴 수 있습니다."
+)
+
+
+def rejection_node(state: AgentState) -> AgentState:
+    print("[Orchestrator] off_topic → 거절 응답")
+    return {**state, "final_answer": _REJECTION_MSG}
 
 
 # ── 노드 2~5: 하위 에이전트 래퍼 ────────────────────────────────
@@ -220,30 +253,33 @@ def build_graph():
 
         g = StateGraph(AgentState)
 
-        g.add_node("classify",  classify_intent)
-        g.add_node("rag",       rag_node)
-        g.add_node("anomaly",   anomaly_node)
-        g.add_node("report",    report_node)
-        g.add_node("forecast",  forecast_node)
-        g.add_node("cms",       cms_node)
-        g.add_node("critic",    critic_node)
+        g.add_node("classify",   classify_intent)
+        g.add_node("rag",        rag_node)
+        g.add_node("anomaly",    anomaly_node)
+        g.add_node("report",     report_node)
+        g.add_node("forecast",   forecast_node)
+        g.add_node("cms",        cms_node)
+        g.add_node("critic",     critic_node)
+        g.add_node("rejection",  rejection_node)
 
         g.set_entry_point("classify")
 
         g.add_conditional_edges("classify", route, {
-            "rag":      "rag",
-            "anomaly":  "anomaly",
-            "report":   "report",
-            "forecast": "forecast",
-            "cms":      "cms",
+            "rag":       "rag",
+            "anomaly":   "anomaly",
+            "report":    "report",
+            "forecast":  "forecast",
+            "cms":       "cms",
+            "off_topic": "rejection",
         })
 
-        g.add_edge("rag",      "critic")
-        g.add_edge("anomaly",  "critic")
-        g.add_edge("report",   "critic")
-        g.add_edge("forecast", "critic")
-        g.add_edge("cms",      "critic")
-        g.add_edge("critic",   END)
+        g.add_edge("rag",       "critic")
+        g.add_edge("anomaly",   "critic")
+        g.add_edge("report",    "critic")
+        g.add_edge("forecast",  "critic")
+        g.add_edge("cms",       "critic")
+        g.add_edge("critic",    END)
+        g.add_edge("rejection", END)   # 거절은 critic 통과 불필요
 
         _graph = g.compile()
     return _graph
