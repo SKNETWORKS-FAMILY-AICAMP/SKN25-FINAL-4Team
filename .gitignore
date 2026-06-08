@@ -52,6 +52,9 @@ mlruns.db
 # ── 생성 보고서 ───────────────────────────────────────────────────────
 docs/reports/*.pdf
 backend/docs/
+# RAG 지식베이스 문서는 예외 (RAG 시스템 필수)
+!backend/docs/kb/
+!backend/docs/kb/**
 
 # ── 노트북 출력 (선택적 — 결과물이 필요하면 주석 처리) ─────────────
 *.ipynb_checkpoints/
