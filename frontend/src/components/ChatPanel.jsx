@@ -120,10 +120,11 @@ export default function ChatPanel({ initialSessionId = null, initialMessages = n
               return next
             })
           } else if (ev.type === 'done') {
+            const pdfFilename = ev.pdf_path ? ev.pdf_path.split(/[/\\]/).pop() : null
             setMessages(prev => {
               const next = [...prev]
               const last = next[next.length - 1]
-              if (last?.streaming) next[next.length - 1] = { ...last, text: accText, intent, streaming: false }
+              if (last?.streaming) next[next.length - 1] = { ...last, text: accText, intent, streaming: false, pdfFilename }
               return next
             })
           } else if (ev.type === 'error') {
@@ -226,9 +227,39 @@ export default function ChatPanel({ initialSessionId = null, initialMessages = n
                 : <div style={s.mdWrap}>
                     {m.streaming && !m.text
                       ? <StepIndicator statusText={m.statusText} />
-                      : <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} components={MD_COMPONENTS}>
-                          {m.text + (m.streaming ? '▌' : '')}
-                        </ReactMarkdown>
+                      : <>
+                          <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} components={MD_COMPONENTS}>
+                            {m.text + (m.streaming ? '▌' : '')}
+                          </ReactMarkdown>
+                          {m.pdfFilename && (
+                            <div style={{ marginTop: 12, borderTop: '1px solid var(--border)', paddingTop: 10, display: 'flex', justifyContent: 'flex-start' }}>
+                              <a
+                                href={`${BASE}/chat/download-pdf?filename=${m.pdfFilename}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '6px',
+                                  padding: '6px 12px',
+                                  background: '#2563eb18',
+                                  border: '1px solid #2563eb44',
+                                  borderRadius: '6px',
+                                  color: '#2563eb',
+                                  fontSize: '12px',
+                                  fontWeight: '600',
+                                  textDecoration: 'none',
+                                  cursor: 'pointer',
+                                  transition: 'background 0.2s'
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.background = '#2563eb28'}
+                                onMouseLeave={e => e.currentTarget.style.background = '#2563eb18'}
+                              >
+                                📥 PDF 리포트 다운로드
+                              </a>
+                            </div>
+                          )}
+                        </>
                     }
                   </div>
               }

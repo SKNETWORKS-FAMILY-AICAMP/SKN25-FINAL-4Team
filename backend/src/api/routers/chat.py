@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
 from pydantic import BaseModel
 from langchain_core.messages import HumanMessage, AIMessage
 
@@ -385,4 +385,24 @@ async def chat(req: ChatRequest):
         answer=answer,
         pdf_path=result.get("pdf_path", ""),
         session_id=session_id,
+    )
+
+
+@router.get("/download-pdf")
+def download_chat_pdf(filename: str):
+    """채팅에서 생성된 보고서 PDF 파일을 다운로드"""
+    from agents.reporting_agent import PDF_DIR
+    
+    # 경로 보안 검증 (Path Traversal 차단)
+    safe_path = (PDF_DIR / filename).resolve()
+    if not str(safe_path).startswith(str(PDF_DIR.resolve())):
+        raise HTTPException(status_code=400, detail="허용되지 않는 파일 이름입니다.")
+        
+    if not safe_path.exists():
+        raise HTTPException(status_code=404, detail="파일을 찾을 수 없습니다.")
+        
+    return FileResponse(
+        path=safe_path,
+        media_type="application/pdf",
+        filename=filename
     )
