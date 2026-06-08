@@ -119,11 +119,23 @@ def test_runtime_operations_dashboard_focuses_on_pipeline_and_server_health() ->
         "Filesystem free by node",
         "PostgreSQL deadlocks last 5m",
         "PostgreSQL active connections",
+        "Meter-series latest ingest status",
+        "Stale meter-series by consumed_at",
+        "Top active meter-series last 1h",
     } <= titles
     assert_panel_queries_are_read_only(dashboard)
     raw = json.dumps(dashboard)
     for token in [
         "live.measurement_event",
+        "meter_urn",
+        "measurement",
+        "events_15m",
+        "events_1h",
+        "latest_consumed_at",
+        "consumed_age_sec",
+        "latest_source_to_consume_sec",
+        "policy_lookup_status",
+        "stale_gt_15m",
         "consumed_at",
         "ops.pipeline_metric",
         "qa.live_measurement_issue",

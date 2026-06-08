@@ -10,7 +10,7 @@
   ],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "30s",
   "time": {
     "from": "now-6h",
@@ -882,6 +882,93 @@
         "textMode": "auto",
         "colorMode": "value",
         "graphMode": "none"
+      }
+    },
+    {
+      "id": 20,
+      "type": "table",
+      "title": "Meter-series latest ingest status",
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 30
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH recent AS (\n  SELECT\n    meter_urn,\n    measurement,\n    count(*) FILTER (WHERE consumed_at >= now() - interval '15 minutes') AS events_15m,\n    count(*) FILTER (WHERE consumed_at >= now() - interval '1 hour') AS events_1h,\n    max(event_ts) AS latest_event_ts,\n    max(consumed_at) AS latest_consumed_at,\n    max(consumed_at) FILTER (WHERE policy_lookup_status = 'resolved') AS latest_resolved_consumed_at,\n    count(*) FILTER (WHERE policy_lookup_status <> 'resolved') AS unresolved_events_1h,\n    max(policy_lookup_status) AS latest_policy_lookup_status\n  FROM live.measurement_event\n  WHERE consumed_at >= now() - interval '24 hours'\n  GROUP BY meter_urn, measurement\n)\nSELECT\n  meter_urn,\n  measurement,\n  events_15m,\n  events_1h,\n  latest_event_ts,\n  latest_consumed_at,\n  EXTRACT(EPOCH FROM now() - latest_consumed_at) AS consumed_age_sec,\n  EXTRACT(EPOCH FROM latest_consumed_at - latest_event_ts) AS latest_source_to_consume_sec,\n  latest_resolved_consumed_at,\n  unresolved_events_1h,\n  latest_policy_lookup_status\nFROM recent\nORDER BY consumed_age_sec DESC, events_1h ASC, meter_urn, measurement\nLIMIT 200;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 21,
+      "type": "table",
+      "title": "Stale meter-series by consumed_at",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 39
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH latest AS (\n  SELECT\n    meter_urn,\n    measurement,\n    max(event_ts) AS latest_event_ts,\n    max(consumed_at) AS latest_consumed_at,\n    count(*) AS events_24h\n  FROM live.measurement_event\n  WHERE consumed_at >= now() - interval '24 hours'\n  GROUP BY meter_urn, measurement\n)\nSELECT\n  meter_urn,\n  measurement,\n  latest_event_ts,\n  latest_consumed_at,\n  EXTRACT(EPOCH FROM now() - latest_consumed_at) AS consumed_age_sec,\n  events_24h,\n  CASE\n    WHEN latest_consumed_at < now() - interval '15 minutes' THEN 'stale_gt_15m'\n    ELSE 'fresh'\n  END AS ingest_status\nFROM latest\nWHERE latest_consumed_at < now() - interval '15 minutes'\nORDER BY consumed_age_sec DESC, meter_urn, measurement\nLIMIT 100;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 22,
+      "type": "table",
+      "title": "Top active meter-series last 1h",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 39
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT\n  meter_urn,\n  measurement,\n  count(*) AS events_1h,\n  max(event_ts) AS latest_event_ts,\n  max(consumed_at) AS latest_consumed_at,\n  count(*) FILTER (WHERE policy_lookup_status = 'resolved') AS resolved_events,\n  count(*) FILTER (WHERE policy_lookup_status <> 'resolved') AS unresolved_events\nFROM live.measurement_event\nWHERE consumed_at >= now() - interval '1 hour'\nGROUP BY meter_urn, measurement\nORDER BY events_1h DESC, latest_consumed_at DESC, meter_urn, measurement\nLIMIT 100;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
       }
     }
   ]
