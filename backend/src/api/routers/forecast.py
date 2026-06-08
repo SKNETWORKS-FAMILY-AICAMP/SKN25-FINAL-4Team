@@ -141,13 +141,26 @@ def predict(
             end_ts = end_ts.tz_convert("UTC") if end_ts.tzinfo else end_ts.tz_localize("UTC")
         else:
             end_ts = pd.Timestamp.now(tz="UTC")
-        raw_df = fetch_meter_window(engine, spec, end_ts=end_ts, window_hours=200)
+        # 24시간 예측 트렌드 구축을 위해 넉넉히 250시간 조회
+        raw_df = fetch_meter_window(engine, spec, end_ts=end_ts, window_hours=250)
+        raw_df["ts_dt"] = pd.to_datetime(raw_df["ts"], utc=True)
 
-        df = predict_meter(meter_urn, horizon, raw_df, spec)
-        records = [
-            {"ts": str(row["ts"])[:16], "yhat_kw": round(float(row["pred_t_plus_1"]) / 1000, 3)}
-            for _, row in df.iterrows()
-        ]
+        records = []
+        for i in range(23, -1, -1):
+            target_ts = end_ts - pd.Timedelta(hours=i)
+            sub_df = raw_df[raw_df["ts_dt"] <= target_ts].copy()
+            if len(sub_df) < 50:
+                continue
+            try:
+                pred_df = predict_meter(meter_urn, horizon, sub_df, spec)
+                if not pred_df.empty:
+                    row = pred_df.iloc[0]
+                    records.append({
+                        "ts": str(row["ts"])[:16],
+                        "yhat_kw": round(float(row[f"pred_t_plus_1"]) / 1000, 3)
+                    })
+            except Exception:
+                continue
         return {"model": model_name, "meter_urn": meter_urn, "horizon": horizon, "forecast": records}
     except FileNotFoundError as e:
         return {"error": str(e)}

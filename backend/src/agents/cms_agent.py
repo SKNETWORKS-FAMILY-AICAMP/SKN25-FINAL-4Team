@@ -12,7 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))   # src 경로 (api.* 임포트용)
 
 # 설비 키워드는 api.config 모듈에서 동적으로 불러옵니다.
-_WO_KW   = re.compile(r"작업\s*지시.*(목록|현황|조회|확인|있어|보여|알려|상태|이력)|미해결|조치\s*내역|점검\s*이력|work\s*order")
+_WO_KW   = re.compile(r"작업\s*지시.*(목록|현황|조회|확인|있어|보여|알려|상태|이력|이유)|미해결|조치\s*내역|점검\s*이력|work\s*order")
 _DIAG_KW = re.compile(r"진단|원인|왜|이유|점검|조치|분석|해석|평가|검토|어때|어떤가|살펴|어떻게\s*됐")
 _PRED_KW = re.compile(r"예지보전|언제.*고장|잔여\s*수명|수명|추세|악화|예측.*위험|위험.*예측")
 
@@ -201,7 +201,11 @@ def run(state: dict) -> dict:
         answer = _do_simulator(q)
     # ── 조회 ──
     elif _WO_KW.search(q):
-        answer = _fmt_work_orders()
+        # 특정 설비 WO 이유/상태 질문이면 설비 상태로, 그 외엔 WO 목록으로
+        if eq_id and re.search(r"작업\s*지시.*(이유|상태|생성)", q):
+            answer = _fmt_status_one(eq_id)
+        else:
+            answer = _fmt_work_orders()
     elif _PRED_KW.search(q):
         answer = _fmt_predictive()
     elif _DIAG_KW.search(q):

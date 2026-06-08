@@ -54,12 +54,18 @@ _KW_CMS      = re.compile(r"작업\s*지시|정비|수리|예지보전|상태\s*
                           r"|설비\s*상태|설비\s*이상|설비\s*점검|설비\s*확인|설비\s*문제"
                           r"|설비.*요약|요약.*설비|설비\s*상태\s*요약|설비\s*요약"
                           r"|냉방\s*설비|계통.*설비|수전.*설비"
-                          r"|열병합|시뮬|시뮬레이터|시연")
+                          r"|열병합|시뮬|시뮬레이터|시연"
+                          r"|설비.*이상\s*건수|설비.*최근\s*이상|태양광.*이상\s*건수|태양광.*최근\s*이상")
 
 # 미래 시제 강제 override — anomaly/cms 키워드와 동시에 있어도 forecast로
 _KW_FUTURE   = re.compile(r"계속\s*될까|계속될까|낮아질까|높아질까|늘어날까|줄어들까"
                           r"|떨어질까|올라갈까|계속\s*낮아|계속\s*떨어|계속\s*높아"
                           r"|앞으로.*될|~할\s*것|추세.*앞|앞.*추세")
+
+# 설비명 + 이상건수 → cms 강제 (compute_equipment_status가 더 정확한 건수 제공)
+_KW_EQ_ANOMALY_COUNT = re.compile(
+    r"(태양광|계통|수전|냉방|chp|열병합).*(이상.*건수|최근.*이상|이상.*몇\s*건)"
+)
 
 INTENT_PROMPT = """사용자 질문을 읽고 아래 중 하나로만 답하세요. 다른 말은 하지 마세요.
 
@@ -93,6 +99,10 @@ def _rule_classify(question: str) -> str | None:
     # 미래 시제 표현이 있으면 다른 키워드보다 forecast 우선
     if _KW_FUTURE.search(q):
         return "forecast"
+
+    # 설비명 + 이상건수 조합 → cms 강제 (compute_equipment_status가 정확한 건수 반환)
+    if _KW_EQ_ANOMALY_COUNT.search(q):
+        return "cms"
 
     scores = {
         "anomaly":  len(_KW_ANOMALY.findall(q)),
