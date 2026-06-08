@@ -80,6 +80,17 @@ LIVE_OPS_TABLES = (
     "live.promotion_run",
 )
 
+CHAMPION_MODEL_DASHBOARD_UID = "cms-champion-model"
+CHAMPION_MODEL_DASHBOARD_FOLDER = "CMS Champion Model"
+CHAMPION_MODEL_EXTERNAL_ALERT_SENDING_ENABLED = False
+CHAMPION_MODEL_SOURCE_TABLES = (
+    "mart.champion_model_input_1h",
+    "live.measurement_1h",
+    "mart.champion_prediction_1h",
+    "qa.champion_prediction_issue",
+    "ops.champion_inference_metric",
+)
+
 GRAFANA_ALERT_RULES = (
     "no_live_events_5m",
     "oldest_pending_queue_age_10m",
@@ -137,8 +148,23 @@ class DashboardPanelContract:
     severity: AlertSeverity | None = None
 
     def __post_init__(self) -> None:
-        if self.source_table not in LIVE_OPS_TABLES and not self.source_table.startswith("live.") and not self.source_table.startswith("qa."):
+        if not _is_supported_dashboard_source_table(self.source_table):
             raise ValueError(f"unsupported dashboard source table: {self.source_table}")
+
+
+DASHBOARD_SOURCE_SCHEMAS = ("live", "qa", "mart", "ops")
+
+
+def _is_safe_unquoted_identifier(value: str) -> bool:
+    return bool(value) and (value[0].isalpha() or value[0] == "_") and all(char.isalnum() or char == "_" for char in value)
+
+
+def _is_supported_dashboard_source_table(source_table: str) -> bool:
+    parts = source_table.split(".")
+    if len(parts) != 2:
+        return False
+    schema, table = parts
+    return schema in DASHBOARD_SOURCE_SCHEMAS and _is_safe_unquoted_identifier(schema) and _is_safe_unquoted_identifier(table)
 
 
 DASHBOARD_PANEL_CONTRACTS = (
@@ -160,10 +186,25 @@ DASHBOARD_PANEL_CONTRACTS = (
     DashboardPanelContract("Consumer invariant", "ops.pipeline_metric", "processed/inserted/duplicate/retry/DLQ reconciliation", "P1"),
 )
 
+CHAMPION_MODEL_DASHBOARD_PANEL_CONTRACTS = (
+    DashboardPanelContract("Model input readiness", "mart.champion_model_input_1h", "champion model input materialization and validation state", "P0"),
+    DashboardPanelContract("168h history coverage", "live.measurement_1h", "rolling 168h observed history coverage before inference", "P0"),
+    DashboardPanelContract("Prediction freshness", "mart.champion_prediction_1h", "latest champion prediction write age", "P0"),
+    DashboardPanelContract("Warning by horizon", "mart.champion_prediction_1h", "pre-warning count grouped by forecast horizon", "P1"),
+    DashboardPanelContract("Post-hoc anomaly/error", "qa.champion_prediction_issue", "actual-vs-predicted anomaly and error triage", "P1"),
+    DashboardPanelContract("Champion inference latency", "ops.champion_inference_metric", "inference adapter latency and runtime health", "P0"),
+)
+
 
 __all__ = [
     "ALERT_RULE_CONTRACTS",
+    "CHAMPION_MODEL_DASHBOARD_FOLDER",
+    "CHAMPION_MODEL_DASHBOARD_PANEL_CONTRACTS",
+    "CHAMPION_MODEL_DASHBOARD_UID",
+    "CHAMPION_MODEL_EXTERNAL_ALERT_SENDING_ENABLED",
+    "CHAMPION_MODEL_SOURCE_TABLES",
     "DASHBOARD_PANEL_CONTRACTS",
+    "DASHBOARD_SOURCE_SCHEMAS",
     "FASTAPI_METRICS",
     "GRAFANA_ALERT_RULES",
     "GRAFANA_LIVE_PIPELINE_DASHBOARD_UID",
