@@ -19,7 +19,7 @@ from cms.data.runtime_consumer_loop import ConsumerLoopStats, run_consumer_loop
 from cms.data.stream_consumer_runner import process_kafka_message
 
 ROOT = Path(__file__).resolve().parents[2]
-SOAK_GATES_DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_live_soak_gates.json"
+TEST_GATES_DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_test_gates.json"
 
 
 def _message_at_offset(offset: int, **value_overrides: object) -> dict[str, object]:
@@ -87,7 +87,7 @@ def test_aggregate_bucket_enqueue_gate_uses_insert_only_policy() -> None:
 
 
 def test_grafana_soak_dashboard_links_duplicate_and_reprocessed_metrics() -> None:
-    dashboard = json.loads(SOAK_GATES_DASHBOARD_PATH.read_text(encoding="utf-8"))
+    dashboard = json.loads(TEST_GATES_DASHBOARD_PATH.read_text(encoding="utf-8"))
     raw = json.dumps(dashboard)
 
     assert REBALANCE_IDEMPOTENCY_METRICS == ("consumer_duplicate", "consumer_reprocessed")

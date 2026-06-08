@@ -190,6 +190,25 @@ def test_test_gates_dashboard_focuses_on_runtime_evidence() -> None:
         assert token in raw
 
 
+def test_active_dashboards_are_visual_first_not_table_heavy() -> None:
+    runtime = load_dashboard(RUNTIME_DASHBOARD_PATH)
+    gates = load_dashboard(TEST_GATES_DASHBOARD_PATH)
+
+    assert "visual-first" in runtime["tags"]
+    assert "visual-first" in gates["tags"]
+
+    runtime_types = {panel["type"] for panel in runtime["panels"]}
+    gates_types = {panel["type"] for panel in gates["panels"]}
+    assert {"stat", "gauge", "bargauge", "timeseries", "table"} <= runtime_types
+    assert {"stat", "gauge", "bargauge", "timeseries", "table"} <= gates_types
+    assert sum(panel["type"] == "table" for panel in runtime["panels"]) <= 3
+    assert sum(panel["type"] == "table" for panel in gates["panels"]) <= 1
+
+    raw = json.dumps({"runtime": runtime, "gates": gates})
+    for token in ["color-background", "gradient-gauge", "displayMode", "showThresholdMarkers"]:
+        assert token in raw
+
+
 def test_model_and_phase_dashboards_are_archived_not_active() -> None:
     active_text = "\n".join(path.read_text(encoding="utf-8") for path in DASHBOARD_DIR.glob("*.json"))
 

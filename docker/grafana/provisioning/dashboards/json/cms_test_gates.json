@@ -3,13 +3,14 @@
   "title": "CMS Test Gates / Evidence",
   "tags": [
     "cms",
+    "evidence",
     "qa",
     "test-gates",
-    "evidence"
+    "visual-first"
   ],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "30s",
   "time": {
     "from": "now-7d",
@@ -51,6 +52,14 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
               }
             ]
           }
@@ -67,13 +76,14 @@
         },
         "orientation": "auto",
         "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center"
       }
     },
     {
       "id": 2,
-      "type": "stat",
+      "type": "gauge",
       "title": "Latest lag after",
       "gridPos": {
         "h": 4,
@@ -100,6 +110,14 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 10
               }
             ]
           }
@@ -115,14 +133,13 @@
           "fields": ""
         },
         "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
       }
     },
     {
       "id": 3,
-      "type": "stat",
+      "type": "gauge",
       "title": "Latest retry",
       "gridPos": {
         "h": 4,
@@ -149,6 +166,14 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 10
               }
             ]
           }
@@ -164,14 +189,13 @@
           "fields": ""
         },
         "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
       }
     },
     {
       "id": 4,
-      "type": "stat",
+      "type": "gauge",
       "title": "Latest DLQ",
       "gridPos": {
         "h": 4,
@@ -198,6 +222,14 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 10
               }
             ]
           }
@@ -213,9 +245,8 @@
           "fields": ""
         },
         "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
       }
     },
     {
@@ -241,15 +272,242 @@
       ],
       "fieldConfig": {
         "defaults": {},
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "producer_events"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "processed"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "inserted"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duplicate"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "retry"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "dlq"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "lag_after"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       },
       "options": {
-        "showHeader": true
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": ""
+        }
       }
     },
     {
       "id": 6,
-      "type": "table",
+      "type": "bargauge",
       "title": "Processed / inserted / duplicate / retry / DLQ invariant",
       "gridPos": {
         "h": 8,
@@ -269,16 +527,45 @@
         }
       ],
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "short"
+        },
         "overrides": []
       },
       "options": {
-        "showHeader": true
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "minVizWidth": 10,
+        "minVizHeight": 10
       }
     },
     {
       "id": 7,
-      "type": "table",
+      "type": "timeseries",
       "title": "Recent gate metrics",
       "gridPos": {
         "h": 8,
@@ -293,17 +580,124 @@
       "targets": [
         {
           "refId": "A",
-          "format": "table",
-          "rawSql": "SELECT metric_ts, run_id, stage, metric_name, metric_value, unit, labels FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' ORDER BY metric_ts DESC LIMIT 200;"
+          "format": "time_series",
+          "rawSql": "SELECT metric_ts AS time, stage || ':' || metric_name AS metric, metric_value AS value FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' ORDER BY 1;"
         }
       ],
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineWidth": 2
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "short"
+        },
         "overrides": []
       },
       "options": {
-        "showHeader": true
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       }
+    },
+    {
+      "id": 8,
+      "title": "Duplicate / reprocessed events",
+      "type": "bargauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 16
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1), pivot AS (SELECT metric_name, max(metric_value) AS value FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name IN ('consumer_duplicate','consumer_reprocessed') GROUP BY metric_name) SELECT 'consumer_duplicate' AS metric, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_duplicate'),0) AS value UNION ALL SELECT 'consumer_reprocessed' AS metric, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_reprocessed'),0) AS value"
+        }
+      ]
     }
   ]
 }

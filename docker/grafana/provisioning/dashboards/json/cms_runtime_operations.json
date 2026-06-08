@@ -4,13 +4,14 @@
   "tags": [
     "cms",
     "operations",
-    "runtime",
     "pipeline",
-    "server"
+    "runtime",
+    "server",
+    "visual-first"
   ],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 2,
+  "version": 3,
   "refresh": "30s",
   "time": {
     "from": "now-6h",
@@ -51,7 +52,11 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "red"
+              },
+              {
+                "color": "green",
+                "value": 1
               }
             ]
           }
@@ -68,8 +73,9 @@
         },
         "orientation": "auto",
         "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center"
       }
     },
     {
@@ -100,7 +106,11 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "red"
+              },
+              {
+                "color": "green",
+                "value": 1
               }
             ]
           }
@@ -117,13 +127,14 @@
         },
         "orientation": "auto",
         "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center"
       }
     },
     {
       "id": 3,
-      "type": "stat",
+      "type": "gauge",
       "title": "Latest consumed age",
       "gridPos": {
         "h": 4,
@@ -150,6 +161,14 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 300
               }
             ]
           }
@@ -165,14 +184,13 @@
           "fields": ""
         },
         "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
       }
     },
     {
       "id": 4,
-      "type": "stat",
+      "type": "gauge",
       "title": "Active series last 15m",
       "gridPos": {
         "h": 4,
@@ -198,7 +216,11 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "red"
+              },
+              {
+                "color": "green",
+                "value": 1
               }
             ]
           }
@@ -214,14 +236,13 @@
           "fields": ""
         },
         "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
       }
     },
     {
       "id": 5,
-      "type": "stat",
+      "type": "gauge",
       "title": "Kafka consumer lag",
       "gridPos": {
         "h": 4,
@@ -248,6 +269,14 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 100
+              },
+              {
+                "color": "red",
+                "value": 10000
               }
             ]
           }
@@ -263,14 +292,13 @@
           "fields": ""
         },
         "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
       }
     },
     {
       "id": 6,
-      "type": "stat",
+      "type": "gauge",
       "title": "DLQ offset",
       "gridPos": {
         "h": 4,
@@ -297,6 +325,14 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 10
               }
             ]
           }
@@ -312,9 +348,8 @@
           "fields": ""
         },
         "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
       }
     },
     {
@@ -345,7 +380,11 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "red"
+              },
+              {
+                "color": "green",
+                "value": 1
               }
             ]
           }
@@ -362,13 +401,14 @@
         },
         "orientation": "auto",
         "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center"
       }
     },
     {
       "id": 8,
-      "type": "stat",
+      "type": "gauge",
       "title": "PostgreSQL exporter up",
       "gridPos": {
         "h": 4,
@@ -394,7 +434,11 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "red"
+              },
+              {
+                "color": "green",
+                "value": 1
               }
             ]
           }
@@ -410,9 +454,8 @@
           "fields": ""
         },
         "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
       }
     },
     {
@@ -444,6 +487,14 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 10
               }
             ]
           }
@@ -460,8 +511,9 @@
         },
         "orientation": "auto",
         "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center"
       }
     },
     {
@@ -493,6 +545,14 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 10
               }
             ]
           }
@@ -509,8 +569,9 @@
         },
         "orientation": "auto",
         "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center"
       }
     },
     {
@@ -542,6 +603,14 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 100
+              },
+              {
+                "color": "orange",
+                "value": 1000
               }
             ]
           }
@@ -558,8 +627,9 @@
         },
         "orientation": "auto",
         "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center"
       }
     },
     {
@@ -591,6 +661,10 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 1
               }
             ]
           }
@@ -607,8 +681,9 @@
         },
         "orientation": "auto",
         "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center"
       }
     },
     {
@@ -634,15 +709,92 @@
       ],
       "fieldConfig": {
         "defaults": {},
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "severity"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "critical": {
+                        "color": "red",
+                        "index": 0,
+                        "text": "critical"
+                      }
+                    }
+                  },
+                  {
+                    "type": "value",
+                    "options": {
+                      "blocking": {
+                        "color": "red",
+                        "index": 1,
+                        "text": "blocking"
+                      }
+                    }
+                  },
+                  {
+                    "type": "value",
+                    "options": {
+                      "high": {
+                        "color": "orange",
+                        "index": 2,
+                        "text": "high"
+                      }
+                    }
+                  },
+                  {
+                    "type": "value",
+                    "options": {
+                      "medium": {
+                        "color": "yellow",
+                        "index": 3,
+                        "text": "medium"
+                      }
+                    }
+                  },
+                  {
+                    "type": "value",
+                    "options": {
+                      "low": {
+                        "color": "green",
+                        "index": 4,
+                        "text": "low"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       "options": {
-        "showHeader": true
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": ""
+        }
       }
     },
     {
       "id": 14,
-      "type": "table",
+      "type": "timeseries",
       "title": "Recent pipeline metrics",
       "gridPos": {
         "h": 7,
@@ -657,16 +809,50 @@
       "targets": [
         {
           "refId": "A",
-          "format": "table",
-          "rawSql": "SELECT metric_ts, run_id, stage, metric_name, metric_value, unit FROM ops.pipeline_metric ORDER BY metric_ts DESC LIMIT 100;"
+          "format": "time_series",
+          "rawSql": "SELECT metric_ts AS time, stage || ':' || metric_name AS metric, metric_value AS value FROM ops.pipeline_metric WHERE metric_ts >= now() - interval '6 hours' ORDER BY 1;"
         }
       ],
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineWidth": 2
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "short"
+        },
         "overrides": []
       },
       "options": {
-        "showHeader": true
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       }
     },
     {
@@ -692,7 +878,28 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "percent"
+          "unit": "percent",
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineWidth": 2
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          }
         },
         "overrides": []
       },
@@ -700,11 +907,14 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull"
+          ]
         },
         "tooltip": {
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "desc"
         }
       }
     },
@@ -731,7 +941,28 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "percent"
+          "unit": "percent",
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineWidth": 2
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "green",
+                "value": 40
+              }
+            ]
+          }
         },
         "overrides": []
       },
@@ -739,11 +970,14 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull"
+          ]
         },
         "tooltip": {
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "desc"
         }
       }
     },
@@ -770,7 +1004,28 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "percent"
+          "unit": "percent",
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineWidth": 2
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "green",
+                "value": 40
+              }
+            ]
+          }
         },
         "overrides": []
       },
@@ -778,17 +1033,20 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull"
+          ]
         },
         "tooltip": {
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "desc"
         }
       }
     },
     {
       "id": 18,
-      "type": "stat",
+      "type": "gauge",
       "title": "PostgreSQL deadlocks last 5m",
       "gridPos": {
         "h": 4,
@@ -815,6 +1073,10 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 1
               }
             ]
           }
@@ -830,14 +1092,13 @@
           "fields": ""
         },
         "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
       }
     },
     {
       "id": 19,
-      "type": "stat",
+      "type": "gauge",
       "title": "PostgreSQL active connections",
       "gridPos": {
         "h": 4,
@@ -864,6 +1125,14 @@
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 120
               }
             ]
           }
@@ -879,9 +1148,8 @@
           "fields": ""
         },
         "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
       }
     },
     {
@@ -907,15 +1175,149 @@
       ],
       "fieldConfig": {
         "defaults": {},
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "events_15m"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "events_1h"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "consumed_age_sec"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "unresolved_events_1h"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       },
       "options": {
-        "showHeader": true
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": ""
+        }
       }
     },
     {
       "id": 21,
-      "type": "table",
+      "type": "bargauge",
       "title": "Stale meter-series by consumed_at",
       "gridPos": {
         "h": 8,
@@ -935,16 +1337,45 @@
         }
       ],
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 900
+              },
+              {
+                "color": "red",
+                "value": 3600
+              }
+            ]
+          },
+          "unit": "s"
+        },
         "overrides": []
       },
       "options": {
-        "showHeader": true
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "minVizWidth": 10,
+        "minVizHeight": 10
       }
     },
     {
       "id": 22,
-      "type": "table",
+      "type": "bargauge",
       "title": "Top active meter-series last 1h",
       "gridPos": {
         "h": 8,
@@ -964,11 +1395,40 @@
         }
       ],
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue"
+              },
+              {
+                "color": "green",
+                "value": 10
+              },
+              {
+                "color": "orange",
+                "value": 100
+              }
+            ]
+          },
+          "unit": "short"
+        },
         "overrides": []
       },
       "options": {
-        "showHeader": true
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "minVizWidth": 10,
+        "minVizHeight": 10
       }
     }
   ]
