@@ -20,26 +20,26 @@ SK Networks AI Family 25기 4팀 파이널 프로젝트.
 ### 핵심 — CMS(설비 상태감시)
 | 기능 | 설명 |
 |------|------|
-| 🏭 **설비 상태 감시** | 설비별 헬스 스코어(노출시간 정규화) + 상태등급 · 현재 전력/COP 지표 · 최근 이상 요약 |
-| 🩺 **AI 고장 원인 진단** | LLM이 이상 이력 + **전기 시그니처(3상 불평형·역률·주파수)** + 도메인 지식으로 원인·근거·조치 생성 |
-| 🔮 **예지보전** | COP·이상 발생률 **추세 외삽**으로 "현 추세면 N개월 후 기준치 도달" 위험 예측 |
-| 🔧 **정비 작업지시** | 진단 → 작업지시 생성 → 진행/완료 칸반 → 조치 결과 기록 (이력 루프) |
-| 🚨 **이상탐지** | 2경로 — ① residual 기반 + Isolation Forest(주력) ② 통계·IF·LSTM-AE 3단 투표(폴백) |
+| <img src=".github/assets/readme/factory.svg" width="16" alt="" /> **설비 상태 감시** | 설비별 헬스 스코어(노출시간 정규화) + 상태등급 · 현재 전력/COP 지표 · 최근 이상 요약 |
+| <img src=".github/assets/readme/stethoscope.svg" width="16" alt="" /> **AI 고장 원인 진단** | LLM이 이상 이력 + **전기 시그니처(3상 불평형·역률·주파수)** + 도메인 지식으로 원인·근거·조치 생성 |
+| <img src=".github/assets/readme/telescope.svg" width="16" alt="" /> **예지보전** | COP·이상 발생률 **추세 외삽**으로 "현 추세면 N개월 후 기준치 도달" 위험 예측 |
+| <img src=".github/assets/readme/wrench.svg" width="16" alt="" /> **정비 작업지시** | 진단 → 작업지시 생성 → 진행/완료 칸반 → 조치 결과 기록 (이력 루프) |
+| <img src=".github/assets/readme/triangle-alert.svg" width="16" alt="" /> **이상탐지** | 2경로 — ① residual 기반 + Isolation Forest(주력) ② 통계·IF·LSTM-AE 3단 투표(폴백) |
 
 ### AI 코파일럿
 | 기능 | 설명 |
 |------|------|
-| 💬 **대화형 + 에이전트** | 자연어 질의(LangGraph) + **실제 행동**(작업지시 생성·시뮬 제어 실행) · 현재 보던 설비 **컨텍스트 자동 인지** |
-| 🧠 **적응형 학습** | 권고의 과거 성공/실패(outcome)로 우선순위 재랭킹 + 신뢰도 표시 |
+| <img src=".github/assets/readme/message-square.svg" width="16" alt="" /> **대화형 + 에이전트** | 자연어 질의(LangGraph) + **실제 행동**(작업지시 생성·시뮬 제어 실행) · 현재 보던 설비 **컨텍스트 자동 인지** |
+| <img src=".github/assets/readme/brain.svg" width="16" alt="" /> **적응형 학습** | 권고의 과거 성공/실패(outcome)로 우선순위 재랭킹 + 신뢰도 표시 |
 
 ### 운영 보조 (에너지)
 | 기능 | 설명 |
 |------|------|
-| 📈 **수요 예측** | v84 앙상블 (계량기별 개인화 — LSTM×6 + CatBoost + LightGBM + Ridge + Naive) |
-| ⚡ **제어 및 최적화** | 피크 시프트·야간부하·효율 권고 (승인/거부 + 적응형 학습) |
-| 💰 **목표 요금 관리** | 월말 요금 추정 · 피크 위험 모니터링 |
-| 📄 **보고서** | 월간 KPI(YoY·MoM) + 일일 운영 브리핑(PDF/DOCX/HWPX) |
-| 🔌 **계량기 토폴로지** | 미터 에너지 흐름·집계 구조 시각화 |
+| <img src=".github/assets/readme/chart-no-axes-combined.svg" width="16" alt="" /> **수요 예측** | v84 앙상블 (계량기별 개인화 — LSTM×6 + CatBoost + LightGBM + Ridge + Naive) |
+| <img src=".github/assets/readme/sliders-horizontal.svg" width="16" alt="" /> **제어 및 최적화** | 피크 시프트·야간부하·효율 권고 (승인/거부 + 적응형 학습) |
+| <img src=".github/assets/readme/wallet-cards.svg" width="16" alt="" /> **목표 요금 관리** | 월말 요금 추정 · 피크 위험 모니터링 |
+| <img src=".github/assets/readme/file-text.svg" width="16" alt="" /> **보고서** | 월간 KPI(YoY·MoM) + 일일 운영 브리핑(PDF/DOCX/HWPX) |
+| <img src=".github/assets/readme/network.svg" width="16" alt="" /> **계량기 토폴로지** | 미터 에너지 흐름·집계 구조 시각화 |
 
 ---
 
@@ -205,7 +205,7 @@ OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
 4. 설비 상태 감시 → 카드 클릭 → AI 진단(전기 시그니처 근거) → 작업지시 생성
 5. 정비 작업지시 탭에서 진행/완료, 제어 탭에서 적응형 학습 확인
 ```
-> 데모 초기화: 대화 내역 🗑전체삭제 / 제어 🗑이력초기화 버튼.
+> 데모 초기화: <img src=".github/assets/readme/trash-2.svg" width="15" alt="" /> 대화 내역 **전체 삭제** / 제어 **이력 초기화** 버튼.
 
 ---
 
