@@ -9,6 +9,7 @@ flowchart LR
     subgraph APP["Application and workflow skeleton"]
       API["FastAPI\nread / status / job / chat"]
       AIRFLOW["Airflow / scheduler\nbackground batch / report job"]
+      MODELJOB["Airflow model job\nP-Max batch inference\nnot streaming test target"]
       LANG["LangGraph review workflow\nQA / report / approval review"]
       RESP["dashboard / report / chat response"]
     end
@@ -24,8 +25,9 @@ flowchart LR
       TRIGGER["common postgres trigger\npolicy lookup / 1min / queue"]
       MEAN["mean_rollup_worker\n15min / 1h mean observed"]
       PEAK["peak_feature_worker\n15min peak + rolling 1h features"]
-      QAGATE["qa_eligibility_worker\nsource / policy / coverage / lineage"]
-      PROMOTE["promotion_worker\ncontrolled canonical promotion"]
+      PMAX_LOAD["P-Max adapter / release loader\n288 windows -> 96x22 input"]
+      QAGATE["qa_eligibility_worker\nQA / anomaly evidence"]
+      PROMOTE["promotion_worker\napproval / controlled promotion"]
       REPORT["report_worker\nevidence packet / artifact"]
     end
 
@@ -34,6 +36,7 @@ flowchart LR
         APIJOB["api_job"]
         PROMO_RUN["promotion_run"]
         ARTREF["job result_ref\nartifact / status"]
+        PMAX_LOG["ops.pmax_forecast_inference_log\nmodel / release lineage"]
       end
 
       subgraph LIVE_SCHEMA["live schema"]
@@ -49,13 +52,14 @@ flowchart LR
       subgraph QA["qa schema"]
         PMISS["policy_miss"]
         QISSUE["live_measurement_issue"]
-        QA_PACKET["QA evidence packet"]
+        QA_PACKET["QA / anomaly evidence packet"]
+        PMAX_EVAL["qa.pmax_forecast_evaluation\nforecast quality evidence"]
       end
 
       subgraph CANON["canonical schema"]
-        C1["measurement_1min"]
-        C15["measurement_15min\napproved mean rollup"]
-        C1H["measurement_1h\napproved mean rollup"]
+        C1["canonical.measurement_1min"]
+        C15["canonical.measurement_15min\napproved mean rollup"]
+        C1H["canonical.measurement_1h\napproved mean rollup"]
         C_READY["canonical read set"]
       end
 
@@ -64,8 +68,9 @@ flowchart LR
       end
 
       subgraph MART["mart schema"]
-        PEAK_FEATURE["peak_feature_15min"]
-        PEAK_INPUT["peak_input_15min\nrolling_1h_peak_features"]
+        PEAK_FEATURE["mart.peak_feature_15min"]
+        PEAK_INPUT["mart.peak_input_15min\nrolling_1h_peak_features"]
+        PMAX_FORECAST["mart.pmax_forecast_15min\nreleased P-Max forecasts"]
       end
     end
 
@@ -103,6 +108,11 @@ flowchart LR
     L1 --> PEAK
     PEAK --> PEAK_FEATURE
     PEAK_FEATURE --> PEAK_INPUT
+    PEAK_INPUT --> MODELJOB
+    MODELJOB --> PMAX_LOAD
+    PMAX_LOAD --> PMAX_FORECAST
+    PMAX_LOAD --> PMAX_LOG
+    PMAX_FORECAST --> PMAX_EVAL
 
     PCHECK --> PROMOTE
     PROMO_RUN --> PROMOTE
@@ -118,6 +128,7 @@ flowchart LR
     REF_CORR --> QAGATE
     API --> APIJOB
     APIJOB --> AIRFLOW
+    AIRFLOW --> MODELJOB
     AIRFLOW --> REPORT
     QA_PACKET --> REPORT
     REPORT --> ARTREF
@@ -129,6 +140,7 @@ flowchart LR
     C_READY --> API
     QA_PACKET --> API
     PEAK_INPUT --> API
+    PMAX_FORECAST --> API
     API --> GROUND
     VDB --> GROUND
     ONT --> GROUND
@@ -148,15 +160,15 @@ flowchart LR
     classDef hub fill:#ffffff,stroke:#334155,color:#0f172a,stroke-width:2px;
 
     class LIVE,ARCHIVE,REF_SRC source;
-    class API,AIRFLOW,LANG,RESP app;
+    class API,AIRFLOW,MODELJOB,LANG,RESP app;
     class RAW_TOPIC,DLQ_TOPIC,CGROUP storage;
-    class INGEST,TRIGGER,MEAN,PEAK,QAGATE,PROMOTE,REPORT worker;
-    class APIJOB,PROMO_RUN,ARTREF,LEVENT,MPOL,L1,BQUEUE,L15,L1H,PCHECK pg;
-    class PMISS,QISSUE qa;
+    class INGEST,TRIGGER,MEAN,PEAK,PMAX_LOAD,QAGATE,PROMOTE,REPORT worker;
+    class APIJOB,PROMO_RUN,ARTREF,PMAX_LOG,LEVENT,MPOL,L1,BQUEUE,L15,L1H,PCHECK pg;
+    class PMISS,QISSUE,PMAX_EVAL qa;
     class QA_PACKET,C_READY hub;
     class C1,C15,C1H canonical;
     class REF_CORR reference;
-    class PEAK_FEATURE,PEAK_INPUT mart;
+    class PEAK_FEATURE,PEAK_INPUT,PMAX_FORECAST mart;
     class VDB,ONT,GROUND knowledge;
 
     style SRC fill:#eff6ff,stroke:#2563eb,stroke-width:3px

@@ -1,8 +1,8 @@
 # Runtime Architecture
 
-**갱신일:** 2026-06-04  
-**상태:** 통합 runtime/workflow 기준  
-**범위:** 이 문서는 FastAPI service plane, Airflow/scheduler workflow plane, optional LangGraph review workflow, live trigger/worker boundary, application skeleton의 책임 경계를 정의한다.
+**갱신일:** 2026-06-08
+**상태:** 통합 runtime/workflow 기준
+**범위:** 이 문서는 FastAPI service plane, Airflow/scheduler workflow plane, optional LangGraph review workflow, live trigger/worker boundary, canonical branch, peak feature/model-serving branch, application skeleton의 책임 경계를 정의한다.
 
 ## 1. 확정 원칙
 
@@ -17,9 +17,9 @@
 
 | Plane | 포함 | 금지 |
 |---|---|---|
-| Data plane | source, Kafka streaming buffer, PostgreSQL live/staging/candidate/canonical, QA evidence | user chat 직접 promotion |
+| Data plane | source, Kafka streaming buffer, PostgreSQL live/staging/candidate/canonical, QA evidence, mart/ops model-serving artifacts | user chat 직접 promotion |
 | Service plane | FastAPI, dashboard, Text-to-SQL, status, artifact download, manual job registration | bulk ETL, long-running batch 직접 실행 |
-| Workflow plane | Airflow, scheduler, replay worker, report worker, optional LangGraph review workflow | 일반 chat 응답 path 대체 |
+| Workflow plane | Airflow, scheduler, replay worker, report worker, model job, P-Max adapter/release loader, optional LangGraph review workflow | 일반 chat 응답 path 대체 |
 
 ## 3. FastAPI boundary
 
@@ -64,11 +64,24 @@ ops.api_job / scheduler
 -> controlled promotion request
 ```
 
+Model-serving branch도 workflow plane에서 실행한다.
+
+```text
+mart.peak_input_15min
+-> Airflow model job
+-> P-Max adapter / release loader
+-> mart.pmax_forecast_15min
+   + ops.pmax_forecast_inference_log
+   + qa.pmax_forecast_evaluation
+```
+
+P-Max inference는 streaming smoke/test target이 아니다. Live streaming 검증은 FastAPI -> Kafka -> `live.measurement_event` -> observed bucket/QA/canonical readiness와 peak feature materialization까지를 우선 대상으로 삼고, P-Max는 별도 Airflow model job 검증으로 분리한다.
+
 LangGraph는 recommendation과 review note를 만들 수 있지만, promotion이나 DB write를 직접 수행하지 않는다.
 
 ## 5. Live trigger and worker boundary
 
-Live path는 다음 순서를 따른다.
+Live common ingestion path는 다음 순서를 따른다.
 
 ```text
 sensor / FastAPI ingestion
@@ -77,9 +90,28 @@ sensor / FastAPI ingestion
 -> live.measurement_event
 -> common trigger
 -> live.measurement_1min + live.bucket_queue
--> workers
--> QA eligibility
--> controlled promotion
+```
+
+`live.measurement_1min`과 `live.bucket_queue` 이후에는 두 branch로 분리한다.
+
+```text
+Branch A: observed / canonical
+live.measurement_1min + live.bucket_queue
+-> mean_rollup_worker
+-> live.measurement_15min / live.measurement_1h
+-> QA / anomaly evidence
+-> approval + controlled promotion
+-> canonical.measurement_1min / canonical.measurement_15min / canonical.measurement_1h
+
+Branch B: peak_feature / model-serving
+live.measurement_1min + live.bucket_queue
+-> peak_feature_worker
+-> mart.peak_feature_15min / mart.peak_input_15min
+-> Airflow model job
+-> P-Max adapter / release loader
+-> mart.pmax_forecast_15min
+   + ops.pmax_forecast_inference_log
+   + qa.pmax_forecast_evaluation
 ```
 
 ### 5.1 Common trigger responsibility
@@ -101,6 +133,7 @@ Trigger 금지 작업은 다음과 같다.
 1h mean 계산
 peak_value / peak_ts 계산
 mart feature write
+model inference / P-Max adapter 실행
 QA eligibility 전체 평가
 canonical write
 external API call
@@ -121,9 +154,11 @@ Trigger가 생성하는 queue job은 최소 다음 세 종류다.
 |---|---|---|---|
 | `kafka_to_postgres_consumer` | Kafka `measurement_raw_v1` envelope | `live.measurement_event` | business idempotency key로 idempotent insert. Kafka topic/partition/offset/key와 raw payload hash/source lineage 보존. DB transaction success 이후 offset commit. canonical/mart write 없음. |
 | `mean_rollup_worker` | `live.bucket_queue`, `live.measurement_1min`, `live.measurement_policy` | `live.measurement_15min`, `live.measurement_1h` | `job_kind='mean_rollup'`만 처리. mean observed rollup과 coverage/missing/quality/provenance 보존. cumulative/unknown policy는 block 또는 candidate-only. peak value를 live 대표값으로 쓰지 않음. |
-| `peak_feature_worker` | `live.bucket_queue`, `live.measurement_1min` | `mart.peak_feature_15min`, `mart.peak_input_15min` | `job_kind='peak_feature'`만 처리. `peak_value`, `peak_ts`, rolling 1h features를 mart에만 기록. canonical promotion 대상이 아님. |
-| `qa_eligibility_worker` | live 1min/15min/1h candidates, policy, issues | `live.promotion_check`, QA evidence packet | observed source, policy validity, coverage arithmetic, NULL/0 distinction, lineage, blocking issue를 평가. pass/warn/block을 재현 가능하게 기록. |
+| `peak_feature_worker` | `live.bucket_queue`, `live.measurement_1min` | `mart.peak_feature_15min`, `mart.peak_input_15min` | `job_kind='peak_feature'`만 처리. `peak_value`, `peak_ts`, rolling 1h features를 mart에만 기록. canonical promotion 대상이 아님. P-Max inference를 직접 호출하지 않음. |
+| `qa_eligibility_worker` | live 1min/15min/1h candidates, policy, issues | `live.promotion_check`, QA/anomaly evidence packet | observed source, policy validity, coverage arithmetic, NULL/0 distinction, lineage, blocking issue, anomaly evidence를 평가. pass/warn/block을 재현 가능하게 기록. |
 | `promotion_worker` | approved `promotion_run`, eligible `promotion_check` | `canonical.measurement_1min/15min/1h` | explicit approval과 `promotion_id` 없이는 실행하지 않음. canonical에는 approved observed mean rows만 upsert. peak feature는 제외. |
+| `airflow_model_job` | `mart.peak_input_15min`, model/version config, release metadata | P-Max inference run request/artifact | P-Max model-serving 전용 batch/scheduled job. Streaming smoke/test target이 아님. 15min 기준 최소 288개 window를 확보해 96x22 input tensor를 구성할 수 있을 때만 실행. |
+| `pmax_adapter_release_loader` | P-Max inference artifact, release policy | `mart.pmax_forecast_15min`, `ops.pmax_forecast_inference_log`, `qa.pmax_forecast_evaluation` | model output을 release policy에 따라 forecast mart로 적재하고 inference lineage/log/evaluation evidence를 분리 기록. canonical measurement table에 write하지 않음. |
 | `report_worker` | QA evidence, promotion_check, job metadata | artifact/status | row counts, block reasons, evidence level, latency summary, artifact ref를 남김. |
 
 ### 5.3 Queue and retry rules
@@ -132,6 +167,13 @@ Trigger가 생성하는 queue job은 최소 다음 세 종류다.
 - Worker는 `pending -> running -> done/failed/blocked` 상태 전이를 남긴다.
 - Late event가 들어오면 같은 idempotency key의 queue row를 다시 dirty 상태로 만들거나 policy에 맞는 재집계 version을 남긴다.
 - Worker failure는 canonical/mart partial write를 성공으로 보고하지 않는다. partial write가 가능하면 retry-safe upsert 또는 transaction boundary가 필요하다.
+
+### 5.4 Model-serving branch rules
+
+- P-Max branch의 runtime source는 `mart.peak_input_15min`이며, Kafka event stream이나 PostgreSQL trigger에서 직접 inference를 호출하지 않는다.
+- P-Max input 생성 조건은 15min 기준 288개 window 확보 후 96x22 input 구성 가능 여부다. window 부족은 inference skip/block evidence로 남긴다.
+- P-Max release loader는 forecast output, inference log, evaluation을 각각 `mart`, `ops`, `qa`에 기록한다.
+- P-Max는 live streaming smoke/test target이 아니며, 별도 Airflow model job dry-run 또는 artifact replay로 검증한다.
 
 ## 6. LangGraph review workflow
 

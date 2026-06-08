@@ -1,69 +1,178 @@
-# CMS 프로젝트 개요
+# CMS Spec Overview
 
-**갱신일:** 2026-06-02  
-**상태:** Vector DB 적재 기준 개요  
-**범위:** CMS project architecture, repository map, naming, verification baseline을 정의한다.
+**갱신일:** 2026-06-08
+**상태:** 팀 공유용 spec overview 초안
+**범위:** CMS project architecture, live pipeline branch, final P-Max model-serving boundary, repository map, naming, verification baseline을 요약합니다. 세부 data/runtime/measurement contract는 기존 spec 문서를 기준으로 하며, 이 문서는 중복 정의가 아니라 공유용 navigation layer입니다.
 
-## 1. 범위
+## 1. 목적과 범위
 
-CMS 프로젝트는 건물·설비 계량 시계열을 수집하고, 품질 검증과 보정 경계를 통과한 데이터만 분석·서빙·보고에 사용하는 system이다. Architecture는 Data plane, Service plane, Workflow plane을 분리한 contract-first 구조를 기준으로 한다.
+CMS 프로젝트는 건물·설비 계량 시계열을 수집하고, 품질 검증과 보정 경계를 통과한 데이터만 분석·서빙·보고에 사용하는 system입니다. Architecture는 Data plane, Service plane, Workflow plane을 분리한 contract-first 구조를 기준으로 합니다.
 
-Active runtime package는 `src/cms`이며, 문서와 schema namespace는 `CMS` / `cms`를 기준으로 한다.
+Active runtime package는 `src/cms`이며, 문서와 schema namespace는 `CMS` / `cms`를 기준으로 합니다. Live ingestion은 `FastAPI -> Kafka -> PostgreSQL live.measurement_event`를 공통 진입점으로 사용하고, 이후 downstream은 observed canonical/QA lane과 P-Max model-serving lane으로 분리합니다.
 
-## 2. Architecture
+## 2. 핵심 원칙
 
-Data plane은 source archive와 live/replay input을 수집한 뒤 staging 또는 raw buffer에 보존하고, processor와 QA gate를 통해 candidate output과 QA evidence를 만든다. Candidate는 canonical이 아니며, dashboard나 model dry-run에서 serving preview로만 사용할 수 있다. Canonical layer로의 승격은 `ops.promotion_request`, QA evidence, approval, controlled promotion role을 통과한 뒤에만 허용한다.
+1. `POST /ingest/measurements`는 payload validation과 Kafka publish만 수행합니다. PostgreSQL direct write, rollup, QA, promotion, model inference는 수행하지 않습니다.
+2. Kafka topic `measurement_raw_v1`는 observed raw measurement event stream입니다. Consumer는 idempotent insert로 `live.measurement_event`에 event ledger를 남깁니다.
+3. `live.measurement_event` 이후 common trigger는 policy lookup, `live.measurement_1min` upsert, `live.bucket_queue` dirty bucket 등록까지만 수행합니다.
+4. Canonical promotion은 approval-gated worker boundary를 통과해야 합니다. `canonical.measurement_*`에는 approved observed fact만 들어갑니다.
+5. Peak/P-Max branch의 feature와 forecast는 model-serving output이며 canonical observed fact가 아닙니다.
+6. Airflow는 scheduled/model/report orchestration을 담당합니다. FastAPI request path의 blocking inference executor가 아닙니다.
+7. Streaming tests는 live measurement ingestion/processing boundary만 검증합니다. P-Max scheduled inference, report, email, production promotion은 별도 승인된 workflow evidence로 검증합니다.
 
-Service plane은 FastAPI를 중심으로 빠른 상태 조회, read-only query, manual job registration, report artifact download, lightweight chat interface를 제공한다. LangGraph는 synchronous chat path에 배치하지 않는다.
+## 3. Plane 구조
 
-Workflow plane은 Airflow, scheduler, background worker가 소유한다. 정기 report, replay/backfill planning, QA evidence packet, approval review, incident review, model inference dry-run 검증은 workflow plane에서 실행하며, LangGraph는 이 plane의 optional async review layer로 사용한다.
+| Plane | 책임 | 주요 대상 | 금지/주의 |
+|---|---|---|---|
+| Data plane | source, live/replay input, PostgreSQL processing, QA evidence, canonical/mart output | Kafka, `live`, `canonical`, `qa`, `mart`, `ops` | 승인 없는 canonical write, peak feature의 canonical promotion |
+| Service plane | lightweight API, read-only query, status/artifact response, manual job registration | FastAPI, dashboard, Text-to-SQL | bulk ETL, long-running batch, direct model inference execution |
+| Workflow plane | scheduled/background execution과 review | Airflow, scheduler, workers, optional LangGraph review | 일반 chat/API request path 대체, approval 없는 side effect |
 
-## 3. Repository map
+## 4. Live pipeline branch overview
+
+공통 ingestion 경로는 다음과 같습니다.
+
+```text
+sensor / client
+-> FastAPI POST /ingest/measurements
+-> Kafka measurement_raw_v1
+-> kafka_to_postgres_consumer
+-> PostgreSQL live.measurement_event
+-> common trigger
+-> live.measurement_1min + live.bucket_queue
+```
+
+`live.bucket_queue` 이후에는 두 개의 downstream branch로 나뉩니다.
+
+### 4.1 Branch A: canonical observed / QA / anomaly / promotion lane
+
+Branch A는 observed measurement를 canonical 후보와 QA evidence로 만드는 lane입니다.
+
+```text
+live.measurement_1min + live.bucket_queue
+-> mean_rollup_worker
+-> live.measurement_15min / live.measurement_1h
+-> qa_eligibility_worker
+-> live.promotion_check + QA evidence packet
+-> approval-gated promotion_worker
+-> canonical.measurement_1min / canonical.measurement_15min / canonical.measurement_1h
+-> anomaly / dashboard / report consumers
+```
+
+이 lane의 대표값은 mean observed rollup과 policy 기반 coverage/missing/quality/provenance입니다. `peak_value`, `peak_ts`, model forecast는 canonical promotion 대상이 아닙니다. Anomaly와 dashboard가 clean observed fact를 요구할 경우 `canonical.measurement_*` 또는 approval policy가 명시된 candidate/evidence만 사용합니다.
+
+### 4.2 Branch B: peak_feature / P-Max model-serving lane
+
+Branch B는 P-Max 예측을 위한 feature 및 serving output lane입니다.
+
+```text
+live.measurement_1min + live.bucket_queue
+-> peak_feature_worker
+-> mart.peak_feature_15min / mart.peak_input_15min
+-> scheduled P-Max inference workflow
+-> mart.pmax_forecast_15min
+-> ops.pmax_forecast_inference_log
+-> qa.pmax_forecast_evaluation
+-> API/dashboard read-only serving
+```
+
+`mart.peak_feature_15min`과 `mart.peak_input_15min`은 model input boundary입니다. 1h peak 정보는 별도 canonical fact가 아니라 rolling 1h feature로 표현합니다. P-Max inference 결과는 forecast serving output이며 observed canonical table에 write하지 않습니다.
+
+## 5. Final P-Max model-serving boundary
+
+Final P-Max model release는 `v29`를 기준으로 공유합니다.
+
+| 항목 | 기준 |
+|---|---|
+| Release | `P-Max v29` |
+| Ensemble | per-meter ensemble of `v20`, `v23`, `v25`, `v27` |
+| Logical meters | `V.Z81`, `V.Z82`, `H2.Z35x`, `H2.Z36x` |
+| Input shape | `96x22` flattened input |
+| History requirement | 288 history windows 필요 |
+| Forecast horizons | 15 / 30 / 45 / 60 minutes |
+| Model input boundary | `mart.peak_input_15min` |
+| Forecast result table | `mart.pmax_forecast_15min` |
+| Inference audit log | `ops.pmax_forecast_inference_log` |
+| Evaluation table | `qa.pmax_forecast_evaluation` |
+
+Model-serving boundary는 다음과 같습니다.
+
+- Airflow 또는 scheduler가 inference job을 기동하고, job metadata와 lineage를 `ops.pmax_forecast_inference_log`에 남깁니다.
+- Inference worker는 `mart.peak_input_15min`에서 approved feature window를 읽고, `P-Max v29` output을 `mart.pmax_forecast_15min`에 기록합니다.
+- Evaluation worker는 horizon별 예측/관측 비교와 metric을 `qa.pmax_forecast_evaluation`에 기록합니다.
+- FastAPI는 최신 forecast, inference status, evaluation summary를 read-only로 제공합니다. FastAPI request가 직접 model inference, retraining, DB promotion을 실행하지 않습니다.
+- `P-Max v29` output은 service forecast입니다. Canonical observed measurement의 대체값이나 QA 없이 promotion 가능한 fact가 아닙니다.
+
+## 6. 기술스택 구조도
+
+팀 공유용 stack architecture SVG는 다음 위치에서 관리합니다.
+
+```text
+docs/specs/diagrams/stack_architecture_overview.svg
+```
+
+이 구조도는 `FastAPI`, `Apache Kafka`, `PostgreSQL`, `Apache Airflow`, `Python model adapter`, `P-Max v29`, `Grafana`, `Vector DB / LLM Wiki`, optional `LangGraph`를 icon-based view로 배치합니다. Diagram의 핵심 메시지는 다음과 같습니다.
+
+1. `FastAPI -> Kafka -> PostgreSQL live.measurement_event`는 공통 live ingestion path입니다.
+2. `live.measurement_event` 이후 Branch A는 observed canonical / QA / anomaly / promotion lane입니다.
+3. Branch B는 peak_feature / P-Max model-serving lane이며, forecast는 `mart/ops/qa`에 남깁니다.
+4. Airflow는 model/report workflow를 실행하고, FastAPI request path에서 blocking inference를 실행하지 않습니다.
+
+## 7. Repository map
 
 ```text
 SKN25-FINAL-4Team/
 ├── docker/                         # local PostgreSQL/TimescaleDB development stack
 ├── docs/
 │   ├── ontology/                   # RDF/OWL/SHACL ontology artifacts
-│   ├── qa/                         # 통합 QA contract
+│   ├── qa/                         # QA, latency, Grafana query contracts
 │   ├── reference/                  # source inventory and measurement glossary
-│   └── specs/                      # overview, data platform, runtime, measurement, knowledge, LLM, ontology, metadata specs
+│   └── specs/                      # overview, data platform, runtime, measurement, model boundary specs
 ├── scripts/                        # dry-run, smoke, scratch guard, ontology, contract verification scripts
 ├── src/cms/                        # CMS Python package
 └── tests/                          # unit/integration tests
 ```
 
-## 4. Naming 및 용어
+## 8. Naming 및 주요 table
 
 | 대상 | 기준 |
 |---|---|
 | Project-facing name | `CMS` |
 | Python package | `src/cms` |
 | PostgreSQL database/user | `cms` |
-| Canonical table | `canonical.measurement_1min`, `canonical.measurement_15min`, `canonical.measurement_1h` |
+| Common live ingress ledger | `live.measurement_event` |
+| Live candidate tables | `live.measurement_1min`, `live.measurement_15min`, `live.measurement_1h` |
+| Canonical observed tables | `canonical.measurement_1min`, `canonical.measurement_15min`, `canonical.measurement_1h` |
+| QA/promotion evidence | `live.promotion_check`, `qa.live_measurement_issue` |
+| Peak/P-Max input | `mart.peak_feature_15min`, `mart.peak_input_15min` |
+| P-Max serving output | `mart.pmax_forecast_15min` |
+| P-Max ops/QA | `ops.pmax_forecast_inference_log`, `qa.pmax_forecast_evaluation` |
 | Reference corrected/resampled table | `reference.corrected_resampled_15min`, `reference.corrected_resampled_1h` |
 | Missing observation 표현 | `NULL`, `missing observation`, `missing_points` |
 
-## 5. Vector DB 적재 대상 문서
+## 9. 상세 문서 연결
 
 | 문서 | 역할 |
 |---|---|
-| `docs/specs/data_platform_contract.md` | data layer와 DB boundary |
-| `docs/specs/runtime_architecture.md` | service/workflow boundary |
-| `docs/specs/measurement_processing_policy.md` | measurement 처리 정책 |
-| `docs/specs/meter_metadata.md` | meter metadata |
-| `docs/specs/ontology_schema.md` | ontology schema와 역량질문 |
-| `docs/specs/knowledge_db_contract.md` | Vector DB ingest 기준 |
-| `docs/specs/llm_contract.md` | LLM/retrieval/SQL safety 기준 |
+| `docs/specs/project_overview.md` | 팀 공유용 architecture/spec overview |
+| `docs/specs/runtime_architecture.md` | FastAPI, Kafka consumer, worker, Airflow/LangGraph runtime boundary |
+| `docs/specs/data_platform_contract.md` | source/Kafka/PostgreSQL schema와 canonical/mart data boundary |
+| `docs/specs/measurement_processing_policy.md` | observed measurement 처리, NULL/0, cadence, canonical eligibility 정책 |
+| `docs/specs/meter_metadata.md` | meter metadata와 logical meter grouping reference |
+| `docs/specs/live_schema_migration_plan.md` | live schema migration draft와 rollback boundary |
+| `docs/specs/kafka_ingestion_implementation_plan.md` | Kafka ingestion implementation plan |
 | `docs/qa/qa_contract.md` | QA/evidence 기준 |
+| `docs/qa/pipeline_latency_test_plan.md` | streaming/live measurement latency test plan |
 | `docs/reference/source_inventory.md` | source tier 기준 |
 | `docs/reference/measurement_glossary.md` | measurement 용어집 |
 
-## 6. 검증 baseline
+## 10. Verification baseline
+
+Markdown overview 변경 자체는 runtime 실행을 요구하지 않습니다. 코드/contract 변경을 동반하는 경우 권장 local check는 다음과 같습니다.
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python scripts/verify/verify_skeleton_contracts.py
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src uv run --with pytest --no-project python -m pytest -q
 ```
 
-검증 후 생성된 cache는 active tree에 남기지 않는다.
+검증 후 생성된 cache는 active tree에 남기지 않습니다.

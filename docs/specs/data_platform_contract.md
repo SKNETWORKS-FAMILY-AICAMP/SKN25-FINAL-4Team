@@ -1,8 +1,8 @@
 # Data Platform Contract
 
-**갱신일:** 2026-06-04  
-**상태:** 통합 data platform 기준  
-**범위:** 이 문서는 source archive, Kafka live ingestion buffer, PostgreSQL live/staging/candidate/canonical boundary, feature/mart boundary를 정의한다. MongoDB는 Phase 1 live ingestion path에서 제거되며, 과거 replay/debug 후보로만 언급한다.
+**갱신일:** 2026-06-08
+**상태:** 통합 data platform 기준
+**범위:** 이 문서는 source archive, Kafka live ingestion buffer, PostgreSQL live/staging/candidate/canonical boundary, canonical branch, peak feature/model-serving branch, feature/mart boundary를 정의한다. MongoDB는 Phase 1 live ingestion path에서 제거되며, 과거 replay/debug 후보로만 언급한다.
 
 ## 1. 목적
 
@@ -13,11 +13,23 @@ compressed source or live sensor event
 -> source manifest or FastAPI ingestion
 -> Kafka measurement_raw_v1
 -> kafka_to_postgres_consumer
--> PostgreSQL live/staging processor / QA evidence
--> candidate
+-> live.measurement_event ledger
+-> live.measurement_1min + live.bucket_queue
+
+Branch A: observed / canonical
+-> mean_rollup_worker
+-> live.measurement_15min / live.measurement_1h
+-> QA/anomaly evidence
 -> approval + controlled promotion
 -> canonical.measurement_1min/15min/1h
--> mart/model input
+
+Branch B: peak_feature / model-serving
+-> peak_feature_worker
+-> mart.peak_feature_15min / mart.peak_input_15min
+-> Airflow model job + P-Max adapter/release loader
+-> mart.pmax_forecast_15min
+   + ops.pmax_forecast_inference_log
+   + qa.pmax_forecast_evaluation
 ```
 
 ## 2. Data layer boundary
@@ -30,7 +42,7 @@ compressed source or live sensor event
 | `candidate` | QA evidence와 promotion 후보 | canonical write 전 검토 대상 |
 | `canonical` | 승인된 observed fact | 별도 approval과 controlled promotion 필요 |
 | `reference` | corrected/resampled comparison | observed truth 대체 금지 |
-| `mart` | model/service input | champion input policy 승인 후 생성 |
+| `mart` | model/service input과 forecast output | champion input/release policy 승인 후 생성 |
 
 ## 3. Source archive
 
@@ -75,10 +87,10 @@ Kafka message key는 `(meter_urn, measurement)`를 포함한다. Business idempo
 | `live` | 1개월 live streaming operational processing layer | approved live run 범위 안에서 허용. canonical 직접 write 금지 |
 | `canonical` | 승인된 measurement facts | controlled promotion 대상 |
 | `candidate` | review/promotion 후보 | target contract |
-| `ops` | job, approval, audit, scheduler metadata | target contract |
+| `ops` | job, approval, audit, scheduler/inference metadata | target contract |
 | `staging_<run_id>` | isolated replay/scratch schema | 테스트 실행 단위 |
-| `qa` | QA issue, evidence, promotion block record | QA worker와 review workflow의 evidence 대상 |
-| `mart` | model/service input | champion policy 후 생성 |
+| `qa` | QA issue, anomaly/evaluation evidence, promotion block record | QA worker와 review workflow의 evidence 대상 |
+| `mart` | model/service input과 forecast output | champion input/release policy 후 생성 |
 
 Target schema의 배포 상태는 환경별 read-only inventory로 확인한 뒤 별도 evidence에 기록한다.
 
@@ -101,6 +113,9 @@ Target schema의 배포 상태는 환경별 read-only inventory로 확인한 뒤
 | `qa.live_measurement_issue` | policy miss, stale state, coverage block, lineage block 등 issue record | no |
 | `mart.peak_feature_15min` | peak prediction feature. `peak_value`, `peak_ts`, `max` 등 | no |
 | `mart.peak_input_15min` | model input view/table. 15min feature와 rolling 1h peak features | no |
+| `mart.pmax_forecast_15min` | P-Max adapter/release loader가 적재하는 15min forecast output | no |
+| `ops.pmax_forecast_inference_log` | P-Max model job, input window, model/release version, run lineage log | no |
+| `qa.pmax_forecast_evaluation` | P-Max forecast 품질/evaluation evidence | no |
 
 ### 6.2 `live.measurement_event` minimum fields
 
@@ -219,13 +234,16 @@ Idempotency key는 다음 조합을 사용한다.
 
 `mean_rollup` job은 `resolution = 15min`과 `resolution = 1h`를 생성한다. `peak_feature` job은 기본적으로 `resolution = 15min`만 생성하고, 1h peak 정보는 `mart.peak_input_15min`의 rolling 1h feature로 관리한다. 별도 `mart.peak_feature_1h`는 reviewed model-input requirement가 생긴 뒤 추가한다.
 
-### 6.6 Peak mart boundary
+### 6.6 Peak feature and P-Max model-serving boundary
 
-Peak prediction branch는 canonical fact가 아니라 model feature branch다.
+Peak prediction branch는 canonical fact가 아니라 model feature/model-serving branch다.
 
 ```text
 mart.peak_feature_15min
 mart.peak_input_15min
+mart.pmax_forecast_15min
+ops.pmax_forecast_inference_log
+qa.pmax_forecast_evaluation
 ```
 
 `mart.peak_feature_15min` minimum fields는 다음과 같다.
@@ -261,9 +279,65 @@ rolling_1h_coverage_ratio
 
 Peak feature row는 `canonical.measurement_*`로 promotion하지 않는다.
 
+P-Max inference input은 `mart.peak_input_15min`에서 15min 기준 288개 window를 확보한 뒤 96x22 input tensor로 구성한다. Window가 부족하거나 release policy가 없으면 forecast write 대신 skip/block evidence를 남긴다. P-Max는 streaming test target이 아니며, Airflow model job dry-run 또는 artifact replay로 검증한다.
+
+`mart.pmax_forecast_15min` minimum fields는 다음과 같다.
+
+```text
+forecast_id
+run_id
+model_name
+model_version
+release_version
+input_window_start_ts
+input_window_end_ts
+input_window_count      # expected 288
+input_shape             # expected 96x22
+target_ts
+forecast_horizon_step
+forecast_value
+forecast_unit
+confidence_summary
+source_peak_input_refs
+loaded_at
+```
+
+`ops.pmax_forecast_inference_log`는 model job과 loader lineage를 남긴다.
+
+```text
+run_id
+job_id
+model_name
+model_version
+release_version
+input_window_count
+input_shape
+artifact_ref
+status
+started_at
+finished_at
+error_summary
+```
+
+`qa.pmax_forecast_evaluation`은 forecast 품질/evaluation evidence를 남긴다.
+
+```text
+evaluation_id
+run_id
+forecast_id
+evaluation_window_start_ts
+evaluation_window_end_ts
+metric_name
+metric_value
+baseline_ref
+quality_status
+evidence_ref
+created_at
+```
+
 ## 7. Canonical measurement tables
 
-활성 canonical target은 다음 세 가지다.
+활성 canonical target은 다음 세 가지다. Canonical branch는 observed 1min/15min/1h bucket을 QA/anomaly evidence와 approval/controlled promotion을 거쳐 적재하며, peak feature와 P-Max forecast output은 canonical promotion 대상이 아니다.
 
 ```text
 canonical.measurement_1min
@@ -349,7 +423,10 @@ Feature는 canonical 또는 승인된 candidate/reference policy에서 생성한
 | `candidate` | service truth가 아닌 review/experiment feature |
 | `mart.model_input_*` | champion model input policy 승인 후 생성 |
 | `mart.peak_feature_15min` | peak prediction feature. canonical fact가 아니며 `peak_value`, `peak_ts`, rolling feature를 보존 |
-| `mart.peak_input_15min` | peak model input view/table. 1h peak는 우선 rolling feature로 표현 |
+| `mart.peak_input_15min` | peak model input view/table. 1h peak는 우선 rolling feature로 표현. P-Max 입력은 288개 15min window로 96x22 tensor 구성 가능 시에만 사용 |
+| `mart.pmax_forecast_15min` | P-Max forecast output. canonical fact가 아니며 release loader 적재 대상 |
+| `ops.pmax_forecast_inference_log` | P-Max Airflow model job과 release loader lineage/status log |
+| `qa.pmax_forecast_evaluation` | P-Max forecast evaluation evidence. Streaming test target이 아님 |
 
 Feature 문서는 아직 상세 feature engineering 문서가 아니라 data boundary의 일부로 관리한다.
 

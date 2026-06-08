@@ -1,7 +1,7 @@
 # Pipeline Diagrams
 
-**갱신일:** 2026-06-04  
-**상태:** 통합 diagram index  
+**갱신일:** 2026-06-08
+**상태:** 통합 diagram index
 **범위:** 이 문서는 pipeline diagram의 목록, 각 diagram의 역할, Mermaid source/render 관리 기준을 정의한다.
 
 ## 1. 관리 원칙
@@ -9,6 +9,7 @@
 - 각 diagram은 서로 다른 관점을 표현하므로 개별 `.mmd`와 `.svg` 파일을 유지한다.
 - `.mmd`는 canonical Mermaid source다.
 - `.svg`는 팀 공유와 Markdown preview를 위한 render 결과다.
+- `stack_architecture_overview.svg`처럼 icon-based SVG를 직접 관리하는 경우에는 Mermaid source 없이 SVG 자체를 canonical source/render로 본다.
 - Mermaid source는 `.mmd`로 관리하고 설명은 이 문서에 모아 관리한다.
 - Diagram 설명은 이 `README.md`에 모아 관리한다.
 - `flow_01` / `sequence_01`은 live DB 처리와 canonical promotion의 상세 기준 diagram으로 유지한다.
@@ -17,7 +18,8 @@
 
 | 구분 | Mermaid source | Render | 설명 |
 |---|---|---|---|
-| 전체 flow | `flow_00_overall_pipeline.mmd` | `flow_00_overall_pipeline.svg` | source/archive, Kafka live ingestion buffer, PostgreSQL staging/candidate/canonical, service/workflow plane의 전체 연결을 표현한다. |
+| 전체 flow | `flow_00_overall_pipeline.mmd` | `flow_00_overall_pipeline.svg` | source/archive, Kafka live ingestion buffer, PostgreSQL live/canonical, peak feature/model-serving branch, service/workflow plane의 전체 연결을 표현한다. |
+| 기술스택 구조도 | - | `stack_architecture_overview.svg` | FastAPI, Kafka, PostgreSQL, Airflow, Python adapter, P-Max v29, Grafana, Vector DB/LangGraph를 icon-based SVG로 배치한 팀 공유용 stack overview다. |
 | 전체 flow visual variant | `flow_00_reference_architecture.svg` | `flow_00_reference_architecture.png` | `flow_00_overall_pipeline`의 내용을 참조해 팀 공유용 reference architecture 스타일로 재배치한 시각화다. 원본 flow 00은 변경하지 않는다. |
 | 전체 flow dark variant | `flow_00_dark_control_tower.svg` | `flow_00_dark_control_tower.png` | `flow_00_overall_pipeline`을 dark control-tower 스타일로 재배치한 발표/공유용 시각화다. |
 | 전체 flow reference-photo variant | `flow_00_reference_photo_style.svg` | `flow_00_reference_photo_style.png` | 첨부 레퍼런스의 white background, red header/boundary, icon grid, orange arrow 스타일을 기준으로 재배치한 시각화다. |
@@ -37,9 +39,9 @@
 
 | Plane | 포함 | 제외 |
 |---|---|---|
-| Data plane | source archive, Kafka live ingestion buffer, PostgreSQL live/staging/candidate/canonical, QA evidence | 외부 알림 또는 운영 전달 경로 |
-| Service plane | FastAPI, dashboard, Text-to-SQL, read-only query, job registration, artifact download | bulk ETL, canonical promotion 직접 실행 |
-| Workflow plane | Airflow, scheduler, batch/report worker, optional LangGraph review workflow | synchronous chat path |
+| Data plane | source archive, Kafka live ingestion buffer, PostgreSQL live/canonical, QA evidence, mart/ops model-serving artifacts | 외부 알림 또는 운영 전달 경로 |
+| Service plane | FastAPI, dashboard, Text-to-SQL, read-only query, job registration, artifact download | bulk ETL, canonical promotion 직접 실행, blocking model inference |
+| Workflow plane | Airflow, scheduler, batch/report worker, P-Max model job, P-Max adapter/release loader, optional LangGraph review workflow | synchronous chat path |
 
 ## 4. Render 기준
 
