@@ -1,0 +1,23 @@
+import os
+import sys
+from pathlib import Path
+import pytest
+from fastapi.testclient import TestClient
+
+# backend/src 패스를 추가하여 테스트 모듈에서 절대경로 import 가능하게 설정
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+
+from api.main import app
+
+@pytest.fixture
+def client():
+    """FastAPI TestClient 픽스처"""
+    return TestClient(app)
+
+@pytest.fixture(autouse=True)
+def mock_env_vars(monkeypatch):
+    """테스트 실행 시 필요한 환경 변수 강제 주입 (API 키 유출 및 오작동 방지)"""
+    monkeypatch.setenv("LLM_PROVIDER", "openai")
+    monkeypatch.setenv("LLM_MODEL", "gpt-4o-test")
+    # 실제 DB에 붙지 않도록 더미 설정 (라우터 에러 핸들링 테스트용)
+    monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@localhost:5432/dummy")
