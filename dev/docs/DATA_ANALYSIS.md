@@ -1,6 +1,6 @@
 # 데이터 분석 및 앱 업그레이드 가이드
 
-> 출처: `data/energy_agent_project_plan.pdf`, `data/energy_agent_project_supplement.pdf`, `paper.pdf` (Gruner et al. Scientific Data 2025)  
+> 출처: `dev/data/energy_agent_project_plan.pdf`, `dev/data/energy_agent_project_supplement.pdf`, `dev/data/paper.pdf` (Gruner et al. Scientific Data 2025)  
 > 작성 기준: 2026-06-05 / 최종 업데이트: 2026-06-05
 
 ---
@@ -415,4 +415,4 @@ def chat(messages, max_tokens=1024):
 
 ---
 
-*참고: `data/` 디렉터리는 `.gitignore`에 의해 추적 제외됨. 이 문서는 프로젝트 루트에서 관리.*
+*참고: `dev/data/` 디렉터리는 로컬 평가/분석 자료로 관리되며, `.gitignore`에서 제외되어 추적되지 않습니다.*
