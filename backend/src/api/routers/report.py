@@ -344,16 +344,13 @@ def latest_data_date() -> str | None:
     except Exception:
         pass
 
-    # 2. DB 마지막 날짜 폴백
+    # 2. DB 마지막 날짜 폴백 — 마지막 행이 당일 일부 데이터일 수 있으므로 항상 하루 빼서 완전한 날짜 반환
     try:
         from data.loader import get_data_range
         _, end_dt = get_data_range()
         if end_dt is None:
             return None
-        d = end_dt.date()
-        if end_dt.hour == 0 and end_dt.minute == 0:
-            d = d - timedelta(days=1)
-        return d.isoformat()
+        return (end_dt.date() - timedelta(days=1)).isoformat()
     except Exception:
         return None
 
