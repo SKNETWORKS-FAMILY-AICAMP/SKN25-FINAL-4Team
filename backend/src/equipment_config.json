@@ -46,41 +46,5 @@
     "unit": "kW",
     "scale": 0.001,
     "keywords": ["태양", "pv", "솔라", "solar"]
-  },
-  {
-    "id": "compressor",
-    "name": "공기압축기",
-    "type": "compressor",
-    "icon": "💨",
-    "types": ["PowerSpike", "NightConsumption"],
-    "metric": "grid_P",
-    "metric_label": "소비 전력",
-    "unit": "kW",
-    "scale": 0.001,
-    "keywords": ["압축기", "공기", "컴프레셔", "compressor"]
-  },
-  {
-    "id": "ventilator",
-    "name": "송풍기/환기",
-    "type": "ventilator",
-    "icon": "🌀",
-    "types": ["PowerSpike"],
-    "metric": "grid_P",
-    "metric_label": "소비 전력",
-    "unit": "kW",
-    "scale": 0.001,
-    "keywords": ["송풍기", "팬", "fan", "환기", "ventilator"]
-  },
-  {
-    "id": "lighting",
-    "name": "조명 설비",
-    "type": "lighting",
-    "icon": "💡",
-    "types": ["NightConsumption"],
-    "metric": "grid_P",
-    "metric_label": "소비 전력",
-    "unit": "kW",
-    "scale": 0.001,
-    "keywords": ["조명", "전등", "라이트", "lighting", "light"]
   }
 ]
