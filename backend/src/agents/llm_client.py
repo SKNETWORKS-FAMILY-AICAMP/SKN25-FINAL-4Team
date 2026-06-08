@@ -20,8 +20,9 @@ from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai").lower()
-LLM_MODEL    = os.getenv("LLM_MODEL", "gpt-4o")
+LLM_PROVIDER    = os.getenv("LLM_PROVIDER", "openai").lower()
+LLM_MODEL       = os.getenv("LLM_MODEL", "gpt-4o")
+LLM_MODEL_FAST  = os.getenv("LLM_MODEL_FAST", LLM_MODEL)  # 미설정 시 기본 모델과 동일
 
 _cache: dict = {}   # 프로바이더별 클라이언트 캐시
 
@@ -64,10 +65,11 @@ def _get_client():
 
 def reload():
     """설정 변경 후 전역 변수 및 클라이언트 캐시 재초기화."""
-    global LLM_PROVIDER, LLM_MODEL, _cache
+    global LLM_PROVIDER, LLM_MODEL, LLM_MODEL_FAST, _cache
     _cache.clear()
-    LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai").lower()
-    LLM_MODEL    = os.getenv("LLM_MODEL", "gpt-4o")
+    LLM_PROVIDER   = os.getenv("LLM_PROVIDER", "openai").lower()
+    LLM_MODEL      = os.getenv("LLM_MODEL", "gpt-4o")
+    LLM_MODEL_FAST = os.getenv("LLM_MODEL_FAST", LLM_MODEL)
 
 
 def _ollama_base_url() -> str:
@@ -76,19 +78,25 @@ def _ollama_base_url() -> str:
     return url.rstrip("/").removesuffix("/v1")
 
 
-def chat(messages: list[dict], max_tokens: int = 1024) -> str:
-    """통합 LLM 호출 — 텍스트 응답만 반환."""
+def chat(messages: list[dict], max_tokens: int = 1024, fast: bool = False) -> str:
+    """통합 LLM 호출 — 텍스트 응답만 반환.
 
-    # Ollama: thinking 모델(gemma4 등)은 /v1 OpenAI 호환 엔드포인트에서
-    # content가 빈 문자열로 오므로 네이티브 API로 직접 호출 + think:false
+    fast=True  → LLM_MODEL_FAST (EXAONE 등) 사용: 의도 분류·단순 쿼리용 (빠름)
+    fast=False → LLM_MODEL (Gemma4 등) 사용: 진단·보고서·분석용 (품질 최우선)
+    """
+    model = LLM_MODEL_FAST if fast else LLM_MODEL
+
     if LLM_PROVIDER == "ollama":
         payload = {
-            "model": LLM_MODEL,
+            "model": model,
             "messages": messages,
             "stream": False,
-            "think": False,
             "options": {"num_predict": max_tokens},
         }
+        # fast 모델(EXAONE 등): thinking 없음 → think 파라미터 불필요
+        # quality 모델(Gemma4): think 파라미터 생략 → thinking 활성화 (품질 극대화)
+        if fast:
+            payload["think"] = False
         resp = httpx.post(
             f"{_ollama_base_url()}/api/chat",
             json=payload,
@@ -101,7 +109,7 @@ def chat(messages: list[dict], max_tokens: int = 1024) -> str:
 
     if LLM_PROVIDER == "anthropic":
         resp = client.messages.create(
-            model=LLM_MODEL,
+            model=model,
             max_tokens=max_tokens,
             messages=messages,
         )
@@ -109,7 +117,7 @@ def chat(messages: list[dict], max_tokens: int = 1024) -> str:
 
     else:   # openai / gemini (OpenAI 호환)
         resp = client.chat.completions.create(
-            model=LLM_MODEL,
+            model=model,
             max_tokens=max_tokens,
             messages=messages,
         )

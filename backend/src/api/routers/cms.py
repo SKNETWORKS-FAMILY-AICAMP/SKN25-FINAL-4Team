@@ -317,6 +317,25 @@ def run_diagnosis(eq_id: str, window_days: int = _WINDOW_DAYS, regenerate: bool 
         prompt = _build_diag_prompt(eq, window_days, total, by_type, examples, sig_str)
 
         # ── few-shot: 설비 유형별 예시 선택 ──────────────────────────
+        # 계절 정상 케이스: 이상 0건 + 외기온 영향으로 COP 기준 미달이지만 정상
+        fs_seasonal_user = (
+            "다음은 '냉방 시스템' 설비의 최근 30일 이상 탐지 결과입니다.\n"
+            "[이상 요약] 총 0건\n"
+            "[전기 시그니처] 전압 398V, 전류 36A, 역률 0.88, COP 1.85 (연간 중앙값 2.06)\n"
+            "[환경 정보] 외기온 35.2°C (평년 8월 평균 28°C 대비 +7.2°C)\n"
+            "위 데이터와 도메인 지식을 근거로 이 설비의 상태를 진단하세요."
+        )
+        fs_seasonal_assistant = (
+            "### 🩺 진단 요약\n"
+            "이상탐지 0건 — 현 시점 계절 정상 범위입니다. "
+            "COP 1.85는 연간 중앙값(2.06) 대비 낮지만, 외기온 35.2°C(평년 대비 +7.2°C)인 한여름 조건을 고려하면 정상 허용 범위(1.7~2.0)에 해당합니다.\n\n"
+            "### 🔍 추정 원인\n"
+            "- COP 1.85: 외기온 35.2°C → 응축기 열방출 부하 증가로 인한 계절적 효율 저하 (이상 아님)\n"
+            "- 전기 시그니처(전압 398V, 역률 0.88) 모두 정상 범위\n\n"
+            "### ✅ 권장 조치\n"
+            "- 즉각 조치 불필요 — 정상 운영 유지\n"
+            "- 외기온 정상화(30°C 이하) 후에도 COP 2.0 미만이면 냉매 충전량 점검 예약"
+        )
         if eq.get("id") in ("pv", "chp"):
             # 발전 설비: 역률 음수 = 정상(역송) 예시
             fs_user = (
@@ -363,7 +382,9 @@ def run_diagnosis(eq_id: str, window_days: int = _WINDOW_DAYS, regenerate: bool 
 
         diagnosis = llm_chat(
             [
-                {"role": "system", "content": system},
+                {"role": "system",    "content": system},
+                {"role": "user",      "content": fs_seasonal_user},
+                {"role": "assistant", "content": fs_seasonal_assistant},
                 {"role": "user",      "content": fs_user},
                 {"role": "assistant", "content": fs_assistant},
                 {"role": "user",      "content": prompt},

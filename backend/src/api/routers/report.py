@@ -167,6 +167,25 @@ def _generate_trend_narrative(items: list[dict]) -> str:
             f"  자급률: {yoy_s:+.1f}%p"
         )
 
+    fs_user = (
+        "당신은 EMS Agent — 에너지 월간 트렌드 분석 AI입니다.\n"
+        "시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력 용어는 \"계통 전력\"만 사용.\n"
+        "기준: 자급률 6년평균 39.6%, COP 중앙값 2.06.\n\n"
+        "## 2024-02 KPI\n"
+        "- 총 소비: 1,185,000 kWh\n- 자급률: 40.1%\n- 평균 COP: 2.11\n"
+        "- 그리드 의존도: 59.9%\n- 이상탐지: 2건\n\n"
+        "## 비교\n"
+        "- 전월(2024-01) 대비 소비량: -4.3%\n"
+        "- 전년 동월(2023-02) 대비 소비량: +1.8%  자급률: +2.1%p\n\n"
+        "3~4문장으로 월간 트렌드를 분석하세요."
+    )
+    fs_assistant = (
+        "2024년 2월 총 소비량은 1,185,000 kWh로, 전월 대비 4.3% 감소하며 효율이 개선됐습니다. "
+        "자급률 40.1%는 6년 평균(39.6%)을 0.5%p 상회했으며, 전년 동월 대비로도 2.1%p 향상됐습니다. "
+        "평균 COP 2.11은 중앙값(2.06)을 소폭 웃돌아 냉방 효율이 양호한 수준이며, "
+        "이상탐지 2건은 경미한 수준으로 운영 안정성을 유지하고 있습니다."
+    )
+
     prompt = f"""당신은 EMS Agent — 에너지 월간 트렌드 분석 AI입니다.
 시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력 용어는 "계통 전력"만 사용.
 기준: 자급률 6년평균 39.6%, COP 중앙값 2.06.
@@ -182,10 +201,18 @@ def _generate_trend_narrative(items: list[dict]) -> str:
 - 전월({prev["period"]}) 대비 소비량: {f"{mom_pct:+.1f}%" if mom_pct is not None else "데이터 없음"}{yoy_lines}
 
 3~4문장으로 월간 트렌드를 분석하세요.
-전월 대비와 전년 동월 대비 변화를 모두 언급하고, 주목할 KPI 변화와 가능한 원인을 짚어주세요."""
+전월 대비와 전년 동월 대비 변화를 모두 언급하고, 주목할 KPI 변화와 가능한 원인을 짚어주세요.
+반드시 제공된 수치(소비량·자급률·COP·이상탐지 건수)를 모두 인용하세요."""
 
     try:
-        return llm_chat([{"role": "user", "content": prompt}], max_tokens=350).strip()
+        return llm_chat(
+            [
+                {"role": "user",      "content": fs_user},
+                {"role": "assistant", "content": fs_assistant},
+                {"role": "user",      "content": prompt},
+            ],
+            max_tokens=350,
+        ).strip()
     except Exception:
         return ""
 
@@ -495,7 +522,8 @@ def _generate_daily_summary(kpi: dict) -> tuple[str, str]:
  없으면 "이상 없음 — 정상 운영 유지" 한 줄.
  최대 3개 항목, 각 항목은 "· "(중간점 1개+공백) 으로만 시작. "··"처럼 두 번 쓰지 마세요.)"""
 
-    few_shot_user = (
+    # few-shot 1: 이상 없음 (정상 운영)
+    fs1_user = (
         "당신은 EMS Agent — 공장 에너지 일일 운영 브리핑을 작성하는 AI입니다.\n"
         "시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력 용어는 '계통 전력'만 사용.\n\n"
         "## 2024-01-10 일일 KPI\n"
@@ -506,7 +534,7 @@ def _generate_daily_summary(kpi: dict) -> tuple[str, str]:
         "다음 두 섹션을 정확히 아래 형식으로 출력하세요. 다른 텍스트 없이.\n\n"
         "---SUMMARY---\n(3~4문장)\n\n---ACTIONS---\n(체크리스트)"
     )
-    few_shot_assistant = (
+    fs1_assistant = (
         "---SUMMARY---\n"
         "2024-01-10 일일 총 소비량은 38,500 kWh이며, 자급률 42.1%로 6년 평균(39.6%)을 상회했습니다. "
         "평균 COP 2.31은 중앙값 2.06을 크게 웃돌아 냉방 효율이 양호합니다. "
@@ -514,11 +542,36 @@ def _generate_daily_summary(kpi: dict) -> tuple[str, str]:
         "---ACTIONS---\n"
         "이상 없음 — 정상 운영 유지"
     )
+    # few-shot 2: HIGH 이상 발생 (조치 구체성 예시)
+    fs2_user = (
+        "당신은 EMS Agent — 공장 에너지 일일 운영 브리핑을 작성하는 AI입니다.\n"
+        "시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력 용어는 '계통 전력'만 사용.\n\n"
+        "## 2024-03-15 일일 KPI\n"
+        "- 총 소비: 41,200 kWh\n- 자급률: 35.4%  (기준: 39.6%)\n"
+        "- 평균 COP: 1.92  (기준: 2.06)\n- 그리드 의존도: 64.6%\n"
+        "- PV 발전: 8,200 kWh | CHP 발전: 6,400 kWh\n"
+        "- 피크: 14시 1,842 kW\n- 이상탐지: 1건\n"
+        "  - [HIGH] 2024-03-15 14:32 ActualSpike: 전력 급등 +38%\n\n"
+        "다음 두 섹션을 정확히 아래 형식으로 출력하세요. 다른 텍스트 없이.\n\n"
+        "---SUMMARY---\n(3~4문장)\n\n---ACTIONS---\n(체크리스트)"
+    )
+    fs2_assistant = (
+        "---SUMMARY---\n"
+        "2024-03-15 총 소비량 41,200 kWh 중 계통 전력 의존도가 64.6%로 기준(60.4%)을 초과했습니다. "
+        "자급률 35.4%는 6년 평균(39.6%) 대비 4.2%p 낮으며, 14:32 전력 급등(+38%) HIGH 이상 1건이 발생했습니다. "
+        "COP 1.92는 중앙값(2.06) 대비 소폭 저하로 냉방 효율 점검이 필요합니다.\n\n"
+        "---ACTIONS---\n"
+        "· 냉방 시스템: 14:32 전력 급등 원인 확인 — 인버터 로그 및 부하 프로파일 점검\n"
+        "· 계통 전력: 피크 1,842 kW(14시) 원인 분석 — 동시 가동 설비 목록 확인\n"
+        "· COP 1.92 모니터링 지속 — 내일도 2.0 미만이면 냉매 충전량 점검 예약"
+    )
     try:
         raw = llm_chat(
             [
-                {"role": "user",      "content": few_shot_user},
-                {"role": "assistant", "content": few_shot_assistant},
+                {"role": "user",      "content": fs1_user},
+                {"role": "assistant", "content": fs1_assistant},
+                {"role": "user",      "content": fs2_user},
+                {"role": "assistant", "content": fs2_assistant},
                 {"role": "user",      "content": prompt},
             ],
             max_tokens=500,

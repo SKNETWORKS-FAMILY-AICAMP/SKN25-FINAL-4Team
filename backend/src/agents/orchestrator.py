@@ -149,6 +149,7 @@ def classify_intent(state: AgentState) -> AgentState:
     raw = llm_chat(
         [{"role": "user", "content": INTENT_PROMPT.format(question=question)}],
         max_tokens=10,
+        fast=True,
     ).strip().lower()
     valid = ("anomaly", "report", "rag", "forecast", "cms", "off_topic")
     intent = raw if raw in valid else "rag"
