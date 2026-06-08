@@ -1,7 +1,6 @@
 # ── 앱 실행 불필요 (개발/학습/분석 전용) ─────────────────────────────
 CLAUDE.md
 /dev/
-/ml/
 /data/
 /lib/
 /team/
@@ -40,7 +39,7 @@ src/models/anomaly/saved/
 src/models/forecasting/saved/
 backend/src/models/anomaly/saved/
 backend/src/models/forecasting/saved/
-ml/pipeline/artifacts/
+backend/ml/pipeline/artifacts/
 mlruns/
 mlruns.db
 *.pkl

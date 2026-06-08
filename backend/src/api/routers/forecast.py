@@ -4,14 +4,12 @@ from pathlib import Path
 
 from fastapi import APIRouter, Query
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-# /app (도커) 또는 프로젝트 루트 (로컬) — ml/ 패키지 접근용
-_APP_ROOT = Path(__file__).resolve().parents[3]  # /app/src/../.. → /app
+_APP_ROOT = Path(__file__).resolve().parents[3]  # backend/
 sys.path.insert(0, str(_APP_ROOT))
 
 router = APIRouter(prefix="/forecast", tags=["forecast"])
 
-_PROJECT_ROOT = _APP_ROOT
+_PROJECT_ROOT = _APP_ROOT  # ml/ is now at backend/ml/
 _PROCS: dict[str, "subprocess.Popen"] = {}
 
 # ── 모델 레지스트리 ──────────────────────────────────────────────────
@@ -32,7 +30,7 @@ MODEL_REGISTRY: dict[str, dict] = {
 
 
 _STATUS_DIR = _PROJECT_ROOT / "ml" / "pipeline" / "artifacts"
-_VENV_PYTHON = str(_PROJECT_ROOT / ".venv-train" / "bin" / "python")
+_VENV_PYTHON = str(Path(__file__).resolve().parents[4] / ".venv-train" / "bin" / "python")
 
 
 def _status_file(horizon: int) -> Path:
@@ -91,6 +89,10 @@ def train_model(
     cmd = [_VENV_PYTHON, "-m", "ml.pipeline.train", "--horizon", str(horizon)]
     if meters:
         cmd += ["--meters"] + meters.split(",")
+    # pass1(LSTM) 아티팩트가 이미 있으면 스킵해서 수십 분 → 수 분으로 단축
+    sample_pt = _STATUS_DIR / f"{horizon}h" / "H2.Z66" / "lstm_v1.pt"
+    if sample_pt.exists():
+        cmd.append("--skip-pass1")
 
     _status_file(horizon).write_text("running")
     proc = subprocess.Popen(cmd, cwd=str(_PROJECT_ROOT))

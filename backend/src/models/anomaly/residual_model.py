@@ -17,8 +17,8 @@ import numpy as np
 import pandas as pd
 import torch
 
-# v84 파이프라인 루트 (backend/src/models/anomaly → SKN25-FINAL-4Team)
-_PROJECT_ROOT = Path(__file__).parents[4]
+# v84 파이프라인 루트 (backend/src/models/anomaly → backend/)
+_PROJECT_ROOT = Path(__file__).parents[3]
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
@@ -86,7 +86,10 @@ def _batch_predict_meter(
 
     routing = load_routing(meter_urn, 1)
     input_scaler, target_scaler = load_scalers(meter_urn, 1)
-    feature_columns = load_feature_columns(meter_urn, 1)
+    all_feature_columns = load_feature_columns(meter_urn, 1)
+    # 스케일러는 학습 당시 피처 수로 고정 → 앞 n_features_in_ 개만 사용
+    n_lstm_features = input_scaler.n_features_in_
+    feature_columns = all_feature_columns[:n_lstm_features]
     threshold = float(routing.get("anomaly_threshold") or 5000.0)
 
     top2_versions = routing.get("lstm_top2_versions") or []
@@ -99,7 +102,7 @@ def _batch_predict_meter(
 
     model = load_lstm_model(
         RecurrentPredictor,
-        input_size=len(feature_columns),
+        input_size=n_lstm_features,
         hidden_size=HIDDEN_SIZE,
         output_size=1,
         architecture=variant.model_architecture,

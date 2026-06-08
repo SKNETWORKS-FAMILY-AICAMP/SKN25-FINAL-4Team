@@ -8,7 +8,7 @@ from typing import Optional
 from dotenv import load_dotenv
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))  # backend/
 
 load_dotenv()
 
@@ -444,9 +444,8 @@ _DETECTION_TIMEOUT_S = 600  # 10분 초과 시 타임아웃
 
 
 def _do_detection(job_id: str, start: str, end: str, loop=None) -> None:
-    """VMD-LSTM 잔차+IF 백그라운드 이상탐지."""
+    """v84 잔차+IF 백그라운드 이상탐지."""
     import pandas as pd
-    sys.path.insert(0, str(Path(__file__).parent.parent.parent))
     try:
         from models.anomaly.residual_model import predict_anomaly, is_available
         from data.loader import load_range

@@ -116,7 +116,12 @@ export default function ForecastPanel() {
     setTraining(true); setTrainMsg('')
     try {
       await trainModel('v84-ensemble', horizon)
-      setTrainMsg(`${horizon}h 학습이 시작되었습니다. 완료까지 수십 분 소요됩니다.`)
+      const isRetrain = currentStatus === 'done'
+      setTrainMsg(
+        isRetrain
+          ? `${horizon}h 재학습이 시작되었습니다. pass1(LSTM) 스킵으로 수 분 내 완료 예정입니다.`
+          : `${horizon}h 학습이 시작되었습니다. 완료까지 20~40분 소요됩니다 (LSTM 6종 학습 포함).`
+      )
       setStatus(s => ({ ...s, [`v84-${horizon}h`]: 'running' }))
     } catch (e) {
       setTrainMsg('학습 요청 실패: ' + (e.message ?? ''))
