@@ -9,10 +9,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-from cms.contracts.import_pmax_forecast_15min import (
-    IMPORT_PMAX_EVALUATION_TABLE,
-    IMPORT_PMAX_FORECAST_TABLE,
-    IMPORT_PMAX_INFERENCE_LOG_TABLE,
+from cms.contracts.pmax_forecast_15min import (
+    PMAX_FORECAST_EVALUATION_TABLE,
+    PMAX_FORECAST_INFERENCE_LOG_TABLE,
+    PMAX_FORECAST_TABLE,
 )
 
 EvidenceLevel = Literal["local_dry_run", "mocked_adapter", "scratch_db_integration", "aws_scratch_or_staging", "production_promotion"]
@@ -95,9 +95,9 @@ CHAMPION_MODEL_SOURCE_TABLES = (
     "mart.champion_prediction_1h",
     "qa.champion_prediction_issue",
     "ops.champion_inference_metric",
-    IMPORT_PMAX_FORECAST_TABLE,
-    IMPORT_PMAX_INFERENCE_LOG_TABLE,
-    IMPORT_PMAX_EVALUATION_TABLE,
+    PMAX_FORECAST_TABLE,
+    PMAX_FORECAST_INFERENCE_LOG_TABLE,
+    PMAX_FORECAST_EVALUATION_TABLE,
 )
 
 GRAFANA_ALERT_RULES = (
@@ -202,9 +202,9 @@ CHAMPION_MODEL_DASHBOARD_PANEL_CONTRACTS = (
     DashboardPanelContract("Warning by horizon", "mart.champion_prediction_1h", "pre-warning count grouped by forecast horizon", "P1"),
     DashboardPanelContract("Post-hoc anomaly/error", "qa.champion_prediction_issue", "actual-vs-predicted anomaly and error triage", "P1"),
     DashboardPanelContract("Champion inference latency", "ops.champion_inference_metric", "inference adapter latency and runtime health", "P0"),
-    DashboardPanelContract("Import P-Max prediction freshness", IMPORT_PMAX_FORECAST_TABLE, "latest 15min Import P-Max forecast write age", "P0"),
-    DashboardPanelContract("Import P-Max quality status", IMPORT_PMAX_INFERENCE_LOG_TABLE, "success/degraded/failed run quality state", "P1"),
-    DashboardPanelContract("Import P-Max evaluation error", IMPORT_PMAX_EVALUATION_TABLE, "post-hoc actual P_max forecast error", "P1"),
+    DashboardPanelContract("P-Max prediction freshness", PMAX_FORECAST_TABLE, "latest 15min P-Max forecast write age", "P0"),
+    DashboardPanelContract("P-Max quality status", PMAX_FORECAST_INFERENCE_LOG_TABLE, "success/degraded/failed run quality state", "P1"),
+    DashboardPanelContract("P-Max evaluation error", PMAX_FORECAST_EVALUATION_TABLE, "post-hoc actual P_max forecast error", "P1"),
 )
 
 
