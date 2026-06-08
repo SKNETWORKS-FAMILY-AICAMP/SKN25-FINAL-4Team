@@ -22,6 +22,7 @@ PROMETHEUS_CONFIG_PATH = ROOT / "docker/prometheus/phase1.yml"
 KAFKA_EXPORTER_DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_phase1b_kafka_exporter.json"
 SYSTEM_POSTGRES_DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_phase1c_system_postgres.json"
 SOAK_GATES_DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_live_soak_gates.json"
+PMAX_FORECAST_DASHBOARD_PATH = ROOT / "docker/grafana/provisioning/dashboards/json/cms_pmax_forecast.json"
 ALERT_PATH = ROOT / "docker/grafana/provisioning/alerting/live_pipeline_alerts.yaml"
 CONTACT_POINT_PATH = ROOT / "docker/grafana/provisioning/alerting/contact_points.yaml"
 QUERY_DOC_PATH = ROOT / "docs/qa/grafana_ops_query_contract.md"
@@ -274,6 +275,39 @@ def test_live_soak_gates_dashboard_uses_postgres_datasource_and_ops_metrics() ->
         "consumer_dlq",
         "consumer_lag_after",
         "gate_status_warning",
+    ]:
+        assert token in raw
+
+
+def test_pmax_forecast_dashboard_uses_postgres_datasource_and_pmax_tables() -> None:
+    dashboard = json.loads(PMAX_FORECAST_DASHBOARD_PATH.read_text(encoding="utf-8"))
+
+    assert dashboard["uid"] == "cms-pmax-forecast"
+    assert dashboard["title"] == "CMS P-Max Forecast"
+    assert dashboard["refresh"] == "30s"
+    titles = {panel["title"] for panel in dashboard["panels"]}
+    assert {
+        "P-Max forecast rows",
+        "Latest P-Max forecast created age",
+        "Latest P-Max run status",
+        "P-Max forecast rows by logical meter",
+        "P-Max latest forecast detail",
+        "P-Max evaluation error",
+    } <= titles
+    for panel in dashboard["panels"]:
+        assert panel["datasource"]["uid"] == GRAFANA_POSTGRES_DATASOURCE_UID
+        for target in panel["targets"]:
+            assert target["rawSql"].strip().upper().startswith(("SELECT", "WITH"))
+    raw = json.dumps(dashboard)
+    for token in [
+        "mart.pmax_forecast_15min",
+        "ops.pmax_forecast_inference_log",
+        "qa.pmax_forecast_evaluation",
+        "logical_meter",
+        "predicted_p_max",
+        "quality_status",
+        "absolute_error",
+        "squared_error",
     ]:
         assert token in raw
 
