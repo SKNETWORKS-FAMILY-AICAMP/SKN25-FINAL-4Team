@@ -1,0 +1,309 @@
+{
+  "uid": "cms-test-gates",
+  "title": "CMS Test Gates / Evidence",
+  "tags": [
+    "cms",
+    "qa",
+    "test-gates",
+    "evidence"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Latest gate status",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1) SELECT COALESCE(max(metric_value), 0) AS value FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name IN ('gate_status_pass','gate_status_warning','gate_status_block');"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Latest lag after",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1) SELECT COALESCE(max(metric_value), 0) AS lag_after FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name IN ('consumer_lag_after','lag_after');"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Latest retry",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1) SELECT COALESCE(max(metric_value), 0) AS retry FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name='consumer_retry';"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Latest DLQ",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1) SELECT COALESCE(max(metric_value), 0) AS dlq FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name='consumer_dlq';"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Gate run summary",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH recent AS (SELECT run_id, max(metric_ts) AS latest_ts FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY latest_ts DESC LIMIT 10) SELECT r.latest_ts, m.run_id, max(m.stage) AS stage, max(m.metric_value) FILTER (WHERE m.metric_name IN ('producer_accepted','producer_emitted')) AS producer_events, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_processed') AS processed, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_inserted') AS inserted, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_duplicate') AS duplicate, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_retry') AS retry, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_dlq') AS dlq, max(m.metric_value) FILTER (WHERE m.metric_name IN ('consumer_lag_after','lag_after')) AS lag_after FROM recent r JOIN ops.pipeline_metric m USING (run_id) GROUP BY r.latest_ts, m.run_id ORDER BY r.latest_ts DESC;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 6,
+      "type": "table",
+      "title": "Processed / inserted / duplicate / retry / DLQ invariant",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1), pivot AS (SELECT metric_name, max(metric_value) AS value FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) GROUP BY metric_name) SELECT COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_processed'),0) AS processed, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_inserted'),0) AS inserted, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_duplicate'),0) AS duplicate, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_retry'),0) AS retry, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_dlq'),0) AS dlq, COALESCE((SELECT value FROM pivot WHERE metric_name IN ('consumer_lag_after','lag_after')),0) AS lag_after, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_processed'),0) - COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_inserted'),0) - COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_duplicate'),0) - COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_dlq'),0) AS invariant_delta;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 7,
+      "type": "table",
+      "title": "Recent gate metrics",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT metric_ts, run_id, stage, metric_name, metric_value, unit, labels FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' ORDER BY metric_ts DESC LIMIT 200;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    }
+  ]
+}

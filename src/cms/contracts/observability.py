@@ -19,8 +19,8 @@ EvidenceLevel = Literal["local_dry_run", "mocked_adapter", "scratch_db_integrati
 AlertSeverity = Literal["P0", "P1", "P2"]
 
 GRAFANA_POSTGRES_DATASOURCE_UID = "postgres-cms-live"
-GRAFANA_LIVE_PIPELINE_DASHBOARD_UID = "cms-live-pipeline"
-GRAFANA_LIVE_PIPELINE_FOLDER = "CMS Live Pipeline"
+GRAFANA_LIVE_PIPELINE_DASHBOARD_UID = "cms-runtime-operations"
+GRAFANA_LIVE_PIPELINE_FOLDER = "CMS Operations"
 
 LATENCY_METRICS = (
     "source_to_fastapi_sec",
