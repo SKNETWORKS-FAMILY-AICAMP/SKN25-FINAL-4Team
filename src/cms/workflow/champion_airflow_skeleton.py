@@ -181,8 +181,11 @@ def make_airflow_dag(*, enabled: bool = AIRFLOW_DAG_ENABLED) -> object:
 
     airflow = import_module("airflow")
     empty_operator = import_module("airflow.operators.empty")
+    python_operator = import_module("airflow.operators.python")
+    champion_tasks = import_module("cms.workflow.champion_tasks")
     dag_class = airflow.DAG
     empty_operator_class = empty_operator.EmptyOperator
+    python_operator_class = python_operator.PythonOperator
 
     dag = dag_class(
         dag_id=DAG_ID,
@@ -195,7 +198,16 @@ def make_airflow_dag(*, enabled: bool = AIRFLOW_DAG_ENABLED) -> object:
     with dag:
         previous: Any | None = None
         for task_id in TASK_IDS:
-            task = empty_operator_class(task_id=task_id)
+            task_callable = getattr(champion_tasks, task_id, None)
+            if task_callable is None:
+                task = empty_operator_class(task_id=task_id)
+            else:
+                task = python_operator_class(
+                    task_id=task_id,
+                    python_callable=champion_tasks.airflow_task_entrypoint,
+                    op_kwargs={"task_id": task_id},
+                    do_xcom_push=False,
+                )
             if previous is not None:
                 previous >> task
             previous = task

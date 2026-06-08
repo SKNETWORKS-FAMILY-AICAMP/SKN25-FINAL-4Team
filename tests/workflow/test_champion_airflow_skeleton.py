@@ -108,7 +108,10 @@ def test_make_airflow_dag_disabled_returns_plain_contract_without_airflow_import
 
 
 def test_make_airflow_dag_enabled_lazy_imports_and_builds_paused_dag(monkeypatch) -> None:
-    created_tasks: list[FakeEmptyOperator] = []
+    from cms.workflow import champion_tasks
+
+    created_tasks: list[FakeBaseOperator] = []
+    created_python_tasks: list[FakePythonOperator] = []
     active_dags: list[FakeDAG] = []
 
     class FakeDAG:
@@ -124,26 +127,42 @@ def test_make_airflow_dag_enabled_lazy_imports_and_builds_paused_dag(monkeypatch
         def __exit__(self, *exc_info: object) -> None:
             active_dags.pop()
 
-    class FakeEmptyOperator:
+    class FakeBaseOperator:
         def __init__(self, *, task_id: str) -> None:
             self.task_id = task_id
             created_tasks.append(self)
             active_dags[-1].task_ids.append(task_id)
 
-        def __rshift__(self, other: FakeEmptyOperator) -> FakeEmptyOperator:
+        def __rshift__(self, other: FakeBaseOperator) -> FakeBaseOperator:
             active_dags[-1].dependencies.append((self.task_id, other.task_id))
             return other
 
+    class FakeEmptyOperator(FakeBaseOperator):
+        pass
+
+    class FakePythonOperator(FakeBaseOperator):
+        def __init__(self, *, task_id: str, python_callable: object, op_kwargs: dict[str, object] | None = None, do_xcom_push: bool = True) -> None:
+            self.python_callable = python_callable
+            self.op_kwargs = op_kwargs or {}
+            self.do_xcom_push = do_xcom_push
+            super().__init__(task_id=task_id)
+            created_python_tasks.append(self)
+
     airflow_module = types.ModuleType("airflow")
     airflow_module.DAG = FakeDAG  # type: ignore[attr-defined]
+    operators_module = types.ModuleType("airflow.operators")
     empty_operator_module = types.ModuleType("airflow.operators.empty")
     empty_operator_module.EmptyOperator = FakeEmptyOperator  # type: ignore[attr-defined]
+    python_operator_module = types.ModuleType("airflow.operators.python")
+    python_operator_module.PythonOperator = FakePythonOperator  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "airflow", airflow_module)
-    monkeypatch.setitem(sys.modules, "airflow.operators", types.ModuleType("airflow.operators"))
+    monkeypatch.setitem(sys.modules, "airflow.operators", operators_module)
     monkeypatch.setitem(sys.modules, "airflow.operators.empty", empty_operator_module)
+    monkeypatch.setitem(sys.modules, "airflow.operators.python", python_operator_module)
 
     dag = champion.make_airflow_dag(enabled=True)
 
+    expected_python_task_ids = tuple(task_id for task_id in EXPECTED_TASK_IDS if hasattr(champion_tasks, task_id))
     assert isinstance(dag, FakeDAG)
     assert dag.kwargs["dag_id"] == "cms_champion_1h_model_pipeline"
     assert dag.kwargs["schedule"] is None
@@ -151,4 +170,8 @@ def test_make_airflow_dag_enabled_lazy_imports_and_builds_paused_dag(monkeypatch
     assert dag.kwargs["is_paused_upon_creation"] is True
     assert dag.task_ids == list(EXPECTED_TASK_IDS)
     assert [task.task_id for task in created_tasks] == list(EXPECTED_TASK_IDS)
+    assert [task.task_id for task in created_python_tasks] == list(expected_python_task_ids)
+    assert [task.python_callable for task in created_python_tasks] == [champion_tasks.airflow_task_entrypoint] * len(expected_python_task_ids)
+    assert [task.op_kwargs for task in created_python_tasks] == [{"task_id": task_id} for task_id in expected_python_task_ids]
+    assert [task.do_xcom_push for task in created_python_tasks] == [False] * len(expected_python_task_ids)
     assert dag.dependencies == list(zip(EXPECTED_TASK_IDS[:-1], EXPECTED_TASK_IDS[1:], strict=True))
