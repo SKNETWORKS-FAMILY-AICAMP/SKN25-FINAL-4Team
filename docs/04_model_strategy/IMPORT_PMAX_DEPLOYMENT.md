@@ -43,7 +43,17 @@ Default outputs:
 ```text
 outputs/import_pmax/import_pmax_{as_of}.json
 outputs/import_pmax/import_pmax_{as_of}.csv
+outputs/import_pmax/import_pmax_forecast_history.csv
 ```
+
+The timestamped CSV is the immutable 16-row snapshot for one inference run.
+`import_pmax_forecast_history.csv` is the cumulative DB-like validation file.
+Every batch upserts rows using `(logical_meter, base_ts, target_ts)`, matching
+the recommended database unique key. A new `base_ts` adds 16 rows; rerunning
+the same `base_ts` replaces those 16 rows without creating duplicates.
+
+Use `--history-csv PATH` to choose another cumulative file or
+`--no-history-csv` to disable cumulative CSV storage.
 
 Airflow should call this single command after the 15-minute source aggregation
 is complete. DB INSERT or UPSERT can consume the resulting 16-row CSV or call
@@ -84,6 +94,25 @@ The training configuration is fixed to:
 Training writes new artifacts to
 `artifacts/import_pmax_v29_60min_candidate/` by default. Validate that directory
 before promoting it to the deployed `artifacts/import_pmax_v29_60min/` path.
+
+Validate the candidate without changing production:
+
+```bash
+python scripts/forecasting/promote_import_pmax.py
+```
+
+Promote an approved candidate:
+
+```bash
+python scripts/forecasting/promote_import_pmax.py \
+  --execute \
+  --approval-note "approved by model review"
+```
+
+Promotion verifies all four manifests, feature order, ensemble weights, and
+model files by loading them before deployment. It copies only runtime files to
+a staging directory, validates staging, backs up the current deployed
+directory with a UTC timestamp, and then swaps staging into the deployed path.
 
 ## Artifact Policy
 

@@ -185,7 +185,9 @@ DB에서 별도로 제공할 필요가 없다.
 
 현재 JSON에는 네 예측 중 가장 큰 값을 `next_60min_peak`로 추가 제공하지만 이는 부가 요약 정보다. CSV 출력은 DB 저장 구조와 동일한 네 행으로 생성된다. 예측 결과를 DB에 직접 INSERT하는 로직은 아직 구현되지 않았다.
 
-4개 논리 계량기를 일괄 추론하면 계량기당 네 행씩 총 16행을 하나의 CSV로 생성한다. 현재 일괄 추론은 한 계량기라도 실패하면 전체 실행을 실패 처리하고 CSV·JSON을 저장하지 않는다.
+4개 논리 계량기를 일괄 추론하면 계량기당 네 행씩 총 16행의 실행별 CSV를 생성한다. 동시에 `outputs/import_pmax/import_pmax_forecast_history.csv`에 동일한 16행을 누적 UPSERT한다. 새 `base_ts`의 실행은 16행을 추가하고, 동일 `base_ts` 재실행은 권장 유일 키 `(logical_meter, base_ts, target_ts)`가 같은 기존 16행을 갱신한다. 이 누적 CSV는 DB 연동 전 단일 예측 테이블 적재 동작을 검증하기 위한 파일이다.
+
+현재 일괄 추론은 한 계량기라도 실패하면 전체 실행을 실패 처리하고 CSV·JSON을 저장하지 않는다.
 
 ---
 
@@ -217,6 +219,8 @@ mart.import_pmax_forecast_15min
 ```
 
 동일 기준 시각에 재실행하면 같은 예측 행을 갱신하는 방식이 단순하다. 모델 교체 이력을 별도로 관리해야 하는 시점에는 모델 배포 이력 테이블을 추가하거나 `model_version` 컬럼을 확장할 수 있다.
+
+DB 연동 전에는 누적 CSV가 같은 키 정책을 구현한다. 실제 DB 연동 시에는 누적 CSV 자체를 운영 저장소로 사용하지 않고 동일 키의 `INSERT ... ON CONFLICT ... DO UPDATE` 또는 동등한 UPSERT로 교체한다.
 
 현재 최소 CSV 스키마에는 결측 보정 여부가 포함되지 않는다. `data_quality.status`, 보간 행 수와 같은 정보는 JSON에만 포함된다. DB에서도 품질 상태를 관리해야 한다면 별도 실행 로그 테이블에 저장하거나 예측 테이블에 품질 컬럼을 추가해야 한다.
 
@@ -277,7 +281,8 @@ actual.window_ts = forecast.target_ts - INTERVAL '15 minutes'
 9. LightGBM 2개, XGBoost, CatBoost 모델을 실행하고 앙상블 예측값을 계산한다.
 10. 요청 시각 이후 네 개 15분 구간별 최대 P 예측값을 생성한다.
 11. 4개 논리 계량기에서 총 16개 예측 행을 생성한다.
-12. API 응답용 통합 JSON과 DB 저장용 통합 CSV를 생성한다.
+12. API 응답용 통합 JSON과 실행별 16행 CSV를 생성한다.
+13. DB 연동 전 검증용 누적 CSV에 유일 키 기준으로 UPSERT한다.
 
 ---
 

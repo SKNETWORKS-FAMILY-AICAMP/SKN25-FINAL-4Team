@@ -8,10 +8,11 @@ from typing import Any
 
 import pandas as pd
 
-from . import inference, training
+from . import csv_store, inference, training
 
 
 DEFAULT_OUTPUT_DIR = inference.PROJECT_ROOT / "outputs" / "import_pmax"
+DEFAULT_HISTORY_CSV = DEFAULT_OUTPUT_DIR / "import_pmax_forecast_history.csv"
 
 
 def parse_args() -> argparse.Namespace:
@@ -37,6 +38,20 @@ def parse_args() -> argparse.Namespace:
         "--csv-output",
         type=Path,
         help="Combined 16-row CSV output path. Defaults to outputs/import_pmax/{as_of}.csv.",
+    )
+    parser.add_argument(
+        "--history-csv",
+        type=Path,
+        default=DEFAULT_HISTORY_CSV,
+        help=(
+            "Cumulative DB-like forecast CSV. Rows are upserted by "
+            "(logical_meter, base_ts, target_ts)."
+        ),
+    )
+    parser.add_argument(
+        "--no-history-csv",
+        action="store_true",
+        help="Do not update the cumulative forecast CSV.",
     )
     return parser.parse_args()
 
@@ -159,14 +174,19 @@ def write_batch_outputs(
     batch: dict[str, Any],
     json_output: Path,
     csv_output: Path,
-) -> None:
+    history_csv: Path | None,
+) -> dict[str, int] | None:
     json_output.parent.mkdir(parents=True, exist_ok=True)
     csv_output.parent.mkdir(parents=True, exist_ok=True)
     json_output.write_text(
         json.dumps(batch, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
-    batch_to_csv_frame(batch).to_csv(csv_output, index=False)
+    forecast_frame = batch_to_csv_frame(batch)
+    forecast_frame.to_csv(csv_output, index=False)
+    if history_csv is None:
+        return None
+    return csv_store.upsert_forecast_csv(forecast_frame, history_csv)
 
 
 def main() -> None:
@@ -181,9 +201,18 @@ def main() -> None:
     default_json, default_csv = default_output_paths(requested_as_of)
     json_output = args.json_output or default_json
     csv_output = args.csv_output or default_csv
-    write_batch_outputs(batch, json_output, csv_output)
+    history_csv = None if args.no_history_csv else args.history_csv
+    history_result = write_batch_outputs(
+        batch,
+        json_output,
+        csv_output,
+        history_csv,
+    )
     batch["json_output"] = str(json_output)
     batch["csv_output"] = str(csv_output)
+    if history_csv is not None:
+        batch["history_csv"] = str(history_csv)
+        batch["history_upsert"] = history_result
     print(json.dumps(batch, indent=2, ensure_ascii=False))
 
 
