@@ -1,8 +1,5 @@
 """v84 앙상블 잔차 기반 이상탐지 래퍼.
 
-vmd_lstm_model 대신 ml.pipeline (v84)의 LSTM + artifacts를 사용한다.
-배치 슬라이딩 윈도우로 전체 구간을 한 번의 forward pass에 처리.
-
 인터페이스 (anomalies.py / simulator.py와 동일):
   is_available() → bool
   predict_anomaly(df, start, end) → DataFrame
@@ -44,7 +41,7 @@ from ml.pipeline.common.preprocessing import (
 from ml.pipeline.common.model import RecurrentPredictor, predict_scaled
 from ml.pipeline.inference import is_available as _v84_available
 
-# 잔차 탐지 대상 계량기 우선순위 (1h artifacts 기준)
+# 잔차 탐지 대상 계량기 (1h artifacts 기준)
 _RESIDUAL_METERS = [
     "H2.Z66", "H2.Z64", "H1.Z10", "H1.Z12",
     "H3.Z43", "H4.Z50", "V.Z84",
@@ -67,12 +64,12 @@ def is_available() -> bool:
 
 def _batch_predict_meter(
     meter_urn: str,
-    raw_df: pd.DataFrame,
     start: str,
     end: str,
 ) -> pd.DataFrame:
     """
-    단일 계량기에 대해 [start, end] 구간의 잔차를 배치로 계산.
+    단일 계량기의 [start, end] 구간 잔차를 배치로 계산.
+    DB에서 직접 계량기별 데이터를 가져온다.
 
     Returns DataFrame(ts, actual_w, predicted_w, residual_w, threshold)
     또는 빈 DataFrame (데이터 부족 / 모델 없음).
@@ -83,6 +80,22 @@ def _batch_predict_meter(
         return pd.DataFrame()
 
     spec = METER_SPECS_BY_URN[meter_urn]
+
+    # 계량기별 원본 데이터 직접 조회 (집계 데이터 대신)
+    try:
+        from ml.pipeline.common.db import build_engine, fetch_meter_window
+        engine = build_engine()
+        end_ts = pd.Timestamp(end, tz="UTC")
+        # start 기준 400h 앞부터 end까지 로드
+        start_ts = pd.Timestamp(start, tz="UTC")
+        total_hours = int((end_ts - start_ts).total_seconds() / 3600) + 400
+        raw_df = fetch_meter_window(engine, spec, end_ts=end_ts, window_hours=total_hours)
+    except Exception as e:
+        print(f"[residual_model] {meter_urn} 데이터 로드 실패: {e}")
+        return pd.DataFrame()
+
+    if raw_df is None or raw_df.empty:
+        return pd.DataFrame()
 
     routing = load_routing(meter_urn, 1)
     input_scaler, target_scaler = load_scalers(meter_urn, 1)
@@ -97,9 +110,9 @@ def _batch_predict_meter(
     if variant is None:
         return pd.DataFrame()
 
-    # checkpoint weight shape으로 실제 입력 크기 감지 (재학습 전/후 호환)
+    # checkpoint weight shape으로 실제 입력 크기 감지
     try:
-        pt_path = ARTIFACTS_DIR / f"1h" / meter_urn / f"lstm_{version}.pt"
+        pt_path = ARTIFACTS_DIR / "1h" / meter_urn / f"lstm_{version}.pt"
         state = torch.load(pt_path, map_location="cpu", weights_only=True)
         n_lstm_features = state["recurrent.weight_ih_l0"].shape[1]
     except Exception:
@@ -121,7 +134,8 @@ def _batch_predict_meter(
 
     try:
         frame, _, _ = prepare_model_frame(raw_df, spec, use_time_features=True)
-    except Exception:
+    except Exception as e:
+        print(f"[residual_model] {meter_urn} prepare_model_frame 실패: {e}")
         return pd.DataFrame()
 
     scaler_cols = scaled_feature_columns(feature_columns)
@@ -129,23 +143,20 @@ def _batch_predict_meter(
     if len(clean) < WINDOW_SIZE + 1:
         return pd.DataFrame()
 
-    # 전 구간 피처 행렬 스케일 → 슬라이딩 윈도우 배치 생성
     x_2d = transform_input(clean, feature_columns, scaler_cols, input_scaler)
     n_windows = len(clean) - WINDOW_SIZE
     if n_windows <= 0:
         return pd.DataFrame()
 
-    # (n_windows, WINDOW_SIZE, n_features) — 한 번에 배치 추론
     windows = np.stack(
         [x_2d[i: i + WINDOW_SIZE] for i in range(n_windows)]
     ).astype(np.float32)
 
     with torch.no_grad():
-        preds_scaled = predict_scaled(model, windows, batch_size=512)  # (n_windows, 1)
+        preds_scaled = predict_scaled(model, windows, batch_size=512)
 
     pred_step1 = preds_scaled[:, 0]
 
-    # P(t-1) anchor로 residual target 복원
     anchor_P = clean["P"].values[WINDOW_SIZE - 1: WINDOW_SIZE - 1 + n_windows]
     anchor_scaled = target_scaler.transform(anchor_P.reshape(-1, 1)).ravel()
 
@@ -177,18 +188,13 @@ def _batch_predict_meter(
 def predict_anomaly(df: pd.DataFrame, start: str, end: str) -> pd.DataFrame:
     """
     v84 잔차 기반 이상탐지.
-
-    사용 가능한 계량기마다 배치 잔차를 계산하고,
-    타임스텝별로 threshold 초과 비율이 가장 높은 계량기 결과를 대표값으로 사용.
-
-    반환 컬럼:
-      ts, actual_w, predicted_w, residual_w,
-      res_flag, if_flag, vote, anomaly_level
+    df: load_reduced 집계 데이터 (센서 컬럼 병합용으로만 사용).
+    계량기별 원본 데이터는 내부에서 직접 조회.
     """
     meter_frames = []
     for meter_urn in _RESIDUAL_METERS:
         try:
-            mdf = _batch_predict_meter(meter_urn, df, start, end)
+            mdf = _batch_predict_meter(meter_urn, start, end)
             if not mdf.empty:
                 mdf["meter_urn"] = meter_urn
                 meter_frames.append(mdf)
@@ -199,14 +205,12 @@ def predict_anomaly(df: pd.DataFrame, start: str, end: str) -> pd.DataFrame:
         return pd.DataFrame()
 
     combined = pd.concat(meter_frames, ignore_index=True)
-    # 타임스텝별로 잔차/threshold 비율이 가장 높은 계량기를 대표로 선택
     combined["ratio"] = combined["residual_w"] / combined["threshold"].clip(lower=1.0)
     best_idx = combined.groupby("ts", sort=False)["ratio"].idxmax()
     result = combined.loc[best_idx].reset_index(drop=True)
 
-    # anomalies.py / simulator.py 인터페이스와 동일한 컬럼 생성
     result["res_flag"] = (result["ratio"] >= 1.0).astype(int)
-    result["if_flag"]  = 0   # v84 버전에서는 IF 미사용
+    result["if_flag"]  = 0
     result["vote"]     = result["res_flag"]
 
     result["anomaly_level"] = np.where(

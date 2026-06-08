@@ -13,8 +13,8 @@ services:
       # 학습된 모델 파일 유지
       - ./backend/src/models/forecasting/saved:/app/src/models/forecasting/saved
       - ./backend/src/models/anomaly/saved:/app/src/models/anomaly/saved
-      # v84 앙상블 파이프라인 (소스 + artifacts)
-      - ./ml:/app/ml
+      # v84 앙상블 artifacts (소스코드는 이미지에 포함, artifacts만 마운트)
+      - ./backend/ml/pipeline/artifacts:/app/ml/pipeline/artifacts
     ports:
       - "8000:8000"
     healthcheck:

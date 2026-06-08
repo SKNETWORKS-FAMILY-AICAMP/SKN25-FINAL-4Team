@@ -19,6 +19,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 # 소스 복사
 COPY src/ ./src/
+COPY ml/ ./ml/
 
 EXPOSE 8000
 

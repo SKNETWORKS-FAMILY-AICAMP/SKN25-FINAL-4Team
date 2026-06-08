@@ -42,6 +42,7 @@ src/models/forecasting/saved/
 backend/src/models/anomaly/saved/
 backend/src/models/forecasting/saved/
 backend/ml/pipeline/artifacts/
+ml/pipeline/artifacts/
 mlruns/
 mlruns.db
 *.pkl
@@ -50,6 +51,7 @@ mlruns.db
 *.pth
 *.h5
 *.onnx
+*.cbm
 
 # ── 생성 보고서 ───────────────────────────────────────────────────────
 docs/reports/*.pdf

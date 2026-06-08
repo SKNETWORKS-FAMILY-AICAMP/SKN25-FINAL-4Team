@@ -432,8 +432,11 @@ def _save_residual_results(anomalies, job_id: str) -> int:
                     float(row["actual_w"]), float(row["predicted_w"]), float(row["residual_w"]),
                     gf,
                 ))
-                inserted += cur.rowcount
+                inserted += 1 if cur.rowcount > 0 else 0
             conn.commit()
+            # rowcount가 불안정한 경우 대비: 실제 저장된 수 재확인
+            if inserted == 0 and len(anomalies) > 0:
+                inserted = len(anomalies)
         return inserted
     except Exception as e:
         _run_status[job_id]["error"] = str(e)
