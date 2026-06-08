@@ -199,13 +199,13 @@ def get_report(
     # YoY 계산을 위해 요청 기간보다 12개월 더 많이 가져옴
     fetch_limit = months + 12
 
-    # 시뮬 활성 시: sim_now 이전 월만 표시
+    # 시뮬 clock 기준 마지막 완전한 월만 표시 (latest_data_date와 동일 로직)
     sim_cutoff_period = None
     try:
-        from api.routers.simulator import clock, SIM_START_DEFAULT
+        from api.routers.simulator import clock
         sim_now = clock.now
-        if sim_now > SIM_START_DEFAULT:
-            sim_cutoff_period = sim_now.strftime("%Y-%m")
+        cutoff_date = sim_now.date() - timedelta(days=1)
+        sim_cutoff_period = cutoff_date.strftime("%Y-%m")
     except Exception:
         pass
 
