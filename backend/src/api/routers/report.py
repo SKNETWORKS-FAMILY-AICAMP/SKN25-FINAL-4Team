@@ -326,21 +326,12 @@ def latest_data_date() -> str | None:
     시뮬레이터가 시작된 적이 있으면 sim_now의 어제 날짜를 반환 (실시간 흐름 모사).
     아니면 DB 마지막 날짜.
     """
-    # 1. 시뮬레이터 우선 (시작된 적 있으면)
+    # 1. 시뮬레이터 clock 기준 — 항상 시뮬 현재 시각 기준으로 "어제"를 반환
+    #    (미시작 상태 SIM_START_DEFAULT=2023-01-01이면 → 2022-12-31)
     try:
         from api.routers.simulator import clock
-        # sim_now가 SIM_START_DEFAULT보다 진행됐다면 시뮬 사용
         sim_now = clock.now
-        from api.routers.simulator import SIM_START_DEFAULT
-        if sim_now > SIM_START_DEFAULT:
-            d = sim_now.date()
-            # 자정 직후면 전날, 그 외에는 어제
-            if sim_now.hour < 1:
-                d = d - timedelta(days=1)
-            else:
-                # 시뮬이 진행 중이면 "어제까지 완전" 가정
-                d = d - timedelta(days=1)
-            return d.isoformat()
+        return (sim_now.date() - timedelta(days=1)).isoformat()
     except Exception:
         pass
 
