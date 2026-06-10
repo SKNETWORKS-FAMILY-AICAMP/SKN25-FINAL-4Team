@@ -35,7 +35,6 @@ ENV/
 mlruns/
 mlruns.db
 *.pkl
-*.joblib
 *.pt
 *.pth
 *.h5
