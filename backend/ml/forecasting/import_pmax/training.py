@@ -121,7 +121,7 @@ def build_engine():
     db_port = os.getenv("DB_PORT", "5432")
     db_name = os.getenv("DB_NAME", "ems")
     db_user = os.getenv("DB_USER", "postgres")
-    db_pass = os.getenv("DB_PASS", "")
+    db_pass = os.getenv("DB_PASS") or os.getenv("DB_PASSWORD", "")
     database_url = URL.create(
         "postgresql+psycopg2",
         username=db_user,

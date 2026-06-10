@@ -180,6 +180,64 @@ function MiniGauge({ pct, color }) {
   )
 }
 
+const skBase = { background: 'var(--line)', borderRadius: 6, animation: 'skPulse 1.5s ease-in-out infinite' }
+
+function Sk({ h = 12, w = '100%', mt = 0 }) {
+  return <div style={{ ...skBase, height: h, width: w, marginTop: mt, flexShrink: 0 }} />
+}
+
+function DashboardSkeleton() {
+  return (
+    <div style={s.body}>
+      <div style={s.cmsRow}>
+        <div style={{ ...s.cmsCard, flex: 3 }}>
+          <Sk h={12} w={120} />
+          <div style={{ display: 'flex', gap: 18, marginTop: 12 }}>
+            {[0,1,2,3].map(i => <Sk key={i} h={44} w={80} />)}
+          </div>
+        </div>
+        <div style={{ ...s.cmsCard, flex: 1 }}>
+          <Sk h={12} w={80} />
+          <Sk h={36} w={60} mt={10} />
+          <Sk h={8} w={120} mt={8} />
+        </div>
+      </div>
+      <div style={s.row1}>
+        {[0,1,2,3].map(i => (
+          <div key={i} style={s.kpiCard}>
+            <Sk h={10} w={80} />
+            <Sk h={36} w={100} mt={10} />
+            <Sk h={4} mt={10} />
+            <Sk h={8} w="60%" mt={6} />
+          </div>
+        ))}
+      </div>
+      <div style={s.briefingCard}>
+        <div style={s.briefingHeader}><Sk h={14} w={160} /></div>
+        <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <Sk h={11} /><Sk h={11} w="85%" /><Sk h={11} w="90%" />
+        </div>
+      </div>
+      <div style={s.row2}>
+        {[0,1].map(i => (
+          <div key={i} style={s.chartBox}>
+            <Sk h={12} w={180} />
+            <div style={{ flex: 1, marginTop: 8, ...skBase }} />
+          </div>
+        ))}
+      </div>
+      <div style={s.row3}>
+        {[0,1,2].map(i => (
+          <div key={i} style={s.chartBox}>
+            <Sk h={12} w={140} />
+            <div style={{ flex: 1, marginTop: 8, ...skBase }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function BriefingCard({ briefing, onRegenerate }) {
   const [regenerating, setRegenerating] = useState(false)
 
@@ -445,6 +503,7 @@ export default function DashboardPanel({ onNavigate } = {}) {
 
   return (
     <div style={s.wrap}>
+      <style>{`@keyframes skPulse{0%,100%{opacity:.35}50%{opacity:.75}}`}</style>
       <div style={s.header}>
         <div>
           <div style={s.title}>대시보드 종합현황</div>
@@ -459,7 +518,7 @@ export default function DashboardPanel({ onNavigate } = {}) {
       </div>
 
       {loading ? (
-        <div style={s.loading}>데이터를 불러오는 중입니다...</div>
+        <DashboardSkeleton />
       ) : (
         <div style={s.body}>
           {/* ================= ROW 0: CMS 설비 상태 요약 ================= */}

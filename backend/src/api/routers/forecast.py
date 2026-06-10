@@ -31,7 +31,7 @@ MODEL_REGISTRY: dict[str, dict] = {
 
 
 _STATUS_DIR = _PROJECT_ROOT / "ml" / "pipeline" / "artifacts"
-_VENV_PYTHON = str(Path(__file__).resolve().parents[4] / ".venv-train" / "bin" / "python")
+_VENV_PYTHON = sys.executable
 
 # Import P-Max(계통 인입 피크) 예측 모델 artifacts 경로
 _PMAX_MODEL_ROOT = _APP_ROOT / "ml" / "forecasting" / "artifacts" / "import_pmax_v29_60min"
