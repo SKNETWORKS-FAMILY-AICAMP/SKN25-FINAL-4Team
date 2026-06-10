@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import 'katex/dist/katex.min.css'
-import { BASE } from '../../api/client'
+import { BASE, getToken } from '../../api/client'
 import ForecastPanel from './ForecastPanel'
 import AnomalyChartPanel from './AnomalyChartPanel'
 
@@ -73,7 +73,7 @@ export default function ChatPanel({ initialSessionId = null, initialMessages = n
     try {
       const res = await fetch(`${BASE}/chat/stream`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}) },
         body: JSON.stringify({
           question: q, history, session_id: sessionId, is_first: isFirst,
           context: context?.equipmentId ? { equipment_id: context.equipmentId } : null,

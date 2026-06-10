@@ -59,14 +59,23 @@ export default function UsersPanel() {
   }
 
   const handleRoleChange = async (id, role) => {
-    await updateUser(id, { role })
+    const prev_role = users.find(u => u.id === id)?.role
     setUsers(prev => prev.map(u => u.id === id ? { ...u, role } : u))
+    try {
+      await updateUser(id, { role })
+    } catch {
+      setUsers(prev => prev.map(u => u.id === id ? { ...u, role: prev_role } : u))
+    }
   }
 
   const handleToggleStatus = async (user) => {
     const next = user.status === 'active' ? 'inactive' : 'active'
-    await updateUser(user.id, { status: next })
     setUsers(prev => prev.map(u => u.id === user.id ? { ...u, status: next } : u))
+    try {
+      await updateUser(user.id, { status: next })
+    } catch {
+      setUsers(prev => prev.map(u => u.id === user.id ? { ...u, status: user.status } : u))
+    }
   }
 
   const handleDelete = async (user) => {

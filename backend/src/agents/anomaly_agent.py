@@ -18,7 +18,17 @@ load_dotenv()
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent.parent / "knowledge"))
 from domain_knowledge import ANOMALY_DOMAIN_PROMPT, ANOMALY_RECOMMENDATION_PROMPT
 
-DB_URL    = os.getenv("DATABASE_URL")
+def _build_db_url() -> str:
+    if url := os.getenv("DATABASE_URL"):
+        return url
+    host = os.getenv("DB_HOST", "localhost")
+    port = os.getenv("DB_PORT", "5432")
+    user = os.getenv("DB_USER", "postgres")
+    pw   = os.getenv("DB_PASS") or os.getenv("DB_PASSWORD", "")
+    name = os.getenv("DB_NAME", "ems")
+    return f"postgresql://{user}:{pw}@{host}:{port}/{name}"
+
+DB_URL = _build_db_url()
 
 # ── 시설 이벤트 컨텍스트 ─────────────────────────────────────────
 

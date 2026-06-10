@@ -6,7 +6,7 @@ Control & Optimization Recommendations Router.
 """
 from api.errors import safe_err
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import APIRouter, Query
@@ -437,7 +437,7 @@ def get_recommendations(hours: int = Query(24, ge=12, le=72)):
     approved_eur = sum((r.get("saving_eur") or 0) for r in recs if r.get("status") == "approved")
 
     return {
-        "generated_at": datetime.utcnow().isoformat(),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "count":        len(recs),
         "items":        recs,
         "summary": {
@@ -566,7 +566,7 @@ def evaluate_pending_outcomes(sim_now=None) -> list[dict]:
             from api.routers.simulator import clock
             sim_now = clock.now
         except Exception:
-            sim_now = datetime.utcnow()
+            sim_now = datetime.now(timezone.utc)
 
     cutoff = sim_now - timedelta(hours=24)
     evaluated = []
@@ -695,7 +695,7 @@ def _compute_outcome(conn, category: str, rec_sim_now, status: str) -> dict:
             return {"value": 0, "unit": "%", "label": "중립", "note": "월별 평가 필요 (장기 추세)"}
 
     except Exception as e:
-        return {"value": 0, "unit": "", "label": "중립", "note": f"평가 실패: {e}"}
+        return {"value": 0, "unit": "", "label": "중립", "note": "평가 중 오류가 발생했습니다."}
 
     return {"value": 0, "unit": "", "label": "중립", "note": "평가 불가"}
 

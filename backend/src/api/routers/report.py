@@ -1248,7 +1248,7 @@ def get_billing(
                 for _, r in daily_agg.iterrows()
             ]
         except Exception as e:
-            return {"error": f"raw 계산 실패: {e}", "period": month}
+            return {"error": safe_err(e), "period": month}
     else:
         daily = [
             {

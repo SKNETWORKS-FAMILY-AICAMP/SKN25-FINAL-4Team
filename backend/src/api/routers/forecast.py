@@ -162,7 +162,7 @@ def predict(
                     row = pred_df.iloc[0]
                     records.append({
                         "ts": str(row["ts"])[:16],
-                        "yhat_kw": round(float(row[f"pred_t_plus_1"]) / 1000, 3)
+                        "yhat_kw": round(float(row[f"pred_t_plus_{horizon}"]) / 1000, 3)
                     })
             except Exception:
                 continue

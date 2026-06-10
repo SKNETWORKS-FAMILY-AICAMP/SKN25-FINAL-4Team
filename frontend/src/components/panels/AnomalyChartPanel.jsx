@@ -12,7 +12,7 @@ import {
   Legend,
   CartesianGrid
 } from 'recharts'
-import { BASE } from '../../api/client'
+import { BASE, getToken } from '../../api/client'
 
 const SEV_COLORS = {
   HIGH: '#f85149',
@@ -37,10 +37,11 @@ export default function AnomalyChartPanel() {
     async function fetchData() {
       try {
         setLoading(true)
+        const authHeader = getToken() ? { Authorization: `Bearer ${getToken()}` } : {}
         const [resSum, resTypes, resTime] = await Promise.all([
-          fetch(`${BASE}/anomalies/summary`),
-          fetch(`${BASE}/anomalies/types`),
-          fetch(`${BASE}/anomalies/timeline`)
+          fetch(`${BASE}/anomalies/summary`, { headers: authHeader }),
+          fetch(`${BASE}/anomalies/types`, { headers: authHeader }),
+          fetch(`${BASE}/anomalies/timeline`, { headers: authHeader }),
         ])
 
         if (!resSum.ok || !resTypes.ok || !resTime.ok) {
