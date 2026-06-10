@@ -35,7 +35,7 @@ const TABS = [
   { id: 'control',     label: '제어 및 최적화',  icon: SlidersHorizontal },
   { id: 'forecast',    label: '수요 예측 현황',  icon: TrendingUp },
   { id: 'billing',     label: '목표 요금 관리',  icon: Wallet },
-  { id: 'report',      label: '보고서',          icon: FileText },
+  { id: 'report',      label: '에너지 분석',     icon: FileText },
   { id: 'divider2',    isDivider: true },
   // ── 참고 ──
   { id: 'chat',        label: 'AI 대화',         icon: MessageSquare },
