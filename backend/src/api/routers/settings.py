@@ -32,6 +32,10 @@ _config: dict = {
     "alert": {
         "min_level": os.getenv("ALERT_MIN_LEVEL", "HIGH"),  # HIGH | CRITICAL
     },
+    "billing": {
+        "unit_price": float(os.getenv("BILLING_UNIT_PRICE", "0.20")),
+        "target_eur": float(os.getenv("BILLING_TARGET_EUR", "50000")),
+    },
 }
 
 
@@ -154,6 +158,14 @@ def update_settings(body: dict):
     # ── 알림 임계값 ──────────────────────────────
     if "alert" in body and "min_level" in body["alert"]:
         _config["alert"]["min_level"] = body["alert"]["min_level"]
+
+    # ── 요금 설정 ────────────────────────────────
+    if "billing" in body:
+        b = body["billing"]
+        if "unit_price" in b:
+            _config["billing"]["unit_price"] = float(b["unit_price"])
+        if "target_eur" in b:
+            _config["billing"]["target_eur"] = float(b["target_eur"])
 
     return {"ok": True, "config": _config}
 

@@ -4,7 +4,7 @@ import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid, ReferenceLine,
 } from 'recharts'
-import { getBilling, getPeakForecast, getSimulatorStatus } from '../../api/client'
+import { getBilling, getPeakForecast, getSimulatorStatus, getSettings, updateSettings } from '../../api/client'
 
 const fmtEur = v => (v == null) ? '–' : '€ ' + Math.round(v).toLocaleString('de-DE')
 const fmtKrw = (eur, rate) => (eur == null) ? '' : '≈ ₩ ' + Math.round(eur * rate).toLocaleString('ko-KR')
@@ -22,9 +22,16 @@ export default function BillingPanel() {
   const [error,   setError]   = useState('')
   const [loading, setLoading] = useState(true)
 
-  // 사용자가 조정 가능한 값 (시연 시 SettingsPanel에서 연동 예정)
   const [unitPrice, setUnitPrice] = useState(0.20)
   const [target,    setTarget]    = useState(50000)
+
+  useEffect(() => {
+    getSettings().then(r => {
+      const b = r.data?.billing
+      if (b?.unit_price != null) setUnitPrice(b.unit_price)
+      if (b?.target_eur  != null) setTarget(b.target_eur)
+    }).catch(() => {})
+  }, [])
 
   // 계통 인입 피크 예측 (Import P-Max — 향후 60분)
   const [peak,        setPeak]        = useState(null)
@@ -82,10 +89,10 @@ export default function BillingPanel() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 11, color: 'var(--text4)' }}>단가</span>
-          <input type="number" step="0.01" value={unitPrice} onChange={e => setUnitPrice(parseFloat(e.target.value) || 0)} style={s.input}/>
+          <input type="number" step="0.01" value={unitPrice} onChange={e => { const v = parseFloat(e.target.value) || 0; setUnitPrice(v); updateSettings({ billing: { unit_price: v, target_eur: target } }).catch(() => {}) }} style={s.input}/>
           <span style={{ fontSize: 11, color: 'var(--text4)' }}>€/kWh</span>
           <span style={{ marginLeft: 12, fontSize: 11, color: 'var(--text4)' }}>목표</span>
-          <input type="number" step="1000" value={target} onChange={e => setTarget(parseFloat(e.target.value) || 0)} style={{ ...s.input, width: 80 }}/>
+          <input type="number" step="1000" value={target} onChange={e => { const v = parseFloat(e.target.value) || 0; setTarget(v); updateSettings({ billing: { unit_price: unitPrice, target_eur: v } }).catch(() => {}) }} style={{ ...s.input, width: 80 }}/>
           <span style={{ fontSize: 11, color: 'var(--text4)' }}>€</span>
           <button onClick={load} style={s.applyBtn}>적용</button>
         </div>

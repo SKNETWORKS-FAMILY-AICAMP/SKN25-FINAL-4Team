@@ -5,7 +5,8 @@ import {
   ReferenceLine, Legend, PieChart, Pie, Cell,
 } from 'recharts'
 import { getAnomalies, getAnomalySummary, getAnomalyTimeline, getAnomalyTypes,
-         getAnomalyContext, getAnomalyEvents, sendChat, runDetection, getDetectionStatus } from '../../api/client'
+         getAnomalyContext, getAnomalyEvents, sendChat, runDetection, getDetectionStatus,
+         getSimulatorStatus } from '../../api/client'
 
 const SEV_COLOR  = { HIGH: '#f85149', MEDIUM: '#d29922', LOW: '#2563eb' }
 const TYPE_LABEL = {
@@ -172,6 +173,19 @@ function DetailPanel({ item, onClose }) {
 function RunDetectionPanel({ onDone }) {
   const [start,   setStart]   = useState('2023-01-01')
   const [end,     setEnd]     = useState('2023-06-01')
+
+  useEffect(() => {
+    getSimulatorStatus().then(r => {
+      const now = r.data?.current_time ?? r.data?.now
+      if (!now) return
+      const simDate = new Date(now)
+      const endStr   = simDate.toISOString().slice(0, 10)
+      const sixBefore = new Date(simDate)
+      sixBefore.setMonth(sixBefore.getMonth() - 6)
+      setEnd(endStr)
+      setStart(sixBefore.toISOString().slice(0, 10))
+    }).catch(() => {})
+  }, [])
   const [jobId,   setJobId]   = useState(null)
   const [status,  setStatus]  = useState(null)
   const [open,    setOpen]    = useState(false)
