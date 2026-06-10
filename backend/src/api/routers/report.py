@@ -1,3 +1,4 @@
+from api.errors import safe_err
 import json
 import sys
 from datetime import datetime, timedelta, timezone
@@ -112,7 +113,7 @@ def aggregate_monthly(
                 inserted += cur.rowcount
             conn.commit()
     except Exception as e:
-        return {"error": str(e), "months_inserted": inserted}
+        return {"error": safe_err(e), "months_inserted": inserted}
 
     return {"period": f"{start} ~ {end}", "months_inserted": inserted}
 
@@ -256,7 +257,7 @@ def get_report(
                 """, (fetch_limit,))
             rows = cur.fetchall()
     except Exception as e:
-        return {"error": str(e), "items": [], "cooling_vs_temp": [], "trend_narrative": ""}
+        return {"error": safe_err(e), "items": [], "cooling_vs_temp": [], "trend_narrative": ""}
 
     cols = ["period", "total_consumption_kwh", "self_sufficiency_pct",
             "avg_cop", "anomaly_count", "grid_dependency_pct", "pv_kwh", "chp_kwh"]
@@ -307,6 +308,31 @@ def get_report(
         pass  # 데이터 없을 시 빈 배열 반환
 
     return {"items": items, "cooling_vs_temp": cooling_vs_temp, "trend_narrative": trend_narrative}
+
+
+@router.get("/download")
+def download_monthly_report(
+    months: int = Query(12, ge=1, le=84),
+    format: str = Query("pdf", description="pdf | docx"),
+):
+    """월간 보고서를 문서 파일(PDF/DOCX)로 다운로드 (차트·비용·CO₂ 포함)."""
+    from urllib.parse import quote
+    from api import report_export
+
+    payload = get_report(months=months, skip_ai=False)
+    if payload.get("error") or not payload.get("items"):
+        return {"error": payload.get("error", "표시할 월간 데이터가 없습니다.")}
+
+    try:
+        data, media, filename = report_export.render_monthly(payload, format)
+    except ValueError as e:
+        return {"error": safe_err(e)}
+
+    return Response(
+        content=data,
+        media_type=media,
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(filename)}"},
+    )
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -467,8 +493,30 @@ def _daily_anomaly_events(conn, date_str: str, limit: int = 50) -> list[dict]:
     ]
 
 
+# 비용·배출 환산 계수 (프로토타입 기준)
+_ENERGY_PRICE_EUR_KWH = 0.20    # 계통 전력 단가
+_GRID_CO2_KG_KWH      = 0.38    # 독일 계통 평균 배출계수
+_CHP_CO2_KG_KWH       = 0.20    # CHP(천연가스) 연소 배출계수
+
+
+def _enrich_cost_co2(report: dict) -> dict:
+    """저장된 KPI(총소비·그리드의존도·CHP)에서 비용(€)·CO₂를 파생 계산해 주입.
+    DB 스키마 변경 없이 조회·내보내기 모두에 일관 적용."""
+    if not report:
+        return report
+    total = report.get("total_consumption_kwh")
+    grid_dep = report.get("grid_dependency_pct")
+    chp_kwh = report.get("chp_kwh") or 0
+    if total is not None and grid_dep is not None:
+        grid_kwh = total * grid_dep / 100.0
+        report["grid_kwh"]  = round(grid_kwh, 1)
+        report["cost_eur"]  = round(grid_kwh * _ENERGY_PRICE_EUR_KWH)
+        report["co2_kg"]    = round(grid_kwh * _GRID_CO2_KG_KWH + chp_kwh * _CHP_CO2_KG_KWH)
+    return report
+
+
 def _enrich_events(report: dict) -> dict:
-    """보고서 dict에 당일 이상 이벤트 목록을 추가 (조회 시점 기준 최신)."""
+    """보고서 dict에 당일 이상 이벤트 목록 + 비용·CO₂를 추가 (조회 시점 기준 최신)."""
     if not report or not report.get("date"):
         return report
     try:
@@ -476,7 +524,7 @@ def _enrich_events(report: dict) -> dict:
             report["anomaly_events"] = _daily_anomaly_events(conn, report["date"])
     except Exception:
         report["anomaly_events"] = []
-    return report
+    return _enrich_cost_co2(report)
 
 
 def _generate_daily_summary(kpi: dict) -> tuple[str, str]:
@@ -689,7 +737,7 @@ def list_daily_reports(limit: int = Query(30, ge=1, le=365)):
             """, (limit,))
             rows = cur.fetchall()
     except Exception as e:
-        return {"error": str(e), "items": []}
+        return {"error": safe_err(e), "items": []}
 
     cols = ["date", "total_consumption_kwh", "self_sufficiency_pct", "avg_cop",
             "anomaly_count", "peak_hour", "peak_kw", "generated_by"]
@@ -714,7 +762,7 @@ def get_daily_report(
             if cached:
                 return _enrich_events(cached)
         except Exception as e:
-            return {"error": str(e)}
+            return {"error": safe_err(e)}
 
     result = build_daily_report(date, generated_by="manual")
     if result is None:
@@ -757,7 +805,7 @@ def download_daily_report(
     try:
         data, media, filename = report_export.render(report, format)
     except ValueError as e:
-        return {"error": str(e)}
+        return {"error": safe_err(e)}
 
     return Response(
         content=data,
@@ -915,7 +963,7 @@ def get_balance_report(
             """, (months,))
             rows = cur.fetchall()
     except Exception as e:
-        return {"error": str(e), "items": [], "narrative": ""}
+        return {"error": safe_err(e), "items": [], "narrative": ""}
 
     cols = ["period", "total_consumption_kwh", "self_sufficiency_pct",
             "grid_dependency_pct", "pv_kwh", "chp_kwh"]
@@ -1004,7 +1052,7 @@ def get_energy_intensity(
             """, (months,))
             rows = cur.fetchall()
     except Exception as e:
-        return {"error": str(e), "items": [], "narrative": ""}
+        return {"error": safe_err(e), "items": [], "narrative": ""}
 
     if not rows:
         return {"items": [], "narrative": "", "ei_avg": None}
@@ -1047,7 +1095,7 @@ def get_energy_intensity(
         dd_monthly = df.groupby("period").apply(_dd).reset_index()
 
     except Exception as e:
-        return {"error": str(e), "items": [], "narrative": "", "ei_avg": None}
+        return {"error": safe_err(e), "items": [], "narrative": "", "ei_avg": None}
 
     # 3. EI 계산
     items = []
@@ -1163,7 +1211,7 @@ def get_billing(
             """, (month,))
             rows = cur.fetchall()
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": safe_err(e)}
 
     # daily_report 부족 시 raw 데이터에서 즉시 계산 (시뮬 진행 속도 따라잡기)
     if not rows or len(rows) < 3:

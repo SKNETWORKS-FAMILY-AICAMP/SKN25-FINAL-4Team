@@ -1,3 +1,4 @@
+from api.errors import safe_err
 import asyncio
 import json
 import uuid
@@ -129,7 +130,7 @@ def list_sessions(
                 """, (limit,))
             rows = cur.fetchall()
     except Exception as e:
-        return {"error": str(e), "items": []}
+        return {"error": safe_err(e), "items": []}
 
     items = [
         {
@@ -167,7 +168,7 @@ def get_session(session_id: str):
             """, (session_id,))
             msgs = cur.fetchall()
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": safe_err(e)}
 
     return {
         "session": {
@@ -201,7 +202,7 @@ def delete_all_sessions():
             conn.commit()
         return {"deleted": True, "count": deleted}
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": safe_err(e)}
 
 
 @router.delete("/sessions/{session_id}")
@@ -214,7 +215,7 @@ def delete_session(session_id: str):
             conn.commit()
         return {"deleted": True}
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": safe_err(e)}
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -325,7 +326,7 @@ async def chat_stream(req: ChatRequest):
             intent   = result.get("intent", "")
             pdf_path = result.get("pdf_path", "")
         except Exception as e:
-            yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"
+            yield f"data: {json.dumps({'type': 'error', 'content': safe_err(e)})}\n\n"
             return
 
         yield f"data: {json.dumps({'type': 'intent', 'content': intent})}\n\n"

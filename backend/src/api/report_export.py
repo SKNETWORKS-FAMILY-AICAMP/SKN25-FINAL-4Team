@@ -35,6 +35,8 @@ def _kpi_rows(r: dict) -> list[tuple[str, str]]:
 
     return [
         ("총 소비량",     _num(r.get("total_consumption_kwh"), " kWh", "{:,.0f}")),
+        ("계통 전력 비용", _num(r.get("cost_eur"), "", "€ {:,.0f}")),
+        ("CO₂ 배출",      _num(r.get("co2_kg"), " kg", "{:,.0f}")),
         ("자급률",        _num(r.get("self_sufficiency_pct"), "%")),
         ("평균 COP",      _num(r.get("avg_cop"), "", "{:.2f}")),
         ("그리드 의존도", _num(r.get("grid_dependency_pct"), "%")),
@@ -80,6 +82,67 @@ def _event_rows(r: dict) -> list[list[str]]:
             (e.get("description") or "—")[:60],
         ])
     return rows
+
+
+# ── 차트 (matplotlib, Agg) — 라벨은 폰트 안전하게 영문 ───────────
+
+def _mpl_plt():
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    return plt
+
+
+def _chart_hourly_png(r: dict) -> bytes | None:
+    """시간대별 전력 프로파일 (Grid/PV/CHP 스택)."""
+    hourly = r.get("hourly_profile") or []
+    if not hourly:
+        return None
+    try:
+        plt = _mpl_plt()
+        hours = [h.get("hour", i) for i, h in enumerate(hourly)]
+        grid  = [h.get("grid_kw") or 0 for h in hourly]
+        pv    = [h.get("pv_kw") or 0 for h in hourly]
+        chp   = [h.get("chp_kw") or 0 for h in hourly]
+        fig, ax = plt.subplots(figsize=(7.4, 2.5), dpi=130)
+        ax.stackplot(hours, grid, pv, chp, labels=["Grid", "PV", "CHP"],
+                     colors=["#1f6feb", "#f0b429", "#16a34a"], alpha=0.9)
+        ax.set_xlabel("Hour", fontsize=8); ax.set_ylabel("kW", fontsize=8)
+        ax.set_xlim(0, 23); ax.set_xticks(range(0, 24, 2))
+        ax.tick_params(labelsize=7)
+        ax.legend(loc="upper left", fontsize=8, ncol=3, framealpha=0.6)
+        ax.grid(True, alpha=0.2)
+        fig.tight_layout()
+        buf = io.BytesIO(); fig.savefig(buf, format="png"); plt.close(fig)
+        return buf.getvalue()
+    except Exception:
+        return None
+
+
+def _chart_mix_png(r: dict) -> bytes | None:
+    """에너지 믹스 도넛 (Grid/PV/CHP kWh)."""
+    pv = r.get("pv_kwh") or 0
+    chp = r.get("chp_kwh") or 0
+    grid = r.get("grid_kwh")
+    if grid is None:
+        total = r.get("total_consumption_kwh") or 0
+        grid = max(total - pv - chp, 0)
+    vals = [grid, pv, chp]
+    if sum(vals) <= 0:
+        return None
+    try:
+        plt = _mpl_plt()
+        fig, ax = plt.subplots(figsize=(3.0, 2.5), dpi=130)
+        ax.pie(vals, labels=["Grid", "PV", "CHP"],
+               colors=["#1f6feb", "#f0b429", "#16a34a"],
+               autopct="%1.0f%%", startangle=90,
+               wedgeprops={"width": 0.42}, textprops={"fontsize": 8})
+        ax.set_title("Energy Mix", fontsize=9)
+        fig.tight_layout()
+        buf = io.BytesIO(); fig.savefig(buf, format="png"); plt.close(fig)
+        return buf.getvalue()
+    except Exception:
+        return None
 
 
 # ── PDF (reportlab) ──────────────────────────────────────────────
@@ -133,6 +196,18 @@ def build_pdf(r: dict) -> bytes:
     ]))
     story += [kpi_tbl, Spacer(1, 5*mm)]
 
+    # 차트 — 시간대별 프로파일 + 에너지 믹스
+    from reportlab.platypus import Image as _RLImage
+    _hourly_png = _chart_hourly_png(r)
+    _mix_png    = _chart_mix_png(r)
+    if _hourly_png or _mix_png:
+        story += [Paragraph("그래프", head_s)]
+        if _hourly_png:
+            story += [_RLImage(io.BytesIO(_hourly_png), width=170*mm, height=57*mm), Spacer(1, 3*mm)]
+        if _mix_png:
+            story += [_RLImage(io.BytesIO(_mix_png), width=70*mm, height=58*mm)]
+        story.append(Spacer(1, 5*mm))
+
     if r.get("ai_summary"):
         story += [Paragraph("AI 요약", head_s)]
         for line in r["ai_summary"].split("\n"):
@@ -183,7 +258,7 @@ def build_pdf(r: dict) -> bytes:
 
 def build_docx(r: dict) -> bytes:
     from docx import Document
-    from docx.shared import Pt, RGBColor
+    from docx.shared import Pt, RGBColor, Inches
 
     doc = Document()
     doc.add_heading("일일 에너지 보고서", level=0)
@@ -198,6 +273,16 @@ def build_docx(r: dict) -> bytes:
     for label, value in kpi:
         c = t.add_row().cells
         c[0].text, c[1].text = label, value
+
+    # 차트
+    _hourly_png = _chart_hourly_png(r)
+    _mix_png    = _chart_mix_png(r)
+    if _hourly_png or _mix_png:
+        doc.add_heading("그래프", level=2)
+        if _hourly_png:
+            doc.add_picture(io.BytesIO(_hourly_png), width=Inches(6.3))
+        if _mix_png:
+            doc.add_picture(io.BytesIO(_mix_png), width=Inches(2.6))
 
     if r.get("ai_summary"):
         doc.add_heading("AI 요약", level=2)
@@ -439,3 +524,189 @@ def render(report: dict, fmt: str) -> tuple[bytes, str, str]:
     data = _BUILDERS[fmt](report)
     filename = f"daily_report_{report.get('date', 'report')}.{fmt}"
     return data, _MEDIA[fmt], filename
+
+
+# ══════════════════════════════════════════════════════════════════
+#  월간 보고서 (Monthly Report) — PDF / DOCX
+# ══════════════════════════════════════════════════════════════════
+
+_M_ENERGY_PRICE = 0.20
+_M_GRID_CO2     = 0.38
+_M_CHP_CO2      = 0.20
+
+
+def _monthly_cost_co2(it: dict) -> tuple[float, float]:
+    """월 KPI에서 비용(€)·CO₂(kg) 파생."""
+    total = it.get("total_consumption_kwh") or 0
+    grid_dep = it.get("grid_dependency_pct")
+    chp = it.get("chp_kwh") or 0
+    grid_kwh = total * grid_dep / 100.0 if grid_dep is not None else 0
+    return grid_kwh * _M_ENERGY_PRICE, grid_kwh * _M_GRID_CO2 + chp * _M_CHP_CO2
+
+
+_MONTHLY_HEADER = ["월", "소비(kWh)", "비용(€)", "CO₂(kg)", "자급률", "COP", "그리드", "이상"]
+
+
+def _monthly_rows(items: list[dict]) -> list[list[str]]:
+    rows = []
+    for it in items:
+        cost, co2 = _monthly_cost_co2(it)
+        def _n(v, fmt="{:,.0f}", suf=""):
+            return (fmt.format(v) + suf) if v is not None else "—"
+        rows.append([
+            it.get("period", "—"),
+            _n(it.get("total_consumption_kwh")),
+            _n(round(cost)),
+            _n(round(co2)),
+            _n(it.get("self_sufficiency_pct"), "{:.1f}", "%"),
+            _n(it.get("avg_cop"), "{:.2f}"),
+            _n(it.get("grid_dependency_pct"), "{:.1f}", "%"),
+            f"{it.get('anomaly_count', 0)}건",
+        ])
+    return rows
+
+
+def _chart_monthly_trend_png(items: list[dict]) -> bytes | None:
+    """월별 소비량(막대) + 자급률(선) 추이."""
+    if not items:
+        return None
+    try:
+        plt = _mpl_plt()
+        periods = [it.get("period", "") for it in items]
+        cons    = [it.get("total_consumption_kwh") or 0 for it in items]
+        ss      = [it.get("self_sufficiency_pct") for it in items]
+        fig, ax1 = plt.subplots(figsize=(7.4, 2.8), dpi=130)
+        x = range(len(periods))
+        ax1.bar(x, cons, color="#1f6feb", alpha=0.8, label="Consumption (kWh)")
+        ax1.set_ylabel("kWh", fontsize=8); ax1.tick_params(labelsize=7)
+        ax1.set_xticks(list(x)); ax1.set_xticklabels(periods, rotation=45, ha="right", fontsize=6)
+        ax2 = ax1.twinx()
+        ax2.plot(x, [v if v is not None else None for v in ss], color="#16a34a",
+                 marker="o", markersize=3, linewidth=1.8, label="Self-sufficiency (%)")
+        ax2.set_ylabel("%", fontsize=8); ax2.tick_params(labelsize=7)
+        ax2.set_ylim(0, max([v for v in ss if v is not None] + [50]) * 1.3)
+        l1, lb1 = ax1.get_legend_handles_labels()
+        l2, lb2 = ax2.get_legend_handles_labels()
+        ax1.legend(l1 + l2, lb1 + lb2, loc="upper left", fontsize=7, framealpha=0.6)
+        ax1.grid(True, axis="y", alpha=0.2)
+        fig.tight_layout()
+        buf = io.BytesIO(); fig.savefig(buf, format="png"); plt.close(fig)
+        return buf.getvalue()
+    except Exception:
+        return None
+
+
+def _kor_font_pdf():
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    for p in _NANUM_PATHS:
+        if Path(p).exists():
+            try:
+                pdfmetrics.registerFont(TTFont("Kor", p)); return "Kor"
+            except Exception:
+                pass
+            break
+    return "Helvetica"
+
+
+def build_monthly_pdf(payload: dict) -> bytes:
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import mm
+    from reportlab.platypus import (
+        SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as RLImage,
+    )
+
+    items = payload.get("items", [])
+    font = _kor_font_pdf()
+    styles = getSampleStyleSheet()
+    title_s = ParagraphStyle("t", parent=styles["Title"],    fontName=font, fontSize=16)
+    body_s  = ParagraphStyle("b", parent=styles["Normal"],   fontName=font, fontSize=10, leading=16)
+    head_s  = ParagraphStyle("h", parent=styles["Heading2"], fontName=font, fontSize=12)
+
+    period_range = f"{items[0]['period']} ~ {items[-1]['period']}" if items else ""
+    buf = io.BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4, leftMargin=18*mm, rightMargin=18*mm,
+                            topMargin=18*mm, bottomMargin=18*mm)
+    story = [
+        Paragraph("월간 에너지 보고서", title_s),
+        Paragraph(f"Honda R&D Europe GmbH — {period_range}", body_s),
+        Paragraph(f"생성: {datetime.now().strftime('%Y-%m-%d %H:%M')}", body_s),
+        Spacer(1, 5*mm),
+    ]
+
+    trend = _chart_monthly_trend_png(items)
+    if trend:
+        story += [Paragraph("월별 추이", head_s),
+                  RLImage(io.BytesIO(trend), width=170*mm, height=64*mm), Spacer(1, 5*mm)]
+
+    story += [Paragraph("월별 KPI", head_s)]
+    tbl = Table([_MONTHLY_HEADER] + _monthly_rows(items), repeatRows=1)
+    tbl.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1f6feb")),
+        ("TEXTCOLOR",  (0, 0), (-1, 0), colors.white),
+        ("FONTNAME",   (0, 0), (-1, -1), font),
+        ("FONTSIZE",   (0, 0), (-1, -1), 8),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f6f8fa")]),
+        ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#d0d7de")),
+        ("ALIGN", (1, 0), (-1, -1), "RIGHT"),
+        ("TOPPADDING", (0, 0), (-1, -1), 3), ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+    ]))
+    story += [tbl, Spacer(1, 5*mm)]
+
+    if payload.get("trend_narrative"):
+        story += [Paragraph("AI 트렌드 분석", head_s)]
+        for line in payload["trend_narrative"].split("\n"):
+            story.append(Paragraph(line.strip() or "&nbsp;", body_s))
+
+    doc.build(story)
+    return buf.getvalue()
+
+
+def build_monthly_docx(payload: dict) -> bytes:
+    from docx import Document
+    from docx.shared import Inches
+
+    items = payload.get("items", [])
+    period_range = f"{items[0]['period']} ~ {items[-1]['period']}" if items else ""
+    doc = Document()
+    doc.add_heading("월간 에너지 보고서", level=0)
+    doc.add_paragraph(f"Honda R&D Europe GmbH — {period_range}")
+    doc.add_paragraph(f"생성: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+
+    trend = _chart_monthly_trend_png(items)
+    if trend:
+        doc.add_heading("월별 추이", level=2)
+        doc.add_picture(io.BytesIO(trend), width=Inches(6.3))
+
+    doc.add_heading("월별 KPI", level=2)
+    t = doc.add_table(rows=1, cols=len(_MONTHLY_HEADER))
+    t.style = "Light Grid Accent 1"
+    for i, h in enumerate(_MONTHLY_HEADER):
+        t.rows[0].cells[i].text = h
+    for row in _monthly_rows(items):
+        cells = t.add_row().cells
+        for i, v in enumerate(row):
+            cells[i].text = v
+
+    if payload.get("trend_narrative"):
+        doc.add_heading("AI 트렌드 분석", level=2)
+        doc.add_paragraph(payload["trend_narrative"])
+
+    buf = io.BytesIO()
+    doc.save(buf)
+    return buf.getvalue()
+
+
+_MONTHLY_BUILDERS = {"pdf": build_monthly_pdf, "docx": build_monthly_docx}
+
+
+def render_monthly(payload: dict, fmt: str) -> tuple[bytes, str, str]:
+    fmt = fmt.lower()
+    if fmt not in _MONTHLY_BUILDERS:
+        raise ValueError(f"월간 보고서 미지원 포맷: {fmt} (pdf/docx만)")
+    data = _MONTHLY_BUILDERS[fmt](payload)
+    items = payload.get("items", [])
+    tag = items[-1]["period"] if items else "report"
+    return data, _MEDIA[fmt], f"monthly_report_{tag}.{fmt}"

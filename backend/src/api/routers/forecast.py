@@ -1,4 +1,5 @@
 """예측 API — 학습 트리거 + 예측 결과 조회."""
+from api.errors import safe_err
 import sys
 from pathlib import Path
 
@@ -31,6 +32,10 @@ MODEL_REGISTRY: dict[str, dict] = {
 
 _STATUS_DIR = _PROJECT_ROOT / "ml" / "pipeline" / "artifacts"
 _VENV_PYTHON = str(Path(__file__).resolve().parents[4] / ".venv-train" / "bin" / "python")
+
+# Import P-Max(계통 인입 피크) 예측 모델 artifacts 경로
+_PMAX_MODEL_ROOT = _APP_ROOT / "ml" / "forecasting" / "artifacts" / "import_pmax_v29_60min"
+_PMAX_TABLE      = "mart.peak_feature_15min"
 
 
 def _status_file(horizon: int) -> Path:
@@ -163,6 +168,82 @@ def predict(
                 continue
         return {"model": model_name, "meter_urn": meter_urn, "horizon": horizon, "forecast": records}
     except FileNotFoundError as e:
-        return {"error": str(e)}
+        return {"error": safe_err(e)}
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": safe_err(e)}
+
+
+@router.get("/peak")
+def predict_peak(
+    as_of: str = Query(None, description="15분 경계 UTC 시각(예: 2026-06-08T10:45:00Z). 생략 시 시뮬레이터 가상 시각 기준."),
+    lookback_days: int = Query(14, ge=4, le=60, description="입력 윈도우 조회 일수"),
+):
+    """계통 인입 피크(import P_max) 향후 60분(15분×4) 예측 — 4개 논리 계량기 일괄.
+
+    Import P-Max v29 앙상블(LightGBM×2 + XGBoost + CatBoost). 단위 W → kW 변환 반환.
+    as_of 미지정 시 시뮬레이터 가상 시각(15분 정렬)을 기준으로 하여 데모와 정합한다.
+    """
+    import os
+    # pmax build_engine은 DB_PASS를 읽지만 프로젝트 .env는 DB_PASSWORD를 쓴다 → 브리지
+    if not os.getenv("DB_PASS") and os.getenv("DB_PASSWORD"):
+        os.environ["DB_PASS"] = os.getenv("DB_PASSWORD")
+
+    # as_of 결정: 명시값 > 시뮬레이터 가상 시각 > (폴백) DB 최신 공통 시각
+    basis = "query" if as_of else "latest"
+    sim_based = False
+    if not as_of:
+        try:
+            import pandas as pd
+            from api.routers.simulator import effective_now
+            as_of = pd.Timestamp(effective_now()).floor("15min").strftime("%Y-%m-%dT%H:%M:%SZ")
+            basis, sim_based = "simulator", True
+        except Exception:
+            as_of = None
+
+    try:
+        from ml.forecasting.import_pmax import batch_inference
+
+        def _run(_as_of):
+            return batch_inference.run_batch(
+                table_name=_PMAX_TABLE,
+                model_root=_PMAX_MODEL_ROOT,
+                requested_as_of=_as_of,
+                lookback_days=lookback_days,
+            )
+
+        try:
+            batch = _run(as_of)
+        except Exception:
+            # 시뮬 시각에 데이터가 부족하면 DB 최신 공통 시각으로 폴백
+            if sim_based:
+                batch, basis = _run(None), "latest"
+            else:
+                raise
+        meters = []
+        for r in batch["results"]:
+            peak = r["next_60min_peak"]
+            meters.append({
+                "logical_meter":     r["logical_meter"],
+                "input_end_ts":      r["input_end_ts"],
+                "last_import_p_max_kw": round(float(r["last_import_p_max"]) / 1000, 2),
+                "data_quality":      r["data_quality"]["status"],
+                "peak_kw":           round(float(peak["predicted_import_p_max"]) / 1000, 2),
+                "peak_at":           peak["timestamp"],
+                "predictions": [
+                    {
+                        "horizon_minutes": p["horizon_minutes"],
+                        "timestamp":       p["timestamp"],
+                        "predicted_kw":    round(float(p["predicted_import_p_max"]) / 1000, 2),
+                    }
+                    for p in r["predictions"]
+                ],
+            })
+        return {
+            "model":           "import-pmax-v29",
+            "requested_as_of": batch["requested_as_of"],
+            "basis":           basis,
+            "meter_count":     batch["logical_meter_count"],
+            "meters":          meters,
+        }
+    except Exception as e:
+        return {"error": safe_err(e)}

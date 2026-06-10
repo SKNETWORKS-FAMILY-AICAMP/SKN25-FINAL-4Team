@@ -17,6 +17,7 @@ export default function SettingsPanel() {
   const [saveResult, setSaveResult] = useState(null)   // null | 'ok' | 'err'
   const [testing,    setTesting]    = useState(false)
   const [testResult, setTestResult] = useState(null)   // null | {ok, latency_ms?, error?}
+  const [keyInput,   setKeyInput]   = useState('')      // API 키 입력 (저장 시에만 전송)
 
   useEffect(() => {
     getSettings().then(r => setDraft(r.data)).catch(console.error)
@@ -34,7 +35,13 @@ export default function SettingsPanel() {
   const handleSave = async () => {
     setSaving(true); setSaveResult(null)
     try {
-      await updateSettings(draft)
+      const payload = keyInput.trim()
+        ? { ...draft, llm: { ...draft.llm, api_keys: { [draft.llm.provider]: keyInput.trim() } } }
+        : draft
+      await updateSettings(payload)
+      setKeyInput('')
+      const r = await getSettings()   // api_key_set 등 상태 갱신
+      setDraft(r.data)
       setSaveResult('ok')
       setTimeout(() => setSaveResult(null), 3000)
     } catch {
@@ -75,7 +82,7 @@ export default function SettingsPanel() {
           desc="AI 응답에 사용할 언어 모델 프로바이더와 엔드포인트를 설정합니다.">
 
           <Row label="프로바이더">
-            <select value={draft.llm.provider} onChange={e => { set('llm', 'provider', e.target.value); setTestResult(null) }}
+            <select value={draft.llm.provider} onChange={e => { set('llm', 'provider', e.target.value); setTestResult(null); setKeyInput('') }}
               style={selectStyle}>
               {PROVIDERS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
             </select>
@@ -86,6 +93,17 @@ export default function SettingsPanel() {
               placeholder="gpt-4o / exaone3.5:7.8b / ..."
               style={inputStyle} />
           </Row>
+
+          {draft.llm.provider !== 'ollama' && (
+            <Row label="API 키">
+              <input type="password" value={keyInput} onChange={e => setKeyInput(e.target.value)}
+                placeholder={draft.llm.api_key_set?.[draft.llm.provider] ? '설정됨 — 변경하려면 새 키 입력' : '키를 입력하세요 (sk-...)'}
+                style={inputStyle} autoComplete="off" />
+              <div style={{ fontSize: 11, color: draft.llm.api_key_set?.[draft.llm.provider] ? '#16a34a' : 'var(--text4)', marginTop: 4 }}>
+                현재: {draft.llm.api_key_set?.[draft.llm.provider] ? '✓ 설정됨' : '✗ 미설정'} · 저장 시 적용됩니다 (키는 화면에 표시되지 않음)
+              </div>
+            </Row>
+          )}
 
           {draft.llm.provider === 'ollama' && (
             <Row label="Ollama 엔드포인트 URL">

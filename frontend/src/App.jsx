@@ -13,12 +13,16 @@ import SettingsPanel   from './components/panels/SettingsPanel'
 import UsersPanel      from './components/panels/UsersPanel'
 import ControlPanel    from './components/panels/ControlPanel'
 import BillingPanel    from './components/panels/BillingPanel'
+import LoginScreen     from './components/LoginScreen'
+import { getMe, logout as apiLogout, setAuthToken, getToken } from './api/client'
 import {
   LayoutDashboard, Factory, Wrench, AlertTriangle, SlidersHorizontal,
   TrendingUp, Wallet, FileText, MessageSquare, Network, Settings, Users,
-  Bot, Zap, X, Sun, Moon,
+  Bot, Zap, X, Sun, Moon, LogOut,
 } from 'lucide-react'
 import { T } from './theme'
+
+const ROLE_LABEL = { admin: '관리자 (Admin)', operator: '운영자 (Operator)', viewer: '뷰어 (Viewer)' }
 
 const TABS = [
   // ── 핵심 (CMS) ──
@@ -60,6 +64,9 @@ const PANELS = {
 export default function App() {
   const [tab, setTab]   = useState('dashboard')
   const visited = useRef(new Set(['dashboard']))
+  // 인증
+  const [user, setUser]             = useState(null)
+  const [authReady, setAuthReady]   = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
   const [apiOk, setApiOk] = useState(null)
   const [woVersion, setWoVersion] = useState(0)   // 작업지시 생성 시 +1 → 정비 패널 자동 갱신
@@ -72,6 +79,21 @@ export default function App() {
     document.documentElement.dataset.theme = theme
     localStorage.setItem('theme', theme)
   }, [theme])
+
+  // 저장된 토큰이 있으면 검증해 자동 로그인
+  useEffect(() => {
+    if (!getToken()) { setAuthReady(true); return }
+    getMe()
+      .then(r => setUser(r.data))
+      .catch(() => setAuthToken(null))
+      .finally(() => setAuthReady(true))
+  }, [])
+
+  const handleLogout = useCallback(() => {
+    apiLogout()
+    setAuthToken(null)
+    setUser(null)
+  }, [])
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const dragRef = useRef({ isDragging: false, startX: 0, startY: 0, initialX: 0, initialY: 0, moved: false })
   const [toasts, setToasts] = useState([])
@@ -161,6 +183,10 @@ export default function App() {
     setTab(id)
   }
 
+  // ── 인증 게이트 ──────────────────────────────────────────────
+  if (!authReady) return null                       // 토큰 검증 중 (깜빡임 방지)
+  if (!user) return <LoginScreen onLogin={setUser} />
+
   return (
     <div style={styles.app}>
       <aside style={styles.sidebar}>
@@ -172,11 +198,14 @@ export default function App() {
           </div>
         </div>
         <div style={styles.profileBox}>
-          <div style={styles.avatar}>H</div>
+          <div style={styles.avatar}>{(user.name || 'U').slice(0, 1)}</div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: T.text, textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>Honda R&D Europe</div>
-            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>관리자 (Admin)</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: T.text, textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>{user.name}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>{ROLE_LABEL[user.role] ?? user.role}</div>
           </div>
+          <button onClick={handleLogout} title="로그아웃" style={styles.logoutBtn}>
+            <LogOut size={15} />
+          </button>
         </div>
         <nav style={styles.nav}>
           {TABS.map(t => {
@@ -350,6 +379,7 @@ const styles = {
   logoSub:      { fontSize: 10, color: T.textFaint, fontWeight: 600, marginTop: 1 },
   profileBox:   { padding: '11px 14px', margin: '14px 12px 8px', background: T.surface2, border: `1px solid ${T.border}`, borderRadius: 10, display: 'flex', alignItems: 'center', gap: 11 },
   avatar:       { width: 32, height: 32, borderRadius: '50%', background: `linear-gradient(135deg, ${T.brand}, ${T.accent})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: '#fff', fontWeight: 700, flexShrink: 0 },
+  logoutBtn:    { width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: `1px solid ${T.border}`, borderRadius: 7, color: T.textMuted, cursor: 'pointer', flexShrink: 0 },
   nav:          { flex: 1, padding: '4px 12px 12px', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto' },
   navBtn:       { display: 'flex', alignItems: 'center', gap: 11, width: '100%', padding: '9px 12px', background: 'transparent', border: 'none', borderRadius: 8, color: T.textMuted, fontSize: 13, fontWeight: 500, textAlign: 'left', cursor: 'pointer', transition: 'all .15s ease' },
   navActive:    { background: T.brandSoft, color: T.brandStrong, fontWeight: 700 },

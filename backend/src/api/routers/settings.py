@@ -5,6 +5,7 @@ GET  /settings          — 현재 설정 조회
 POST /settings          — 설정 업데이트 (in-memory + LLM 클라이언트 재로드)
 POST /settings/test-llm — LLM 연결 테스트 (저장 전 테스트 가능)
 """
+from api.errors import safe_err
 import os
 import time
 from typing import Optional
@@ -39,9 +40,22 @@ def get_alert_min_level() -> str:
     return _config["alert"]["min_level"]
 
 
+# 프로바이더 → 환경변수 매핑 (API 키)
+_KEY_ENV = {
+    "openai":    "OPENAI_API_KEY",
+    "anthropic": "ANTHROPIC_API_KEY",
+    "gemini":    "GEMINI_API_KEY",
+}
+
+
+def _api_key_status() -> dict:
+    """각 프로바이더 키 설정 여부만 반환 (키 값 자체는 절대 노출하지 않음)."""
+    return {p: bool(os.getenv(env, "").strip()) for p, env in _KEY_ENV.items()}
+
+
 @router.get("")
 def get_settings():
-    return _config
+    return {**_config, "llm": {**_config["llm"], "api_key_set": _api_key_status()}}
 
 
 class TestLlmRequest(BaseModel):
@@ -103,7 +117,7 @@ def test_llm(body: TestLlmRequest = TestLlmRequest()):
                 "response": (resp.choices[0].message.content or "")[:50]}
 
     except Exception as e:
-        return {"ok": False, "error": str(e)}
+        return {"ok": False, "error": safe_err(e)}
 
 
 @router.post("")
@@ -115,6 +129,10 @@ def update_settings(body: dict):
             if key in llm:
                 _config["llm"][key] = llm[key]
                 os.environ[env_key] = llm[key]
+        # API 키 — 비어있지 않은 값만 환경변수에 주입 (저장값은 _config에 남기지 않음)
+        for provider, val in (llm.get("api_keys") or {}).items():
+            if provider in _KEY_ENV and val and val.strip():
+                os.environ[_KEY_ENV[provider]] = val.strip()
         try:
             from agents.llm_client import reload as llm_reload
             llm_reload()

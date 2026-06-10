@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Factory, RefreshCw } from 'lucide-react'
+import { Factory, RefreshCw, TrendingUp } from 'lucide-react'
 import { EquipmentIcon } from '../common/EquipmentIcon'
 import { getEquipmentStatus, diagnoseEquipment, createWorkOrder, getPredictiveMaintenance } from '../../api/client'
 
@@ -35,7 +35,7 @@ function PredictiveSection({ items }) {
   if (!items || items.length === 0) return null
   return (
     <div style={s.predWrap}>
-      <div style={s.predTitle}>🔮 예지보전 — 추세 기반 위험 예측 <span style={{ fontSize: 10, color: 'var(--text4)', fontWeight: 400 }}>(현 추세 외삽 · 참고용)</span></div>
+      <div style={s.predTitle}><TrendingUp size={14} style={{ verticalAlign: '-2px', marginRight: 6 }} />예지보전 — 추세 기반 위험 예측 <span style={{ fontSize: 10, color: 'var(--text4)', fontWeight: 400 }}>(현 추세 외삽 · 참고용)</span></div>
       <div style={s.predList}>
         {items.map(it => {
           const rk = RISK_STYLE[it.risk] ?? RISK_STYLE.낮음

@@ -97,16 +97,13 @@ clock = SimulationClock()
 
 def effective_now() -> datetime:
     """
-    '지금'으로 간주할 시각.
-    시뮬레이터가 한 번이라도 시작된 적이 있으면 sim_now,
-    아니면 실시간 datetime.utcnow().
+    '지금'으로 간주할 시각 = 시뮬레이터 재생 헤드(clock.now).
 
-    forecast_agent / forecast API 등에서 'as_of' 기준으로 사용.
+    데모는 2023년(테스트 연도)을 실시간 재생하는 구조이므로,
+    재생 헤드가 항상 '지금'이다 (idle이면 시작점 2023-01-01).
+    데이터가 없는 미래 시각은 호출부에서 latest로 클램프한다(cms 등).
     """
-    sim = clock.now
-    if sim > SIM_START_DEFAULT:
-        return sim
-    return datetime.utcnow()
+    return clock.now
 
 
 # ── 모니터링 워커 ─────────────────────────────────────────────────

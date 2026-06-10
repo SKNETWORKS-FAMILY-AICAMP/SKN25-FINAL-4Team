@@ -6,6 +6,28 @@ export const BASE = import.meta.env.PROD
   : import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 export const api = axios.create({ baseURL: BASE, timeout: 30000 })
 
+// ── 인증 토큰 관리 ────────────────────────────────────────────────
+const TOKEN_KEY = 'auth_token'
+export const getToken = () => localStorage.getItem(TOKEN_KEY)
+export function setAuthToken(token) {
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token)
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+  } else {
+    localStorage.removeItem(TOKEN_KEY)
+    delete api.defaults.headers.common['Authorization']
+  }
+}
+// 새로고침 시 저장된 토큰 복원
+{
+  const _t = getToken()
+  if (_t) api.defaults.headers.common['Authorization'] = `Bearer ${_t}`
+}
+
+export const login  = (email, password) => api.post('/auth/login', { email, password })
+export const logout = () => api.post('/auth/logout').catch(() => {})
+export const getMe  = () => api.get('/auth/me')
+
 export const sendChat    = (question, history = []) => api.post('/chat', { question, history })
 export const listChatSessions = (search = '', limit = 50) =>
   api.get('/chat/sessions', { params: { ...(search && { search }), limit } })
@@ -80,6 +102,8 @@ export const getSchedulerStatus  = () => api.get('/report/daily/scheduler')
 export const runSchedulerNow     = () => api.post('/report/daily/scheduler/run', null, { timeout: 60000 })
 export const dailyDownloadUrl    = (date, format) =>
   `${BASE}/report/daily/download?date=${encodeURIComponent(date)}&format=${format}`
+export const monthlyDownloadUrl  = (months, format) =>
+  `${BASE}/report/download?months=${months}&format=${format}`
 export const runDetection       = (start, end) => api.post('/anomalies/run', null, { params: { start, end } })
 export const getDetectionStatus = (jobId) => api.get(`/anomalies/run/status/${jobId}`)
 
@@ -87,6 +111,7 @@ export const listUsers   = () => api.get('/users')
 export const createUser  = (body) => api.post('/users', body)
 export const updateUser  = (id, body) => api.patch(`/users/${id}`, body)
 export const deleteUser  = (id) => api.delete(`/users/${id}`)
+export const resetUserPassword = (id, password) => api.post(`/users/${id}/password`, { password })
 
 export const getSettings        = () => api.get('/settings')
 export const updateSettings     = (body) => api.post('/settings', body)
@@ -98,3 +123,7 @@ export const trainModel         = (model, horizon = 1, meters = null) =>
   api.post(`/forecast/train/${model}`, null, { params: { horizon, ...(meters ? { meters } : {}) } })
 export const predictModel       = (model, meterUrn, horizon = 1) =>
   api.get(`/forecast/predict/${model}`, { params: { meter_urn: meterUrn, horizon } })
+
+// 계통 인입 피크 예측 (Import P-Max v29 — 향후 60분, 4개 논리 계량기)
+export const getPeakForecast    = (asOf = null, lookbackDays = 14) =>
+  api.get('/forecast/peak', { params: { ...(asOf && { as_of: asOf }), lookback_days: lookbackDays }, timeout: 120000 })

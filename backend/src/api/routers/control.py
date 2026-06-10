@@ -4,6 +4,7 @@ Control & Optimization Recommendations Router.
 예측 결과·이상탐지·에너지 효율을 종합해 운영자가 즉시 행동할 수 있는
 권고 카드 목록을 생성한다. 실제 설비 제어는 모의 (승인 상태만 기록).
 """
+from api.errors import safe_err
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -17,6 +18,14 @@ router = APIRouter(prefix="/control", tags=["control"])
 from api.db import get_conn as _db_conn  # noqa: E402
 
 _table_ready = False
+
+# ── 비용 환산 (프로토타입 기준 단가) ──────────────────────────────
+ENERGY_PRICE_EUR_KWH      = 0.20    # 에너지 단가 (billing 기본값과 동일)
+DEMAND_PRICE_EUR_KW_MONTH = 12.0    # 데먼드 차지(월) ≈ €144/kW·년
+
+
+def _eur(v: float) -> str:
+    return f"€{v:,.0f}"
 
 
 def _ensure_control_table(conn):
@@ -77,6 +86,7 @@ def _gen_peak_shift(forecast: dict) -> dict | None:
     peak_idx = vals.index(peak)
     peak_ts  = data[peak_idx].get("ts", "")
     saving_kw = (peak - avg) * 0.2   # 보수적으로 20% 분산 가정
+    saving_eur = round(saving_kw * DEMAND_PRICE_EUR_KW_MONTH)
 
     return {
         "id":              f"peak-shift-{peak_ts}",
@@ -86,10 +96,11 @@ def _gen_peak_shift(forecast: dict) -> dict | None:
         "description":     (
             f"예측 피크 {peak:.0f} kW (평균 {avg:.0f} kW의 {ratio:.2f}배). "
             f"피크 3시간 전부터 비핵심 부하(공조 프리쿨·ESS 충전)를 시프트하면 "
-            f"약 {saving_kw:.0f} kW 분산 가능."
+            f"약 {saving_kw:.0f} kW 분산 가능 → 월 데먼드 차지 약 {_eur(saving_eur)} 절감."
         ),
         "equipment":       "H1 공조 / ESS",
-        "expected_saving": f"피크 -{saving_kw:.0f} kW",
+        "expected_saving": f"피크 -{saving_kw:.0f} kW · {_eur(saving_eur)}/월",
+        "saving_eur":      saving_eur,
     }
 
 
@@ -123,6 +134,10 @@ def _gen_night_load(forecast: dict) -> dict | None:
     if ratio < 0.7:
         return None
 
+    reduce_kw  = max(n_avg - d_avg * 0.5, 0)
+    # 야간 6시간(00~05) × 30일 × 에너지 단가
+    saving_eur = round(reduce_kw * 6 * 30 * ENERGY_PRICE_EUR_KWH)
+
     return {
         "id":              "night-load-check",
         "category":        "night_check",
@@ -130,10 +145,11 @@ def _gen_night_load(forecast: dict) -> dict | None:
         "title":           "야간 대기전력 점검",
         "description":     (
             f"야간(00~05시) 평균 {n_avg:.0f} kW가 주간(08~18시) 평균 {d_avg:.0f} kW의 "
-            f"{ratio*100:.0f}%. 비가동 시간 설비 차단 점검 권고."
+            f"{ratio*100:.0f}%. 비가동 시간 설비 차단 시 월 약 {_eur(saving_eur)} 절감 여지."
         ),
         "equipment":       "전체 분기 차단기",
-        "expected_saving": f"대기전력 -{(n_avg - d_avg*0.5):.0f} kW 추정",
+        "expected_saving": f"대기전력 -{reduce_kw:.0f} kW · {_eur(saving_eur)}/월",
+        "saving_eur":      saving_eur,
     }
 
 
@@ -141,13 +157,11 @@ def _gen_anomaly_actions(conn) -> list[dict]:
     """최근 HIGH 이상탐지 → 점검 권고. 시뮬 활성 시 sim_now 이전만."""
     items = []
 
-    # 시뮬 cutoff
+    # 재생 헤드 cutoff
     cutoff = None
     try:
-        from api.routers.simulator import clock, SIM_START_DEFAULT
-        sim_now = clock.now
-        if sim_now > SIM_START_DEFAULT:
-            cutoff = sim_now.strftime("%Y-%m-%d %H:%M:%S")
+        from api.routers.simulator import clock
+        cutoff = clock.now.strftime("%Y-%m-%d %H:%M:%S")
     except Exception:
         pass
 
@@ -193,7 +207,8 @@ def _gen_anomaly_actions(conn) -> list[dict]:
             "title":           f"{atype} 후속 점검 — {ts.strftime('%m-%d %H:%M')}",
             "description":     f"{desc[:80]}... → {action}",
             "equipment":       equipment,
-            "expected_saving": "재발 방지",
+            "expected_saving": "재발 방지 (정성)",
+            "saving_eur":      0,
         })
     return items
 
@@ -202,10 +217,8 @@ def _gen_efficiency(conn) -> dict | None:
     """최근 월 자급률·COP 악화 시 운영 검토 권고."""
     cutoff_period = None
     try:
-        from api.routers.simulator import clock, SIM_START_DEFAULT
-        sim_now = clock.now
-        if sim_now > SIM_START_DEFAULT:
-            cutoff_period = sim_now.strftime("%Y-%m")
+        from api.routers.simulator import clock
+        cutoff_period = clock.now.strftime("%Y-%m")
     except Exception:
         pass
 
@@ -251,7 +264,64 @@ def _gen_efficiency(conn) -> dict | None:
         "title":           f"효율 저하 검토 — {latest[0]}",
         "description":     " · ".join(issues) + " — 베이스라인 재학습 또는 설비 정밀 점검 권고.",
         "equipment":       "전체",
-        "expected_saving": "추세 회복",
+        "expected_saving": "추세 회복 (정성)",
+        "saving_eur":      0,
+    }
+
+
+def _gen_peak_forecast_shift() -> dict | None:
+    """Import P-Max 60분 피크 예측 → 선제 피크 시프트 권고 (데먼드 차지 절감)."""
+    import os
+    if not os.getenv("DB_PASS") and os.getenv("DB_PASSWORD"):
+        os.environ["DB_PASS"] = os.getenv("DB_PASSWORD")
+    try:
+        import pandas as pd
+        from api.routers.simulator import effective_now
+        from ml.forecasting.import_pmax import batch_inference
+        model_root = Path(__file__).resolve().parents[3] / "ml" / "forecasting" / "artifacts" / "import_pmax_v29_60min"
+        as_of = pd.Timestamp(effective_now()).floor("15min").strftime("%Y-%m-%dT%H:%M:%SZ")
+        batch = batch_inference.run_batch(
+            table_name="mart.peak_feature_15min",
+            model_root=model_root,
+            requested_as_of=as_of,
+            lookback_days=14,
+        )
+    except Exception as e:
+        print(f"[control] pmax peak rec skipped: {e}")
+        return None
+
+    total_peak = 0.0
+    shiftable  = 0.0
+    peak_at    = None
+    for r in batch.get("results", []):
+        try:
+            peak_kw = float(r["next_60min_peak"]["predicted_import_p_max"]) / 1000
+            last_kw = float(r["last_import_p_max"]) / 1000
+        except (KeyError, TypeError, ValueError):
+            continue
+        total_peak += peak_kw
+        if peak_kw > last_kw:
+            shiftable += (peak_kw - last_kw)
+        if peak_at is None:
+            peak_at = r["next_60min_peak"].get("timestamp")
+
+    if shiftable < 15:   # 시프트 여지 미미 → 권고 안 함
+        return None
+
+    saving_eur = round(shiftable * DEMAND_PRICE_EUR_KW_MONTH)
+    return {
+        "id":              f"peak-fc-{(peak_at or '')[:13]}",
+        "category":        "peak_shift",
+        "priority":        "HIGH" if shiftable >= 40 else "MEDIUM",
+        "title":           f"계통 인입 피크 선제 시프트 — {(peak_at or '')[11:16]} 예상",
+        "description":     (
+            f"Import P-Max 예측: 향후 60분 계통 인입 피크 합계 약 {total_peak:.0f} kW "
+            f"(상승분 {shiftable:.0f} kW). 피크 도달 전 비핵심 부하를 시프트하면 "
+            f"월 데먼드 차지 약 {_eur(saving_eur)} 절감 여지."
+        ),
+        "equipment":       "계통 인입 (V/H2 주피더)",
+        "expected_saving": f"피크 -{shiftable:.0f} kW · {_eur(saving_eur)}/월",
+        "saving_eur":      saving_eur,
     }
 
 
@@ -297,6 +367,11 @@ def get_recommendations(hours: int = Query(24, ge=12, le=72)):
                 recs.append(night)
     except Exception as e:
         print(f"[control] v84 forecast-based rec failed: {e}")
+
+    # 1-b. Import P-Max 60분 피크 예측 기반 선제 시프트 (v84 없이도 동작)
+    peak_fc = _gen_peak_forecast_shift()
+    if peak_fc:
+        recs.append(peak_fc)
 
     # 2. DB 기반 권고
     try:
@@ -356,10 +431,21 @@ def get_recommendations(hours: int = Query(24, ge=12, le=72)):
         return (pri_order.get(x["priority"], 9), -(rate if rate is not None else 50), x["id"])
     recs.sort(key=_rank)
 
+    def _is_pending(r):
+        return (r.get("status") or "pending") == "pending"
+    pending_eur  = sum((r.get("saving_eur") or 0) for r in recs if _is_pending(r))
+    approved_eur = sum((r.get("saving_eur") or 0) for r in recs if r.get("status") == "approved")
+
     return {
         "generated_at": datetime.utcnow().isoformat(),
         "count":        len(recs),
         "items":        recs,
+        "summary": {
+            "pending_count":       sum(1 for r in recs if _is_pending(r)),
+            "pending_saving_eur":  pending_eur,
+            "approved_count":      sum(1 for r in recs if r.get("status") == "approved"),
+            "approved_saving_eur": approved_eur,
+        },
     }
 
 
@@ -401,7 +487,7 @@ def learning_stats():
             "recent":          recent,
         }
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": safe_err(e)}
 
 
 @router.delete("/recommendations")
@@ -416,7 +502,7 @@ def clear_recommendations():
             conn.commit()
         return {"deleted": True, "count": deleted}
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": safe_err(e)}
 
 
 @router.post("/recommendations/{rec_id}/approve")
@@ -438,13 +524,11 @@ def _save_status(rec_id: str, status: str, body: dict | None) -> None:
     cat   = (body or {}).get("category", "")
     pri   = (body or {}).get("priority", "")
 
-    # 시뮬 활성 시 sim_now 같이 저장 — 24h 후 outcome 평가에 사용
+    # 재생 헤드 시각 같이 저장 — 24h 후 outcome 평가에 사용
     sim_now = None
     try:
-        from api.routers.simulator import clock, SIM_START_DEFAULT
-        sn = clock.now
-        if sn > SIM_START_DEFAULT:
-            sim_now = sn
+        from api.routers.simulator import clock
+        sim_now = clock.now
     except Exception:
         pass
 

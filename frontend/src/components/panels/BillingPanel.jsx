@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Wallet } from 'lucide-react'
+import { Wallet, TrendingUp, RefreshCw } from 'lucide-react'
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid, ReferenceLine,
 } from 'recharts'
-import { getBilling } from '../../api/client'
+import { getBilling, getPeakForecast, getSimulatorStatus } from '../../api/client'
 
 const fmtEur = v => (v == null) ? '–' : '€ ' + Math.round(v).toLocaleString('de-DE')
 const fmtKrw = (eur, rate) => (eur == null) ? '' : '≈ ₩ ' + Math.round(eur * rate).toLocaleString('ko-KR')
@@ -26,6 +26,11 @@ export default function BillingPanel() {
   const [unitPrice, setUnitPrice] = useState(0.20)
   const [target,    setTarget]    = useState(50000)
 
+  // 계통 인입 피크 예측 (Import P-Max — 향후 60분)
+  const [peak,        setPeak]        = useState(null)
+  const [peakLoading, setPeakLoading] = useState(true)
+  const [peakErr,     setPeakErr]     = useState(false)
+
   const load = () => {
     setLoading(true); setError('')
     getBilling(null, unitPrice, null, target)
@@ -37,7 +42,33 @@ export default function BillingPanel() {
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => { load() }, [])   // 초기 로드만 자동
+  const loadPeak = () => {
+    setPeakLoading(true); setPeakErr(false)
+    getPeakForecast()
+      .then(r => {
+        if (r.data?.error) { setPeak(null); setPeakErr(true) }
+        else setPeak(r.data)
+      })
+      .catch(() => { setPeak(null); setPeakErr(true) })
+      .finally(() => setPeakLoading(false))
+  }
+
+  useEffect(() => { load(); loadPeak() }, [])   // 초기 로드
+
+  // 시뮬레이터 실행 중 시각이 바뀌면 피크 예측 자동 갱신 (30초 폴링 — 고배속에서도 1회/30초로 제한)
+  useEffect(() => {
+    let lastKey = null
+    const poll = async () => {
+      try {
+        const r = await getSimulatorStatus()
+        if (!r.data?.running) return
+        const key = r.data.now?.slice(0, 13)   // 시(hour) 단위 변경 감지
+        if (key && key !== lastKey) { lastKey = key; loadPeak() }
+      } catch { /* 무시 */ }
+    }
+    const id = setInterval(poll, 30000)
+    return () => clearInterval(id)
+  }, [])
 
   const statusColor = data ? (STATUS_COLOR[data.status] ?? 'var(--text3)') : 'var(--text3)'
   const overPct     = data && data.target_eur ? (data.projected_eur - data.target_eur) / data.target_eur * 100 : 0
@@ -93,6 +124,9 @@ export default function BillingPanel() {
               <div style={s.narrativeText}>{data.narrative}</div>
             </div>
           )}
+
+          {/* 계통 인입 피크 예측 (Import P-Max v29 — 향후 60분) */}
+          <PeakForecast peak={peak} loading={peakLoading} error={peakErr} onRefresh={loadPeak} />
 
           {/* 2-컬럼: 일별 비용 차트 + 일별 피크 차트 */}
           <div style={s.chartsRow}>
@@ -152,6 +186,68 @@ export default function BillingPanel() {
   )
 }
 
+function PeakForecast({ peak, loading, error, onRefresh }) {
+  const Header = ({ children }) => (
+    <div style={s.peakTitle}><TrendingUp size={14} style={{ verticalAlign: '-2px', marginRight: 6 }} />{children}</div>
+  )
+  if (loading) return <div style={s.peakBox}><Header>계통 인입 피크 예측 (향후 60분)</Header><div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 6 }}>예측 계산 중...</div></div>
+  if (error) return (
+    <div style={s.peakBox}>
+      <Header>계통 인입 피크 예측 (향후 60분)</Header>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 6 }}>
+        <span style={{ fontSize: 12, color: 'var(--text3)' }}>예측을 불러오지 못했습니다.</span>
+        <button onClick={onRefresh} style={s.peakRetry}>다시 시도</button>
+      </div>
+    </div>
+  )
+  if (!peak || !peak.meters?.length) return null
+
+  const asOf = (peak.requested_as_of || '').replace('T', ' ').slice(0, 16)
+  return (
+    <div style={s.peakBox}>
+      <div style={s.peakHead}>
+        <div style={s.peakTitle}><TrendingUp size={14} style={{ verticalAlign: '-2px', marginRight: 6 }} />계통 인입 피크 예측 — 향후 60분 (15분 단위)</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={s.peakModel}>Import P-Max v29 · 기준 {asOf}</span>
+          <button onClick={onRefresh} title="피크 예측 새로고침" style={s.peakRefresh}><RefreshCw size={13} /></button>
+        </div>
+      </div>
+      <div style={s.peakGrid}>
+        {peak.meters.map(m => {
+          const rising = m.peak_kw > m.last_import_p_max_kw
+          return (
+            <div key={m.logical_meter} style={s.peakCard}>
+              <div style={s.peakCardTop}>
+                <span style={s.peakMeter}>{m.logical_meter}</span>
+                {m.data_quality === 'degraded' &&
+                  <span style={s.peakDeg} title="입력 데이터 일부 보정됨">보정</span>}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                <span style={{ fontSize: 22, fontWeight: 700, color: rising ? '#f85149' : '#3fb950' }}>
+                  {m.peak_kw.toLocaleString()} <span style={{ fontSize: 12, fontWeight: 500 }}>kW</span>
+                </span>
+                <span style={{ fontSize: 10, color: 'var(--text4)' }}>{rising ? '▲' : '▼'} 피크 @ {(m.peak_at || '').slice(11, 16)}</span>
+              </div>
+              <div style={{ fontSize: 10, color: 'var(--text4)', margin: '2px 0 6px' }}>
+                직전 실측 {m.last_import_p_max_kw.toLocaleString()} kW
+              </div>
+              <ResponsiveContainer width="100%" height={48}>
+                <LineChart data={m.predictions.map(p => ({ t: `+${p.horizon_minutes}`, kw: p.predicted_kw }))}
+                  margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
+                  <XAxis dataKey="t" tick={{ fontSize: 8, fill: '#5a6675' }} tickLine={false} axisLine={false}/>
+                  <Tooltip {...tt} formatter={v => [`${v} kW`, '예측']}/>
+                  <Line type="monotone" dataKey="kw" stroke="#0d9488" strokeWidth={2}
+                    dot={{ fill: '#0d9488', r: 2 }} activeDot={{ r: 3 }}/>
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 function KpiCard({ label, value, sub, color, highlight }) {
   return (
     <div style={{ ...s.kpiCard, ...(highlight ? s.kpiHighlight : {}) }}>
@@ -182,6 +278,18 @@ const s = {
   narrativeBox:  { background: 'linear-gradient(135deg, #a371f70a, var(--surface))', border: '1px solid #a371f733', borderRadius: 10, padding: '14px 18px' },
   narrativeTitle:{ fontSize: 12, fontWeight: 700, color: '#a371f7', marginBottom: 6 },
   narrativeText: { fontSize: 13, color: 'var(--text2)', lineHeight: 1.7, whiteSpace: 'pre-wrap' },
+
+  peakBox:     { background: 'linear-gradient(135deg, #0d948810, var(--surface))', border: '1px solid #0d948844', borderRadius: 10, padding: '14px 18px' },
+  peakHead:    { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 6 },
+  peakTitle:   { fontSize: 12, fontWeight: 700, color: '#0d9488' },
+  peakModel:   { fontSize: 10, color: 'var(--text4)' },
+  peakRefresh: { width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text3)', cursor: 'pointer', flexShrink: 0 },
+  peakRetry:   { padding: '3px 10px', background: 'none', border: '1px solid #0d9488', borderRadius: 4, color: '#0d9488', cursor: 'pointer', fontSize: 11 },
+  peakGrid:    { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 },
+  peakCard:    { background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 8, padding: '10px 12px' },
+  peakCardTop: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
+  peakMeter:   { fontSize: 12, fontWeight: 700, color: 'var(--text)' },
+  peakDeg:     { fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#fef3c7', color: '#d29922', border: '1px solid #d2992233' },
 
   chartsRow:   { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 },
   chartBox:    { background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 10, padding: '12px 14px' },

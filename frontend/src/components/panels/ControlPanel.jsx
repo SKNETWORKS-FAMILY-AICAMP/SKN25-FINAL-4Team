@@ -1,11 +1,14 @@
 import { useEffect, useState, useCallback } from 'react'
-import { SlidersHorizontal } from 'lucide-react'
+import { SlidersHorizontal, Wallet, Brain, TrendingDown } from 'lucide-react'
 import {
   getControlRecommendations,
   approveRecommendation,
   rejectRecommendation,
   clearRecommendations,
+  getLearningStats,
 } from '../../api/client'
+
+const fmtEur = v => '€ ' + Math.round(v || 0).toLocaleString('de-DE')
 
 const PRIORITY_COLOR = {
   HIGH:   { bg: '#f8514922', border: '#f85149', label: '높음', dot: '#f85149' },
@@ -34,11 +37,17 @@ const STATUS_LABEL = {
 }
 
 export default function ControlPanel() {
-  const [items,   setItems]   = useState([])
-  const [meta,    setMeta]    = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error,   setError]   = useState('')
-  const [busyId,  setBusyId]  = useState(null)
+  const [items,    setItems]    = useState([])
+  const [meta,     setMeta]     = useState(null)
+  const [summary,  setSummary]  = useState(null)
+  const [learning, setLearning] = useState(null)
+  const [loading,  setLoading]  = useState(true)
+  const [error,    setError]    = useState('')
+  const [busyId,   setBusyId]   = useState(null)
+
+  const loadLearning = useCallback(() => {
+    getLearningStats().then(r => setLearning(r.data?.error ? null : r.data)).catch(() => {})
+  }, [])
 
   const load = useCallback(() => {
     setLoading(true); setError('')
@@ -47,10 +56,11 @@ export default function ControlPanel() {
         if (r.data.error) throw new Error(r.data.error)
         setItems(r.data.items ?? [])
         setMeta({ generated_at: r.data.generated_at, count: r.data.count })
+        setSummary(r.data.summary ?? null)
       })
       .catch(e => setError(e.message ?? '권고 로드 실패'))
-      .finally(() => setLoading(false))
-  }, [])
+      .finally(() => { setLoading(false); loadLearning() })
+  }, [loadLearning])
 
   useEffect(() => { load() }, [load])
 
@@ -89,6 +99,8 @@ export default function ControlPanel() {
   const pendingItems  = items.filter(i => (i.status ?? 'pending') === 'pending')
   const reviewedItems = items.filter(i => (i.status ?? 'pending') !== 'pending')
   const highCount     = pendingItems.filter(i => i.priority === 'HIGH').length
+  const pendingEur    = pendingItems.reduce((s, i) => s + (i.saving_eur || 0), 0)
+  const approvedEur   = items.filter(i => i.status === 'approved').reduce((s, i) => s + (i.saving_eur || 0), 0)
 
   return (
     <div style={s.wrap}>
@@ -116,6 +128,37 @@ export default function ControlPanel() {
       </div>
 
       <div style={s.body}>
+        {!loading && !error && items.length > 0 && (
+          <div style={s.kpiRow}>
+            <div style={s.kpiCard}>
+              <div style={s.kpiLabel}><Wallet size={13} color="#0d9488" /> 검토 대기 절감 가능</div>
+              <div style={{ ...s.kpiValue, color: '#0d9488' }}>{fmtEur(pendingEur)}<span style={s.kpiUnit}> /월</span></div>
+              <div style={s.kpiSub}>{pendingItems.length}건 권고 · 승인 시 반영</div>
+            </div>
+            <div style={s.kpiCard}>
+              <div style={s.kpiLabel}><TrendingDown size={13} color="#3fb950" /> 승인 적용 효과</div>
+              <div style={{ ...s.kpiValue, color: '#3fb950' }}>{fmtEur(approvedEur)}<span style={s.kpiUnit}> /월</span></div>
+              <div style={s.kpiSub}>현재 승인된 권고 누계</div>
+            </div>
+            <div style={s.kpiCard}>
+              <div style={s.kpiLabel}><Brain size={13} color="#7c3aed" /> AI 적응형 학습</div>
+              {learning && (learning.success + learning.failure) > 0 ? (
+                <>
+                  <div style={{ ...s.kpiValue, color: '#7c3aed' }}>
+                    {Math.round(learning.success / (learning.success + learning.failure) * 100)}<span style={s.kpiUnit}>% 성공률</span>
+                  </div>
+                  <div style={s.kpiSub}>성공 {learning.success} · 실패 {learning.failure} · 누적 절감 {Math.round(learning.kw_saved_total)}kW</div>
+                </>
+              ) : (
+                <>
+                  <div style={{ ...s.kpiValue, color: 'var(--text3)', fontSize: 18 }}>학습 전</div>
+                  <div style={s.kpiSub}>승인 후 24h 결과로 학습 시작</div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
         {loading && (
           <div style={s.center}>
             <div style={{ fontSize: 28, marginBottom: 12 }}>⏳</div>
@@ -293,6 +336,12 @@ const s = {
   clearBtn:    { padding: '6px 14px', background: 'var(--line)', border: '1px solid #f8514944', borderRadius: 6, color: '#f85149', fontSize: 12, fontWeight: 600, cursor: 'pointer' },
 
   body:        { flex: 1, overflowY: 'auto', padding: '20px 24px 32px' },
+  kpiRow:      { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 20 },
+  kpiCard:     { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '12px 16px' },
+  kpiLabel:    { fontSize: 11, color: 'var(--text3)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5 },
+  kpiValue:    { fontSize: 24, fontWeight: 700, marginTop: 6 },
+  kpiUnit:     { fontSize: 12, fontWeight: 500, color: 'var(--text3)' },
+  kpiSub:      { fontSize: 10, color: 'var(--text4)', marginTop: 3 },
   center:      { padding: '60px 20px', textAlign: 'center' },
   errorBox:    { margin: '20px 0', padding: '14px 18px', background: '#fee2e2', border: '1px solid #f85149', borderRadius: 8, color: '#f85149', fontSize: 13, display: 'flex', alignItems: 'center', gap: 12 },
   retryBtn:    { padding: '4px 12px', background: 'none', border: '1px solid #f85149', borderRadius: 4, color: '#f85149', cursor: 'pointer', fontSize: 11 },

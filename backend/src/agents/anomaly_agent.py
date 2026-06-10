@@ -121,7 +121,7 @@ def _parse_date_range(question: str) -> tuple[str | None, str | None]:
 
 
 def _run_ml_anomaly(start: str, end: str) -> list[dict]:
-    """VMD-LSTM 잔차 + IF 실시간 이상탐지 (ML 팀 residual 방식)."""
+    """LSTM 잔차 실시간 이상탐지 (ML 팀 residual 방식)."""
     try:
         from models.anomaly.residual_model import predict_anomaly, is_available
         if not is_available():
@@ -207,13 +207,11 @@ def _fetch_anomalies(limit: int = 20,
                 conds.append("timestamp <  %s"); params.append(end)
             if exclude_gateway:
                 conds.append("(gateway_failure IS NULL OR gateway_failure = FALSE)")
-            # 시뮬 활성 시: sim_now 이후 데이터는 챗봇에서도 안 보이게
+            # 재생 헤드(sim_now) 이후 데이터는 챗봇에서도 안 보이게
             try:
-                from api.routers.simulator import clock, SIM_START_DEFAULT
-                sim_now = clock.now
-                if sim_now > SIM_START_DEFAULT:
-                    conds.append("timestamp <= %s")
-                    params.append(sim_now.strftime("%Y-%m-%d %H:%M:%S"))
+                from api.routers.simulator import clock
+                conds.append("timestamp <= %s")
+                params.append(clock.now.strftime("%Y-%m-%d %H:%M:%S"))
             except Exception:
                 pass
 
@@ -336,7 +334,7 @@ def run(state: dict) -> dict:
 
     # 날짜 표시
     period_str = f"{start} ~ {end}" if start else "최근 20건"
-    source_str = "VMD-LSTM 잔차+IF (실시간)" if ml_source else "anomaly_results DB"
+    source_str = "LSTM 잔차 (실시간)" if ml_source else "anomaly_results DB"
 
     # 전체 건수 집계 (severity 무관 — 카운트 질문 대응, ML 경로에도 항상 DB에서 집계)
     type_counts = _count_anomalies_by_type(start, end) if start else {}

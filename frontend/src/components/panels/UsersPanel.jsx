@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Users, UserPlus, Trash2, Search, ShieldCheck, Eye, Wrench, X, Loader2 } from 'lucide-react'
-import { listUsers, createUser, updateUser, deleteUser } from '../../api/client'
+import { Users, UserPlus, Trash2, Search, ShieldCheck, Eye, Wrench, X, Loader2, KeyRound } from 'lucide-react'
+import { listUsers, createUser, updateUser, deleteUser, resetUserPassword } from '../../api/client'
 
 const ROLES = {
   admin:    { label: '최고 관리자', color: '#2563eb', bg: '#dbeafe' },
@@ -13,8 +13,8 @@ export default function UsersPanel() {
   const [users,   setUsers]   = useState([])
   const [loading, setLoading] = useState(true)
   const [search,  setSearch]  = useState('')
-  const [modal,   setModal]   = useState(null)   // null | 'add' | {type:'delete', user}
-  const [form,    setForm]    = useState({ name: '', email: '', role: 'viewer' })
+  const [modal,   setModal]   = useState(null)   // null | 'add' | {type:'delete'|'reset', user}
+  const [form,    setForm]    = useState({ name: '', email: '', role: 'viewer', password: '' })
   const [formErr, setFormErr] = useState('')
   const [saving,  setSaving]  = useState(false)
 
@@ -34,14 +34,25 @@ export default function UsersPanel() {
   const handleAdd = async () => {
     if (!form.name.trim()) return setFormErr('이름을 입력하세요.')
     if (!form.email.trim() || !form.email.includes('@')) return setFormErr('유효한 이메일을 입력하세요.')
+    if (!form.password || form.password.length < 4) return setFormErr('비밀번호는 4자 이상이어야 합니다.')
     setSaving(true); setFormErr('')
     try {
       await createUser(form)
       load()
       setModal(null)
-      setForm({ name: '', email: '', role: 'viewer' })
+      setForm({ name: '', email: '', role: 'viewer', password: '' })
     } catch (e) {
       setFormErr(e.response?.data?.detail || '추가 실패')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleReset = async (user, password) => {
+    setSaving(true)
+    try {
+      await resetUserPassword(user.id, password)
+      setModal(null)
     } finally {
       setSaving(false)
     }
@@ -82,7 +93,7 @@ export default function UsersPanel() {
             <Users size={20} color="var(--brand)" />
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', margin: 0 }}>사용자 관리</h2>
           </div>
-          <button onClick={() => { setModal('add'); setFormErr(''); setForm({ name: '', email: '', role: 'viewer' }) }}
+          <button onClick={() => { setModal('add'); setFormErr(''); setForm({ name: '', email: '', role: 'viewer', password: '' }) }}
             style={addBtnStyle}>
             <UserPlus size={14} /> 사용자 추가
           </button>
@@ -181,14 +192,22 @@ export default function UsersPanel() {
                               {user.last_login ? user.last_login.replace('T', ' ') : '—'}
                             </td>
 
-                            {/* 삭제 */}
+                            {/* 액션: 비밀번호 재설정 / 삭제 */}
                             <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                              <button onClick={() => setModal({ type: 'delete', user })}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text4)', display: 'flex', padding: 4, borderRadius: 4, transition: 'color .15s' }}
-                                onMouseEnter={e => e.currentTarget.style.color = '#dc2626'}
-                                onMouseLeave={e => e.currentTarget.style.color = 'var(--text4)'}>
-                                <Trash2 size={14} />
-                              </button>
+                              <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' }}>
+                                <button onClick={() => setModal({ type: 'reset', user })} title="비밀번호 재설정"
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text4)', display: 'flex', padding: 4, borderRadius: 4, transition: 'color .15s' }}
+                                  onMouseEnter={e => e.currentTarget.style.color = 'var(--brand)'}
+                                  onMouseLeave={e => e.currentTarget.style.color = 'var(--text4)'}>
+                                  <KeyRound size={14} />
+                                </button>
+                                <button onClick={() => setModal({ type: 'delete', user })} title="삭제"
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text4)', display: 'flex', padding: 4, borderRadius: 4, transition: 'color .15s' }}
+                                  onMouseEnter={e => e.currentTarget.style.color = '#dc2626'}
+                                  onMouseLeave={e => e.currentTarget.style.color = 'var(--text4)'}>
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         )
@@ -207,6 +226,9 @@ export default function UsersPanel() {
             {modal === 'add'
               ? <AddUserForm form={form} setForm={setForm} error={formErr} saving={saving}
                   onSubmit={handleAdd} onClose={() => setModal(null)} />
+              : modal.type === 'reset'
+              ? <ResetPasswordForm user={modal.user} saving={saving}
+                  onSubmit={(pw) => handleReset(modal.user, pw)} onClose={() => setModal(null)} />
               : <DeleteConfirm user={modal.user} saving={saving}
                   onConfirm={() => handleDelete(modal.user)} onClose={() => setModal(null)} />
             }
@@ -236,6 +258,10 @@ function AddUserForm({ form, setForm, error, saving, onSubmit, onClose }) {
         <Field label="이메일">
           <input value={form.email} onChange={e => set('email', e.target.value)}
             placeholder="user@company.com" type="email" style={inputStyle} />
+        </Field>
+        <Field label="초기 비밀번호">
+          <input value={form.password} onChange={e => set('password', e.target.value)}
+            placeholder="4자 이상" type="password" style={inputStyle} />
         </Field>
         <Field label="역할">
           <select value={form.role} onChange={e => set('role', e.target.value)} style={selectStyle}>
@@ -276,6 +302,37 @@ function DeleteConfirm({ user, saving, onConfirm, onClose }) {
         <button onClick={onClose} style={cancelBtnStyle}>취소</button>
         <button onClick={onConfirm} disabled={saving} style={{ ...primaryBtnStyle, background: '#dc2626' }}>
           {saving ? <><Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> 삭제 중...</> : '삭제'}
+        </button>
+      </div>
+    </>
+  )
+}
+
+function ResetPasswordForm({ user, saving, onSubmit, onClose }) {
+  const [pw, setPw]   = useState('')
+  const [err, setErr] = useState('')
+  const submit = () => {
+    if (!pw || pw.length < 4) return setErr('비밀번호는 4자 이상이어야 합니다.')
+    onSubmit(pw)
+  }
+  return (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>비밀번호 재설정</h3>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex' }}><X size={18} /></button>
+      </div>
+      <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 16 }}>
+        <strong>{user.name}</strong> ({user.email}) 의 새 비밀번호를 설정합니다.
+      </p>
+      <Field label="새 비밀번호">
+        <input value={pw} onChange={e => { setPw(e.target.value); setErr('') }}
+          placeholder="4자 이상" type="password" style={inputStyle} autoFocus />
+      </Field>
+      {err && <div style={{ marginTop: 12, fontSize: 12, color: '#dc2626' }}>{err}</div>}
+      <div style={{ display: 'flex', gap: 8, marginTop: 24, justifyContent: 'flex-end' }}>
+        <button onClick={onClose} style={cancelBtnStyle}>취소</button>
+        <button onClick={submit} disabled={saving} style={primaryBtnStyle}>
+          {saving ? <><Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> 변경 중...</> : '변경'}
         </button>
       </div>
     </>

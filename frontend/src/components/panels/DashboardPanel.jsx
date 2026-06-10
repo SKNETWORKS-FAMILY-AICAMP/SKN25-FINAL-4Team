@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Factory, Wrench } from 'lucide-react'
+import { Factory, Wrench, TrendingUp } from 'lucide-react'
 import { EquipmentIcon } from '../common/EquipmentIcon'
 import {
   BarChart, Bar, LineChart, Line, AreaChart, Area, ComposedChart,
@@ -517,7 +517,7 @@ export default function DashboardPanel({ onNavigate } = {}) {
             {/* 전력 수요 예측 (24시간) */}
             <div style={s.chartBox}>
               <div style={s.chartHeader}>
-                <div style={s.chartTitle}>🔮 전력 수요 예측 트렌드 — H2.Z66 (1h 앙상블)</div>
+                <div style={s.chartTitle}><TrendingUp size={13} style={{ verticalAlign: '-2px', marginRight: 6 }} />전력 수요 예측 트렌드 — H2.Z66 (1h 앙상블)</div>
               </div>
               <div style={s.chartContent}>
                 {fcLoading && <div style={s.emptyMsg}>예측 중...</div>}

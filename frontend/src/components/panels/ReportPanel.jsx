@@ -5,7 +5,7 @@ import {
   XAxis, YAxis, ZAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
   ReferenceLine,
 } from 'recharts'
-import { getReport, getBalanceReport, getEnergyIntensity } from '../../api/client'
+import { getReport, getBalanceReport, getEnergyIntensity, monthlyDownloadUrl } from '../../api/client'
 
 const tooltip = {
   contentStyle: { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 },
@@ -244,8 +244,20 @@ export default function ReportPanel() {
           </div>
           {items.length > 0 && (
             <button style={s.csvBtn} onClick={() => downloadCSV(items, view)}>
-              CSV 다운로드
+              CSV
             </button>
+          )}
+          {raw.length > 0 && (
+            <>
+              <button style={s.docBtn} title="월간 보고서 PDF (차트·비용·CO₂ 포함)"
+                onClick={() => window.open(monthlyDownloadUrl(months, 'pdf'), '_blank')}>
+                📄 PDF
+              </button>
+              <button style={s.docBtn} title="월간 보고서 Word"
+                onClick={() => window.open(monthlyDownloadUrl(months, 'docx'), '_blank')}>
+                📝 DOCX
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -606,6 +618,7 @@ const s = {
   seg:       { padding: '4px 12px', background: 'none', border: 'none', color: 'var(--text3)', fontSize: 12, cursor: 'pointer' },
   segActive: { background: '#2563eb33', color: '#2563eb', fontWeight: 600 },
   csvBtn:       { padding: '5px 12px', background: 'var(--line)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text)', fontSize: 12, cursor: 'pointer', fontWeight: 500 },
+  docBtn:       { padding: '5px 12px', background: 'var(--surface)', border: '1px solid var(--brand)', borderRadius: 6, color: 'var(--brand)', fontSize: 12, cursor: 'pointer', fontWeight: 600 },
   loadingBanner:   { display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', background: 'linear-gradient(135deg, #2563eb15, var(--surface))', border: '1px solid #2563eb44', borderRadius: 10, marginBottom: 12 },
   loadingSpinner:  { width: 22, height: 22, borderRadius: '50%', border: '2px solid var(--border)', borderTopColor: '#2563eb', animation: 'spin 0.8s linear infinite', flexShrink: 0 },
 

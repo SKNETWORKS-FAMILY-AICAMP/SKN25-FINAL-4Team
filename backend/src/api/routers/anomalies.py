@@ -1,3 +1,4 @@
+from api.errors import safe_err
 import concurrent.futures
 import os
 import sys
@@ -18,18 +19,12 @@ from api.db import get_conn as _db_conn  # noqa: E402
 
 
 def _sim_cutoff() -> str | None:
-    """
-    시뮬레이터가 시작된 적이 있으면 sim_now timestamp 반환 (조회 cutoff).
-    아니면 None — 전체 데이터 조회 가능.
-    """
+    """재생 헤드(sim_now)까지를 조회 cutoff로 반환. 헤드 이후 데이터는 '아직 안 들어온 것'으로 숨김."""
     try:
-        from api.routers.simulator import clock, SIM_START_DEFAULT
-        sim_now = clock.now
-        if sim_now > SIM_START_DEFAULT:
-            return sim_now.strftime("%Y-%m-%d %H:%M:%S")
+        from api.routers.simulator import clock
+        return clock.now.strftime("%Y-%m-%d %H:%M:%S")
     except Exception:
-        pass
-    return None
+        return None
 
 
 @router.get("")
@@ -79,7 +74,7 @@ def list_anomalies(
             """, params + [limit, offset])
             rows = cur.fetchall()
     except Exception as e:
-        return {"error": str(e), "items": [], "total": 0}
+        return {"error": safe_err(e), "items": [], "total": 0}
 
     cols = ["id", "timestamp", "meter_id", "anomaly_type", "severity",
             "description", "score_stat", "score_iso", "score_lstm",
@@ -111,7 +106,7 @@ def anomaly_summary():
             rows = cur.fetchall()
         return {"summary": [{"severity": r[0], "count": r[1]} for r in rows]}
     except Exception as e:
-        return {"error": str(e), "summary": []}
+        return {"error": safe_err(e), "summary": []}
 
 
 @router.get("/timeline")
@@ -138,7 +133,7 @@ def anomaly_timeline():
             result[month][severity] = cnt
         return {"timeline": list(result.values())}
     except Exception as e:
-        return {"error": str(e), "timeline": []}
+        return {"error": safe_err(e), "timeline": []}
 
 
 @router.get("/events")
@@ -175,7 +170,7 @@ def anomaly_events(
             """, params)
             rows = cur.fetchall()
     except Exception as e:
-        return {"error": str(e), "events": []}
+        return {"error": safe_err(e), "events": []}
 
     if not rows:
         return {"events": [], "total": 0}
@@ -259,7 +254,7 @@ def anomaly_types():
             rows = cur.fetchall()
         return {"types": [{"type": r[0], "count": r[1]} for r in rows]}
     except Exception as e:
-        return {"error": str(e), "types": []}
+        return {"error": safe_err(e), "types": []}
 
 
 @router.get("/{anomaly_id}/context")
@@ -275,7 +270,7 @@ def anomaly_context(anomaly_id: int, hours: int = Query(24, ge=6, le=72)):
             """, (anomaly_id,))
             row = cur.fetchone()
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": safe_err(e)}
 
     if not row:
         raise HTTPException(status_code=404, detail="anomaly not found")
@@ -312,7 +307,7 @@ def anomaly_context(anomaly_id: int, hours: int = Query(24, ge=6, le=72)):
             "anomaly_ts": ts_berlin.strftime("%Y-%m-%d %H:%M"),
         }
     except Exception as e:
-        return {"anomaly": anomaly, "timeseries": [], "error": str(e)}
+        return {"anomaly": anomaly, "timeseries": [], "error": safe_err(e)}
 
 
 _run_status: dict[str, dict] = {}   # job_id → {status, total, counts, error}
@@ -336,7 +331,7 @@ def _is_gateway_failure(ts) -> bool:
 
 
 def _classify_type_residual(row) -> str:
-    """센서값 + VMD-LSTM 잔차 기반 이상 유형 분류."""
+    """센서값 + LSTM 잔차 기반 이상 유형 분류."""
     import pandas as pd
     ts        = row.get("ts")
     actual    = float(row.get("actual_w",    0) or 0)
@@ -399,7 +394,7 @@ def _migrate_schema(conn) -> None:
 
 
 def _save_residual_results(anomalies, job_id: str) -> int:
-    """VMD-LSTM 잔차+IF 탐지 결과를 anomaly_results에 저장."""
+    """LSTM 잔차 탐지 결과를 anomaly_results에 저장."""
     import pandas as pd
     try:
         with _db_conn() as conn:
@@ -439,7 +434,7 @@ def _save_residual_results(anomalies, job_id: str) -> int:
                 inserted = len(anomalies)
         return inserted
     except Exception as e:
-        _run_status[job_id]["error"] = str(e)
+        _run_status[job_id]["error"] = safe_err(e)
         return 0
 
 
@@ -522,7 +517,7 @@ def _do_detection(job_id: str, start: str, end: str, loop=None) -> None:
                 loop
             )
     except Exception as e:
-        _run_status[job_id].update({"status": "error", "error": str(e)})
+        _run_status[job_id].update({"status": "error", "error": safe_err(e)})
 
 
 @router.post("/run")
@@ -531,7 +526,7 @@ async def run_detection(
     start: str = Query(..., description="ISO 날짜 예: 2022-07-01"),
     end:   str = Query(..., description="ISO 날짜 예: 2022-08-01"),
 ):
-    """VMD-LSTM 잔차+IF 이상탐지 백그라운드 실행. /run/status/{job_id}로 완료 확인."""
+    """LSTM 잔차 이상탐지 백그라운드 실행. /run/status/{job_id}로 완료 확인."""
     job_id = f"{start}_{end}_{datetime.now().strftime('%H%M%S')}"
     _run_status[job_id] = {"status": "queued", "period": f"{start} ~ {end}"}
     

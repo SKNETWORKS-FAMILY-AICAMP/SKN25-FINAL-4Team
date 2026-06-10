@@ -3,6 +3,7 @@ Forecast Agent — v84 앙상블 모델로 계량기별 전력 예측 후 자연
 orchestrator에서 intent='forecast'일 때 호출.
 """
 
+from api.errors import safe_err
 import re
 import sys
 from datetime import datetime
@@ -87,9 +88,9 @@ def _run_v84_forecast(meter_urn: str, horizon: int, raw_df: pd.DataFrame) -> dic
                 "meter_urn": meter_urn, "horizon": horizon}
 
     except FileNotFoundError as e:
-        return {"error": str(e), "model": None, "records": []}
+        return {"error": safe_err(e), "model": None, "records": []}
     except Exception as e:
-        return {"error": str(e), "model": None, "records": []}
+        return {"error": safe_err(e), "model": None, "records": []}
 
 
 # ── 요약 ──────────────────────────────────────────────────────────

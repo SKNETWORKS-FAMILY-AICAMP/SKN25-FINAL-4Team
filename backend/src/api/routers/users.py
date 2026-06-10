@@ -52,17 +52,49 @@ _users: list[dict] = [
     },
 ]
 
+# ── 데모 계정 비밀번호 ────────────────────────────────────────────────
+# 프로토타입용 평문 저장. 운영 전환 시 bcrypt 등 해시 저장 필요.
+_DEFAULT_PASSWORD = "honda123"
+_passwords: dict[str, str] = {
+    "admin@honda-rd.eu":       "admin123",
+    "op_team_a@honda-rd.eu":   "operator123",
+    "maintenance@honda-rd.eu": "operator123",
+    "analyst@honda-rd.eu":     "viewer123",
+}
+
+
+def find_by_email(email: str) -> Optional[dict]:
+    return next((u for u in _users if u["email"].lower() == (email or "").lower()), None)
+
+
+def verify_credentials(email: str, password: str) -> Optional[dict]:
+    """이메일+비밀번호 검증. 성공 시 사용자 dict, 실패 시 None."""
+    user = find_by_email(email)
+    if not user:
+        return None
+    expected = _passwords.get(user["email"], _DEFAULT_PASSWORD)
+    return user if password == expected else None
+
+
+def touch_last_login(user: dict) -> None:
+    user["last_login"] = __import__("datetime").datetime.utcnow().isoformat(timespec="minutes")
+
 
 class CreateUser(BaseModel):
     name: str
     email: str
     role: str = "viewer"
+    password: Optional[str] = None   # 미지정 시 기본 비밀번호 부여
 
 
 class PatchUser(BaseModel):
     name:   Optional[str] = None
     role:   Optional[str] = None
     status: Optional[str] = None
+
+
+class PasswordReset(BaseModel):
+    password: str
 
 
 @router.get("")
@@ -84,7 +116,19 @@ def create_user(body: CreateUser):
         "last_login": None,
     }
     _users.append(user)
+    _passwords[body.email] = body.password or _DEFAULT_PASSWORD
     return user
+
+
+@router.post("/{user_id}/password")
+def reset_password(user_id: str, body: PasswordReset):
+    user = next((u for u in _users if u["id"] == user_id), None)
+    if not user:
+        raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
+    if not body.password or len(body.password) < 4:
+        raise HTTPException(status_code=400, detail="비밀번호는 4자 이상이어야 합니다.")
+    _passwords[user["email"]] = body.password
+    return {"ok": True}
 
 
 @router.patch("/{user_id}")
@@ -101,7 +145,8 @@ def update_user(user_id: str, body: PatchUser):
 @router.delete("/{user_id}", status_code=204)
 def delete_user(user_id: str):
     global _users
-    before = len(_users)
-    _users = [u for u in _users if u["id"] != user_id]
-    if len(_users) == before:
+    victim = next((u for u in _users if u["id"] == user_id), None)
+    if not victim:
         raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
+    _users = [u for u in _users if u["id"] != user_id]
+    _passwords.pop(victim["email"], None)

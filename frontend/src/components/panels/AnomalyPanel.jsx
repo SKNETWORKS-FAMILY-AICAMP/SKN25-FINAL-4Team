@@ -80,7 +80,7 @@ function DetailPanel({ item, onClose }) {
           <span style={s.detailType}>{TYPE_LABEL[item.anomaly_type] ?? item.anomaly_type}</span>
           {isNewModel && (
             <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: '#ede9fe', color: '#7c3aed', border: '1px solid #a371f744' }}>
-              VMD-LSTM
+              LSTM 잔차
             </span>
           )}
         </div>
@@ -205,7 +205,7 @@ function RunDetectionPanel({ onDone }) {
   return (
     <div style={s.runPanel}>
       <button style={s.runToggle} onClick={() => setOpen(o => !o)}>
-        {open ? '▲' : '▼'} VMD-LSTM 새 탐지 실행
+        {open ? '▲' : '▼'} LSTM 잔차 새 탐지 실행
       </button>
       {open && (
         <div style={s.runForm}>
@@ -230,7 +230,7 @@ function RunDetectionPanel({ onDone }) {
             </div>
           )}
           <div style={{ fontSize: 11, color: 'var(--text4)', marginTop: 4 }}>
-            VMD-LSTM 잔차 + Isolation Forest 앙상블로 재탐지 후 DB에 저장합니다.
+            계량기별 LSTM 예측 잔차를 학습 임계값과 비교해 이상 구간을 재탐지 후 DB에 저장합니다.
           </div>
         </div>
       )}
@@ -539,7 +539,7 @@ export default function AnomalyPanel({ equipmentFilter } = {}) {
                     <span style={s.typeLabel}>{TYPE_LABEL[item.anomaly_type] ?? item.anomaly_type}</span>
                     {isNew && (
                       <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#ede9fe', color: '#7c3aed', border: '1px solid #a371f733' }}>
-                        VMD
+                        잔차
                       </span>
                     )}
                     {gf && (

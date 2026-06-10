@@ -15,7 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 sys.path.insert(0, str(Path(__file__).parent.parent))
 load_dotenv()
 
-from api.routers import chat, anomalies, report, forecast, notifications, control, simulator, cms, settings, users
+from api.routers import chat, anomalies, report, forecast, notifications, control, simulator, cms, settings, users, auth
 
 
 @asynccontextmanager
@@ -94,6 +94,7 @@ app.include_router(simulator.router)
 app.include_router(cms.router)
 app.include_router(settings.router)
 app.include_router(users.router)
+app.include_router(auth.router)
 
 
 @app.get("/health")
