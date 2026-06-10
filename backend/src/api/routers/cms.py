@@ -7,6 +7,7 @@ CMS (Condition Monitoring System) 설비 상태 라우터.
 
 설비 마스터는 손으로 시드하지 않고 로더의 기능별 미터 그룹(계통/PV/CHP/냉방)에서 도출한다.
 """
+import re
 import sys
 import math
 from datetime import datetime, timedelta, timezone

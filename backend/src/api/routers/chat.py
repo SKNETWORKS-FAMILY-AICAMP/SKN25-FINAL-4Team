@@ -167,6 +167,8 @@ def get_session(session_id: str):
                 ORDER BY id ASC;
             """, (session_id,))
             msgs = cur.fetchall()
+    except HTTPException:
+        raise
     except Exception as e:
         return {"error": safe_err(e)}
 

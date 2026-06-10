@@ -161,7 +161,7 @@ def update_settings(body: dict):
 def _apply_schedule():
     """변경된 스케줄을 APScheduler에 실시간 반영."""
     try:
-        from api.scheduler import _scheduler, start_scheduler, stop_scheduler
+        from api.scheduler import scheduler, start_scheduler, stop_scheduler
         from apscheduler.triggers.cron import CronTrigger
 
         enabled = _config["report_schedule"]["enabled"]
@@ -172,14 +172,17 @@ def _apply_schedule():
             stop_scheduler()
             return
 
-        if _scheduler is None:
+        if not scheduler.running:
             os.environ["DAILY_REPORT_HOUR"]   = str(hour)
             os.environ["DAILY_REPORT_MINUTE"] = str(minute)
             start_scheduler()
         else:
-            _scheduler.reschedule_job(
-                "daily_report",
-                trigger=CronTrigger(hour=hour, minute=minute),
-            )
+            try:
+                scheduler.reschedule_job(
+                    "ml_retraining_job",
+                    trigger=CronTrigger(hour=hour, minute=minute),
+                )
+            except Exception:
+                pass
     except Exception as e:
         print(f"[Settings] schedule apply error: {e}")

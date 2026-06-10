@@ -85,3 +85,17 @@ def stop_scheduler():
     if scheduler.running:
         scheduler.shutdown()
         print(f"[{datetime.now()}] [Scheduler] 백그라운드 크론 스케줄러가 중지되었습니다.")
+
+
+def scheduler_status() -> dict:
+    """스케줄러 상태 반환 — /report/daily/scheduler 엔드포인트용."""
+    if not scheduler.running:
+        return {"enabled": False, "next_run": None, "job_id": None}
+    jobs = scheduler.get_jobs()
+    job = next((j for j in jobs), None)
+    return {
+        "enabled": True,
+        "next_run": job.next_run_time.isoformat() if job and job.next_run_time else None,
+        "job_id": job.id if job else None,
+        "job_name": job.name if job else None,
+    }
