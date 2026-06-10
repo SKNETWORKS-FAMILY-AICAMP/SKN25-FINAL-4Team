@@ -183,11 +183,6 @@ def predict_peak(
     Import P-Max v29 앙상블(LightGBM×2 + XGBoost + CatBoost). 단위 W → kW 변환 반환.
     as_of 미지정 시 시뮬레이터 가상 시각(15분 정렬)을 기준으로 하여 데모와 정합한다.
     """
-    import os
-    # pmax build_engine은 DB_PASS를 읽지만 프로젝트 .env는 DB_PASSWORD를 쓴다 → 브리지
-    if not os.getenv("DB_PASS") and os.getenv("DB_PASSWORD"):
-        os.environ["DB_PASS"] = os.getenv("DB_PASSWORD")
-
     # as_of 결정: 명시값 > 시뮬레이터 가상 시각 > (폴백) DB 최신 공통 시각
     basis = "query" if as_of else "latest"
     sim_based = False

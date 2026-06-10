@@ -145,7 +145,7 @@ async def _do_check():
     # 일 단위가 바뀌면 어제 일일 보고서 자동 생성 (시뮬에서 매일 06:00 자동 생성 모사)
     if last_checked.date() != window_end.date():
         try:
-            loop_ = asyncio.get_event_loop()
+            loop_ = asyncio.get_running_loop()
             target_date = (window_end - timedelta(days=1)).date().isoformat()
             await loop_.run_in_executor(None, _ensure_daily_report, target_date)
         except Exception as e:
@@ -154,7 +154,7 @@ async def _do_check():
         # 같은 타이밍에 권고 outcome 평가 → 회고 토스트 발송
         try:
             from api.routers.control import evaluate_pending_outcomes
-            evaluated = await asyncio.get_event_loop().run_in_executor(
+            evaluated = await asyncio.get_running_loop().run_in_executor(
                 None, evaluate_pending_outcomes, window_end
             )
             if evaluated:
@@ -176,7 +176,7 @@ async def _do_check():
             print(f"[Simulator] outcome evaluation failed: {e}")
 
     try:
-        loop   = asyncio.get_event_loop()
+        loop   = asyncio.get_running_loop()
         result = await loop.run_in_executor(
             None, _check_window_sync, last_checked, window_end
         )

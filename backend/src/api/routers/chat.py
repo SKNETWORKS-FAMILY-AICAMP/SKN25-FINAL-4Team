@@ -290,7 +290,7 @@ async def chat_stream(req: ChatRequest):
     is_first   = req.is_first or not req.session_id
 
     # 사용자 메시지 즉시 저장 (백그라운드 스레드)
-    await asyncio.get_event_loop().run_in_executor(
+    await asyncio.get_running_loop().run_in_executor(
         _executor, _save_user_message, session_id, question, is_first
     )
 
@@ -309,7 +309,7 @@ async def chat_stream(req: ChatRequest):
         yield f"data: {json.dumps({'type': 'status', 'content': PROGRESS_STEPS[0]})}\n\n"
 
         # graph 실행을 백그라운드 태스크로
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         graph_task = loop.run_in_executor(_executor, _invoke_graph, question, lc_messages, req.context)
 
         # 1.8초마다 다음 진행 메시지 전송
@@ -343,7 +343,7 @@ async def chat_stream(req: ChatRequest):
             await asyncio.sleep(0.015)
 
         # 어시스턴트 메시지 저장 (스트리밍 종료 직전)
-        await asyncio.get_event_loop().run_in_executor(
+        await asyncio.get_running_loop().run_in_executor(
             _executor, _save_assistant_message, session_id, answer, intent
         )
 
@@ -373,7 +373,7 @@ async def chat(req: ChatRequest):
     session_id = req.session_id or str(uuid.uuid4())
     is_first   = req.is_first or not req.session_id
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     await loop.run_in_executor(_executor, _save_user_message, session_id, req.question, is_first)
 
     result = await loop.run_in_executor(_executor, _invoke_graph, req.question, lc_messages, req.context)

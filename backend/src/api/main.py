@@ -43,7 +43,6 @@ async def lifespan(app: FastAPI):
     def warmup_pool():
         """풀의 모든 최소 커넥션을 미리 검증해 첫 요청 500 방지."""
         from api.db import _get_pool, _reset_pool
-        import psycopg2
         for _ in range(3):
             try:
                 p = _get_pool()
