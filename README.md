@@ -1,77 +1,152 @@
-# SKN25 FINAL 4Team EMS 프로젝트
 
-EMS는 Honda R&D Europe의 다년 에너지 계량 데이터를 기반으로 건물 에너지 사용, 설비 운전, 이상 패턴, 예측 가능성을 분석하는 프로젝트입니다. 저장소는 PostgreSQL/TimescaleDB `ems` schema를 기준 원천으로 사용하는 DB 중심 구조를 따릅니다.
+# SKN25 FINAL 4Team — TTF-FMS
 
-## 1. 프로젝트 범위
+**스마트팩토리 에너지 인사이트 · 설비 운영 AI Copilot**
+**FEMS + CMS Lite 하이브리드 플랫폼**
 
-- 81개 계량기와 기상 데이터를 기준으로 전기, 열, 냉방, 기상 측정값을 분석합니다.
-- 원천 데이터와 대용량 로컬 데이터는 저장소에 포함하지 않습니다.
-- 분석 입력, 계량기 metadata, feature 기준, ontology schema는 `docs/specs/`의 active 문서를 기준으로 합니다.
-- 실험 노트북, 분석 스크립트, 재생성 가능한 산출물은 목적별 폴더에 분리합니다.
+TTF-FMS는 Honda R&D Europe EMS 6년치 에너지 계량 데이터를 기반으로 전력 수요 예측, 이상 징후 탐지, 설비 상태 분석, 원인 추정, 작업지시 생성, 월간 보고서 자동화를 통합한 설비 운영 AI Copilot입니다.
 
-## 2. 저장소 구조
+기존 FEMS가 에너지 사용량 모니터링에 머무르고, 기존 CMS가 별도 진동·전류 센서 설치를 요구하는 문제를 보완하기 위해, 본 프로젝트는 **기존 전력 계량기 데이터만으로 에너지 관리와 설비 이상 징후 선별을 동시에 수행하는 CMS Lite 구조**를 목표로 합니다.
+
+---
+
+## 1. 핵심 기능
+
+* 전력 수요 예측
+
+  * v84 앙상블 기반 1시간/3시간 수요 예측
+  * Import P-Max 기반 15분 단위 피크 예측
+
+* 이상탐지
+
+  * v84 예측 잔차 기반 이상 후보 탐지
+  * IsolationForest 보조 검증
+  * 통계 + IF + LSTM-AE 폴백 구조
+
+* AI Copilot
+
+  * LangGraph 기반 멀티 에이전트
+  * 설비 상태 질의
+  * 이상 원인 추정
+  * 작업지시 생성
+  * 월간 보고서 자동 생성
+  * RAG 기반 도메인 질의응답
+
+* 대시보드
+
+  * 설비 상태 감시
+  * 이상탐지 현황
+  * 예측 트렌드
+  * 정비 작업지시
+  * 보고서
+  * 챗봇
+
+---
+
+## 2. 모델 및 검증 요약
+
+### v84 수요 예측 모델
+
+* 모델 구성: LSTM × 7 + CatBoost + LightGBM + Ridge + Seasonal Naive
+* 타겟: 잔차 `P(t) - P(t-1)`
+* 구조: 계량기별 개인화 학습
+* 주요 지표:
+
+  * 1h beats_persistence: 27/45
+  * 3h beats_persistence: 16/45
+
+### Import P-Max 피크 예측
+
+* 모델 구성: LightGBM × 2 + XGBoost + CatBoost
+* 입력: 최근 24시간, 15분 단위 96개 시점
+* 출력: 향후 60분 P_max 예측
+* 주요 지표:
+
+  * Persistence 대비 RMSE 개선: 11~18%
+  * 추론 70,660건 실패 0건
+
+### 이상탐지
+
+* 주력: v84 예측 잔차 기반 이상 후보 탐지 + IsolationForest 보조 검증
+* 폴백: 통계 + IsolationForest + LSTM-AE 3단 투표
+* 유형 해석:
+
+  * v84는 이상 후보만 탐지
+  * PowerSpike, COPDrop, NightConsumption, CHPOutage, PVNightNonZero 등 운영 유형은 anomaly_agent와 LLM이 해석
+
+### AI Hub 외부 검증
+
+Honda 데이터 기반 모델 구조가 국내 제조설비 데이터에도 적용 가능한지 확인하기 위해 AI Hub 전력 설비 에너지 품질 데이터셋으로 외부 검증을 수행했습니다.
+
+* 대상: AI Hub #149, 펌프/일반모터 73개 설비
+* 데이터 성격: 국내 63개 업체, 461개 설비에서 Mobile Energy Meter로 직접 계측한 제조 현장 데이터
+* Import P-Max:
+
+  * AI Hub 재학습 후 유효 설비 85%에서 Persistence 대비 개선
+  * 중앙값 RMSE 개선율 17.5%
+* v84 이상탐지:
+
+  * Honda 가중치 그대로 오탐율 31.10%
+  * AI Hub 재학습 후 오탐율 11.77%
+  * 경보율 20.04%로 Honda 운영 수준에 근접
+
+단, 이는 국내 제조업 전체 적용을 입증한 것이 아니라, **고객사 데이터 재학습을 전제로 모델 구조의 전이 가능성을 확인한 결과**입니다.
+
+---
+
+## 3. 저장소 구조
 
 ```text
 SKN25-FINAL-4Team/
-├── docs/
-│   ├── specs/                 # 프로젝트 핵심 명세
-│   ├── ontology/              # ontology artifact와 역량질문
-│   ├── reference/             # 도메인 학습·참조 문서
-│   ├── analysis/              # 분석 기획·발표·해석 문서
-│   └── papers/                # 기준 논문과 추출 문서
-├── notebooks/
-│   ├── overview/              # 전체 품질·coverage·집계 탐색
-│   ├── H1.Z16/                # H1.Z16 계량기 EDA/이상탐지
-│   └── stl_eda/               # STL·상관·이상치 탐색 노트북
-├── scripts/
-│   ├── ontology/              # ontology 생성·검증·조회
-│   ├── profiling/             # 미터 프로파일링과 에너지 흐름 시각화
-│   ├── features/              # baseline feature 생성
-│   ├── anomaly/               # 이상 탐지 실행 스크립트
-│   ├── forecast/              # 예측 baseline 실행 스크립트
-│   └── ingest/                # 보조 적재·뷰 SQL. DB write는 승인 후 실행
-├── src/ems/                   # 재사용 가능한 EMS Python 모듈
-├── outputs/
-│   ├── figures/               # 공유 가능한 그림 산출물
-│   └── tables/                # 공유 가능한 표 산출물
-├── docker/                    # 로컬 컨테이너 이미지 정의
-├── docker-compose.yml         # 로컬 EMS 컨테이너 compose
-├── pyproject.toml
-└── requirements.txt
+├── backend/                         # FastAPI, LangGraph, ML 추론 연동
+│   ├── src/
+│   │   ├── agents/                  # LangGraph 에이전트
+│   │   ├── api/                     # 앱 진입점 및 라우터
+│   │   ├── data/                    # 데이터 접근 계층
+│   │   ├── knowledge/               # RAG 지식 및 임베딩
+│   │   └── models/anomaly/          # 이상탐지 모델
+│   ├── ml/pipeline/                 # v84 학습·추론 파이프라인
+│   ├── docs/kb/                     # RAG 지식베이스
+│   ├── requirements.txt
+│   └── Dockerfile
+├── frontend/                        # React/Vite 대시보드
+│   └── src/
+│       ├── api/
+│       ├── components/
+│       ├── data/
+│       ├── App.jsx
+│       └── theme.js
+├── reports/                         # 최종 발표 및 검증 보고서
+│   ├── BM_스토리_뼈대_v46_수정.md
+│   ├── AIHub_검증_내부보고서_v4.md
+│   └── 최종발표_예상질문_답변리스트_v3_주의사항추가.md
+├── scripts/                         # 실험·검증·전처리 스크립트
+├── outputs/                         # 실험 결과 CSV 및 산출물
+├── docs/                            # 분석 문서 및 참고 자료
+├── notebooks/                       # EDA 및 실험 노트북
+├── docker-compose.yml
+├── requirements.txt
+└── README.md
 ```
 
-## 3. 주요 문서
+---
 
-| 구분 | 경로 | 내용 |
-|---|---|---|
-| 프로젝트 개요 | `docs/specs/프로젝트_개요.md` | 목적, 기준 데이터, 분석 범위 |
-| 데이터 계약 | `docs/specs/데이터_계약.md` | 분석 입력 grain, timestamp, 품질 규칙 |
-| DB 구조 | `docs/specs/데이터베이스_구조.md` | `ems` schema relation, column, index 기준 |
-| 계량기 metadata | `docs/specs/계량기_메타데이터.md` | 계량기 분류, 설비 그룹, redundancy, 부호 규약 |
-| Feature 기준 | `docs/specs/피처_명세.md` | feature 입력, naming, 누수 방지 기준 |
-| Ontology 기준 | `docs/specs/온톨로지_스키마.md` | ontology class/property/artifact coverage |
-| 도메인 개념 | `docs/reference/도메인_개념.md` | 전기·열 계량기 기본 개념 |
-| 분석 기획 | `docs/analysis/분석_기획/` | 팀 분석 진행 문서와 발표자료 |
-| 기준 논문 | `docs/papers/` | 논문 원문, 번역, 전문, 요약 |
+## 4. 주요 문서
 
-## 4. 주요 산출물
+| 구분        | 경로                                     | 내용                              |
+| --------- | -------------------------------------- | ------------------------------- |
+| BM 스토리    | `reports/BM_스토리_뼈대_v46_수정.md`          | 최종 발표용 사업·기술 스토리                |
+| AI Hub 검증 | `reports/AIHub_검증_내부보고서_v4.md`         | Import P-Max, v84, 이상탐지 외부 검증   |
+| 예상 질문     | `reports/최종발표_예상질문_답변리스트_v3_주의사항추가.md` | 최종 발표 Q&A 방어 논리                 |
+| 도메인 지식    | `backend/src/knowledge/`               | FEMS/CMS 도메인 프롬프트 및 RAG 자료      |
+| 이상탐지 모델   | `backend/src/models/anomaly/`          | residual, IF, LSTM-AE, ensemble |
+| ML 파이프라인  | `backend/ml/pipeline/`                 | v84 학습·추론 코드                    |
 
-| 구분 | 경로 |
-|---|---|
-| 에너지 흐름 그림 | `outputs/figures/energy_flow/` |
-| 프로파일링 테이블 | `outputs/tables/profiling/` |
-| H1.Z16 노트북 | `notebooks/H1.Z16/` |
-| 전체 탐색 노트북 | `notebooks/overview/` |
-| STL EDA 노트북 | `notebooks/stl_eda/` |
+---
 
 ## 5. 실행 환경
 
-- Python 기준 버전은 3.12입니다.
-- 공통 의존성은 루트 `requirements.txt`를 기준으로 설치합니다.
-- RunPod CUDA image의 `torch==2.8.*` 계열은 이미지에서 관리합니다. `requirements.txt`에는 `torch`, `torchvision`, `torchaudio`를 넣지 않습니다.
-- `.env`, DB password, token, SSH key 등 credential은 저장소에 커밋하지 않습니다.
-
-예시:
+Python 3.12 기준입니다.
 
 ```bash
 python -m venv .venv
@@ -80,75 +155,108 @@ python -m pip install -U pip
 python -m pip install -r requirements.txt
 ```
 
-## 6. 대표 실행 명령
-
-프로파일링:
+백엔드 환경은 `backend/requirements.txt`를 기준으로 별도 설치할 수 있습니다.
 
 ```bash
-python scripts/profiling/meter_profiling.py
+cd backend
+python -m pip install -r requirements.txt
 ```
 
-에너지 흐름 시각화:
+`.env`, DB 비밀번호, API 키, SSH 키 등 credential은 저장소에 커밋하지 않습니다.
+
+---
+
+## 6. 실행 예시
+
+### 백엔드 실행
 
 ```bash
-python scripts/profiling/visualize_energy_flow.py
+cd backend
+uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Ontology artifact 생성과 검증:
+### 프론트엔드 실행
 
 ```bash
-python scripts/ontology/generate_ontology.py
-python scripts/ontology/validate_ontology.py
-python scripts/ontology/query_ontology.py
+cd frontend
+npm install
+npm run dev
 ```
 
-Baseline feature 생성:
+### Docker Compose 실행
 
 ```bash
-python scripts/features/build_baseline_features.py
+docker compose up --build
 ```
 
-이상 탐지 baseline 실행:
+---
+
+## 7. 주요 ML 실행 예시
+
+### v84 학습
 
 ```bash
-python scripts/anomaly/run_anomaly_detection.py
+cd backend
+python -m ml.pipeline.train --horizon 1
+python -m ml.pipeline.train --horizon 3
 ```
 
-예측 baseline 실행:
+### 이상탐지 배치 실행
 
 ```bash
-python scripts/forecast/run_forecast_baseline.py
+cd backend
+python src/models/anomaly/batch_detect_historical.py
 ```
 
-## 7. DB write 주의사항
+### AI Hub 검증 스크립트
 
-`scripts/ingest/` 아래의 SQL 또는 적재 스크립트는 DB 객체 생성, view 생성, 외부 데이터 적재를 포함할 수 있습니다. 다음 작업은 반드시 사전 승인 후 실행합니다.
+AI Hub 전이 검증 관련 스크립트는 `scripts/`와 `outputs/`에 보관합니다.
 
-- schema, table, view, index 생성 또는 변경
-- 대용량 적재 또는 삭제
-- 외부 원천 데이터 다운로드와 DB 반영
-- 운영 DB credential 사용
+```bash
+ls scripts/
+ls outputs/
+```
 
-## 8. Git 관리 기준
+---
 
-저장소에는 다음 항목을 포함하지 않습니다.
+## 8. 데이터 및 DB 기준
+
+* Honda EMS 원천 데이터는 저장소에 포함하지 않습니다.
+* 대용량 로컬 데이터와 credential은 커밋하지 않습니다.
+* 운영 데이터는 PostgreSQL/TimescaleDB 기반 DB를 기준으로 사용합니다.
+* 주요 테이블 예시:
+
+  * `reference.corrected_resampled_1h`
+  * `anomaly_results`
+  * `monthly_report`
+  * `work_orders`
+  * `cr_measurement_1h`
+
+---
+
+## 9. Git 관리 기준
+
+저장소에는 다음 항목을 커밋하지 않습니다.
 
 ```text
 .env
 .env.*
 .venv/
 data/
-HERMES.md
-.github/
 __pycache__/
 *.pyc
 .pytest_cache/
-.obsidian/
-_archive/
-tests/
 .cache/
 tmp/
 *.log
 ```
 
-공유 대상 문서와 산출물은 목적별 폴더에 둡니다. 사람이 읽는 Markdown 문서는 한글 파일명을 우선하며, RDF/OWL/TTL 등 도구용 artifact 파일명은 기존 영문명을 유지합니다.
+대용량 모델 파일, 실험 중간 산출물, 원천 데이터는 별도 관리합니다.
+공유가 필요한 최종 문서와 검증 보고서는 `reports/`에 정리합니다.
+
+---
+
+## 10. 한 줄 요약
+
+> TTF-FMS는 기존 전력 계량기 데이터만으로 전력 수요 예측, 이상 징후 탐지, 원인 추정, 작업지시, 보고서 생성을 연결하는 FEMS + CMS Lite 기반 설비 운영 AI Copilot입니다.
+
