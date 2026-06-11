@@ -43,10 +43,11 @@ _KW_ANOMALY  = re.compile(r"이상\s*탐지|이상\s*발생|이상\s*이력|이�
                           r"|비정상|스파이크|급등|급락|오류|탐지|경보|알람|fault|anomal"
                           r"|chpoutage|powerspike|copdrop|nightconsumption|pvnightnonzero"
                           r"|사건|빈도|심각도|발생\s*건수|몇\s*건|잔차|급등\s*이벤트|게이트웨이\s*장애")
-_KW_REPORT   = re.compile(r"보고서|리포트|report|kpi|월간|요약|통계|실적|집계|월별\s*현황"
+_KW_REPORT   = re.compile(r"보고서|리포트|report|kpi|월간|통계|실적|집계|월별\s*현황"
                           r"|요금|비용|cost|전력\s*비용|얼마나\s*나"
                           r"|의존도|자급률|출력\s*얼마|사용량\s*어때|사용량\s*얼마"
-                          r"|그리드\s*의존|외부\s*전력\s*의존|계통\s*의존")
+                          r"|그리드\s*의존|외부\s*전력\s*의존|계통\s*의존"
+                          r"|보고서.*요약|요약.*보고서|월간.*요약|요약.*월간|실적.*요약|요약.*실적")
 _KW_FORECAST = re.compile(r"예측|전망|앞으로|내일|다음\s*주|장기|예상|forecast|미래|될\s*것"
                           r"|계속\s*될까|계속될까|낮아질까|높아질까|늘어날까|줄어들까"
                           r"|떨어질까|올라갈까|늘\s*까|줄\s*까|추세|앞으로.*될")
@@ -67,6 +68,10 @@ _KW_OFFTOPIC = re.compile(
     r"|의료|병원|질병|증상|처방전"
     r"|연애|결혼|이혼|육아|임신"
     r"|게임|유튜브|틱톡|sns|인스타|트위터"
+    r"|운영\s*테이블.*변경|테이블.*변경|테이블.*삭제|테이블.*drop|테이블.*truncate"
+    r"|서버\s*파일.*덮어쓰기|파일.*덮어쓰기|원격.*서버.*파일"
+    r"|승인\s*요청|결재\s*올려|허가\s*받아|force\s*처리|강제.*진행"
+    r"|db.*insert|db.*update|db.*delete|db.*drop"
 )
 
 # 미래 시제 강제 override — anomaly/cms 키워드와 동시에 있어도 forecast로

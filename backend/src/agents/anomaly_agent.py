@@ -405,6 +405,7 @@ def run(state: dict) -> dict:
 {_REGIME_EVENTS}
 {_GATEWAY_FAILURES}
 ※ 게이트웨이 장애 구간의 이상은 인공 보정 데이터이므로 반드시 명시하세요.
+※ 이상 발생 시각과 센서 수치는 반드시 위 데이터에서 직접 인용하세요. 제공되지 않은 수치를 추론으로 생성하지 마세요.
 
 {ANOMALY_DOMAIN_PROMPT}
 

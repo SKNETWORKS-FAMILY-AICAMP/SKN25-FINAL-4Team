@@ -24,7 +24,7 @@ SK Networks AI Family 25기 4팀 파이널 프로젝트.
 | <img src=".github/assets/readme/stethoscope.svg" width="16" alt="" /> **AI 고장 원인 진단** | LLM이 이상 이력 + **전기 시그니처(3상 불평형·역률·주파수)** + 도메인 지식으로 원인·근거·조치 생성 |
 | <img src=".github/assets/readme/telescope.svg" width="16" alt="" /> **예지보전** | COP·이상 발생률 **추세 외삽**으로 "현 추세면 N개월 후 기준치 도달" 위험 예측 |
 | <img src=".github/assets/readme/wrench.svg" width="16" alt="" /> **정비 작업지시** | 진단 → 작업지시 생성 → 진행/완료 칸반 → 조치 결과 기록 (이력 루프) |
-| <img src=".github/assets/readme/triangle-alert.svg" width="16" alt="" /> **이상탐지** | 2경로 — ① residual 기반 + Isolation Forest(주력) ② 통계·IF·LSTM-AE 3단 투표(폴백) |
+| <img src=".github/assets/readme/triangle-alert.svg" width="16" alt="" /> **이상탐지** | 2경로 — ① LSTM 잔차 비율 기반(주력, ratio=\|실제−예측\|/threshold, ≥2.0=HIGH) ② 통계·IF·LSTM-AE 3단 투표(폴백) |
 
 ### AI 코파일럿
 | 기능 | 설명 |
@@ -35,7 +35,7 @@ SK Networks AI Family 25기 4팀 파이널 프로젝트.
 ### 운영 보조 (에너지)
 | 기능 | 설명 |
 |------|------|
-| <img src=".github/assets/readme/chart-no-axes-combined.svg" width="16" alt="" /> **수요 예측** | v84 앙상블 (계량기별 개인화 — LSTM×6 + CatBoost + LightGBM + Ridge + Naive) |
+| <img src=".github/assets/readme/chart-no-axes-combined.svg" width="16" alt="" /> **수요 예측** | v84 앙상블 (LSTM×6 median + CatBoost + LightGBM + Ridge + Naive, 계량기별 개인화 45개, shrunk bias correction) |
 | <img src=".github/assets/readme/sliders-horizontal.svg" width="16" alt="" /> **제어 및 최적화** | 피크 시프트·야간부하·효율 권고 (승인/거부 + 적응형 학습) |
 | <img src=".github/assets/readme/wallet-cards.svg" width="16" alt="" /> **목표 요금 관리** | 월말 요금 추정 · 피크 위험 모니터링 |
 | <img src=".github/assets/readme/file-text.svg" width="16" alt="" /> **보고서** | 월간 KPI(YoY·MoM) + 일일 운영 브리핑(PDF/DOCX/HWPX) |
@@ -152,6 +152,20 @@ python -m pytest tests
 
 ---
 
+## ML 아티팩트 (사전 학습 모델)
+
+예측·이상탐지 모델 artifacts는 Hugging Face Hub([mintmarket/ems-agent-artifacts](https://huggingface.co/datasets/mintmarket/ems-agent-artifacts))에 보관됩니다.
+
+**Docker Compose 실행 시 자동 다운로드**됩니다 — 별도 작업 불필요.
+컨테이너 시작 시 artifacts가 없으면 자동으로 받고, 이미 있으면 스킵합니다.
+
+> 로컬 직접 실행 시에는 수동 다운로드 필요:
+> ```bash
+> .venv/bin/python scripts/download_artifacts.py
+> ```
+
+---
+
 ## ML 학습 파이프라인 (v84 앙상블)
 
 예측 모델은 별도 Python 환경에서 학습합니다. 학습 후 생성된 artifacts를 백엔드가 로드합니다.
@@ -250,8 +264,8 @@ OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
 | GET | `/report`, `/report/daily`, `/report/billing` | 월간/일일/요금 보고서 |
 
 > **이상탐지 2경로**
-> - **주력**: 예측 잔차(|실제−예측|) 임계 초과 + IsolationForest 합산. 둘 다=HIGH, 잔차 1.5배=MEDIUM, 한쪽=LOW.
-> - **폴백**: 통계(Z·IQR·STL) + IsolationForest + LSTM-AE 3단 투표. 2표↑=HIGH, 1표=MEDIUM.
+> - **주력**: LSTM 잔차 비율 기반. `ratio = |실제−예측| / threshold`. ratio ≥ 2.0=HIGH, ≥ 1.5=MEDIUM, ≥ 1.0=LOW. (IsolationForest 미사용)
+> - **폴백** (artifacts 없을 때): 통계(Z·IQR·STL) + IsolationForest + LSTM-AE 3단 투표. 3표=HIGH, 2표=MEDIUM, 1표=LOW.
 > - 유형 분류(COPDrop·CHPOutage·NightConsumption·PVNightNonZero·PowerSpike) → `anomaly_results` 저장 → CMS 전체 소비.
 
 ---
@@ -286,11 +300,15 @@ SKN25-FINAL-4Team/
 │   ├── docs/
 │   ├── eval/
 │   └── scripts/
+├── scripts/
+│   ├── download_artifacts.py        # HF Hub에서 ML artifacts 다운로드
+│   └── upload_artifacts.py          # HF Hub에 ML artifacts 업로드 (관리자용)
 ├── .env.example
 └── docker-compose.yml
 ```
 
-> `dev/data`, `dev/docs`, `dev/eval`과 생성된 모델 artifacts는 Git에서 제외됩니다. 앱 실행 코드는 `backend`와 `frontend`, 자동화 테스트는 `tests`에 둡니다.
+> `dev/data`, `dev/docs`, `dev/eval`과 생성된 모델 artifacts는 Git에서 제외됩니다.
+> artifacts는 Hugging Face Hub(`mintmarket/ems-agent-artifacts`)에 보관 — `scripts/download_artifacts.py`로 받습니다.
 
 ---
 
@@ -301,8 +319,8 @@ SKN25-FINAL-4Team/
 - **프론트**: React (Vite) · Recharts · lucide-react · react-markdown
 - **sLLM**: Ollama (`gemma4:12b`) — RunPod GPU 서버 또는 로컬. OpenAI / Anthropic / Gemini로 `.env` 1줄 전환 가능
 - **의도 분류**: 키워드 룰 기반 우선 분류 + LLM 폴백 (골든셋 100문항 기준 **92% 정확도**)
-- **ML 예측**: v84 앙상블 — LSTM(×6) + CatBoost + LightGBM + Ridge + Seasonal Naive, 잔차 타겟(P(t)−P(t−1)), 45개 계량기 개인화
-- **ML 이상탐지**: residual 기반 + IsolationForest(주력) / 통계+IF+LSTM-AE 투표(폴백)
+- **ML 예측**: v84 앙상블 — LSTM×6 버전 median + CatBoost + LightGBM + Ridge + Seasonal Naive, 잔차 타겟(P(t)−P(t−1)), 45개 계량기 개인화, shrunk bias correction
+- **ML 이상탐지**: LSTM 잔차 비율 기반(주력, ratio ≥ 2.0=HIGH) / 통계+IF+LSTM-AE 3단 투표(폴백)
 
 ---
 

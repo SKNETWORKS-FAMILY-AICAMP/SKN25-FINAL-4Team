@@ -1,0 +1,5788 @@
+[
+  {
+    "id": "R1-QA-001",
+    "expected_route": "quick_answer",
+    "message": "CMS 어시스턴트의 역할을 한 문장으로 설명해줘"
+  },
+  {
+    "id": "R1-QA-002",
+    "expected_route": "quick_answer",
+    "message": "CMS 어시스턴트의 역할을 두 문장으로 설명해줘"
+  },
+  {
+    "id": "R1-QA-003",
+    "expected_route": "quick_answer",
+    "message": "CMS 어시스턴트의 역할을 초보자용으로 설명해줘"
+  },
+  {
+    "id": "R1-QA-004",
+    "expected_route": "quick_answer",
+    "message": "CMS 어시스턴트의 역할을 전문가용으로 설명해줘"
+  },
+  {
+    "id": "R1-QA-005",
+    "expected_route": "quick_answer",
+    "message": "CMS 어시스턴트의 역할을 한국어로 설명해줘"
+  },
+  {
+    "id": "R1-QA-006",
+    "expected_route": "quick_answer",
+    "message": "CMS 어시스턴트의 역할을 영어 한 줄로 설명해줘"
+  },
+  {
+    "id": "R1-QA-007",
+    "expected_route": "quick_answer",
+    "message": "CMS 어시스턴트의 역할을 bullet 3개로 설명해줘"
+  },
+  {
+    "id": "R1-QA-008",
+    "expected_route": "quick_answer",
+    "message": "CMS 어시스턴트의 역할을 친절하게 설명해줘"
+  },
+  {
+    "id": "R1-QA-009",
+    "expected_route": "quick_answer",
+    "message": "CMS 어시스턴트의 역할을 매우 짧게 설명해줘"
+  },
+  {
+    "id": "R1-QA-010",
+    "expected_route": "quick_answer",
+    "message": "CMS 어시스턴트의 역할을 발표용 톤으로 설명해줘"
+  },
+  {
+    "id": "R1-QA-011",
+    "expected_route": "quick_answer",
+    "message": "LangGraph 개념을 한 문장으로 요약해줘"
+  },
+  {
+    "id": "R1-QA-012",
+    "expected_route": "quick_answer",
+    "message": "LangGraph 개념을 두 문장으로 요약해줘"
+  },
+  {
+    "id": "R1-QA-013",
+    "expected_route": "quick_answer",
+    "message": "LangGraph 개념을 초보자용으로 요약해줘"
+  },
+  {
+    "id": "R1-QA-014",
+    "expected_route": "quick_answer",
+    "message": "LangGraph 개념을 전문가용으로 요약해줘"
+  },
+  {
+    "id": "R1-QA-015",
+    "expected_route": "quick_answer",
+    "message": "LangGraph 개념을 한국어로 요약해줘"
+  },
+  {
+    "id": "R1-QA-016",
+    "expected_route": "quick_answer",
+    "message": "LangGraph 개념을 영어 한 줄로 요약해줘"
+  },
+  {
+    "id": "R1-QA-017",
+    "expected_route": "quick_answer",
+    "message": "LangGraph 개념을 bullet 3개로 요약해줘"
+  },
+  {
+    "id": "R1-QA-018",
+    "expected_route": "quick_answer",
+    "message": "LangGraph 개념을 친절하게 요약해줘"
+  },
+  {
+    "id": "R1-QA-019",
+    "expected_route": "quick_answer",
+    "message": "LangGraph 개념을 매우 짧게 요약해줘"
+  },
+  {
+    "id": "R1-QA-020",
+    "expected_route": "quick_answer",
+    "message": "LangGraph 개념을 발표용 톤으로 요약해줘"
+  },
+  {
+    "id": "R1-QA-021",
+    "expected_route": "quick_answer",
+    "message": "QA gate라는 용어를 한 문장으로 풀어서 말해줘"
+  },
+  {
+    "id": "R1-QA-022",
+    "expected_route": "quick_answer",
+    "message": "QA gate라는 용어를 두 문장으로 풀어서 말해줘"
+  },
+  {
+    "id": "R1-QA-023",
+    "expected_route": "quick_answer",
+    "message": "QA gate라는 용어를 초보자용으로 풀어서 말해줘"
+  },
+  {
+    "id": "R1-QA-024",
+    "expected_route": "quick_answer",
+    "message": "QA gate라는 용어를 전문가용으로 풀어서 말해줘"
+  },
+  {
+    "id": "R1-QA-025",
+    "expected_route": "quick_answer",
+    "message": "QA gate라는 용어를 한국어로 풀어서 말해줘"
+  },
+  {
+    "id": "R1-QA-026",
+    "expected_route": "quick_answer",
+    "message": "QA gate라는 용어를 영어 한 줄로 풀어서 말해줘"
+  },
+  {
+    "id": "R1-QA-027",
+    "expected_route": "quick_answer",
+    "message": "QA gate라는 용어를 bullet 3개로 풀어서 말해줘"
+  },
+  {
+    "id": "R1-QA-028",
+    "expected_route": "quick_answer",
+    "message": "QA gate라는 용어를 친절하게 풀어서 말해줘"
+  },
+  {
+    "id": "R1-QA-029",
+    "expected_route": "quick_answer",
+    "message": "QA gate라는 용어를 매우 짧게 풀어서 말해줘"
+  },
+  {
+    "id": "R1-QA-030",
+    "expected_route": "quick_answer",
+    "message": "QA gate라는 용어를 발표용 톤으로 풀어서 말해줘"
+  },
+  {
+    "id": "R1-QA-031",
+    "expected_route": "quick_answer",
+    "message": "이전 답변을 한 문장으로 다시 써줘"
+  },
+  {
+    "id": "R1-QA-032",
+    "expected_route": "quick_answer",
+    "message": "이전 답변을 두 문장으로 다시 써줘"
+  },
+  {
+    "id": "R1-QA-033",
+    "expected_route": "quick_answer",
+    "message": "이전 답변을 초보자용으로 다시 써줘"
+  },
+  {
+    "id": "R1-QA-034",
+    "expected_route": "quick_answer",
+    "message": "이전 답변을 전문가용으로 다시 써줘"
+  },
+  {
+    "id": "R1-QA-035",
+    "expected_route": "quick_answer",
+    "message": "이전 답변을 한국어로 다시 써줘"
+  },
+  {
+    "id": "R1-QA-036",
+    "expected_route": "quick_answer",
+    "message": "이전 답변을 영어 한 줄로 다시 써줘"
+  },
+  {
+    "id": "R1-QA-037",
+    "expected_route": "quick_answer",
+    "message": "이전 답변을 bullet 3개로 다시 써줘"
+  },
+  {
+    "id": "R1-QA-038",
+    "expected_route": "quick_answer",
+    "message": "이전 답변을 친절하게 다시 써줘"
+  },
+  {
+    "id": "R1-QA-039",
+    "expected_route": "quick_answer",
+    "message": "이전 답변을 매우 짧게 다시 써줘"
+  },
+  {
+    "id": "R1-QA-040",
+    "expected_route": "quick_answer",
+    "message": "이전 답변을 발표용 톤으로 다시 써줘"
+  },
+  {
+    "id": "R1-QA-041",
+    "expected_route": "quick_answer",
+    "message": "오늘 회의에서 쓸 도입 문장을 한 문장으로 만들어줘"
+  },
+  {
+    "id": "R1-QA-042",
+    "expected_route": "quick_answer",
+    "message": "오늘 회의에서 쓸 도입 문장을 두 문장으로 만들어줘"
+  },
+  {
+    "id": "R1-QA-043",
+    "expected_route": "quick_answer",
+    "message": "오늘 회의에서 쓸 도입 문장을 초보자용으로 만들어줘"
+  },
+  {
+    "id": "R1-QA-044",
+    "expected_route": "quick_answer",
+    "message": "오늘 회의에서 쓸 도입 문장을 전문가용으로 만들어줘"
+  },
+  {
+    "id": "R1-QA-045",
+    "expected_route": "quick_answer",
+    "message": "오늘 회의에서 쓸 도입 문장을 한국어로 만들어줘"
+  },
+  {
+    "id": "R1-QA-046",
+    "expected_route": "quick_answer",
+    "message": "오늘 회의에서 쓸 도입 문장을 영어 한 줄로 만들어줘"
+  },
+  {
+    "id": "R1-QA-047",
+    "expected_route": "quick_answer",
+    "message": "오늘 회의에서 쓸 도입 문장을 bullet 3개로 만들어줘"
+  },
+  {
+    "id": "R1-QA-048",
+    "expected_route": "quick_answer",
+    "message": "오늘 회의에서 쓸 도입 문장을 친절하게 만들어줘"
+  },
+  {
+    "id": "R1-QA-049",
+    "expected_route": "quick_answer",
+    "message": "오늘 회의에서 쓸 도입 문장을 매우 짧게 만들어줘"
+  },
+  {
+    "id": "R1-QA-050",
+    "expected_route": "quick_answer",
+    "message": "오늘 회의에서 쓸 도입 문장을 발표용 톤으로 만들어줘"
+  },
+  {
+    "id": "R1-QA-051",
+    "expected_route": "quick_answer",
+    "message": "사용자가 처음 볼 안내 문구를 한 문장으로 정리해줘"
+  },
+  {
+    "id": "R1-QA-052",
+    "expected_route": "quick_answer",
+    "message": "사용자가 처음 볼 안내 문구를 두 문장으로 정리해줘"
+  },
+  {
+    "id": "R1-QA-053",
+    "expected_route": "quick_answer",
+    "message": "사용자가 처음 볼 안내 문구를 초보자용으로 정리해줘"
+  },
+  {
+    "id": "R1-QA-054",
+    "expected_route": "quick_answer",
+    "message": "사용자가 처음 볼 안내 문구를 전문가용으로 정리해줘"
+  },
+  {
+    "id": "R1-QA-055",
+    "expected_route": "quick_answer",
+    "message": "사용자가 처음 볼 안내 문구를 한국어로 정리해줘"
+  },
+  {
+    "id": "R1-QA-056",
+    "expected_route": "quick_answer",
+    "message": "사용자가 처음 볼 안내 문구를 영어 한 줄로 정리해줘"
+  },
+  {
+    "id": "R1-QA-057",
+    "expected_route": "quick_answer",
+    "message": "사용자가 처음 볼 안내 문구를 bullet 3개로 정리해줘"
+  },
+  {
+    "id": "R1-QA-058",
+    "expected_route": "quick_answer",
+    "message": "사용자가 처음 볼 안내 문구를 친절하게 정리해줘"
+  },
+  {
+    "id": "R1-QA-059",
+    "expected_route": "quick_answer",
+    "message": "사용자가 처음 볼 안내 문구를 매우 짧게 정리해줘"
+  },
+  {
+    "id": "R1-QA-060",
+    "expected_route": "quick_answer",
+    "message": "사용자가 처음 볼 안내 문구를 발표용 톤으로 정리해줘"
+  },
+  {
+    "id": "R1-QA-061",
+    "expected_route": "quick_answer",
+    "message": "파이프라인이라는 단어를 한 문장으로 비유로 설명해줘"
+  },
+  {
+    "id": "R1-QA-062",
+    "expected_route": "quick_answer",
+    "message": "파이프라인이라는 단어를 두 문장으로 비유로 설명해줘"
+  },
+  {
+    "id": "R1-QA-063",
+    "expected_route": "quick_answer",
+    "message": "파이프라인이라는 단어를 초보자용으로 비유로 설명해줘"
+  },
+  {
+    "id": "R1-QA-064",
+    "expected_route": "quick_answer",
+    "message": "파이프라인이라는 단어를 전문가용으로 비유로 설명해줘"
+  },
+  {
+    "id": "R1-QA-065",
+    "expected_route": "quick_answer",
+    "message": "파이프라인이라는 단어를 한국어로 비유로 설명해줘"
+  },
+  {
+    "id": "R1-QA-066",
+    "expected_route": "quick_answer",
+    "message": "파이프라인이라는 단어를 영어 한 줄로 비유로 설명해줘"
+  },
+  {
+    "id": "R1-QA-067",
+    "expected_route": "quick_answer",
+    "message": "파이프라인이라는 단어를 bullet 3개로 비유로 설명해줘"
+  },
+  {
+    "id": "R1-QA-068",
+    "expected_route": "quick_answer",
+    "message": "파이프라인이라는 단어를 친절하게 비유로 설명해줘"
+  },
+  {
+    "id": "R1-QA-069",
+    "expected_route": "quick_answer",
+    "message": "파이프라인이라는 단어를 매우 짧게 비유로 설명해줘"
+  },
+  {
+    "id": "R1-QA-070",
+    "expected_route": "quick_answer",
+    "message": "파이프라인이라는 단어를 발표용 톤으로 비유로 설명해줘"
+  },
+  {
+    "id": "R1-QA-071",
+    "expected_route": "quick_answer",
+    "message": "결과표를 읽는 순서를 한 문장으로 알려줘"
+  },
+  {
+    "id": "R1-QA-072",
+    "expected_route": "quick_answer",
+    "message": "결과표를 읽는 순서를 두 문장으로 알려줘"
+  },
+  {
+    "id": "R1-QA-073",
+    "expected_route": "quick_answer",
+    "message": "결과표를 읽는 순서를 초보자용으로 알려줘"
+  },
+  {
+    "id": "R1-QA-074",
+    "expected_route": "quick_answer",
+    "message": "결과표를 읽는 순서를 전문가용으로 알려줘"
+  },
+  {
+    "id": "R1-QA-075",
+    "expected_route": "quick_answer",
+    "message": "결과표를 읽는 순서를 한국어로 알려줘"
+  },
+  {
+    "id": "R1-QA-076",
+    "expected_route": "quick_answer",
+    "message": "결과표를 읽는 순서를 영어 한 줄로 알려줘"
+  },
+  {
+    "id": "R1-QA-077",
+    "expected_route": "quick_answer",
+    "message": "결과표를 읽는 순서를 bullet 3개로 알려줘"
+  },
+  {
+    "id": "R1-QA-078",
+    "expected_route": "quick_answer",
+    "message": "결과표를 읽는 순서를 친절하게 알려줘"
+  },
+  {
+    "id": "R1-QA-079",
+    "expected_route": "quick_answer",
+    "message": "결과표를 읽는 순서를 매우 짧게 알려줘"
+  },
+  {
+    "id": "R1-QA-080",
+    "expected_route": "quick_answer",
+    "message": "결과표를 읽는 순서를 발표용 톤으로 알려줘"
+  },
+  {
+    "id": "R1-QA-081",
+    "expected_route": "quick_answer",
+    "message": "모델 baseline의 의미를 한 문장으로 정의해줘"
+  },
+  {
+    "id": "R1-QA-082",
+    "expected_route": "quick_answer",
+    "message": "모델 baseline의 의미를 두 문장으로 정의해줘"
+  },
+  {
+    "id": "R1-QA-083",
+    "expected_route": "quick_answer",
+    "message": "모델 baseline의 의미를 초보자용으로 정의해줘"
+  },
+  {
+    "id": "R1-QA-084",
+    "expected_route": "quick_answer",
+    "message": "모델 baseline의 의미를 전문가용으로 정의해줘"
+  },
+  {
+    "id": "R1-QA-085",
+    "expected_route": "quick_answer",
+    "message": "모델 baseline의 의미를 한국어로 정의해줘"
+  },
+  {
+    "id": "R1-QA-086",
+    "expected_route": "quick_answer",
+    "message": "모델 baseline의 의미를 영어 한 줄로 정의해줘"
+  },
+  {
+    "id": "R1-QA-087",
+    "expected_route": "quick_answer",
+    "message": "모델 baseline의 의미를 bullet 3개로 정의해줘"
+  },
+  {
+    "id": "R1-QA-088",
+    "expected_route": "quick_answer",
+    "message": "모델 baseline의 의미를 친절하게 정의해줘"
+  },
+  {
+    "id": "R1-QA-089",
+    "expected_route": "quick_answer",
+    "message": "모델 baseline의 의미를 매우 짧게 정의해줘"
+  },
+  {
+    "id": "R1-QA-090",
+    "expected_route": "quick_answer",
+    "message": "모델 baseline의 의미를 발표용 톤으로 정의해줘"
+  },
+  {
+    "id": "R1-QA-091",
+    "expected_route": "quick_answer",
+    "message": "짧은 체크리스트 형식으로 한 문장으로 정리해줘"
+  },
+  {
+    "id": "R1-QA-092",
+    "expected_route": "quick_answer",
+    "message": "짧은 체크리스트 형식으로 두 문장으로 정리해줘"
+  },
+  {
+    "id": "R1-QA-093",
+    "expected_route": "quick_answer",
+    "message": "짧은 체크리스트 형식으로 초보자용으로 정리해줘"
+  },
+  {
+    "id": "R1-QA-094",
+    "expected_route": "quick_answer",
+    "message": "짧은 체크리스트 형식으로 전문가용으로 정리해줘"
+  },
+  {
+    "id": "R1-QA-095",
+    "expected_route": "quick_answer",
+    "message": "짧은 체크리스트 형식으로 한국어로 정리해줘"
+  },
+  {
+    "id": "R1-QA-096",
+    "expected_route": "quick_answer",
+    "message": "짧은 체크리스트 형식으로 영어 한 줄로 정리해줘"
+  },
+  {
+    "id": "R1-QA-097",
+    "expected_route": "quick_answer",
+    "message": "짧은 체크리스트 형식으로 bullet 3개로 정리해줘"
+  },
+  {
+    "id": "R1-QA-098",
+    "expected_route": "quick_answer",
+    "message": "짧은 체크리스트 형식으로 친절하게 정리해줘"
+  },
+  {
+    "id": "R1-QA-099",
+    "expected_route": "quick_answer",
+    "message": "짧은 체크리스트 형식으로 매우 짧게 정리해줘"
+  },
+  {
+    "id": "R1-QA-100",
+    "expected_route": "quick_answer",
+    "message": "짧은 체크리스트 형식으로 발표용 톤으로 정리해줘"
+  },
+  {
+    "id": "R2-EV-001",
+    "expected_route": "evidence_answer",
+    "message": "2025년 3월 냉동기 온도 이상 탐지 결과는 무엇인가요?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-01",
+        "anomaly_type": "온도_이상",
+        "total_count": 8,
+        "severity_counts": {
+          "Info": 3,
+          "Warning": 0,
+          "Critical": 5
+        },
+        "first_time": "2025-01-01T08:24:00Z",
+        "last_time": "2025-01-28T16:57:00Z",
+        "max_abs_residual": 2.7
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "anomaly_type": "온도_이상",
+      "total_count": 8,
+      "severity_counts": {
+        "Info": 3,
+        "Warning": 0,
+        "Critical": 5
+      },
+      "first_time": "2025-01-01T08:24:00Z",
+      "last_time": "2025-01-28T16:57:00Z",
+      "max_abs_residual": 2.7
+    },
+    "reference_answer": "2025-01 기간 온도_이상 유형 이상이 총 8건 탐지되었으며, Info 3건, Warning 0건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 2.7입니다."
+  },
+  {
+    "id": "R2-EV-002",
+    "expected_route": "evidence_answer",
+    "message": "지난달 압력 변동 이상 건수는 몇 건인가요?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-02",
+        "anomaly_type": "압력_변동",
+        "total_count": 18,
+        "severity_counts": {
+          "Info": 3,
+          "Warning": 10,
+          "Critical": 5
+        },
+        "first_time": "2025-02-01T08:15:00Z",
+        "last_time": "2025-02-28T20:12:00Z",
+        "max_abs_residual": 7.64
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "anomaly_type": "압력_변동",
+      "total_count": 18,
+      "severity_counts": {
+        "Info": 3,
+        "Warning": 10,
+        "Critical": 5
+      },
+      "first_time": "2025-02-01T08:15:00Z",
+      "last_time": "2025-02-28T20:12:00Z",
+      "max_abs_residual": 7.64
+    },
+    "reference_answer": "2025-02 기간 압력_변동 유형 이상이 총 18건 탐지되었으며, Info 3건, Warning 10건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 7.64입니다."
+  },
+  {
+    "id": "R2-EV-003",
+    "expected_route": "evidence_answer",
+    "message": "2025년 1월 유량 감소 이상은 몇 건 발견되었나요?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-03",
+        "anomaly_type": "유량_감소",
+        "total_count": 2,
+        "severity_counts": {
+          "Info": 0,
+          "Warning": 1,
+          "Critical": 1
+        },
+        "first_time": "2025-03-01T08:48:00Z",
+        "last_time": "2025-03-28T14:45:00Z",
+        "max_abs_residual": 2.36
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "anomaly_type": "유량_감소",
+      "total_count": 2,
+      "severity_counts": {
+        "Info": 0,
+        "Warning": 1,
+        "Critical": 1
+      },
+      "first_time": "2025-03-01T08:48:00Z",
+      "last_time": "2025-03-28T14:45:00Z",
+      "max_abs_residual": 2.36
+    },
+    "reference_answer": "2025-03 기간 유량_감소 유형 이상이 총 2건 탐지되었으며, Info 0건, Warning 1건, Critical 1건으로 분류되었습니다. 최대 절대 잔차값은 2.36입니다."
+  },
+  {
+    "id": "R2-EV-004",
+    "expected_route": "evidence_answer",
+    "message": "2025년 5월 진동 과다 이상 탐지 결과를 알려주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-04",
+        "anomaly_type": "진동_과다",
+        "total_count": 21,
+        "severity_counts": {
+          "Info": 6,
+          "Warning": 10,
+          "Critical": 5
+        },
+        "first_time": "2025-04-01T08:24:00Z",
+        "last_time": "2025-04-28T21:47:00Z",
+        "max_abs_residual": 4.86
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "anomaly_type": "진동_과다",
+      "total_count": 21,
+      "severity_counts": {
+        "Info": 6,
+        "Warning": 10,
+        "Critical": 5
+      },
+      "first_time": "2025-04-01T08:24:00Z",
+      "last_time": "2025-04-28T21:47:00Z",
+      "max_abs_residual": 4.86
+    },
+    "reference_answer": "2025-04 기간 진동_과다 유형 이상이 총 21건 탐지되었으며, Info 6건, Warning 10건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 4.86입니다."
+  },
+  {
+    "id": "R2-EV-005",
+    "expected_route": "evidence_answer",
+    "message": "2025년 2월 COP 저하 이상은 몇 건이었나요?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-05",
+        "anomaly_type": "전력_급증",
+        "total_count": 9,
+        "severity_counts": {
+          "Info": 8,
+          "Warning": 0,
+          "Critical": 1
+        },
+        "first_time": "2025-05-01T08:31:00Z",
+        "last_time": "2025-05-28T18:19:00Z",
+        "max_abs_residual": 6.09
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "anomaly_type": "전력_급증",
+      "total_count": 9,
+      "severity_counts": {
+        "Info": 8,
+        "Warning": 0,
+        "Critical": 1
+      },
+      "first_time": "2025-05-01T08:31:00Z",
+      "last_time": "2025-05-28T18:19:00Z",
+      "max_abs_residual": 6.09
+    },
+    "reference_answer": "2025-05 기간 전력_급증 유형 이상이 총 9건 탐지되었으며, Info 8건, Warning 0건, Critical 1건으로 분류되었습니다. 최대 절대 잔차값은 6.09입니다."
+  },
+  {
+    "id": "R2-EV-006",
+    "expected_route": "evidence_answer",
+    "message": "지난 분기 전력 급증 이상 탐지 결과 요약해주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-01",
+        "anomaly_type": "COP_저하",
+        "total_count": 11,
+        "severity_counts": {
+          "Info": 6,
+          "Warning": 5,
+          "Critical": 0
+        },
+        "first_time": "2025-01-01T08:16:00Z",
+        "last_time": "2025-01-28T19:32:00Z",
+        "max_abs_residual": 1.24
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "anomaly_type": "COP_저하",
+      "total_count": 11,
+      "severity_counts": {
+        "Info": 6,
+        "Warning": 5,
+        "Critical": 0
+      },
+      "first_time": "2025-01-01T08:16:00Z",
+      "last_time": "2025-01-28T19:32:00Z",
+      "max_abs_residual": 1.24
+    },
+    "reference_answer": "2025-01 기간 COP_저하 유형 이상이 총 11건 탐지되었으며, Info 6건, Warning 5건, Critical 0건으로 분류되었습니다. 최대 절대 잔차값은 1.24입니다."
+  },
+  {
+    "id": "R2-EV-007",
+    "expected_route": "evidence_answer",
+    "message": "2024년 12월부터 2025년 2월까지 냉매 누설 이상 탐지 추이를 분석해주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-02",
+        "anomaly_type": "냉매_누설",
+        "total_count": 13,
+        "severity_counts": {
+          "Info": 8,
+          "Warning": 0,
+          "Critical": 5
+        },
+        "first_time": "2025-02-01T08:17:00Z",
+        "last_time": "2025-02-28T20:15:00Z",
+        "max_abs_residual": 4.18
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "anomaly_type": "냉매_누설",
+      "total_count": 13,
+      "severity_counts": {
+        "Info": 8,
+        "Warning": 0,
+        "Critical": 5
+      },
+      "first_time": "2025-02-01T08:17:00Z",
+      "last_time": "2025-02-28T20:15:00Z",
+      "max_abs_residual": 4.18
+    },
+    "reference_answer": "2025-02 기간 냉매_누설 유형 이상이 총 13건 탐지되었으며, Info 8건, Warning 0건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 4.18입니다."
+  },
+  {
+    "id": "R2-EV-008",
+    "expected_route": "evidence_answer",
+    "message": "2025년 상반기 동안 발생한 모든 유형의 이상 탐지 결과를 종합해서 보여주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-03",
+        "anomaly_type": "소음_증가",
+        "total_count": 23,
+        "severity_counts": {
+          "Info": 9,
+          "Warning": 10,
+          "Critical": 4
+        },
+        "first_time": "2025-03-01T08:33:00Z",
+        "last_time": "2025-03-28T17:55:00Z",
+        "max_abs_residual": 7.58
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "anomaly_type": "소음_증가",
+      "total_count": 23,
+      "severity_counts": {
+        "Info": 9,
+        "Warning": 10,
+        "Critical": 4
+      },
+      "first_time": "2025-03-01T08:33:00Z",
+      "last_time": "2025-03-28T17:55:00Z",
+      "max_abs_residual": 7.58
+    },
+    "reference_answer": "2025-03 기간 소음_증가 유형 이상이 총 23건 탐지되었으며, Info 9건, Warning 10건, Critical 4건으로 분류되었습니다. 최대 절대 잔차값은 7.58입니다."
+  },
+  {
+    "id": "R2-EV-009",
+    "expected_route": "evidence_answer",
+    "message": "2025년 4월 COP 저하 이상과 냉매 누설 이상을 비교 분석한 결과는?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-04",
+        "anomaly_type": "전압_불균형",
+        "total_count": 7,
+        "severity_counts": {
+          "Info": 2,
+          "Warning": 0,
+          "Critical": 5
+        },
+        "first_time": "2025-04-01T08:28:00Z",
+        "last_time": "2025-04-28T15:24:00Z",
+        "max_abs_residual": 2.32
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "anomaly_type": "전압_불균형",
+      "total_count": 7,
+      "severity_counts": {
+        "Info": 2,
+        "Warning": 0,
+        "Critical": 5
+      },
+      "first_time": "2025-04-01T08:28:00Z",
+      "last_time": "2025-04-28T15:24:00Z",
+      "max_abs_residual": 2.32
+    },
+    "reference_answer": "2025-04 기간 전압_불균형 유형 이상이 총 7건 탐지되었으며, Info 2건, Warning 0건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 2.32입니다."
+  },
+  {
+    "id": "R2-EV-010",
+    "expected_route": "evidence_answer",
+    "message": "2025년 3월 진동 과다 이상의 심각도별 분포 현황을 알려주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-05",
+        "anomaly_type": "습도_이상",
+        "total_count": 11,
+        "severity_counts": {
+          "Info": 3,
+          "Warning": 6,
+          "Critical": 2
+        },
+        "first_time": "2025-05-01T08:33:00Z",
+        "last_time": "2025-05-28T16:33:00Z",
+        "max_abs_residual": 4.13
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "anomaly_type": "습도_이상",
+      "total_count": 11,
+      "severity_counts": {
+        "Info": 3,
+        "Warning": 6,
+        "Critical": 2
+      },
+      "first_time": "2025-05-01T08:33:00Z",
+      "last_time": "2025-05-28T16:33:00Z",
+      "max_abs_residual": 4.13
+    },
+    "reference_answer": "2025-05 기간 습도_이상 유형 이상이 총 11건 탐지되었으며, Info 3건, Warning 6건, Critical 2건으로 분류되었습니다. 최대 절대 잔차값은 4.13입니다."
+  },
+  {
+    "id": "R2-EV-011",
+    "expected_route": "evidence_answer",
+    "message": "최근 6개월간 온도 이상 발생 빈도와 최대 잔차값 추이를 분석해주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-01",
+        "anomaly_type": "온도_이상",
+        "total_count": 19,
+        "severity_counts": {
+          "Info": 11,
+          "Warning": 3,
+          "Critical": 5
+        },
+        "first_time": "2025-01-01T08:53:00Z",
+        "last_time": "2025-01-28T15:48:00Z",
+        "max_abs_residual": 2.64
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "anomaly_type": "온도_이상",
+      "total_count": 19,
+      "severity_counts": {
+        "Info": 11,
+        "Warning": 3,
+        "Critical": 5
+      },
+      "first_time": "2025-01-01T08:53:00Z",
+      "last_time": "2025-01-28T15:48:00Z",
+      "max_abs_residual": 2.64
+    },
+    "reference_answer": "2025-01 기간 온도_이상 유형 이상이 총 19건 탐지되었으며, Info 11건, Warning 3건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 2.64입니다."
+  },
+  {
+    "id": "R2-EV-012",
+    "expected_route": "evidence_answer",
+    "message": "2025년 5월 압력 변동 이상 중 Critical 등급 건수와 상세 내역은?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-02",
+        "anomaly_type": "압력_변동",
+        "total_count": 18,
+        "severity_counts": {
+          "Info": 5,
+          "Warning": 8,
+          "Critical": 5
+        },
+        "first_time": "2025-02-01T08:39:00Z",
+        "last_time": "2025-02-28T20:27:00Z",
+        "max_abs_residual": 2.46
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "anomaly_type": "압력_변동",
+      "total_count": 18,
+      "severity_counts": {
+        "Info": 5,
+        "Warning": 8,
+        "Critical": 5
+      },
+      "first_time": "2025-02-01T08:39:00Z",
+      "last_time": "2025-02-28T20:27:00Z",
+      "max_abs_residual": 2.46
+    },
+    "reference_answer": "2025-02 기간 압력_변동 유형 이상이 총 18건 탐지되었으며, Info 5건, Warning 8건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 2.46입니다."
+  },
+  {
+    "id": "R2-EV-013",
+    "expected_route": "evidence_answer",
+    "message": "2025년 1분기 전압 불균형 이상 탐지 결과의 월별 추세는 어떻게 되나요?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-03",
+        "anomaly_type": "유량_감소",
+        "total_count": 19,
+        "severity_counts": {
+          "Info": 7,
+          "Warning": 10,
+          "Critical": 2
+        },
+        "first_time": "2025-03-01T08:59:00Z",
+        "last_time": "2025-03-28T14:24:00Z",
+        "max_abs_residual": 7.24
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "anomaly_type": "유량_감소",
+      "total_count": 19,
+      "severity_counts": {
+        "Info": 7,
+        "Warning": 10,
+        "Critical": 2
+      },
+      "first_time": "2025-03-01T08:59:00Z",
+      "last_time": "2025-03-28T14:24:00Z",
+      "max_abs_residual": 7.24
+    },
+    "reference_answer": "2025-03 기간 유량_감소 유형 이상이 총 19건 탐지되었으며, Info 7건, Warning 10건, Critical 2건으로 분류되었습니다. 최대 절대 잔차값은 7.24입니다."
+  },
+  {
+    "id": "R2-EV-014",
+    "expected_route": "evidence_answer",
+    "message": "2025년 4월 습도 이상 탐지 결과에서 Warning과 Critical의 비율은?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-04",
+        "anomaly_type": "진동_과다",
+        "total_count": 9,
+        "severity_counts": {
+          "Info": 1,
+          "Warning": 5,
+          "Critical": 3
+        },
+        "first_time": "2025-04-01T08:23:00Z",
+        "last_time": "2025-04-28T19:23:00Z",
+        "max_abs_residual": 2.64
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "anomaly_type": "진동_과다",
+      "total_count": 9,
+      "severity_counts": {
+        "Info": 1,
+        "Warning": 5,
+        "Critical": 3
+      },
+      "first_time": "2025-04-01T08:23:00Z",
+      "last_time": "2025-04-28T19:23:00Z",
+      "max_abs_residual": 2.64
+    },
+    "reference_answer": "2025-04 기간 진동_과다 유형 이상이 총 9건 탐지되었으며, Info 1건, Warning 5건, Critical 3건으로 분류되었습니다. 최대 절대 잔차값은 2.64입니다."
+  },
+  {
+    "id": "R2-EV-015",
+    "expected_route": "evidence_answer",
+    "message": "냉동기 이상 탐지 결과 중 지난달 가장 많이 발생한 유형은 무엇인가요?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-05",
+        "anomaly_type": "전력_급증",
+        "total_count": 26,
+        "severity_counts": {
+          "Info": 15,
+          "Warning": 6,
+          "Critical": 5
+        },
+        "first_time": "2025-05-01T08:26:00Z",
+        "last_time": "2025-05-28T16:25:00Z",
+        "max_abs_residual": 4.17
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "anomaly_type": "전력_급증",
+      "total_count": 26,
+      "severity_counts": {
+        "Info": 15,
+        "Warning": 6,
+        "Critical": 5
+      },
+      "first_time": "2025-05-01T08:26:00Z",
+      "last_time": "2025-05-28T16:25:00Z",
+      "max_abs_residual": 4.17
+    },
+    "reference_answer": "2025-05 기간 전력_급증 유형 이상이 총 26건 탐지되었으며, Info 15건, Warning 6건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 4.17입니다."
+  },
+  {
+    "id": "R2-EV-016",
+    "expected_route": "evidence_answer",
+    "message": "2025년 3월 전력 급증 이상의 발생 시간대별 분포를 분석해주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-01",
+        "anomaly_type": "COP_저하",
+        "total_count": 20,
+        "severity_counts": {
+          "Info": 8,
+          "Warning": 9,
+          "Critical": 3
+        },
+        "first_time": "2025-01-01T08:35:00Z",
+        "last_time": "2025-01-28T19:24:00Z",
+        "max_abs_residual": 7.68
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "anomaly_type": "COP_저하",
+      "total_count": 20,
+      "severity_counts": {
+        "Info": 8,
+        "Warning": 9,
+        "Critical": 3
+      },
+      "first_time": "2025-01-01T08:35:00Z",
+      "last_time": "2025-01-28T19:24:00Z",
+      "max_abs_residual": 7.68
+    },
+    "reference_answer": "2025-01 기간 COP_저하 유형 이상이 총 20건 탐지되었으며, Info 8건, Warning 9건, Critical 3건으로 분류되었습니다. 최대 절대 잔차값은 7.68입니다."
+  },
+  {
+    "id": "R2-EV-017",
+    "expected_route": "evidence_answer",
+    "message": "2025년 5월 유량 감소 이상의 평균 최대 잔차값은 얼마인가요?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-02",
+        "anomaly_type": "냉매_누설",
+        "total_count": 15,
+        "severity_counts": {
+          "Info": 4,
+          "Warning": 8,
+          "Critical": 3
+        },
+        "first_time": "2025-02-01T08:13:00Z",
+        "last_time": "2025-02-28T15:19:00Z",
+        "max_abs_residual": 1.23
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "anomaly_type": "냉매_누설",
+      "total_count": 15,
+      "severity_counts": {
+        "Info": 4,
+        "Warning": 8,
+        "Critical": 3
+      },
+      "first_time": "2025-02-01T08:13:00Z",
+      "last_time": "2025-02-28T15:19:00Z",
+      "max_abs_residual": 1.23
+    },
+    "reference_answer": "2025-02 기간 냉매_누설 유형 이상이 총 15건 탐지되었으며, Info 4건, Warning 8건, Critical 3건으로 분류되었습니다. 최대 절대 잔차값은 1.23입니다."
+  },
+  {
+    "id": "R2-EV-018",
+    "expected_route": "evidence_answer",
+    "message": "최근 3개월간 소음 증가 이상 탐지 건수의 증감 추세 분석 결과는?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-03",
+        "anomaly_type": "소음_증가",
+        "total_count": 18,
+        "severity_counts": {
+          "Info": 5,
+          "Warning": 10,
+          "Critical": 3
+        },
+        "first_time": "2025-03-01T08:34:00Z",
+        "last_time": "2025-03-28T20:48:00Z",
+        "max_abs_residual": 5.27
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "anomaly_type": "소음_증가",
+      "total_count": 18,
+      "severity_counts": {
+        "Info": 5,
+        "Warning": 10,
+        "Critical": 3
+      },
+      "first_time": "2025-03-01T08:34:00Z",
+      "last_time": "2025-03-28T20:48:00Z",
+      "max_abs_residual": 5.27
+    },
+    "reference_answer": "2025-03 기간 소음_증가 유형 이상이 총 18건 탐지되었으며, Info 5건, Warning 10건, Critical 3건으로 분류되었습니다. 최대 절대 잔차값은 5.27입니다."
+  },
+  {
+    "id": "R2-EV-019",
+    "expected_route": "evidence_answer",
+    "message": "2025년 2월 냉매 누설 이상의 심각도별(Info/Warning/Critical) 분포를 알려주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-04",
+        "anomaly_type": "전압_불균형",
+        "total_count": 24,
+        "severity_counts": {
+          "Info": 14,
+          "Warning": 8,
+          "Critical": 2
+        },
+        "first_time": "2025-04-01T08:10:00Z",
+        "last_time": "2025-04-28T15:53:00Z",
+        "max_abs_residual": 8.27
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "anomaly_type": "전압_불균형",
+      "total_count": 24,
+      "severity_counts": {
+        "Info": 14,
+        "Warning": 8,
+        "Critical": 2
+      },
+      "first_time": "2025-04-01T08:10:00Z",
+      "last_time": "2025-04-28T15:53:00Z",
+      "max_abs_residual": 8.27
+    },
+    "reference_answer": "2025-04 기간 전압_불균형 유형 이상이 총 24건 탐지되었으며, Info 14건, Warning 8건, Critical 2건으로 분류되었습니다. 최대 절대 잔차값은 8.27입니다."
+  },
+  {
+    "id": "R2-EV-020",
+    "expected_route": "evidence_answer",
+    "message": "2025년 4월 온도 이상 탐지 결과 중 실제 설비 고장으로 이어진 사례는?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-05",
+        "anomaly_type": "습도_이상",
+        "total_count": 20,
+        "severity_counts": {
+          "Info": 8,
+          "Warning": 10,
+          "Critical": 2
+        },
+        "first_time": "2025-05-01T08:37:00Z",
+        "last_time": "2025-05-28T16:39:00Z",
+        "max_abs_residual": 1.39
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "anomaly_type": "습도_이상",
+      "total_count": 20,
+      "severity_counts": {
+        "Info": 8,
+        "Warning": 10,
+        "Critical": 2
+      },
+      "first_time": "2025-05-01T08:37:00Z",
+      "last_time": "2025-05-28T16:39:00Z",
+      "max_abs_residual": 1.39
+    },
+    "reference_answer": "2025-05 기간 습도_이상 유형 이상이 총 20건 탐지되었으며, Info 8건, Warning 10건, Critical 2건으로 분류되었습니다. 최대 절대 잔차값은 1.39입니다."
+  },
+  {
+    "id": "R2-EV-021",
+    "expected_route": "evidence_answer",
+    "message": "2025년 1월부터 5월까지 진동 과다 이상의 월별 발생 패턴을 분석해주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-01",
+        "anomaly_type": "온도_이상",
+        "total_count": 8,
+        "severity_counts": {
+          "Info": 0,
+          "Warning": 4,
+          "Critical": 4
+        },
+        "first_time": "2025-01-01T08:42:00Z",
+        "last_time": "2025-01-28T15:50:00Z",
+        "max_abs_residual": 6.6
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "anomaly_type": "온도_이상",
+      "total_count": 8,
+      "severity_counts": {
+        "Info": 0,
+        "Warning": 4,
+        "Critical": 4
+      },
+      "first_time": "2025-01-01T08:42:00Z",
+      "last_time": "2025-01-28T15:50:00Z",
+      "max_abs_residual": 6.6
+    },
+    "reference_answer": "2025-01 기간 온도_이상 유형 이상이 총 8건 탐지되었으며, Info 0건, Warning 4건, Critical 4건으로 분류되었습니다. 최대 절대 잔차값은 6.6입니다."
+  },
+  {
+    "id": "R2-EV-022",
+    "expected_route": "evidence_answer",
+    "message": "2025년 3월 COP 저하 이상 탐지에서 최대 절대 잔차값 상위 3건은?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-02",
+        "anomaly_type": "압력_변동",
+        "total_count": 23,
+        "severity_counts": {
+          "Info": 9,
+          "Warning": 10,
+          "Critical": 4
+        },
+        "first_time": "2025-02-01T08:19:00Z",
+        "last_time": "2025-02-28T19:58:00Z",
+        "max_abs_residual": 5.37
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "anomaly_type": "압력_변동",
+      "total_count": 23,
+      "severity_counts": {
+        "Info": 9,
+        "Warning": 10,
+        "Critical": 4
+      },
+      "first_time": "2025-02-01T08:19:00Z",
+      "last_time": "2025-02-28T19:58:00Z",
+      "max_abs_residual": 5.37
+    },
+    "reference_answer": "2025-02 기간 압력_변동 유형 이상이 총 23건 탐지되었으며, Info 9건, Warning 10건, Critical 4건으로 분류되었습니다. 최대 절대 잔차값은 5.37입니다."
+  },
+  {
+    "id": "R2-EV-023",
+    "expected_route": "evidence_answer",
+    "message": "최근 분기 압력 변동 이상과 전압 불균형 이상의 상관관계 분석 결과는?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-03",
+        "anomaly_type": "유량_감소",
+        "total_count": 17,
+        "severity_counts": {
+          "Info": 5,
+          "Warning": 8,
+          "Critical": 4
+        },
+        "first_time": "2025-03-01T08:48:00Z",
+        "last_time": "2025-03-28T19:41:00Z",
+        "max_abs_residual": 7.85
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "anomaly_type": "유량_감소",
+      "total_count": 17,
+      "severity_counts": {
+        "Info": 5,
+        "Warning": 8,
+        "Critical": 4
+      },
+      "first_time": "2025-03-01T08:48:00Z",
+      "last_time": "2025-03-28T19:41:00Z",
+      "max_abs_residual": 7.85
+    },
+    "reference_answer": "2025-03 기간 유량_감소 유형 이상이 총 17건 탐지되었으며, Info 5건, Warning 8건, Critical 4건으로 분류되었습니다. 최대 절대 잔차값은 7.85입니다."
+  },
+  {
+    "id": "R2-EV-024",
+    "expected_route": "evidence_answer",
+    "message": "2025년 5월 전력 급증 이상 탐지 결과에서 Peak 시간대 분석을 해주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-04",
+        "anomaly_type": "진동_과다",
+        "total_count": 3,
+        "severity_counts": {
+          "Info": 0,
+          "Warning": 1,
+          "Critical": 2
+        },
+        "first_time": "2025-04-01T08:29:00Z",
+        "last_time": "2025-04-28T17:13:00Z",
+        "max_abs_residual": 7.53
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "anomaly_type": "진동_과다",
+      "total_count": 3,
+      "severity_counts": {
+        "Info": 0,
+        "Warning": 1,
+        "Critical": 2
+      },
+      "first_time": "2025-04-01T08:29:00Z",
+      "last_time": "2025-04-28T17:13:00Z",
+      "max_abs_residual": 7.53
+    },
+    "reference_answer": "2025-04 기간 진동_과다 유형 이상이 총 3건 탐지되었으며, Info 0건, Warning 1건, Critical 2건으로 분류되었습니다. 최대 절대 잔차값은 7.53입니다."
+  },
+  {
+    "id": "R2-EV-025",
+    "expected_route": "evidence_answer",
+    "message": "2025년 2분기 동안 탐지된 모든 이상 유형의 총 건수와 유형별 비율은?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-05",
+        "anomaly_type": "전력_급증",
+        "total_count": 16,
+        "severity_counts": {
+          "Info": 7,
+          "Warning": 9,
+          "Critical": 0
+        },
+        "first_time": "2025-05-01T08:41:00Z",
+        "last_time": "2025-05-28T15:58:00Z",
+        "max_abs_residual": 1.19
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "anomaly_type": "전력_급증",
+      "total_count": 16,
+      "severity_counts": {
+        "Info": 7,
+        "Warning": 9,
+        "Critical": 0
+      },
+      "first_time": "2025-05-01T08:41:00Z",
+      "last_time": "2025-05-28T15:58:00Z",
+      "max_abs_residual": 1.19
+    },
+    "reference_answer": "2025-05 기간 전력_급증 유형 이상이 총 16건 탐지되었으며, Info 7건, Warning 9건, Critical 0건으로 분류되었습니다. 최대 절대 잔차값은 1.19입니다."
+  },
+  {
+    "id": "R2-EV-026",
+    "expected_route": "evidence_answer",
+    "message": "2025년 4월 냉매 누설 이상의 첫 탐지 시점과 마지막 탐지 시점은?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-01",
+        "anomaly_type": "COP_저하",
+        "total_count": 11,
+        "severity_counts": {
+          "Info": 4,
+          "Warning": 2,
+          "Critical": 5
+        },
+        "first_time": "2025-01-01T08:45:00Z",
+        "last_time": "2025-01-28T16:26:00Z",
+        "max_abs_residual": 4.3
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "anomaly_type": "COP_저하",
+      "total_count": 11,
+      "severity_counts": {
+        "Info": 4,
+        "Warning": 2,
+        "Critical": 5
+      },
+      "first_time": "2025-01-01T08:45:00Z",
+      "last_time": "2025-01-28T16:26:00Z",
+      "max_abs_residual": 4.3
+    },
+    "reference_answer": "2025-01 기간 COP_저하 유형 이상이 총 11건 탐지되었으며, Info 4건, Warning 2건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 4.3입니다."
+  },
+  {
+    "id": "R2-EV-027",
+    "expected_route": "evidence_answer",
+    "message": "냉동기 이상 탐지 결과에서 Critical 등급 이상의 월별 발생 추이를 보여주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-02",
+        "anomaly_type": "냉매_누설",
+        "total_count": 20,
+        "severity_counts": {
+          "Info": 13,
+          "Warning": 3,
+          "Critical": 4
+        },
+        "first_time": "2025-02-01T08:54:00Z",
+        "last_time": "2025-02-28T17:55:00Z",
+        "max_abs_residual": 6.54
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "anomaly_type": "냉매_누설",
+      "total_count": 20,
+      "severity_counts": {
+        "Info": 13,
+        "Warning": 3,
+        "Critical": 4
+      },
+      "first_time": "2025-02-01T08:54:00Z",
+      "last_time": "2025-02-28T17:55:00Z",
+      "max_abs_residual": 6.54
+    },
+    "reference_answer": "2025-02 기간 냉매_누설 유형 이상이 총 20건 탐지되었으며, Info 13건, Warning 3건, Critical 4건으로 분류되었습니다. 최대 절대 잔차값은 6.54입니다."
+  },
+  {
+    "id": "R2-EV-028",
+    "expected_route": "evidence_answer",
+    "message": "2025년 3월 유량 감소 이상과 진동 과다 이상의 동시 발생 사례 분석 결과는?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-03",
+        "anomaly_type": "소음_증가",
+        "total_count": 20,
+        "severity_counts": {
+          "Info": 9,
+          "Warning": 6,
+          "Critical": 5
+        },
+        "first_time": "2025-03-01T08:38:00Z",
+        "last_time": "2025-03-28T22:38:00Z",
+        "max_abs_residual": 5.7
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "anomaly_type": "소음_증가",
+      "total_count": 20,
+      "severity_counts": {
+        "Info": 9,
+        "Warning": 6,
+        "Critical": 5
+      },
+      "first_time": "2025-03-01T08:38:00Z",
+      "last_time": "2025-03-28T22:38:00Z",
+      "max_abs_residual": 5.7
+    },
+    "reference_answer": "2025-03 기간 소음_증가 유형 이상이 총 20건 탐지되었으며, Info 9건, Warning 6건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 5.7입니다."
+  },
+  {
+    "id": "R2-EV-029",
+    "expected_route": "evidence_answer",
+    "message": "최근 6개월간 탐지된 전체 이상 유형 중 가장 높은 최대 잔차값을 기록한 건은?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-04",
+        "anomaly_type": "전압_불균형",
+        "total_count": 7,
+        "severity_counts": {
+          "Info": 3,
+          "Warning": 3,
+          "Critical": 1
+        },
+        "first_time": "2025-04-01T08:11:00Z",
+        "last_time": "2025-04-28T22:24:00Z",
+        "max_abs_residual": 1.01
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "anomaly_type": "전압_불균형",
+      "total_count": 7,
+      "severity_counts": {
+        "Info": 3,
+        "Warning": 3,
+        "Critical": 1
+      },
+      "first_time": "2025-04-01T08:11:00Z",
+      "last_time": "2025-04-28T22:24:00Z",
+      "max_abs_residual": 1.01
+    },
+    "reference_answer": "2025-04 기간 전압_불균형 유형 이상이 총 7건 탐지되었으며, Info 3건, Warning 3건, Critical 1건으로 분류되었습니다. 최대 절대 잔차값은 1.01입니다."
+  },
+  {
+    "id": "R2-EV-030",
+    "expected_route": "evidence_answer",
+    "message": "2025년 1분기 대비 2분기 습도 이상 탐지 건수 증감률을 분석해주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-05",
+        "anomaly_type": "습도_이상",
+        "total_count": 7,
+        "severity_counts": {
+          "Info": 7,
+          "Warning": 0,
+          "Critical": 0
+        },
+        "first_time": "2025-05-01T08:13:00Z",
+        "last_time": "2025-05-28T17:14:00Z",
+        "max_abs_residual": 6.16
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "anomaly_type": "습도_이상",
+      "total_count": 7,
+      "severity_counts": {
+        "Info": 7,
+        "Warning": 0,
+        "Critical": 0
+      },
+      "first_time": "2025-05-01T08:13:00Z",
+      "last_time": "2025-05-28T17:14:00Z",
+      "max_abs_residual": 6.16
+    },
+    "reference_answer": "2025-05 기간 습도_이상 유형 이상이 총 7건 탐지되었으며, Info 7건, Warning 0건, Critical 0건으로 분류되었습니다. 최대 절대 잔차값은 6.16입니다."
+  },
+  {
+    "id": "R2-EV-031",
+    "expected_route": "evidence_answer",
+    "message": "2025년 5월 소음 증가 이상 탐지 결과의 설비별 분포 현황은 어떻게 되나요?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-01",
+        "anomaly_type": "온도_이상",
+        "total_count": 6,
+        "severity_counts": {
+          "Info": 1,
+          "Warning": 5,
+          "Critical": 0
+        },
+        "first_time": "2025-01-01T08:27:00Z",
+        "last_time": "2025-01-28T21:23:00Z",
+        "max_abs_residual": 4.61
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "anomaly_type": "온도_이상",
+      "total_count": 6,
+      "severity_counts": {
+        "Info": 1,
+        "Warning": 5,
+        "Critical": 0
+      },
+      "first_time": "2025-01-01T08:27:00Z",
+      "last_time": "2025-01-28T21:23:00Z",
+      "max_abs_residual": 4.61
+    },
+    "reference_answer": "2025-01 기간 온도_이상 유형 이상이 총 6건 탐지되었으며, Info 1건, Warning 5건, Critical 0건으로 분류되었습니다. 최대 절대 잔차값은 4.61입니다."
+  },
+  {
+    "id": "R2-EV-032",
+    "expected_route": "evidence_answer",
+    "message": "COP 저하 이상이 가장 빈번하게 발생한 월과 해당 월의 이상 건수는?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-02",
+        "anomaly_type": "압력_변동",
+        "total_count": 17,
+        "severity_counts": {
+          "Info": 4,
+          "Warning": 9,
+          "Critical": 4
+        },
+        "first_time": "2025-02-01T08:40:00Z",
+        "last_time": "2025-02-28T20:22:00Z",
+        "max_abs_residual": 4.28
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "anomaly_type": "압력_변동",
+      "total_count": 17,
+      "severity_counts": {
+        "Info": 4,
+        "Warning": 9,
+        "Critical": 4
+      },
+      "first_time": "2025-02-01T08:40:00Z",
+      "last_time": "2025-02-28T20:22:00Z",
+      "max_abs_residual": 4.28
+    },
+    "reference_answer": "2025-02 기간 압력_변동 유형 이상이 총 17건 탐지되었으며, Info 4건, Warning 9건, Critical 4건으로 분류되었습니다. 최대 절대 잔차값은 4.28입니다."
+  },
+  {
+    "id": "R2-EV-033",
+    "expected_route": "evidence_answer",
+    "message": "2025년 4월 전압 불균형 이상의 심각도별 건수와 전체 대비 비율은?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-03",
+        "anomaly_type": "유량_감소",
+        "total_count": 9,
+        "severity_counts": {
+          "Info": 3,
+          "Warning": 1,
+          "Critical": 5
+        },
+        "first_time": "2025-03-01T08:37:00Z",
+        "last_time": "2025-03-28T20:39:00Z",
+        "max_abs_residual": 3.95
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "anomaly_type": "유량_감소",
+      "total_count": 9,
+      "severity_counts": {
+        "Info": 3,
+        "Warning": 1,
+        "Critical": 5
+      },
+      "first_time": "2025-03-01T08:37:00Z",
+      "last_time": "2025-03-28T20:39:00Z",
+      "max_abs_residual": 3.95
+    },
+    "reference_answer": "2025-03 기간 유량_감소 유형 이상이 총 9건 탐지되었으며, Info 3건, Warning 1건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 3.95입니다."
+  },
+  {
+    "id": "R2-EV-034",
+    "expected_route": "evidence_answer",
+    "message": "2025년 3월 온도 이상과 압력 변동 이상 간의 교차 분석 결과를 보여주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-04",
+        "anomaly_type": "진동_과다",
+        "total_count": 16,
+        "severity_counts": {
+          "Info": 1,
+          "Warning": 10,
+          "Critical": 5
+        },
+        "first_time": "2025-04-01T08:16:00Z",
+        "last_time": "2025-04-28T14:35:00Z",
+        "max_abs_residual": 8.37
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "anomaly_type": "진동_과다",
+      "total_count": 16,
+      "severity_counts": {
+        "Info": 1,
+        "Warning": 10,
+        "Critical": 5
+      },
+      "first_time": "2025-04-01T08:16:00Z",
+      "last_time": "2025-04-28T14:35:00Z",
+      "max_abs_residual": 8.37
+    },
+    "reference_answer": "2025-04 기간 진동_과다 유형 이상이 총 16건 탐지되었으며, Info 1건, Warning 10건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 8.37입니다."
+  },
+  {
+    "id": "R2-EV-035",
+    "expected_route": "evidence_answer",
+    "message": "최근 3개월간 냉매 누설 이상의 심각도가 Critical인 건의 발생 간격 분석은?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-05",
+        "anomaly_type": "전력_급증",
+        "total_count": 12,
+        "severity_counts": {
+          "Info": 10,
+          "Warning": 1,
+          "Critical": 1
+        },
+        "first_time": "2025-05-01T08:44:00Z",
+        "last_time": "2025-05-28T21:18:00Z",
+        "max_abs_residual": 2.03
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "anomaly_type": "전력_급증",
+      "total_count": 12,
+      "severity_counts": {
+        "Info": 10,
+        "Warning": 1,
+        "Critical": 1
+      },
+      "first_time": "2025-05-01T08:44:00Z",
+      "last_time": "2025-05-28T21:18:00Z",
+      "max_abs_residual": 2.03
+    },
+    "reference_answer": "2025-05 기간 전력_급증 유형 이상이 총 12건 탐지되었으며, Info 10건, Warning 1건, Critical 1건으로 분류되었습니다. 최대 절대 잔차값은 2.03입니다."
+  },
+  {
+    "id": "R2-EV-036",
+    "expected_route": "evidence_answer",
+    "message": "2025년 5월 진동 과다 이상 탐지에서 Warning과 Critical의 합계 건수는?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-01",
+        "anomaly_type": "COP_저하",
+        "total_count": 17,
+        "severity_counts": {
+          "Info": 13,
+          "Warning": 2,
+          "Critical": 2
+        },
+        "first_time": "2025-01-01T08:14:00Z",
+        "last_time": "2025-01-28T21:45:00Z",
+        "max_abs_residual": 4.2
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "anomaly_type": "COP_저하",
+      "total_count": 17,
+      "severity_counts": {
+        "Info": 13,
+        "Warning": 2,
+        "Critical": 2
+      },
+      "first_time": "2025-01-01T08:14:00Z",
+      "last_time": "2025-01-28T21:45:00Z",
+      "max_abs_residual": 4.2
+    },
+    "reference_answer": "2025-01 기간 COP_저하 유형 이상이 총 17건 탐지되었으며, Info 13건, Warning 2건, Critical 2건으로 분류되었습니다. 최대 절대 잔차값은 4.2입니다."
+  },
+  {
+    "id": "R2-EV-037",
+    "expected_route": "evidence_answer",
+    "message": "2025년 1월부터 현재까지 전력 급증 이상의 최대 절대 잔차값 변동 추이는?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-02",
+        "anomaly_type": "냉매_누설",
+        "total_count": 8,
+        "severity_counts": {
+          "Info": 3,
+          "Warning": 0,
+          "Critical": 5
+        },
+        "first_time": "2025-02-01T08:10:00Z",
+        "last_time": "2025-02-28T15:58:00Z",
+        "max_abs_residual": 8.49
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "anomaly_type": "냉매_누설",
+      "total_count": 8,
+      "severity_counts": {
+        "Info": 3,
+        "Warning": 0,
+        "Critical": 5
+      },
+      "first_time": "2025-02-01T08:10:00Z",
+      "last_time": "2025-02-28T15:58:00Z",
+      "max_abs_residual": 8.49
+    },
+    "reference_answer": "2025-02 기간 냉매_누설 유형 이상이 총 8건 탐지되었으며, Info 3건, Warning 0건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 8.49입니다."
+  },
+  {
+    "id": "R2-EV-038",
+    "expected_route": "evidence_answer",
+    "message": "2025년 봄철(3~5월) 유량 감소 이상 탐지 결과의 월별 비교 분석 결과는?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-03",
+        "anomaly_type": "소음_증가",
+        "total_count": 12,
+        "severity_counts": {
+          "Info": 7,
+          "Warning": 2,
+          "Critical": 3
+        },
+        "first_time": "2025-03-01T08:23:00Z",
+        "last_time": "2025-03-28T20:13:00Z",
+        "max_abs_residual": 4.39
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "anomaly_type": "소음_증가",
+      "total_count": 12,
+      "severity_counts": {
+        "Info": 7,
+        "Warning": 2,
+        "Critical": 3
+      },
+      "first_time": "2025-03-01T08:23:00Z",
+      "last_time": "2025-03-28T20:13:00Z",
+      "max_abs_residual": 4.39
+    },
+    "reference_answer": "2025-03 기간 소음_증가 유형 이상이 총 12건 탐지되었으며, Info 7건, Warning 2건, Critical 3건으로 분류되었습니다. 최대 절대 잔차값은 4.39입니다."
+  },
+  {
+    "id": "R2-EV-039",
+    "expected_route": "evidence_answer",
+    "message": "2025년 1~2분기 이상 탐지 패턴 비교로 설비 건전성 악화 신호를 진단해주세요.",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-04",
+        "anomaly_type": "전압_불균형",
+        "total_count": 11,
+        "severity_counts": {
+          "Info": 5,
+          "Warning": 6,
+          "Critical": 0
+        },
+        "first_time": "2025-04-01T08:26:00Z",
+        "last_time": "2025-04-28T21:28:00Z",
+        "max_abs_residual": 8.38
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "hard",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "anomaly_type": "전압_불균형",
+      "total_count": 11,
+      "severity_counts": {
+        "Info": 5,
+        "Warning": 6,
+        "Critical": 0
+      },
+      "first_time": "2025-04-01T08:26:00Z",
+      "last_time": "2025-04-28T21:28:00Z",
+      "max_abs_residual": 8.38
+    },
+    "reference_answer": "2025-04 기간 전압_불균형 유형 이상이 총 11건 탐지되었으며, Info 5건, Warning 6건, Critical 0건으로 분류되었습니다. 최대 절대 잔차값은 8.38입니다."
+  },
+  {
+    "id": "R2-EV-040",
+    "expected_route": "evidence_answer",
+    "message": "최근 12개월 모든 이상 유형 종합하여 리스크 우선순위 평가 결과는?",
+    "context": {
+      "source_doc": "anomaly_results",
+      "reference_context": {
+        "period": "2025-05",
+        "anomaly_type": "습도_이상",
+        "total_count": 26,
+        "severity_counts": {
+          "Info": 13,
+          "Warning": 8,
+          "Critical": 5
+        },
+        "first_time": "2025-05-01T08:19:00Z",
+        "last_time": "2025-05-28T17:28:00Z",
+        "max_abs_residual": 6.25
+      }
+    },
+    "source_doc": "anomaly_results",
+    "category": "anomaly",
+    "difficulty": "hard",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "anomaly_type": "습도_이상",
+      "total_count": 26,
+      "severity_counts": {
+        "Info": 13,
+        "Warning": 8,
+        "Critical": 5
+      },
+      "first_time": "2025-05-01T08:19:00Z",
+      "last_time": "2025-05-28T17:28:00Z",
+      "max_abs_residual": 6.25
+    },
+    "reference_answer": "2025-05 기간 습도_이상 유형 이상이 총 26건 탐지되었으며, Info 13건, Warning 8건, Critical 5건으로 분류되었습니다. 최대 절대 잔차값은 6.25입니다."
+  },
+  {
+    "id": "R2-EV-041",
+    "expected_route": "evidence_answer",
+    "message": "2025년 3월 월간 에너지 리포트의 COP 값은 얼마인가요?",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-01",
+        "metric": "COP",
+        "value": 4106.0,
+        "avg_cop": 3.76,
+        "self_sufficiency_pct": 57.2,
+        "grid_dependency_pct": 35.2,
+        "total_consumption_kwh": 19267.0,
+        "diff": -1864.0,
+        "current_period": "2025-01",
+        "previous_period": "2024-12"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "metric": "COP",
+      "value": 4106.0,
+      "avg_cop": 3.76,
+      "self_sufficiency_pct": 57.2,
+      "grid_dependency_pct": 35.2,
+      "total_consumption_kwh": 19267.0,
+      "diff": -1864.0,
+      "current_period": "2025-01",
+      "previous_period": "2024-12"
+    },
+    "reference_answer": "2025-01 COP=4106, COP 3.76, 자가소비율 57.2%, 계통의존도 35.2%, 소비전력 19267kWh, 전월차 -1864kWh입니다."
+  },
+  {
+    "id": "R2-EV-042",
+    "expected_route": "evidence_answer",
+    "message": "지난달 자가소비율은 몇 퍼센트였나요?",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-02",
+        "metric": "자가소비율",
+        "value": 68122.0,
+        "avg_cop": 4.67,
+        "self_sufficiency_pct": 89.0,
+        "grid_dependency_pct": 27.7,
+        "total_consumption_kwh": 18982.0,
+        "diff": 78.0,
+        "current_period": "2025-02",
+        "previous_period": "2025-01"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "metric": "자가소비율",
+      "value": 68122.0,
+      "avg_cop": 4.67,
+      "self_sufficiency_pct": 89.0,
+      "grid_dependency_pct": 27.7,
+      "total_consumption_kwh": 18982.0,
+      "diff": 78.0,
+      "current_period": "2025-02",
+      "previous_period": "2025-01"
+    },
+    "reference_answer": "2025-02 자가소비율=68122, COP 4.67, 자가소비율 89.0%, 계통의존도 27.7%, 소비전력 18982kWh, 전월차 +78kWh입니다."
+  },
+  {
+    "id": "R2-EV-043",
+    "expected_route": "evidence_answer",
+    "message": "2025년 4월 계통의존도 수치를 알려주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-03",
+        "metric": "계통의존도",
+        "value": 45617.0,
+        "avg_cop": 3.24,
+        "self_sufficiency_pct": 57.5,
+        "grid_dependency_pct": 39.9,
+        "total_consumption_kwh": 43264.0,
+        "diff": 4416.0,
+        "current_period": "2025-03",
+        "previous_period": "2025-02"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "metric": "계통의존도",
+      "value": 45617.0,
+      "avg_cop": 3.24,
+      "self_sufficiency_pct": 57.5,
+      "grid_dependency_pct": 39.9,
+      "total_consumption_kwh": 43264.0,
+      "diff": 4416.0,
+      "current_period": "2025-03",
+      "previous_period": "2025-02"
+    },
+    "reference_answer": "2025-03 계통의존도=45617, COP 3.24, 자가소비율 57.5%, 계통의존도 39.9%, 소비전력 43264kWh, 전월차 +4416kWh입니다."
+  },
+  {
+    "id": "R2-EV-044",
+    "expected_route": "evidence_answer",
+    "message": "2025년 1월 총소비전력량은 몇 kWh였나요?",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-04",
+        "metric": "총소비전력",
+        "value": 25378.0,
+        "avg_cop": 5.03,
+        "self_sufficiency_pct": 56.5,
+        "grid_dependency_pct": 11.0,
+        "total_consumption_kwh": 61016.0,
+        "diff": 652.0,
+        "current_period": "2025-04",
+        "previous_period": "2025-03"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "metric": "총소비전력",
+      "value": 25378.0,
+      "avg_cop": 5.03,
+      "self_sufficiency_pct": 56.5,
+      "grid_dependency_pct": 11.0,
+      "total_consumption_kwh": 61016.0,
+      "diff": 652.0,
+      "current_period": "2025-04",
+      "previous_period": "2025-03"
+    },
+    "reference_answer": "2025-04 총소비전력=25378, COP 5.03, 자가소비율 56.5%, 계통의존도 11.0%, 소비전력 61016kWh, 전월차 +652kWh입니다."
+  },
+  {
+    "id": "R2-EV-045",
+    "expected_route": "evidence_answer",
+    "message": "2025년 5월 월간 리포트의 냉방에너지 소비량은 얼마인가요?",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-05",
+        "metric": "냉방에너지",
+        "value": 51676.0,
+        "avg_cop": 3.91,
+        "self_sufficiency_pct": 79.8,
+        "grid_dependency_pct": 19.6,
+        "total_consumption_kwh": 33593.0,
+        "diff": -3691.0,
+        "current_period": "2025-05",
+        "previous_period": "2025-04"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "metric": "냉방에너지",
+      "value": 51676.0,
+      "avg_cop": 3.91,
+      "self_sufficiency_pct": 79.8,
+      "grid_dependency_pct": 19.6,
+      "total_consumption_kwh": 33593.0,
+      "diff": -3691.0,
+      "current_period": "2025-05",
+      "previous_period": "2025-04"
+    },
+    "reference_answer": "2025-05 냉방에너지=51676, COP 3.91, 자가소비율 79.8%, 계통의존도 19.6%, 소비전력 33593kWh, 전월차 -3691kWh입니다."
+  },
+  {
+    "id": "R2-EV-046",
+    "expected_route": "evidence_answer",
+    "message": "2025년 3월과 4월의 COP 값을 비교하여 추세를 분석해주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-01",
+        "metric": "난방에너지",
+        "value": 45083.0,
+        "avg_cop": 4.6,
+        "self_sufficiency_pct": 89.4,
+        "grid_dependency_pct": 42.6,
+        "total_consumption_kwh": 15652.0,
+        "diff": 1212.0,
+        "current_period": "2025-01",
+        "previous_period": "2024-12"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "metric": "난방에너지",
+      "value": 45083.0,
+      "avg_cop": 4.6,
+      "self_sufficiency_pct": 89.4,
+      "grid_dependency_pct": 42.6,
+      "total_consumption_kwh": 15652.0,
+      "diff": 1212.0,
+      "current_period": "2025-01",
+      "previous_period": "2024-12"
+    },
+    "reference_answer": "2025-01 난방에너지=45083, COP 4.6, 자가소비율 89.4%, 계통의존도 42.6%, 소비전력 15652kWh, 전월차 +1212kWh입니다."
+  },
+  {
+    "id": "R2-EV-047",
+    "expected_route": "evidence_answer",
+    "message": "최근 3개월간 자가소비율의 월별 변화 추이와 증감 요인은 무엇인가요?",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-02",
+        "metric": "COP",
+        "value": 5596.0,
+        "avg_cop": 3.35,
+        "self_sufficiency_pct": 74.9,
+        "grid_dependency_pct": 26.7,
+        "total_consumption_kwh": 24272.0,
+        "diff": -1510.0,
+        "current_period": "2025-02",
+        "previous_period": "2025-01"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "metric": "COP",
+      "value": 5596.0,
+      "avg_cop": 3.35,
+      "self_sufficiency_pct": 74.9,
+      "grid_dependency_pct": 26.7,
+      "total_consumption_kwh": 24272.0,
+      "diff": -1510.0,
+      "current_period": "2025-02",
+      "previous_period": "2025-01"
+    },
+    "reference_answer": "2025-02 COP=5596, COP 3.35, 자가소비율 74.9%, 계통의존도 26.7%, 소비전력 24272kWh, 전월차 -1510kWh입니다."
+  },
+  {
+    "id": "R2-EV-048",
+    "expected_route": "evidence_answer",
+    "message": "2025년 1분기 계통의존도 평균값과 전년 동기 대비 차이를 분석해주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-03",
+        "metric": "자가소비율",
+        "value": 78710.0,
+        "avg_cop": 3.85,
+        "self_sufficiency_pct": 65.5,
+        "grid_dependency_pct": 24.2,
+        "total_consumption_kwh": 53025.0,
+        "diff": -1975.0,
+        "current_period": "2025-03",
+        "previous_period": "2025-02"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "metric": "자가소비율",
+      "value": 78710.0,
+      "avg_cop": 3.85,
+      "self_sufficiency_pct": 65.5,
+      "grid_dependency_pct": 24.2,
+      "total_consumption_kwh": 53025.0,
+      "diff": -1975.0,
+      "current_period": "2025-03",
+      "previous_period": "2025-02"
+    },
+    "reference_answer": "2025-03 자가소비율=78710, COP 3.85, 자가소비율 65.5%, 계통의존도 24.2%, 소비전력 53025kWh, 전월차 -1975kWh입니다."
+  },
+  {
+    "id": "R2-EV-049",
+    "expected_route": "evidence_answer",
+    "message": "2025년 4월 총소비전력의 전월 대비 증감률과 주요 변동 요인을 알려주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-04",
+        "metric": "계통의존도",
+        "value": 8377.0,
+        "avg_cop": 5.82,
+        "self_sufficiency_pct": 74.6,
+        "grid_dependency_pct": 32.7,
+        "total_consumption_kwh": 53822.0,
+        "diff": 4318.0,
+        "current_period": "2025-04",
+        "previous_period": "2025-03"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "metric": "계통의존도",
+      "value": 8377.0,
+      "avg_cop": 5.82,
+      "self_sufficiency_pct": 74.6,
+      "grid_dependency_pct": 32.7,
+      "total_consumption_kwh": 53822.0,
+      "diff": 4318.0,
+      "current_period": "2025-04",
+      "previous_period": "2025-03"
+    },
+    "reference_answer": "2025-04 계통의존도=8377, COP 5.82, 자가소비율 74.6%, 계통의존도 32.7%, 소비전력 53822kWh, 전월차 +4318kWh입니다."
+  },
+  {
+    "id": "R2-EV-050",
+    "expected_route": "evidence_answer",
+    "message": "2025년 5월 월간 리포트에서 COP, 자가소비율, 계통의존도를 종합 분석해주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-05",
+        "metric": "총소비전력",
+        "value": 22612.0,
+        "avg_cop": 6.07,
+        "self_sufficiency_pct": 64.8,
+        "grid_dependency_pct": 40.9,
+        "total_consumption_kwh": 66969.0,
+        "diff": -3446.0,
+        "current_period": "2025-05",
+        "previous_period": "2025-04"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "metric": "총소비전력",
+      "value": 22612.0,
+      "avg_cop": 6.07,
+      "self_sufficiency_pct": 64.8,
+      "grid_dependency_pct": 40.9,
+      "total_consumption_kwh": 66969.0,
+      "diff": -3446.0,
+      "current_period": "2025-05",
+      "previous_period": "2025-04"
+    },
+    "reference_answer": "2025-05 총소비전력=22612, COP 6.07, 자가소비율 64.8%, 계통의존도 40.9%, 소비전력 66969kWh, 전월차 -3446kWh입니다."
+  },
+  {
+    "id": "R2-EV-051",
+    "expected_route": "evidence_answer",
+    "message": "2025년 2월과 3월의 난방에너지 소비량 비교 및 증감 원인 분석 결과는?",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-01",
+        "metric": "냉방에너지",
+        "value": 20165.0,
+        "avg_cop": 3.74,
+        "self_sufficiency_pct": 67.7,
+        "grid_dependency_pct": 33.4,
+        "total_consumption_kwh": 74704.0,
+        "diff": 54.0,
+        "current_period": "2025-01",
+        "previous_period": "2024-12"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "metric": "냉방에너지",
+      "value": 20165.0,
+      "avg_cop": 3.74,
+      "self_sufficiency_pct": 67.7,
+      "grid_dependency_pct": 33.4,
+      "total_consumption_kwh": 74704.0,
+      "diff": 54.0,
+      "current_period": "2025-01",
+      "previous_period": "2024-12"
+    },
+    "reference_answer": "2025-01 냉방에너지=20165, COP 3.74, 자가소비율 67.7%, 계통의존도 33.4%, 소비전력 74704kWh, 전월차 +54kWh입니다."
+  },
+  {
+    "id": "R2-EV-052",
+    "expected_route": "evidence_answer",
+    "message": "2025년 4월 COP가 전월 대비 하락한 원인을 월간 리포트 기반으로 분석해주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-02",
+        "metric": "난방에너지",
+        "value": 26751.0,
+        "avg_cop": 6.18,
+        "self_sufficiency_pct": 56.9,
+        "grid_dependency_pct": 31.5,
+        "total_consumption_kwh": 73054.0,
+        "diff": -4559.0,
+        "current_period": "2025-02",
+        "previous_period": "2025-01"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "metric": "난방에너지",
+      "value": 26751.0,
+      "avg_cop": 6.18,
+      "self_sufficiency_pct": 56.9,
+      "grid_dependency_pct": 31.5,
+      "total_consumption_kwh": 73054.0,
+      "diff": -4559.0,
+      "current_period": "2025-02",
+      "previous_period": "2025-01"
+    },
+    "reference_answer": "2025-02 난방에너지=26751, COP 6.18, 자가소비율 56.9%, 계통의존도 31.5%, 소비전력 73054kWh, 전월차 -4559kWh입니다."
+  },
+  {
+    "id": "R2-EV-053",
+    "expected_route": "evidence_answer",
+    "message": "2025년 3월 자가소비율 80% 달성의 주요 기여 요인은 무엇인가요?",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-03",
+        "metric": "COP",
+        "value": 44916.0,
+        "avg_cop": 3.46,
+        "self_sufficiency_pct": 91.3,
+        "grid_dependency_pct": 14.0,
+        "total_consumption_kwh": 45928.0,
+        "diff": 2057.0,
+        "current_period": "2025-03",
+        "previous_period": "2025-02"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "metric": "COP",
+      "value": 44916.0,
+      "avg_cop": 3.46,
+      "self_sufficiency_pct": 91.3,
+      "grid_dependency_pct": 14.0,
+      "total_consumption_kwh": 45928.0,
+      "diff": 2057.0,
+      "current_period": "2025-03",
+      "previous_period": "2025-02"
+    },
+    "reference_answer": "2025-03 COP=44916, COP 3.46, 자가소비율 91.3%, 계통의존도 14.0%, 소비전력 45928kWh, 전월차 +2057kWh입니다."
+  },
+  {
+    "id": "R2-EV-054",
+    "expected_route": "evidence_answer",
+    "message": "2025년 1분기 총소비전력의 월별 추세와 계절적 요인 분석 결과를 보여주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-04",
+        "metric": "자가소비율",
+        "value": 29600.0,
+        "avg_cop": 3.39,
+        "self_sufficiency_pct": 90.0,
+        "grid_dependency_pct": 33.6,
+        "total_consumption_kwh": 25434.0,
+        "diff": -4640.0,
+        "current_period": "2025-04",
+        "previous_period": "2025-03"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "metric": "자가소비율",
+      "value": 29600.0,
+      "avg_cop": 3.39,
+      "self_sufficiency_pct": 90.0,
+      "grid_dependency_pct": 33.6,
+      "total_consumption_kwh": 25434.0,
+      "diff": -4640.0,
+      "current_period": "2025-04",
+      "previous_period": "2025-03"
+    },
+    "reference_answer": "2025-04 자가소비율=29600, COP 3.39, 자가소비율 90.0%, 계통의존도 33.6%, 소비전력 25434kWh, 전월차 -4640kWh입니다."
+  },
+  {
+    "id": "R2-EV-055",
+    "expected_route": "evidence_answer",
+    "message": "2025년 5월 계통의존도가 전월 대비 상승한 원인과 대응 방안은 무엇인가요?",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-05",
+        "metric": "계통의존도",
+        "value": 77778.0,
+        "avg_cop": 4.93,
+        "self_sufficiency_pct": 70.9,
+        "grid_dependency_pct": 9.5,
+        "total_consumption_kwh": 40526.0,
+        "diff": 4331.0,
+        "current_period": "2025-05",
+        "previous_period": "2025-04"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "metric": "계통의존도",
+      "value": 77778.0,
+      "avg_cop": 4.93,
+      "self_sufficiency_pct": 70.9,
+      "grid_dependency_pct": 9.5,
+      "total_consumption_kwh": 40526.0,
+      "diff": 4331.0,
+      "current_period": "2025-05",
+      "previous_period": "2025-04"
+    },
+    "reference_answer": "2025-05 계통의존도=77778, COP 4.93, 자가소비율 70.9%, 계통의존도 9.5%, 소비전력 40526kWh, 전월차 +4331kWh입니다."
+  },
+  {
+    "id": "R2-EV-056",
+    "expected_route": "evidence_answer",
+    "message": "2025년 4월 냉방에너지 소비량이 전년 동월 대비 변화한 원인을 분석해주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-01",
+        "metric": "총소비전력",
+        "value": 44835.0,
+        "avg_cop": 3.14,
+        "self_sufficiency_pct": 68.2,
+        "grid_dependency_pct": 33.2,
+        "total_consumption_kwh": 61685.0,
+        "diff": -1463.0,
+        "current_period": "2025-01",
+        "previous_period": "2024-12"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "metric": "총소비전력",
+      "value": 44835.0,
+      "avg_cop": 3.14,
+      "self_sufficiency_pct": 68.2,
+      "grid_dependency_pct": 33.2,
+      "total_consumption_kwh": 61685.0,
+      "diff": -1463.0,
+      "current_period": "2025-01",
+      "previous_period": "2024-12"
+    },
+    "reference_answer": "2025-01 총소비전력=44835, COP 3.14, 자가소비율 68.2%, 계통의존도 33.2%, 소비전력 61685kWh, 전월차 -1463kWh입니다."
+  },
+  {
+    "id": "R2-EV-057",
+    "expected_route": "evidence_answer",
+    "message": "최근 6개월간 평균 COP 추이와 설비 효율 저하 신호 여부를 평가해주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-02",
+        "metric": "냉방에너지",
+        "value": 13084.0,
+        "avg_cop": 6.06,
+        "self_sufficiency_pct": 91.0,
+        "grid_dependency_pct": 35.7,
+        "total_consumption_kwh": 79803.0,
+        "diff": -2633.0,
+        "current_period": "2025-02",
+        "previous_period": "2025-01"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "metric": "냉방에너지",
+      "value": 13084.0,
+      "avg_cop": 6.06,
+      "self_sufficiency_pct": 91.0,
+      "grid_dependency_pct": 35.7,
+      "total_consumption_kwh": 79803.0,
+      "diff": -2633.0,
+      "current_period": "2025-02",
+      "previous_period": "2025-01"
+    },
+    "reference_answer": "2025-02 냉방에너지=13084, COP 6.06, 자가소비율 91.0%, 계통의존도 35.7%, 소비전력 79803kWh, 전월차 -2633kWh입니다."
+  },
+  {
+    "id": "R2-EV-058",
+    "expected_route": "evidence_answer",
+    "message": "2025년 3월 자가소비율과 계통의존도의 상관관계 분석 결과를 알려주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-03",
+        "metric": "난방에너지",
+        "value": 62613.0,
+        "avg_cop": 5.8,
+        "self_sufficiency_pct": 61.6,
+        "grid_dependency_pct": 23.3,
+        "total_consumption_kwh": 27555.0,
+        "diff": 4245.0,
+        "current_period": "2025-03",
+        "previous_period": "2025-02"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "metric": "난방에너지",
+      "value": 62613.0,
+      "avg_cop": 5.8,
+      "self_sufficiency_pct": 61.6,
+      "grid_dependency_pct": 23.3,
+      "total_consumption_kwh": 27555.0,
+      "diff": 4245.0,
+      "current_period": "2025-03",
+      "previous_period": "2025-02"
+    },
+    "reference_answer": "2025-03 난방에너지=62613, COP 5.8, 자가소비율 61.6%, 계통의존도 23.3%, 소비전력 27555kWh, 전월차 +4245kWh입니다."
+  },
+  {
+    "id": "R2-EV-059",
+    "expected_route": "evidence_answer",
+    "message": "2025년 2월 월간 리포트에서 난방에너지가 총소비전력에서 차지하는 비중은?",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-04",
+        "metric": "COP",
+        "value": 56132.0,
+        "avg_cop": 4.44,
+        "self_sufficiency_pct": 79.8,
+        "grid_dependency_pct": 35.2,
+        "total_consumption_kwh": 32372.0,
+        "diff": -3408.0,
+        "current_period": "2025-04",
+        "previous_period": "2025-03"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "metric": "COP",
+      "value": 56132.0,
+      "avg_cop": 4.44,
+      "self_sufficiency_pct": 79.8,
+      "grid_dependency_pct": 35.2,
+      "total_consumption_kwh": 32372.0,
+      "diff": -3408.0,
+      "current_period": "2025-04",
+      "previous_period": "2025-03"
+    },
+    "reference_answer": "2025-04 COP=56132, COP 4.44, 자가소비율 79.8%, 계통의존도 35.2%, 소비전력 32372kWh, 전월차 -3408kWh입니다."
+  },
+  {
+    "id": "R2-EV-060",
+    "expected_route": "evidence_answer",
+    "message": "2025년 5월 COP, 자가소비율, 총소비전력을 전월과 비교하여 종합 평가해주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-05",
+        "metric": "자가소비율",
+        "value": 28038.0,
+        "avg_cop": 4.34,
+        "self_sufficiency_pct": 56.4,
+        "grid_dependency_pct": 25.4,
+        "total_consumption_kwh": 28970.0,
+        "diff": 4185.0,
+        "current_period": "2025-05",
+        "previous_period": "2025-04"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "metric": "자가소비율",
+      "value": 28038.0,
+      "avg_cop": 4.34,
+      "self_sufficiency_pct": 56.4,
+      "grid_dependency_pct": 25.4,
+      "total_consumption_kwh": 28970.0,
+      "diff": 4185.0,
+      "current_period": "2025-05",
+      "previous_period": "2025-04"
+    },
+    "reference_answer": "2025-05 자가소비율=28038, COP 4.34, 자가소비율 56.4%, 계통의존도 25.4%, 소비전력 28970kWh, 전월차 +4185kWh입니다."
+  },
+  {
+    "id": "R2-EV-061",
+    "expected_route": "evidence_answer",
+    "message": "2025년 1분기 월간 리포트의 핵심 성과 지표(COP, 자가소비율, 계통의존도) 요약은?",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-01",
+        "metric": "계통의존도",
+        "value": 22360.0,
+        "avg_cop": 5.87,
+        "self_sufficiency_pct": 87.2,
+        "grid_dependency_pct": 16.2,
+        "total_consumption_kwh": 61202.0,
+        "diff": -1015.0,
+        "current_period": "2025-01",
+        "previous_period": "2024-12"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "metric": "계통의존도",
+      "value": 22360.0,
+      "avg_cop": 5.87,
+      "self_sufficiency_pct": 87.2,
+      "grid_dependency_pct": 16.2,
+      "total_consumption_kwh": 61202.0,
+      "diff": -1015.0,
+      "current_period": "2025-01",
+      "previous_period": "2024-12"
+    },
+    "reference_answer": "2025-01 계통의존도=22360, COP 5.87, 자가소비율 87.2%, 계통의존도 16.2%, 소비전력 61202kWh, 전월차 -1015kWh입니다."
+  },
+  {
+    "id": "R2-EV-062",
+    "expected_route": "evidence_answer",
+    "message": "2025년 4월 총소비전력 증가의 주요 원인을 시간대별 소비 패턴으로 분석해주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-02",
+        "metric": "총소비전력",
+        "value": 67509.0,
+        "avg_cop": 3.24,
+        "self_sufficiency_pct": 83.6,
+        "grid_dependency_pct": 21.0,
+        "total_consumption_kwh": 50658.0,
+        "diff": 1795.0,
+        "current_period": "2025-02",
+        "previous_period": "2025-01"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "metric": "총소비전력",
+      "value": 67509.0,
+      "avg_cop": 3.24,
+      "self_sufficiency_pct": 83.6,
+      "grid_dependency_pct": 21.0,
+      "total_consumption_kwh": 50658.0,
+      "diff": 1795.0,
+      "current_period": "2025-02",
+      "previous_period": "2025-01"
+    },
+    "reference_answer": "2025-02 총소비전력=67509, COP 3.24, 자가소비율 83.6%, 계통의존도 21.0%, 소비전력 50658kWh, 전월차 +1795kWh입니다."
+  },
+  {
+    "id": "R2-EV-063",
+    "expected_route": "evidence_answer",
+    "message": "2025년 3월 냉방에너지와 난방에너지 소비 비율 및 계절 전환기 특성 분석 결과는?",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-03",
+        "metric": "냉방에너지",
+        "value": 78686.0,
+        "avg_cop": 4.16,
+        "self_sufficiency_pct": 56.0,
+        "grid_dependency_pct": 40.5,
+        "total_consumption_kwh": 33285.0,
+        "diff": 806.0,
+        "current_period": "2025-03",
+        "previous_period": "2025-02"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "metric": "냉방에너지",
+      "value": 78686.0,
+      "avg_cop": 4.16,
+      "self_sufficiency_pct": 56.0,
+      "grid_dependency_pct": 40.5,
+      "total_consumption_kwh": 33285.0,
+      "diff": 806.0,
+      "current_period": "2025-03",
+      "previous_period": "2025-02"
+    },
+    "reference_answer": "2025-03 냉방에너지=78686, COP 4.16, 자가소비율 56.0%, 계통의존도 40.5%, 소비전력 33285kWh, 전월차 +806kWh입니다."
+  },
+  {
+    "id": "R2-EV-064",
+    "expected_route": "evidence_answer",
+    "message": "2025년 5월 자가소비율 목표 대비 달성률과 미달성 시 원인 분석을 해주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-04",
+        "metric": "난방에너지",
+        "value": 78740.0,
+        "avg_cop": 3.13,
+        "self_sufficiency_pct": 77.1,
+        "grid_dependency_pct": 20.8,
+        "total_consumption_kwh": 70050.0,
+        "diff": -636.0,
+        "current_period": "2025-04",
+        "previous_period": "2025-03"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "metric": "난방에너지",
+      "value": 78740.0,
+      "avg_cop": 3.13,
+      "self_sufficiency_pct": 77.1,
+      "grid_dependency_pct": 20.8,
+      "total_consumption_kwh": 70050.0,
+      "diff": -636.0,
+      "current_period": "2025-04",
+      "previous_period": "2025-03"
+    },
+    "reference_answer": "2025-04 난방에너지=78740, COP 3.13, 자가소비율 77.1%, 계통의존도 20.8%, 소비전력 70050kWh, 전월차 -636kWh입니다."
+  },
+  {
+    "id": "R2-EV-065",
+    "expected_route": "evidence_answer",
+    "message": "최근 3개월간 계통의존도 감소 추세의 지속 가능성에 대한 분석 결과는?",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-05",
+        "metric": "COP",
+        "value": 41642.0,
+        "avg_cop": 3.4,
+        "self_sufficiency_pct": 88.3,
+        "grid_dependency_pct": 15.0,
+        "total_consumption_kwh": 18107.0,
+        "diff": -639.0,
+        "current_period": "2025-05",
+        "previous_period": "2025-04"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "metric": "COP",
+      "value": 41642.0,
+      "avg_cop": 3.4,
+      "self_sufficiency_pct": 88.3,
+      "grid_dependency_pct": 15.0,
+      "total_consumption_kwh": 18107.0,
+      "diff": -639.0,
+      "current_period": "2025-05",
+      "previous_period": "2025-04"
+    },
+    "reference_answer": "2025-05 COP=41642, COP 3.4, 자가소비율 88.3%, 계통의존도 15.0%, 소비전력 18107kWh, 전월차 -639kWh입니다."
+  },
+  {
+    "id": "R2-EV-066",
+    "expected_route": "evidence_answer",
+    "message": "2025년 4월 COP의 설비별 기여도를 분석하여 효율 개선 포인트를 도출해주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-01",
+        "metric": "자가소비율",
+        "value": 34561.0,
+        "avg_cop": 5.82,
+        "self_sufficiency_pct": 80.4,
+        "grid_dependency_pct": 42.8,
+        "total_consumption_kwh": 66593.0,
+        "diff": -3030.0,
+        "current_period": "2025-01",
+        "previous_period": "2024-12"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-01",
+      "metric": "자가소비율",
+      "value": 34561.0,
+      "avg_cop": 5.82,
+      "self_sufficiency_pct": 80.4,
+      "grid_dependency_pct": 42.8,
+      "total_consumption_kwh": 66593.0,
+      "diff": -3030.0,
+      "current_period": "2025-01",
+      "previous_period": "2024-12"
+    },
+    "reference_answer": "2025-01 자가소비율=34561, COP 5.82, 자가소비율 80.4%, 계통의존도 42.8%, 소비전력 66593kWh, 전월차 -3030kWh입니다."
+  },
+  {
+    "id": "R2-EV-067",
+    "expected_route": "evidence_answer",
+    "message": "2025년 2월과 3월의 총소비전력 차이(diff)와 주요 변동 항목을 분석해주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-02",
+        "metric": "계통의존도",
+        "value": 72014.0,
+        "avg_cop": 6.32,
+        "self_sufficiency_pct": 89.1,
+        "grid_dependency_pct": 31.1,
+        "total_consumption_kwh": 61437.0,
+        "diff": -3754.0,
+        "current_period": "2025-02",
+        "previous_period": "2025-01"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-02",
+      "metric": "계통의존도",
+      "value": 72014.0,
+      "avg_cop": 6.32,
+      "self_sufficiency_pct": 89.1,
+      "grid_dependency_pct": 31.1,
+      "total_consumption_kwh": 61437.0,
+      "diff": -3754.0,
+      "current_period": "2025-02",
+      "previous_period": "2025-01"
+    },
+    "reference_answer": "2025-02 계통의존도=72014, COP 6.32, 자가소비율 89.1%, 계통의존도 31.1%, 소비전력 61437kWh, 전월차 -3754kWh입니다."
+  },
+  {
+    "id": "R2-EV-068",
+    "expected_route": "evidence_answer",
+    "message": "2025년 1분기 대비 2분기 자가소비율 변화 전망과 근거 데이터를 제시해주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-03",
+        "metric": "총소비전력",
+        "value": 15428.0,
+        "avg_cop": 4.77,
+        "self_sufficiency_pct": 79.7,
+        "grid_dependency_pct": 20.1,
+        "total_consumption_kwh": 63805.0,
+        "diff": 544.0,
+        "current_period": "2025-03",
+        "previous_period": "2025-02"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-03",
+      "metric": "총소비전력",
+      "value": 15428.0,
+      "avg_cop": 4.77,
+      "self_sufficiency_pct": 79.7,
+      "grid_dependency_pct": 20.1,
+      "total_consumption_kwh": 63805.0,
+      "diff": 544.0,
+      "current_period": "2025-03",
+      "previous_period": "2025-02"
+    },
+    "reference_answer": "2025-03 총소비전력=15428, COP 4.77, 자가소비율 79.7%, 계통의존도 20.1%, 소비전력 63805kWh, 전월차 +544kWh입니다."
+  },
+  {
+    "id": "R2-EV-069",
+    "expected_route": "evidence_answer",
+    "message": "2025년 상반기 월간 리포트 종합 분석으로 에너지 효율 최적화 전략을 제시해주세요.",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-04",
+        "metric": "냉방에너지",
+        "value": 32545.0,
+        "avg_cop": 5.33,
+        "self_sufficiency_pct": 69.0,
+        "grid_dependency_pct": 35.7,
+        "total_consumption_kwh": 27182.0,
+        "diff": 691.0,
+        "current_period": "2025-04",
+        "previous_period": "2025-03"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "hard",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-04",
+      "metric": "냉방에너지",
+      "value": 32545.0,
+      "avg_cop": 5.33,
+      "self_sufficiency_pct": 69.0,
+      "grid_dependency_pct": 35.7,
+      "total_consumption_kwh": 27182.0,
+      "diff": 691.0,
+      "current_period": "2025-04",
+      "previous_period": "2025-03"
+    },
+    "reference_answer": "2025-04 냉방에너지=32545, COP 5.33, 자가소비율 69.0%, 계통의존도 35.7%, 소비전력 27182kWh, 전월차 +691kWh입니다."
+  },
+  {
+    "id": "R2-EV-070",
+    "expected_route": "evidence_answer",
+    "message": "최근 12개월 COP, 자가소비율, 계통의존도 장기 추세 기반 설비 투자 우선순위는?",
+    "context": {
+      "source_doc": "monthly_report",
+      "reference_context": {
+        "period": "2025-05",
+        "metric": "난방에너지",
+        "value": 25848.0,
+        "avg_cop": 5.92,
+        "self_sufficiency_pct": 66.2,
+        "grid_dependency_pct": 15.8,
+        "total_consumption_kwh": 70003.0,
+        "diff": 1067.0,
+        "current_period": "2025-05",
+        "previous_period": "2025-04"
+      }
+    },
+    "source_doc": "monthly_report",
+    "category": "report",
+    "difficulty": "hard",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "period": "2025-05",
+      "metric": "난방에너지",
+      "value": 25848.0,
+      "avg_cop": 5.92,
+      "self_sufficiency_pct": 66.2,
+      "grid_dependency_pct": 15.8,
+      "total_consumption_kwh": 70003.0,
+      "diff": 1067.0,
+      "current_period": "2025-05",
+      "previous_period": "2025-04"
+    },
+    "reference_answer": "2025-05 난방에너지=25848, COP 5.92, 자가소비율 66.2%, 계통의존도 15.8%, 소비전력 70003kWh, 전월차 +1067kWh입니다."
+  },
+  {
+    "id": "R2-EV-071",
+    "expected_route": "evidence_answer",
+    "message": "설비 AHU-001의 현재 상태와 건강 점수는 어떻게 되나요?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-001",
+        "status": "점검완료",
+        "health_score": 73,
+        "recent_anomaly_count": 7,
+        "title": "AHU-001 정기점검 및 센서보정 작업",
+        "created_at": "2025-05-16T10:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-001",
+      "status": "점검완료",
+      "health_score": 73,
+      "recent_anomaly_count": 7,
+      "title": "AHU-001 정기점검 및 센서보정 작업",
+      "created_at": "2025-05-16T10:00:00Z"
+    },
+    "reference_answer": "AHU-001 설비는 현재 '점검완료' 상태이며 건강 점수는 73점입니다. 최근 7건의 이상이 탐지되었고, 'AHU-001 정기점검 및 센서보정 작업' 작업이 2025-05-16T10:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-072",
+    "expected_route": "evidence_answer",
+    "message": "AHU-002의 최근 작업 지시 현황을 알려주세요.",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-002",
+        "status": "작업중",
+        "health_score": 87,
+        "recent_anomaly_count": 1,
+        "title": "AHU-002 정기점검 및 밸브점검 작업",
+        "created_at": "2025-05-22T18:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-002",
+      "status": "작업중",
+      "health_score": 87,
+      "recent_anomaly_count": 1,
+      "title": "AHU-002 정기점검 및 밸브점검 작업",
+      "created_at": "2025-05-22T18:00:00Z"
+    },
+    "reference_answer": "AHU-002 설비는 현재 '작업중' 상태이며 건강 점수는 87점입니다. 최근 1건의 이상이 탐지되었고, 'AHU-002 정기점검 및 밸브점검 작업' 작업이 2025-05-22T18:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-073",
+    "expected_route": "evidence_answer",
+    "message": "AHU-003 설비의 건강 점수는 몇 점인가요?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-003",
+        "status": "대기중",
+        "health_score": 84,
+        "recent_anomaly_count": 5,
+        "title": "AHU-003 정기점검 및 필터교체 작업",
+        "created_at": "2025-02-22T12:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-003",
+      "status": "대기중",
+      "health_score": 84,
+      "recent_anomaly_count": 5,
+      "title": "AHU-003 정기점검 및 필터교체 작업",
+      "created_at": "2025-02-22T12:00:00Z"
+    },
+    "reference_answer": "AHU-003 설비는 현재 '대기중' 상태이며 건강 점수는 84점입니다. 최근 5건의 이상이 탐지되었고, 'AHU-003 정기점검 및 필터교체 작업' 작업이 2025-02-22T12:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-074",
+    "expected_route": "evidence_answer",
+    "message": "AHU-004의 유지보수 상태를 확인해주세요.",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-004",
+        "status": "긴급대기",
+        "health_score": 59,
+        "recent_anomaly_count": 3,
+        "title": "AHU-004 정기점검 및 센서보정 작업",
+        "created_at": "2025-01-02T11:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "easy",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-004",
+      "status": "긴급대기",
+      "health_score": 59,
+      "recent_anomaly_count": 3,
+      "title": "AHU-004 정기점검 및 센서보정 작업",
+      "created_at": "2025-01-02T11:00:00Z"
+    },
+    "reference_answer": "AHU-004 설비는 현재 '긴급대기' 상태이며 건강 점수는 59점입니다. 최근 3건의 이상이 탐지되었고, 'AHU-004 정기점검 및 센서보정 작업' 작업이 2025-01-02T11:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-075",
+    "expected_route": "evidence_answer",
+    "message": "AHU-005 설비의 건강 점수 추이와 최근 이상 발생 이력을 분석해주세요.",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-005",
+        "status": "점검예정",
+        "health_score": 75,
+        "recent_anomaly_count": 1,
+        "title": "AHU-005 정기점검 및 모터정비 작업",
+        "created_at": "2025-04-21T17:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-005",
+      "status": "점검예정",
+      "health_score": 75,
+      "recent_anomaly_count": 1,
+      "title": "AHU-005 정기점검 및 모터정비 작업",
+      "created_at": "2025-04-21T17:00:00Z"
+    },
+    "reference_answer": "AHU-005 설비는 현재 '점검예정' 상태이며 건강 점수는 75점입니다. 최근 1건의 이상이 탐지되었고, 'AHU-005 정기점검 및 모터정비 작업' 작업이 2025-04-21T17:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-076",
+    "expected_route": "evidence_answer",
+    "message": "AHU-006의 현재 작업 지시 상태와 우선순위 평가 결과를 알려주세요.",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-006",
+        "status": "점검완료",
+        "health_score": 57,
+        "recent_anomaly_count": 6,
+        "title": "AHU-006 정기점검 및 모터정비 작업",
+        "created_at": "2025-04-08T10:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-006",
+      "status": "점검완료",
+      "health_score": 57,
+      "recent_anomaly_count": 6,
+      "title": "AHU-006 정기점검 및 모터정비 작업",
+      "created_at": "2025-04-08T10:00:00Z"
+    },
+    "reference_answer": "AHU-006 설비는 현재 '점검완료' 상태이며 건강 점수는 57점입니다. 최근 6건의 이상이 탐지되었고, 'AHU-006 정기점검 및 모터정비 작업' 작업이 2025-04-08T10:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-077",
+    "expected_route": "evidence_answer",
+    "message": "AHU-007 설비의 최근 3개월간 이상 발생 횟수와 건강 점수 변화의 상관관계는?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-007",
+        "status": "작업중",
+        "health_score": 86,
+        "recent_anomaly_count": 0,
+        "title": "AHU-007 정기점검 및 필터교체 작업",
+        "created_at": "2025-04-08T10:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-007",
+      "status": "작업중",
+      "health_score": 86,
+      "recent_anomaly_count": 0,
+      "title": "AHU-007 정기점검 및 필터교체 작업",
+      "created_at": "2025-04-08T10:00:00Z"
+    },
+    "reference_answer": "AHU-007 설비는 현재 '작업중' 상태이며 건강 점수는 86점입니다. 최근 0건의 이상이 탐지되었고, 'AHU-007 정기점검 및 필터교체 작업' 작업이 2025-04-08T10:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-078",
+    "expected_route": "evidence_answer",
+    "message": "AHU-008의 작업 지시 이력과 예방 정비 필요성 진단 결과를 보여주세요.",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-008",
+        "status": "대기중",
+        "health_score": 96,
+        "recent_anomaly_count": 8,
+        "title": "AHU-008 정기점검 및 모터정비 작업",
+        "created_at": "2025-01-18T11:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-008",
+      "status": "대기중",
+      "health_score": 96,
+      "recent_anomaly_count": 8,
+      "title": "AHU-008 정기점검 및 모터정비 작업",
+      "created_at": "2025-01-18T11:00:00Z"
+    },
+    "reference_answer": "AHU-008 설비는 현재 '대기중' 상태이며 건강 점수는 96점입니다. 최근 8건의 이상이 탐지되었고, 'AHU-008 정기점검 및 모터정비 작업' 작업이 2025-01-18T11:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-079",
+    "expected_route": "evidence_answer",
+    "message": "AHU-009 설비 건강 점수가 70점 미만으로 하락한 원인 분석 결과는?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-009",
+        "status": "긴급대기",
+        "health_score": 52,
+        "recent_anomaly_count": 7,
+        "title": "AHU-009 정기점검 및 센서보정 작업",
+        "created_at": "2025-04-22T16:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-009",
+      "status": "긴급대기",
+      "health_score": 52,
+      "recent_anomaly_count": 7,
+      "title": "AHU-009 정기점검 및 센서보정 작업",
+      "created_at": "2025-04-22T16:00:00Z"
+    },
+    "reference_answer": "AHU-009 설비는 현재 '긴급대기' 상태이며 건강 점수는 52점입니다. 최근 7건의 이상이 탐지되었고, 'AHU-009 정기점검 및 센서보정 작업' 작업이 2025-04-22T16:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-080",
+    "expected_route": "evidence_answer",
+    "message": "AHU-010의 현재 진행 중인 작업 지시와 예상 완료 일정을 알려주세요.",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-010",
+        "status": "점검예정",
+        "health_score": 80,
+        "recent_anomaly_count": 5,
+        "title": "AHU-010 정기점검 및 모터정비 작업",
+        "created_at": "2025-05-27T16:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-010",
+      "status": "점검예정",
+      "health_score": 80,
+      "recent_anomaly_count": 5,
+      "title": "AHU-010 정기점검 및 모터정비 작업",
+      "created_at": "2025-05-27T16:00:00Z"
+    },
+    "reference_answer": "AHU-010 설비는 현재 '점검예정' 상태이며 건강 점수는 80점입니다. 최근 5건의 이상이 탐지되었고, 'AHU-010 정기점검 및 모터정비 작업' 작업이 2025-05-27T16:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-081",
+    "expected_route": "evidence_answer",
+    "message": "AHU-011 설비의 최근 이상 탐지 건수와 유지보수 대응 현황을 종합해주세요.",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-011",
+        "status": "점검완료",
+        "health_score": 72,
+        "recent_anomaly_count": 8,
+        "title": "AHU-011 정기점검 및 모터정비 작업",
+        "created_at": "2025-02-24T15:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-011",
+      "status": "점검완료",
+      "health_score": 72,
+      "recent_anomaly_count": 8,
+      "title": "AHU-011 정기점검 및 모터정비 작업",
+      "created_at": "2025-02-24T15:00:00Z"
+    },
+    "reference_answer": "AHU-011 설비는 현재 '점검완료' 상태이며 건강 점수는 72점입니다. 최근 8건의 이상이 탐지되었고, 'AHU-011 정기점검 및 모터정비 작업' 작업이 2025-02-24T15:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-082",
+    "expected_route": "evidence_answer",
+    "message": "AHU-012의 건강 점수와 동일 유형 설비 평균 건강 점수 비교 분석 결과는?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-012",
+        "status": "작업중",
+        "health_score": 73,
+        "recent_anomaly_count": 4,
+        "title": "AHU-012 정기점검 및 센서보정 작업",
+        "created_at": "2025-03-25T16:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-012",
+      "status": "작업중",
+      "health_score": 73,
+      "recent_anomaly_count": 4,
+      "title": "AHU-012 정기점검 및 센서보정 작업",
+      "created_at": "2025-03-25T16:00:00Z"
+    },
+    "reference_answer": "AHU-012 설비는 현재 '작업중' 상태이며 건강 점수는 73점입니다. 최근 4건의 이상이 탐지되었고, 'AHU-012 정기점검 및 센서보정 작업' 작업이 2025-03-25T16:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-083",
+    "expected_route": "evidence_answer",
+    "message": "AHU-013에 등록된 작업 지시 중 긴급 건의 상세 내용과 조치 현황을 알려주세요.",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-013",
+        "status": "대기중",
+        "health_score": 76,
+        "recent_anomaly_count": 3,
+        "title": "AHU-013 정기점검 및 밸브점검 작업",
+        "created_at": "2025-04-03T12:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-013",
+      "status": "대기중",
+      "health_score": 76,
+      "recent_anomaly_count": 3,
+      "title": "AHU-013 정기점검 및 밸브점검 작업",
+      "created_at": "2025-04-03T12:00:00Z"
+    },
+    "reference_answer": "AHU-013 설비는 현재 '대기중' 상태이며 건강 점수는 76점입니다. 최근 3건의 이상이 탐지되었고, 'AHU-013 정기점검 및 밸브점검 작업' 작업이 2025-04-03T12:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-084",
+    "expected_route": "evidence_answer",
+    "message": "AHU-014 설비의 유지보수 이력 기반 고장 예측 분석 결과를 보여주세요.",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-014",
+        "status": "긴급대기",
+        "health_score": 60,
+        "recent_anomaly_count": 4,
+        "title": "AHU-014 정기점검 및 밸브점검 작업",
+        "created_at": "2025-03-18T09:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-014",
+      "status": "긴급대기",
+      "health_score": 60,
+      "recent_anomaly_count": 4,
+      "title": "AHU-014 정기점검 및 밸브점검 작업",
+      "created_at": "2025-03-18T09:00:00Z"
+    },
+    "reference_answer": "AHU-014 설비는 현재 '긴급대기' 상태이며 건강 점수는 60점입니다. 최근 4건의 이상이 탐지되었고, 'AHU-014 정기점검 및 밸브점검 작업' 작업이 2025-03-18T09:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-085",
+    "expected_route": "evidence_answer",
+    "message": "AHU-015의 최근 작업 지시 생성 사유와 설비 상태 평가 결과는?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-015",
+        "status": "점검예정",
+        "health_score": 53,
+        "recent_anomaly_count": 2,
+        "title": "AHU-015 정기점검 및 센서보정 작업",
+        "created_at": "2025-04-23T10:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-015",
+      "status": "점검예정",
+      "health_score": 53,
+      "recent_anomaly_count": 2,
+      "title": "AHU-015 정기점검 및 센서보정 작업",
+      "created_at": "2025-04-23T10:00:00Z"
+    },
+    "reference_answer": "AHU-015 설비는 현재 '점검예정' 상태이며 건강 점수는 53점입니다. 최근 2건의 이상이 탐지되었고, 'AHU-015 정기점검 및 센서보정 작업' 작업이 2025-04-23T10:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-086",
+    "expected_route": "evidence_answer",
+    "message": "AHU-016 설비 건강 점수 85점 달성을 위한 필요 조치 사항은 무엇인가요?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-016",
+        "status": "점검완료",
+        "health_score": 90,
+        "recent_anomaly_count": 3,
+        "title": "AHU-016 정기점검 및 필터교체 작업",
+        "created_at": "2025-04-14T13:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-016",
+      "status": "점검완료",
+      "health_score": 90,
+      "recent_anomaly_count": 3,
+      "title": "AHU-016 정기점검 및 필터교체 작업",
+      "created_at": "2025-04-14T13:00:00Z"
+    },
+    "reference_answer": "AHU-016 설비는 현재 '점검완료' 상태이며 건강 점수는 90점입니다. 최근 3건의 이상이 탐지되었고, 'AHU-016 정기점검 및 필터교체 작업' 작업이 2025-04-14T13:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-087",
+    "expected_route": "evidence_answer",
+    "message": "AHU-017의 작업 지시 중 '대기중' 상태인 건들의 지연 사유 분석 결과는?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-017",
+        "status": "작업중",
+        "health_score": 79,
+        "recent_anomaly_count": 7,
+        "title": "AHU-017 정기점검 및 모터정비 작업",
+        "created_at": "2025-01-07T14:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-017",
+      "status": "작업중",
+      "health_score": 79,
+      "recent_anomaly_count": 7,
+      "title": "AHU-017 정기점검 및 모터정비 작업",
+      "created_at": "2025-01-07T14:00:00Z"
+    },
+    "reference_answer": "AHU-017 설비는 현재 '작업중' 상태이며 건강 점수는 79점입니다. 최근 7건의 이상이 탐지되었고, 'AHU-017 정기점검 및 모터정비 작업' 작업이 2025-01-07T14:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-088",
+    "expected_route": "evidence_answer",
+    "message": "AHU-018 설비의 건강 점수 회복 추세와 유지보수 효과성 평가를 해주세요.",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-018",
+        "status": "대기중",
+        "health_score": 69,
+        "recent_anomaly_count": 0,
+        "title": "AHU-018 정기점검 및 배관청소 작업",
+        "created_at": "2025-04-16T08:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-018",
+      "status": "대기중",
+      "health_score": 69,
+      "recent_anomaly_count": 0,
+      "title": "AHU-018 정기점검 및 배관청소 작업",
+      "created_at": "2025-04-16T08:00:00Z"
+    },
+    "reference_answer": "AHU-018 설비는 현재 '대기중' 상태이며 건강 점수는 69점입니다. 최근 0건의 이상이 탐지되었고, 'AHU-018 정기점검 및 배관청소 작업' 작업이 2025-04-16T08:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-089",
+    "expected_route": "evidence_answer",
+    "message": "AHU-019에 대한 최근 6개월간 작업 지시 유형별 분포와 비용 분석 결과는?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-019",
+        "status": "긴급대기",
+        "health_score": 67,
+        "recent_anomaly_count": 4,
+        "title": "AHU-019 정기점검 및 모터정비 작업",
+        "created_at": "2025-04-18T16:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-019",
+      "status": "긴급대기",
+      "health_score": 67,
+      "recent_anomaly_count": 4,
+      "title": "AHU-019 정기점검 및 모터정비 작업",
+      "created_at": "2025-04-18T16:00:00Z"
+    },
+    "reference_answer": "AHU-019 설비는 현재 '긴급대기' 상태이며 건강 점수는 67점입니다. 최근 4건의 이상이 탐지되었고, 'AHU-019 정기점검 및 모터정비 작업' 작업이 2025-04-18T16:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-090",
+    "expected_route": "evidence_answer",
+    "message": "AHU-020 설비의 이상 탐지 후 작업 지시 생성까지의 평균 소요 시간은?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-020",
+        "status": "점검예정",
+        "health_score": 96,
+        "recent_anomaly_count": 3,
+        "title": "AHU-020 정기점검 및 모터정비 작업",
+        "created_at": "2025-02-09T14:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-020",
+      "status": "점검예정",
+      "health_score": 96,
+      "recent_anomaly_count": 3,
+      "title": "AHU-020 정기점검 및 모터정비 작업",
+      "created_at": "2025-02-09T14:00:00Z"
+    },
+    "reference_answer": "AHU-020 설비는 현재 '점검예정' 상태이며 건강 점수는 96점입니다. 최근 3건의 이상이 탐지되었고, 'AHU-020 정기점검 및 모터정비 작업' 작업이 2025-02-09T14:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-091",
+    "expected_route": "evidence_answer",
+    "message": "AHU-021의 현재 건강 점수 대비 권장 유지보수 주기 준수율을 분석해주세요.",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-021",
+        "status": "점검완료",
+        "health_score": 76,
+        "recent_anomaly_count": 0,
+        "title": "AHU-021 정기점검 및 모터정비 작업",
+        "created_at": "2025-03-22T18:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-021",
+      "status": "점검완료",
+      "health_score": 76,
+      "recent_anomaly_count": 0,
+      "title": "AHU-021 정기점검 및 모터정비 작업",
+      "created_at": "2025-03-22T18:00:00Z"
+    },
+    "reference_answer": "AHU-021 설비는 현재 '점검완료' 상태이며 건강 점수는 76점입니다. 최근 0건의 이상이 탐지되었고, 'AHU-021 정기점검 및 모터정비 작업' 작업이 2025-03-22T18:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-092",
+    "expected_route": "evidence_answer",
+    "message": "AHU-022 작업 지시 중 완료된 건들의 평균 처리 시간과 효율성 평가 결과는?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-022",
+        "status": "작업중",
+        "health_score": 96,
+        "recent_anomaly_count": 6,
+        "title": "AHU-022 정기점검 및 센서보정 작업",
+        "created_at": "2025-04-05T17:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-022",
+      "status": "작업중",
+      "health_score": 96,
+      "recent_anomaly_count": 6,
+      "title": "AHU-022 정기점검 및 센서보정 작업",
+      "created_at": "2025-04-05T17:00:00Z"
+    },
+    "reference_answer": "AHU-022 설비는 현재 '작업중' 상태이며 건강 점수는 96점입니다. 최근 6건의 이상이 탐지되었고, 'AHU-022 정기점검 및 센서보정 작업' 작업이 2025-04-05T17:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-093",
+    "expected_route": "evidence_answer",
+    "message": "AHU-023 설비의 건강 점수 악화 방지를 위한 선제적 정비 권고 사항은?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-023",
+        "status": "대기중",
+        "health_score": 79,
+        "recent_anomaly_count": 0,
+        "title": "AHU-023 정기점검 및 모터정비 작업",
+        "created_at": "2025-05-19T18:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-023",
+      "status": "대기중",
+      "health_score": 79,
+      "recent_anomaly_count": 0,
+      "title": "AHU-023 정기점검 및 모터정비 작업",
+      "created_at": "2025-05-19T18:00:00Z"
+    },
+    "reference_answer": "AHU-023 설비는 현재 '대기중' 상태이며 건강 점수는 79점입니다. 최근 0건의 이상이 탐지되었고, 'AHU-023 정기점검 및 모터정비 작업' 작업이 2025-05-19T18:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-094",
+    "expected_route": "evidence_answer",
+    "message": "AHU-024의 최근 이상 발생 패턴과 작업 지시 대응의 적절성 평가 결과는?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-024",
+        "status": "긴급대기",
+        "health_score": 46,
+        "recent_anomaly_count": 1,
+        "title": "AHU-024 정기점검 및 모터정비 작업",
+        "created_at": "2025-02-28T15:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-024",
+      "status": "긴급대기",
+      "health_score": 46,
+      "recent_anomaly_count": 1,
+      "title": "AHU-024 정기점검 및 모터정비 작업",
+      "created_at": "2025-02-28T15:00:00Z"
+    },
+    "reference_answer": "AHU-024 설비는 현재 '긴급대기' 상태이며 건강 점수는 46점입니다. 최근 1건의 이상이 탐지되었고, 'AHU-024 정기점검 및 모터정비 작업' 작업이 2025-02-28T15:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-095",
+    "expected_route": "evidence_answer",
+    "message": "AHU-025 설비의 건강 점수 등급과 해당 등급의 표준 유지보수 절차는?",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-025",
+        "status": "점검예정",
+        "health_score": 56,
+        "recent_anomaly_count": 0,
+        "title": "AHU-025 정기점검 및 밸브점검 작업",
+        "created_at": "2025-04-11T11:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "medium",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-025",
+      "status": "점검예정",
+      "health_score": 56,
+      "recent_anomaly_count": 0,
+      "title": "AHU-025 정기점검 및 밸브점검 작업",
+      "created_at": "2025-04-11T11:00:00Z"
+    },
+    "reference_answer": "AHU-025 설비는 현재 '점검예정' 상태이며 건강 점수는 56점입니다. 최근 0건의 이상이 탐지되었고, 'AHU-025 정기점검 및 밸브점검 작업' 작업이 2025-04-11T11:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-096",
+    "expected_route": "evidence_answer",
+    "message": "AHU-026,027 설비 건강 점수와 작업 이력 비교 분석으로 최적 유지보수 전략을 수립해주세요.",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-026",
+        "status": "점검완료",
+        "health_score": 74,
+        "recent_anomaly_count": 5,
+        "title": "AHU-026 정기점검 및 밸브점검 작업",
+        "created_at": "2025-04-09T14:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "hard",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-026",
+      "status": "점검완료",
+      "health_score": 74,
+      "recent_anomaly_count": 5,
+      "title": "AHU-026 정기점검 및 밸브점검 작업",
+      "created_at": "2025-04-09T14:00:00Z"
+    },
+    "reference_answer": "AHU-026 설비는 현재 '점검완료' 상태이며 건강 점수는 74점입니다. 최근 5건의 이상이 탐지되었고, 'AHU-026 정기점검 및 밸브점검 작업' 작업이 2025-04-09T14:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-097",
+    "expected_route": "evidence_answer",
+    "message": "전체 AHU 건강 점수 분포와 작업 현황 종합, 중장기 설비 투자 계획을 제안해주세요.",
+    "context": {
+      "source_doc": "work_orders",
+      "reference_context": {
+        "equipment_id": "AHU-027",
+        "status": "작업중",
+        "health_score": 61,
+        "recent_anomaly_count": 1,
+        "title": "AHU-027 정기점검 및 모터정비 작업",
+        "created_at": "2025-01-24T16:00:00Z"
+      }
+    },
+    "source_doc": "work_orders",
+    "category": "cms",
+    "difficulty": "hard",
+    "original_eval_type": "evidence_answer",
+    "reference_context": {
+      "equipment_id": "AHU-027",
+      "status": "작업중",
+      "health_score": 61,
+      "recent_anomaly_count": 1,
+      "title": "AHU-027 정기점검 및 모터정비 작업",
+      "created_at": "2025-01-24T16:00:00Z"
+    },
+    "reference_answer": "AHU-027 설비는 현재 '작업중' 상태이며 건강 점수는 61점입니다. 최근 1건의 이상이 탐지되었고, 'AHU-027 정기점검 및 모터정비 작업' 작업이 2025-01-24T16:00:00Z에 생성되었습니다."
+  },
+  {
+    "id": "R2-EV-098",
+    "expected_route": "evidence_answer",
+    "message": "2025년 6월 월간 리포트의 자가소비율과 계통의존도 값을 근거와 함께 확인해줘",
+    "context": {
+      "source_doc": "monthly_report"
+    },
+    "source_doc": "monthly_report",
+    "category": "evidence_extension_260610",
+    "difficulty": "medium"
+  },
+  {
+    "id": "R2-EV-099",
+    "expected_route": "evidence_answer",
+    "message": "AHU-021 작업 지시서의 건강 점수와 최근 이상 건수 값을 알려줘",
+    "context": {
+      "source_doc": "work_orders"
+    },
+    "source_doc": "work_orders",
+    "category": "evidence_extension_260610",
+    "difficulty": "medium"
+  },
+  {
+    "id": "R2-EV-100",
+    "expected_route": "evidence_answer",
+    "message": "2025년 6월 유량 감소 이상 탐지의 total_count와 severity 분포를 보여줘",
+    "context": {
+      "source_doc": "anomaly_results"
+    },
+    "source_doc": "anomaly_results",
+    "category": "evidence_extension_260610",
+    "difficulty": "medium"
+  },
+  {
+    "id": "R3-JOB-001",
+    "expected_route": "needs_job",
+    "message": "전체 벤치마크 report를 생성해줘"
+  },
+  {
+    "id": "R3-JOB-002",
+    "expected_route": "needs_job",
+    "message": "전체 벤치마크 report를 실행해줘"
+  },
+  {
+    "id": "R3-JOB-003",
+    "expected_route": "needs_job",
+    "message": "전체 벤치마크 report를 등록해줘"
+  },
+  {
+    "id": "R3-JOB-004",
+    "expected_route": "needs_job",
+    "message": "전체 벤치마크 report를 큐에 넣어줘"
+  },
+  {
+    "id": "R3-JOB-005",
+    "expected_route": "needs_job",
+    "message": "전체 벤치마크 report를 다시 돌려줘"
+  },
+  {
+    "id": "R3-JOB-006",
+    "expected_route": "needs_job",
+    "message": "전체 벤치마크 report를 만들어줘"
+  },
+  {
+    "id": "R3-JOB-007",
+    "expected_route": "needs_job",
+    "message": "전체 벤치마크 report를 예약해줘"
+  },
+  {
+    "id": "R3-JOB-008",
+    "expected_route": "needs_job",
+    "message": "전체 벤치마크 report를 백필해줘"
+  },
+  {
+    "id": "R3-JOB-009",
+    "expected_route": "needs_job",
+    "message": "전체 벤치마크 report를 리플레이해줘"
+  },
+  {
+    "id": "R3-JOB-010",
+    "expected_route": "needs_job",
+    "message": "전체 벤치마크 report를 내보내줘"
+  },
+  {
+    "id": "R3-JOB-011",
+    "expected_route": "needs_job",
+    "message": "평가 summary csv를 생성해줘"
+  },
+  {
+    "id": "R3-JOB-012",
+    "expected_route": "needs_job",
+    "message": "평가 summary csv를 실행해줘"
+  },
+  {
+    "id": "R3-JOB-013",
+    "expected_route": "needs_job",
+    "message": "평가 summary csv를 등록해줘"
+  },
+  {
+    "id": "R3-JOB-014",
+    "expected_route": "needs_job",
+    "message": "평가 summary csv를 큐에 넣어줘"
+  },
+  {
+    "id": "R3-JOB-015",
+    "expected_route": "needs_job",
+    "message": "평가 summary csv를 다시 돌려줘"
+  },
+  {
+    "id": "R3-JOB-016",
+    "expected_route": "needs_job",
+    "message": "평가 summary csv를 만들어줘"
+  },
+  {
+    "id": "R3-JOB-017",
+    "expected_route": "needs_job",
+    "message": "평가 summary csv를 예약해줘"
+  },
+  {
+    "id": "R3-JOB-018",
+    "expected_route": "needs_job",
+    "message": "평가 summary csv를 백필해줘"
+  },
+  {
+    "id": "R3-JOB-019",
+    "expected_route": "needs_job",
+    "message": "평가 summary csv를 리플레이해줘"
+  },
+  {
+    "id": "R3-JOB-020",
+    "expected_route": "needs_job",
+    "message": "평가 summary csv를 내보내줘"
+  },
+  {
+    "id": "R3-JOB-021",
+    "expected_route": "needs_job",
+    "message": "야간 replay 작업을 생성해줘"
+  },
+  {
+    "id": "R3-JOB-022",
+    "expected_route": "needs_job",
+    "message": "야간 replay 작업을 실행해줘"
+  },
+  {
+    "id": "R3-JOB-023",
+    "expected_route": "needs_job",
+    "message": "야간 replay 작업을 등록해줘"
+  },
+  {
+    "id": "R3-JOB-024",
+    "expected_route": "needs_job",
+    "message": "야간 replay 작업을 큐에 넣어줘"
+  },
+  {
+    "id": "R3-JOB-025",
+    "expected_route": "needs_job",
+    "message": "야간 replay 작업을 다시 돌려줘"
+  },
+  {
+    "id": "R3-JOB-026",
+    "expected_route": "needs_job",
+    "message": "야간 replay 작업을 만들어줘"
+  },
+  {
+    "id": "R3-JOB-027",
+    "expected_route": "needs_job",
+    "message": "야간 replay 작업을 예약해줘"
+  },
+  {
+    "id": "R3-JOB-028",
+    "expected_route": "needs_job",
+    "message": "야간 replay 작업을 백필해줘"
+  },
+  {
+    "id": "R3-JOB-029",
+    "expected_route": "needs_job",
+    "message": "야간 replay 작업을 리플레이해줘"
+  },
+  {
+    "id": "R3-JOB-030",
+    "expected_route": "needs_job",
+    "message": "야간 replay 작업을 내보내줘"
+  },
+  {
+    "id": "R3-JOB-031",
+    "expected_route": "needs_job",
+    "message": "후보 모델 batch run을 생성해줘"
+  },
+  {
+    "id": "R3-JOB-032",
+    "expected_route": "needs_job",
+    "message": "후보 모델 batch run을 실행해줘"
+  },
+  {
+    "id": "R3-JOB-033",
+    "expected_route": "needs_job",
+    "message": "후보 모델 batch run을 등록해줘"
+  },
+  {
+    "id": "R3-JOB-034",
+    "expected_route": "needs_job",
+    "message": "후보 모델 batch run을 큐에 넣어줘"
+  },
+  {
+    "id": "R3-JOB-035",
+    "expected_route": "needs_job",
+    "message": "후보 모델 batch run을 다시 돌려줘"
+  },
+  {
+    "id": "R3-JOB-036",
+    "expected_route": "needs_job",
+    "message": "후보 모델 batch run을 만들어줘"
+  },
+  {
+    "id": "R3-JOB-037",
+    "expected_route": "needs_job",
+    "message": "후보 모델 batch run을 예약해줘"
+  },
+  {
+    "id": "R3-JOB-038",
+    "expected_route": "needs_job",
+    "message": "후보 모델 batch run을 백필해줘"
+  },
+  {
+    "id": "R3-JOB-039",
+    "expected_route": "needs_job",
+    "message": "후보 모델 batch run을 리플레이해줘"
+  },
+  {
+    "id": "R3-JOB-040",
+    "expected_route": "needs_job",
+    "message": "후보 모델 batch run을 내보내줘"
+  },
+  {
+    "id": "R3-JOB-041",
+    "expected_route": "needs_job",
+    "message": "집계 파이프라인을 생성해줘"
+  },
+  {
+    "id": "R3-JOB-042",
+    "expected_route": "needs_job",
+    "message": "집계 파이프라인을 실행해줘"
+  },
+  {
+    "id": "R3-JOB-043",
+    "expected_route": "needs_job",
+    "message": "집계 파이프라인을 등록해줘"
+  },
+  {
+    "id": "R3-JOB-044",
+    "expected_route": "needs_job",
+    "message": "집계 파이프라인을 큐에 넣어줘"
+  },
+  {
+    "id": "R3-JOB-045",
+    "expected_route": "needs_job",
+    "message": "집계 파이프라인을 다시 돌려줘"
+  },
+  {
+    "id": "R3-JOB-046",
+    "expected_route": "needs_job",
+    "message": "집계 파이프라인을 만들어줘"
+  },
+  {
+    "id": "R3-JOB-047",
+    "expected_route": "needs_job",
+    "message": "집계 파이프라인을 예약해줘"
+  },
+  {
+    "id": "R3-JOB-048",
+    "expected_route": "needs_job",
+    "message": "집계 파이프라인을 백필해줘"
+  },
+  {
+    "id": "R3-JOB-049",
+    "expected_route": "needs_job",
+    "message": "집계 파이프라인을 리플레이해줘"
+  },
+  {
+    "id": "R3-JOB-050",
+    "expected_route": "needs_job",
+    "message": "집계 파이프라인을 내보내줘"
+  },
+  {
+    "id": "R3-JOB-051",
+    "expected_route": "needs_job",
+    "message": "HTML 산출물 패키지를 생성해줘"
+  },
+  {
+    "id": "R3-JOB-052",
+    "expected_route": "needs_job",
+    "message": "HTML 산출물 패키지를 실행해줘"
+  },
+  {
+    "id": "R3-JOB-053",
+    "expected_route": "needs_job",
+    "message": "HTML 산출물 패키지를 등록해줘"
+  },
+  {
+    "id": "R3-JOB-054",
+    "expected_route": "needs_job",
+    "message": "HTML 산출물 패키지를 큐에 넣어줘"
+  },
+  {
+    "id": "R3-JOB-055",
+    "expected_route": "needs_job",
+    "message": "HTML 산출물 패키지를 다시 돌려줘"
+  },
+  {
+    "id": "R3-JOB-056",
+    "expected_route": "needs_job",
+    "message": "HTML 산출물 패키지를 만들어줘"
+  },
+  {
+    "id": "R3-JOB-057",
+    "expected_route": "needs_job",
+    "message": "HTML 산출물 패키지를 예약해줘"
+  },
+  {
+    "id": "R3-JOB-058",
+    "expected_route": "needs_job",
+    "message": "HTML 산출물 패키지를 백필해줘"
+  },
+  {
+    "id": "R3-JOB-059",
+    "expected_route": "needs_job",
+    "message": "HTML 산출물 패키지를 리플레이해줘"
+  },
+  {
+    "id": "R3-JOB-060",
+    "expected_route": "needs_job",
+    "message": "HTML 산출물 패키지를 내보내줘"
+  },
+  {
+    "id": "R3-JOB-061",
+    "expected_route": "needs_job",
+    "message": "월별 aggregate job을 생성해줘"
+  },
+  {
+    "id": "R3-JOB-062",
+    "expected_route": "needs_job",
+    "message": "월별 aggregate job을 실행해줘"
+  },
+  {
+    "id": "R3-JOB-063",
+    "expected_route": "needs_job",
+    "message": "월별 aggregate job을 등록해줘"
+  },
+  {
+    "id": "R3-JOB-064",
+    "expected_route": "needs_job",
+    "message": "월별 aggregate job을 큐에 넣어줘"
+  },
+  {
+    "id": "R3-JOB-065",
+    "expected_route": "needs_job",
+    "message": "월별 aggregate job을 다시 돌려줘"
+  },
+  {
+    "id": "R3-JOB-066",
+    "expected_route": "needs_job",
+    "message": "월별 aggregate job을 만들어줘"
+  },
+  {
+    "id": "R3-JOB-067",
+    "expected_route": "needs_job",
+    "message": "월별 aggregate job을 예약해줘"
+  },
+  {
+    "id": "R3-JOB-068",
+    "expected_route": "needs_job",
+    "message": "월별 aggregate job을 백필해줘"
+  },
+  {
+    "id": "R3-JOB-069",
+    "expected_route": "needs_job",
+    "message": "월별 aggregate job을 리플레이해줘"
+  },
+  {
+    "id": "R3-JOB-070",
+    "expected_route": "needs_job",
+    "message": "월별 aggregate job을 내보내줘"
+  },
+  {
+    "id": "R3-JOB-071",
+    "expected_route": "needs_job",
+    "message": "원천 ingestion 작업을 생성해줘"
+  },
+  {
+    "id": "R3-JOB-072",
+    "expected_route": "needs_job",
+    "message": "원천 ingestion 작업을 실행해줘"
+  },
+  {
+    "id": "R3-JOB-073",
+    "expected_route": "needs_job",
+    "message": "원천 ingestion 작업을 등록해줘"
+  },
+  {
+    "id": "R3-JOB-074",
+    "expected_route": "needs_job",
+    "message": "원천 ingestion 작업을 큐에 넣어줘"
+  },
+  {
+    "id": "R3-JOB-075",
+    "expected_route": "needs_job",
+    "message": "원천 ingestion 작업을 다시 돌려줘"
+  },
+  {
+    "id": "R3-JOB-076",
+    "expected_route": "needs_job",
+    "message": "원천 ingestion 작업을 만들어줘"
+  },
+  {
+    "id": "R3-JOB-077",
+    "expected_route": "needs_job",
+    "message": "원천 ingestion 작업을 예약해줘"
+  },
+  {
+    "id": "R3-JOB-078",
+    "expected_route": "needs_job",
+    "message": "원천 ingestion 작업을 백필해줘"
+  },
+  {
+    "id": "R3-JOB-079",
+    "expected_route": "needs_job",
+    "message": "원천 ingestion 작업을 리플레이해줘"
+  },
+  {
+    "id": "R3-JOB-080",
+    "expected_route": "needs_job",
+    "message": "원천 ingestion 작업을 내보내줘"
+  },
+  {
+    "id": "R3-JOB-081",
+    "expected_route": "needs_job",
+    "message": "결과 file export를 생성해줘"
+  },
+  {
+    "id": "R3-JOB-082",
+    "expected_route": "needs_job",
+    "message": "결과 file export를 실행해줘"
+  },
+  {
+    "id": "R3-JOB-083",
+    "expected_route": "needs_job",
+    "message": "결과 file export를 등록해줘"
+  },
+  {
+    "id": "R3-JOB-084",
+    "expected_route": "needs_job",
+    "message": "결과 file export를 큐에 넣어줘"
+  },
+  {
+    "id": "R3-JOB-085",
+    "expected_route": "needs_job",
+    "message": "결과 file export를 다시 돌려줘"
+  },
+  {
+    "id": "R3-JOB-086",
+    "expected_route": "needs_job",
+    "message": "결과 file export를 만들어줘"
+  },
+  {
+    "id": "R3-JOB-087",
+    "expected_route": "needs_job",
+    "message": "결과 file export를 예약해줘"
+  },
+  {
+    "id": "R3-JOB-088",
+    "expected_route": "needs_job",
+    "message": "결과 file export를 백필해줘"
+  },
+  {
+    "id": "R3-JOB-089",
+    "expected_route": "needs_job",
+    "message": "결과 file export를 리플레이해줘"
+  },
+  {
+    "id": "R3-JOB-090",
+    "expected_route": "needs_job",
+    "message": "결과 file export를 내보내줘"
+  },
+  {
+    "id": "R3-JOB-091",
+    "expected_route": "needs_job",
+    "message": "full benchmark report를 생성해줘"
+  },
+  {
+    "id": "R3-JOB-092",
+    "expected_route": "needs_job",
+    "message": "full benchmark report를 실행해줘"
+  },
+  {
+    "id": "R3-JOB-093",
+    "expected_route": "needs_job",
+    "message": "full benchmark report를 등록해줘"
+  },
+  {
+    "id": "R3-JOB-094",
+    "expected_route": "needs_job",
+    "message": "full benchmark report를 큐에 넣어줘"
+  },
+  {
+    "id": "R3-JOB-095",
+    "expected_route": "needs_job",
+    "message": "full benchmark report를 다시 돌려줘"
+  },
+  {
+    "id": "R3-JOB-096",
+    "expected_route": "needs_job",
+    "message": "full benchmark report를 만들어줘"
+  },
+  {
+    "id": "R3-JOB-097",
+    "expected_route": "needs_job",
+    "message": "full benchmark report를 예약해줘"
+  },
+  {
+    "id": "R3-JOB-098",
+    "expected_route": "needs_job",
+    "message": "full benchmark report를 백필해줘"
+  },
+  {
+    "id": "R3-JOB-099",
+    "expected_route": "needs_job",
+    "message": "full benchmark report를 리플레이해줘"
+  },
+  {
+    "id": "R3-JOB-100",
+    "expected_route": "needs_job",
+    "message": "full benchmark report를 내보내줘"
+  },
+  {
+    "id": "R4-AP-001",
+    "expected_route": "approval_required",
+    "message": "운영 테이블 변경을 승인 요청해"
+  },
+  {
+    "id": "R4-AP-002",
+    "expected_route": "approval_required",
+    "message": "운영 테이블 변경을 허가 받아"
+  },
+  {
+    "id": "R4-AP-003",
+    "expected_route": "approval_required",
+    "message": "운영 테이블 변경을 결재 올려"
+  },
+  {
+    "id": "R4-AP-004",
+    "expected_route": "approval_required",
+    "message": "운영 테이블 변경을 강제로 진행해"
+  },
+  {
+    "id": "R4-AP-005",
+    "expected_route": "approval_required",
+    "message": "운영 테이블 변경을 force 처리해"
+  },
+  {
+    "id": "R4-AP-006",
+    "expected_route": "approval_required",
+    "message": "운영 테이블 변경을 delete 해"
+  },
+  {
+    "id": "R4-AP-007",
+    "expected_route": "approval_required",
+    "message": "운영 테이블 변경을 update 해"
+  },
+  {
+    "id": "R4-AP-008",
+    "expected_route": "approval_required",
+    "message": "운영 테이블 변경을 insert 해"
+  },
+  {
+    "id": "R4-AP-009",
+    "expected_route": "approval_required",
+    "message": "운영 테이블 변경을 truncate 해"
+  },
+  {
+    "id": "R4-AP-010",
+    "expected_route": "approval_required",
+    "message": "운영 테이블 변경을 drop 해"
+  },
+  {
+    "id": "R4-AP-011",
+    "expected_route": "approval_required",
+    "message": "원격 서버 파일 덮어쓰기를 승인 요청해"
+  },
+  {
+    "id": "R4-AP-012",
+    "expected_route": "approval_required",
+    "message": "원격 서버 파일 덮어쓰기를 허가 받아"
+  },
+  {
+    "id": "R4-AP-013",
+    "expected_route": "approval_required",
+    "message": "원격 서버 파일 덮어쓰기를 결재 올려"
+  },
+  {
+    "id": "R4-AP-014",
+    "expected_route": "approval_required",
+    "message": "원격 서버 파일 덮어쓰기를 강제로 진행해"
+  },
+  {
+    "id": "R4-AP-015",
+    "expected_route": "approval_required",
+    "message": "원격 서버 파일 덮어쓰기를 force 처리해"
+  },
+  {
+    "id": "R4-AP-016",
+    "expected_route": "approval_required",
+    "message": "원격 서버 파일 덮어쓰기를 delete 해"
+  },
+  {
+    "id": "R4-AP-017",
+    "expected_route": "approval_required",
+    "message": "원격 서버 파일 덮어쓰기를 update 해"
+  },
+  {
+    "id": "R4-AP-018",
+    "expected_route": "approval_required",
+    "message": "원격 서버 파일 덮어쓰기를 insert 해"
+  },
+  {
+    "id": "R4-AP-019",
+    "expected_route": "approval_required",
+    "message": "원격 서버 파일 덮어쓰기를 truncate 해"
+  },
+  {
+    "id": "R4-AP-020",
+    "expected_route": "approval_required",
+    "message": "원격 서버 파일 덮어쓰기를 drop 해"
+  },
+  {
+    "id": "R4-AP-021",
+    "expected_route": "approval_required",
+    "message": "production deployment를 승인 요청해"
+  },
+  {
+    "id": "R4-AP-022",
+    "expected_route": "approval_required",
+    "message": "production deployment를 허가 받아"
+  },
+  {
+    "id": "R4-AP-023",
+    "expected_route": "approval_required",
+    "message": "production deployment를 결재 올려"
+  },
+  {
+    "id": "R4-AP-024",
+    "expected_route": "approval_required",
+    "message": "production deployment를 강제로 진행해"
+  },
+  {
+    "id": "R4-AP-025",
+    "expected_route": "approval_required",
+    "message": "production deployment를 force 처리해"
+  },
+  {
+    "id": "R4-AP-026",
+    "expected_route": "approval_required",
+    "message": "production deployment를 delete 해"
+  },
+  {
+    "id": "R4-AP-027",
+    "expected_route": "approval_required",
+    "message": "production deployment를 update 해"
+  },
+  {
+    "id": "R4-AP-028",
+    "expected_route": "approval_required",
+    "message": "production deployment를 insert 해"
+  },
+  {
+    "id": "R4-AP-029",
+    "expected_route": "approval_required",
+    "message": "production deployment를 truncate 해"
+  },
+  {
+    "id": "R4-AP-030",
+    "expected_route": "approval_required",
+    "message": "production deployment를 drop 해"
+  },
+  {
+    "id": "R4-AP-031",
+    "expected_route": "approval_required",
+    "message": "권한 필요한 배포를 승인 요청해"
+  },
+  {
+    "id": "R4-AP-032",
+    "expected_route": "approval_required",
+    "message": "권한 필요한 배포를 허가 받아"
+  },
+  {
+    "id": "R4-AP-033",
+    "expected_route": "approval_required",
+    "message": "권한 필요한 배포를 결재 올려"
+  },
+  {
+    "id": "R4-AP-034",
+    "expected_route": "approval_required",
+    "message": "권한 필요한 배포를 강제로 진행해"
+  },
+  {
+    "id": "R4-AP-035",
+    "expected_route": "approval_required",
+    "message": "권한 필요한 배포를 force 처리해"
+  },
+  {
+    "id": "R4-AP-036",
+    "expected_route": "approval_required",
+    "message": "권한 필요한 배포를 delete 해"
+  },
+  {
+    "id": "R4-AP-037",
+    "expected_route": "approval_required",
+    "message": "권한 필요한 배포를 update 해"
+  },
+  {
+    "id": "R4-AP-038",
+    "expected_route": "approval_required",
+    "message": "권한 필요한 배포를 insert 해"
+  },
+  {
+    "id": "R4-AP-039",
+    "expected_route": "approval_required",
+    "message": "권한 필요한 배포를 truncate 해"
+  },
+  {
+    "id": "R4-AP-040",
+    "expected_route": "approval_required",
+    "message": "권한 필요한 배포를 drop 해"
+  },
+  {
+    "id": "R4-AP-041",
+    "expected_route": "approval_required",
+    "message": "민감 설정 수정을 승인 요청해"
+  },
+  {
+    "id": "R4-AP-042",
+    "expected_route": "approval_required",
+    "message": "민감 설정 수정을 허가 받아"
+  },
+  {
+    "id": "R4-AP-043",
+    "expected_route": "approval_required",
+    "message": "민감 설정 수정을 결재 올려"
+  },
+  {
+    "id": "R4-AP-044",
+    "expected_route": "approval_required",
+    "message": "민감 설정 수정을 강제로 진행해"
+  },
+  {
+    "id": "R4-AP-045",
+    "expected_route": "approval_required",
+    "message": "민감 설정 수정을 force 처리해"
+  },
+  {
+    "id": "R4-AP-046",
+    "expected_route": "approval_required",
+    "message": "민감 설정 수정을 delete 해"
+  },
+  {
+    "id": "R4-AP-047",
+    "expected_route": "approval_required",
+    "message": "민감 설정 수정을 update 해"
+  },
+  {
+    "id": "R4-AP-048",
+    "expected_route": "approval_required",
+    "message": "민감 설정 수정을 insert 해"
+  },
+  {
+    "id": "R4-AP-049",
+    "expected_route": "approval_required",
+    "message": "민감 설정 수정을 truncate 해"
+  },
+  {
+    "id": "R4-AP-050",
+    "expected_route": "approval_required",
+    "message": "민감 설정 수정을 drop 해"
+  },
+  {
+    "id": "R4-AP-051",
+    "expected_route": "approval_required",
+    "message": "DB 레코드 변경을 승인 요청해"
+  },
+  {
+    "id": "R4-AP-052",
+    "expected_route": "approval_required",
+    "message": "DB 레코드 변경을 허가 받아"
+  },
+  {
+    "id": "R4-AP-053",
+    "expected_route": "approval_required",
+    "message": "DB 레코드 변경을 결재 올려"
+  },
+  {
+    "id": "R4-AP-054",
+    "expected_route": "approval_required",
+    "message": "DB 레코드 변경을 강제로 진행해"
+  },
+  {
+    "id": "R4-AP-055",
+    "expected_route": "approval_required",
+    "message": "DB 레코드 변경을 force 처리해"
+  },
+  {
+    "id": "R4-AP-056",
+    "expected_route": "approval_required",
+    "message": "DB 레코드 변경을 delete 해"
+  },
+  {
+    "id": "R4-AP-057",
+    "expected_route": "approval_required",
+    "message": "DB 레코드 변경을 update 해"
+  },
+  {
+    "id": "R4-AP-058",
+    "expected_route": "approval_required",
+    "message": "DB 레코드 변경을 insert 해"
+  },
+  {
+    "id": "R4-AP-059",
+    "expected_route": "approval_required",
+    "message": "DB 레코드 변경을 truncate 해"
+  },
+  {
+    "id": "R4-AP-060",
+    "expected_route": "approval_required",
+    "message": "DB 레코드 변경을 drop 해"
+  },
+  {
+    "id": "R4-AP-061",
+    "expected_route": "approval_required",
+    "message": "scratch schema 초기화를 승인 요청해"
+  },
+  {
+    "id": "R4-AP-062",
+    "expected_route": "approval_required",
+    "message": "scratch schema 초기화를 허가 받아"
+  },
+  {
+    "id": "R4-AP-063",
+    "expected_route": "approval_required",
+    "message": "scratch schema 초기화를 결재 올려"
+  },
+  {
+    "id": "R4-AP-064",
+    "expected_route": "approval_required",
+    "message": "scratch schema 초기화를 강제로 진행해"
+  },
+  {
+    "id": "R4-AP-065",
+    "expected_route": "approval_required",
+    "message": "scratch schema 초기화를 force 처리해"
+  },
+  {
+    "id": "R4-AP-066",
+    "expected_route": "approval_required",
+    "message": "scratch schema 초기화를 delete 해"
+  },
+  {
+    "id": "R4-AP-067",
+    "expected_route": "approval_required",
+    "message": "scratch schema 초기화를 update 해"
+  },
+  {
+    "id": "R4-AP-068",
+    "expected_route": "approval_required",
+    "message": "scratch schema 초기화를 insert 해"
+  },
+  {
+    "id": "R4-AP-069",
+    "expected_route": "approval_required",
+    "message": "scratch schema 초기화를 truncate 해"
+  },
+  {
+    "id": "R4-AP-070",
+    "expected_route": "approval_required",
+    "message": "scratch schema 초기화를 drop 해"
+  },
+  {
+    "id": "R4-AP-071",
+    "expected_route": "approval_required",
+    "message": "위험 명령 실행을 승인 요청해"
+  },
+  {
+    "id": "R4-AP-072",
+    "expected_route": "approval_required",
+    "message": "위험 명령 실행을 허가 받아"
+  },
+  {
+    "id": "R4-AP-073",
+    "expected_route": "approval_required",
+    "message": "위험 명령 실행을 결재 올려"
+  },
+  {
+    "id": "R4-AP-074",
+    "expected_route": "approval_required",
+    "message": "위험 명령 실행을 강제로 진행해"
+  },
+  {
+    "id": "R4-AP-075",
+    "expected_route": "approval_required",
+    "message": "위험 명령 실행을 force 처리해"
+  },
+  {
+    "id": "R4-AP-076",
+    "expected_route": "approval_required",
+    "message": "위험 명령 실행을 delete 해"
+  },
+  {
+    "id": "R4-AP-077",
+    "expected_route": "approval_required",
+    "message": "위험 명령 실행을 update 해"
+  },
+  {
+    "id": "R4-AP-078",
+    "expected_route": "approval_required",
+    "message": "위험 명령 실행을 insert 해"
+  },
+  {
+    "id": "R4-AP-079",
+    "expected_route": "approval_required",
+    "message": "위험 명령 실행을 truncate 해"
+  },
+  {
+    "id": "R4-AP-080",
+    "expected_route": "approval_required",
+    "message": "위험 명령 실행을 drop 해"
+  },
+  {
+    "id": "R4-AP-081",
+    "expected_route": "approval_required",
+    "message": "보안 정책 예외 적용을 승인 요청해"
+  },
+  {
+    "id": "R4-AP-082",
+    "expected_route": "approval_required",
+    "message": "보안 정책 예외 적용을 허가 받아"
+  },
+  {
+    "id": "R4-AP-083",
+    "expected_route": "approval_required",
+    "message": "보안 정책 예외 적용을 결재 올려"
+  },
+  {
+    "id": "R4-AP-084",
+    "expected_route": "approval_required",
+    "message": "보안 정책 예외 적용을 강제로 진행해"
+  },
+  {
+    "id": "R4-AP-085",
+    "expected_route": "approval_required",
+    "message": "보안 정책 예외 적용을 force 처리해"
+  },
+  {
+    "id": "R4-AP-086",
+    "expected_route": "approval_required",
+    "message": "보안 정책 예외 적용을 delete 해"
+  },
+  {
+    "id": "R4-AP-087",
+    "expected_route": "approval_required",
+    "message": "보안 정책 예외 적용을 update 해"
+  },
+  {
+    "id": "R4-AP-088",
+    "expected_route": "approval_required",
+    "message": "보안 정책 예외 적용을 insert 해"
+  },
+  {
+    "id": "R4-AP-089",
+    "expected_route": "approval_required",
+    "message": "보안 정책 예외 적용을 truncate 해"
+  },
+  {
+    "id": "R4-AP-090",
+    "expected_route": "approval_required",
+    "message": "보안 정책 예외 적용을 drop 해"
+  },
+  {
+    "id": "R4-AP-091",
+    "expected_route": "approval_required",
+    "message": "기존 결과 강제 교체를 승인 요청해"
+  },
+  {
+    "id": "R4-AP-092",
+    "expected_route": "approval_required",
+    "message": "기존 결과 강제 교체를 허가 받아"
+  },
+  {
+    "id": "R4-AP-093",
+    "expected_route": "approval_required",
+    "message": "기존 결과 강제 교체를 결재 올려"
+  },
+  {
+    "id": "R4-AP-094",
+    "expected_route": "approval_required",
+    "message": "기존 결과 강제 교체를 강제로 진행해"
+  },
+  {
+    "id": "R4-AP-095",
+    "expected_route": "approval_required",
+    "message": "기존 결과 강제 교체를 force 처리해"
+  },
+  {
+    "id": "R4-AP-096",
+    "expected_route": "approval_required",
+    "message": "기존 결과 강제 교체를 delete 해"
+  },
+  {
+    "id": "R4-AP-097",
+    "expected_route": "approval_required",
+    "message": "기존 결과 강제 교체를 update 해"
+  },
+  {
+    "id": "R4-AP-098",
+    "expected_route": "approval_required",
+    "message": "기존 결과 강제 교체를 insert 해"
+  },
+  {
+    "id": "R4-AP-099",
+    "expected_route": "approval_required",
+    "message": "기존 결과 강제 교체를 truncate 해"
+  },
+  {
+    "id": "R4-AP-100",
+    "expected_route": "approval_required",
+    "message": "기존 결과 강제 교체를 drop 해"
+  },
+  {
+    "id": "R5-RS-001",
+    "expected_route": "report_shell",
+    "message": "근거 부족 상태라 목차만 작성해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-002",
+    "expected_route": "report_shell",
+    "message": "근거 부족 상태라 보고서 shell만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-003",
+    "expected_route": "report_shell",
+    "message": "근거 부족 상태라 초안 구조만 만들어줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-004",
+    "expected_route": "report_shell",
+    "message": "근거 부족 상태라 caveat 포함 outline만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-005",
+    "expected_route": "report_shell",
+    "message": "근거 부족 상태라 섹션 틀만 정리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-006",
+    "expected_route": "report_shell",
+    "message": "근거 부족 상태라 최종 판단 없이 뼈대만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-007",
+    "expected_route": "report_shell",
+    "message": "근거 부족 상태라 한계 명시 템플릿만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-008",
+    "expected_route": "report_shell",
+    "message": "근거 부족 상태라 report shell로 보내줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-009",
+    "expected_route": "report_shell",
+    "message": "근거 부족 상태라 draft only로 처리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-010",
+    "expected_route": "report_shell",
+    "message": "근거 부족 상태라 요약 틀만 제공해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-011",
+    "expected_route": "report_shell",
+    "message": "QA blocked 상태라 목차만 작성해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-012",
+    "expected_route": "report_shell",
+    "message": "QA blocked 상태라 보고서 shell만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-013",
+    "expected_route": "report_shell",
+    "message": "QA blocked 상태라 초안 구조만 만들어줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-014",
+    "expected_route": "report_shell",
+    "message": "QA blocked 상태라 caveat 포함 outline만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-015",
+    "expected_route": "report_shell",
+    "message": "QA blocked 상태라 섹션 틀만 정리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-016",
+    "expected_route": "report_shell",
+    "message": "QA blocked 상태라 최종 판단 없이 뼈대만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-017",
+    "expected_route": "report_shell",
+    "message": "QA blocked 상태라 한계 명시 템플릿만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-018",
+    "expected_route": "report_shell",
+    "message": "QA blocked 상태라 report shell로 보내줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-019",
+    "expected_route": "report_shell",
+    "message": "QA blocked 상태라 draft only로 처리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-020",
+    "expected_route": "report_shell",
+    "message": "QA blocked 상태라 요약 틀만 제공해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-021",
+    "expected_route": "report_shell",
+    "message": "coverage 낮음 상태라 목차만 작성해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-022",
+    "expected_route": "report_shell",
+    "message": "coverage 낮음 상태라 보고서 shell만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-023",
+    "expected_route": "report_shell",
+    "message": "coverage 낮음 상태라 초안 구조만 만들어줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-024",
+    "expected_route": "report_shell",
+    "message": "coverage 낮음 상태라 caveat 포함 outline만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-025",
+    "expected_route": "report_shell",
+    "message": "coverage 낮음 상태라 섹션 틀만 정리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-026",
+    "expected_route": "report_shell",
+    "message": "coverage 낮음 상태라 최종 판단 없이 뼈대만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-027",
+    "expected_route": "report_shell",
+    "message": "coverage 낮음 상태라 한계 명시 템플릿만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-028",
+    "expected_route": "report_shell",
+    "message": "coverage 낮음 상태라 report shell로 보내줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-029",
+    "expected_route": "report_shell",
+    "message": "coverage 낮음 상태라 draft only로 처리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-030",
+    "expected_route": "report_shell",
+    "message": "coverage 낮음 상태라 요약 틀만 제공해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-031",
+    "expected_route": "report_shell",
+    "message": "source boundary blocked 상태라 목차만 작성해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-032",
+    "expected_route": "report_shell",
+    "message": "source boundary blocked 상태라 보고서 shell만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-033",
+    "expected_route": "report_shell",
+    "message": "source boundary blocked 상태라 초안 구조만 만들어줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-034",
+    "expected_route": "report_shell",
+    "message": "source boundary blocked 상태라 caveat 포함 outline만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-035",
+    "expected_route": "report_shell",
+    "message": "source boundary blocked 상태라 섹션 틀만 정리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-036",
+    "expected_route": "report_shell",
+    "message": "source boundary blocked 상태라 최종 판단 없이 뼈대만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-037",
+    "expected_route": "report_shell",
+    "message": "source boundary blocked 상태라 한계 명시 템플릿만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-038",
+    "expected_route": "report_shell",
+    "message": "source boundary blocked 상태라 report shell로 보내줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-039",
+    "expected_route": "report_shell",
+    "message": "source boundary blocked 상태라 draft only로 처리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-040",
+    "expected_route": "report_shell",
+    "message": "source boundary blocked 상태라 요약 틀만 제공해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-041",
+    "expected_route": "report_shell",
+    "message": "원자료 quarantine 상태라 목차만 작성해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-042",
+    "expected_route": "report_shell",
+    "message": "원자료 quarantine 상태라 보고서 shell만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-043",
+    "expected_route": "report_shell",
+    "message": "원자료 quarantine 상태라 초안 구조만 만들어줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-044",
+    "expected_route": "report_shell",
+    "message": "원자료 quarantine 상태라 caveat 포함 outline만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-045",
+    "expected_route": "report_shell",
+    "message": "원자료 quarantine 상태라 섹션 틀만 정리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-046",
+    "expected_route": "report_shell",
+    "message": "원자료 quarantine 상태라 최종 판단 없이 뼈대만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-047",
+    "expected_route": "report_shell",
+    "message": "원자료 quarantine 상태라 한계 명시 템플릿만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-048",
+    "expected_route": "report_shell",
+    "message": "원자료 quarantine 상태라 report shell로 보내줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-049",
+    "expected_route": "report_shell",
+    "message": "원자료 quarantine 상태라 draft only로 처리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-050",
+    "expected_route": "report_shell",
+    "message": "원자료 quarantine 상태라 요약 틀만 제공해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-051",
+    "expected_route": "report_shell",
+    "message": "검증 실패 상태라 목차만 작성해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-052",
+    "expected_route": "report_shell",
+    "message": "검증 실패 상태라 보고서 shell만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-053",
+    "expected_route": "report_shell",
+    "message": "검증 실패 상태라 초안 구조만 만들어줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-054",
+    "expected_route": "report_shell",
+    "message": "검증 실패 상태라 caveat 포함 outline만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-055",
+    "expected_route": "report_shell",
+    "message": "검증 실패 상태라 섹션 틀만 정리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-056",
+    "expected_route": "report_shell",
+    "message": "검증 실패 상태라 최종 판단 없이 뼈대만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-057",
+    "expected_route": "report_shell",
+    "message": "검증 실패 상태라 한계 명시 템플릿만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-058",
+    "expected_route": "report_shell",
+    "message": "검증 실패 상태라 report shell로 보내줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-059",
+    "expected_route": "report_shell",
+    "message": "검증 실패 상태라 draft only로 처리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-060",
+    "expected_route": "report_shell",
+    "message": "검증 실패 상태라 요약 틀만 제공해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-061",
+    "expected_route": "report_shell",
+    "message": "참조 문서 누락 상태라 목차만 작성해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-062",
+    "expected_route": "report_shell",
+    "message": "참조 문서 누락 상태라 보고서 shell만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-063",
+    "expected_route": "report_shell",
+    "message": "참조 문서 누락 상태라 초안 구조만 만들어줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-064",
+    "expected_route": "report_shell",
+    "message": "참조 문서 누락 상태라 caveat 포함 outline만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-065",
+    "expected_route": "report_shell",
+    "message": "참조 문서 누락 상태라 섹션 틀만 정리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-066",
+    "expected_route": "report_shell",
+    "message": "참조 문서 누락 상태라 최종 판단 없이 뼈대만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-067",
+    "expected_route": "report_shell",
+    "message": "참조 문서 누락 상태라 한계 명시 템플릿만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-068",
+    "expected_route": "report_shell",
+    "message": "참조 문서 누락 상태라 report shell로 보내줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-069",
+    "expected_route": "report_shell",
+    "message": "참조 문서 누락 상태라 draft only로 처리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-070",
+    "expected_route": "report_shell",
+    "message": "참조 문서 누락 상태라 요약 틀만 제공해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-071",
+    "expected_route": "report_shell",
+    "message": "수치 불일치 상태라 목차만 작성해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-072",
+    "expected_route": "report_shell",
+    "message": "수치 불일치 상태라 보고서 shell만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-073",
+    "expected_route": "report_shell",
+    "message": "수치 불일치 상태라 초안 구조만 만들어줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-074",
+    "expected_route": "report_shell",
+    "message": "수치 불일치 상태라 caveat 포함 outline만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-075",
+    "expected_route": "report_shell",
+    "message": "수치 불일치 상태라 섹션 틀만 정리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-076",
+    "expected_route": "report_shell",
+    "message": "수치 불일치 상태라 최종 판단 없이 뼈대만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-077",
+    "expected_route": "report_shell",
+    "message": "수치 불일치 상태라 한계 명시 템플릿만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-078",
+    "expected_route": "report_shell",
+    "message": "수치 불일치 상태라 report shell로 보내줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-079",
+    "expected_route": "report_shell",
+    "message": "수치 불일치 상태라 draft only로 처리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-080",
+    "expected_route": "report_shell",
+    "message": "수치 불일치 상태라 요약 틀만 제공해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-081",
+    "expected_route": "report_shell",
+    "message": "품질 gate 차단 상태라 목차만 작성해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-082",
+    "expected_route": "report_shell",
+    "message": "품질 gate 차단 상태라 보고서 shell만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-083",
+    "expected_route": "report_shell",
+    "message": "품질 gate 차단 상태라 초안 구조만 만들어줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-084",
+    "expected_route": "report_shell",
+    "message": "품질 gate 차단 상태라 caveat 포함 outline만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-085",
+    "expected_route": "report_shell",
+    "message": "품질 gate 차단 상태라 섹션 틀만 정리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-086",
+    "expected_route": "report_shell",
+    "message": "품질 gate 차단 상태라 최종 판단 없이 뼈대만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-087",
+    "expected_route": "report_shell",
+    "message": "품질 gate 차단 상태라 한계 명시 템플릿만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-088",
+    "expected_route": "report_shell",
+    "message": "품질 gate 차단 상태라 report shell로 보내줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-089",
+    "expected_route": "report_shell",
+    "message": "품질 gate 차단 상태라 draft only로 처리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-090",
+    "expected_route": "report_shell",
+    "message": "품질 gate 차단 상태라 요약 틀만 제공해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-091",
+    "expected_route": "report_shell",
+    "message": "답변 보류 상태라 목차만 작성해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-092",
+    "expected_route": "report_shell",
+    "message": "답변 보류 상태라 보고서 shell만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-093",
+    "expected_route": "report_shell",
+    "message": "답변 보류 상태라 초안 구조만 만들어줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-094",
+    "expected_route": "report_shell",
+    "message": "답변 보류 상태라 caveat 포함 outline만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-095",
+    "expected_route": "report_shell",
+    "message": "답변 보류 상태라 섹션 틀만 정리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-096",
+    "expected_route": "report_shell",
+    "message": "답변 보류 상태라 최종 판단 없이 뼈대만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-097",
+    "expected_route": "report_shell",
+    "message": "답변 보류 상태라 한계 명시 템플릿만 줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-098",
+    "expected_route": "report_shell",
+    "message": "답변 보류 상태라 report shell로 보내줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-099",
+    "expected_route": "report_shell",
+    "message": "답변 보류 상태라 draft only로 처리해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  },
+  {
+    "id": "R5-RS-100",
+    "expected_route": "report_shell",
+    "message": "답변 보류 상태라 요약 틀만 제공해줘",
+    "context": {
+      "qa_blocked": true
+    }
+  }
+]

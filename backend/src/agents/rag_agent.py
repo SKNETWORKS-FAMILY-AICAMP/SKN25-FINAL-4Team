@@ -175,7 +175,7 @@ def run(question: str, history: list | None = None) -> RAGState:
 
     # 2. LLM 답변 생성
     prompt = build_prompt(state, history=history)
-    state.answer = llm_chat([{"role": "user", "content": prompt}], max_tokens=1024)
+    state.answer = llm_chat([{"role": "user", "content": prompt}], max_tokens=1024, thinking=False)
 
     return state
 

@@ -78,18 +78,19 @@ def _ollama_base_url() -> str:
     return url.rstrip("/").removesuffix("/v1")
 
 
-def chat(messages: list[dict], max_tokens: int = 1024, fast: bool = False) -> str:
+def chat(messages: list[dict], max_tokens: int = 1024, fast: bool = False, thinking: bool | None = None) -> str:
     """통합 LLM 호출 — 텍스트 응답만 반환.
 
-    fast=True  → LLM_MODEL_FAST (EXAONE 등): 의도 분류·단순 쿼리용, think=False
-    fast=False → LLM_MODEL (Gemma4 등): 진단·보고서·분석용, think=True (품질 극대화)
-                 thinking 토큰 소모를 위해 num_predict를 4배 확장
+    fast=True           → EXAONE: 의도 분류·단순 쿼리용, thinking 자동 OFF
+    fast=False          → Gemma4: 진단·보고서·분석용, thinking 자동 ON
+    thinking=False 명시 → Gemma4를 thinking 없이 호출 (~3s, RAG 단순 설명용)
     """
     model = LLM_MODEL_FAST if fast else LLM_MODEL
 
     if LLM_PROVIDER == "ollama":
         num_ctx = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
-        thinking = not fast  # quality 경로는 thinking ON, fast 경로는 OFF
+        if thinking is None:
+            thinking = not fast  # 기본값: quality → ON, fast → OFF
         num_predict = max_tokens * 4 if thinking else max_tokens
         payload = {
             "model": model,

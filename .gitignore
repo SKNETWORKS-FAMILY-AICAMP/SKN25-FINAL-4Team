@@ -28,7 +28,9 @@ venv/
 env/
 ENV/
 
-# 학습 모델과 실험 결과
+# 학습 모델과 실험 결과 (Hugging Face Hub에 별도 보관)
+# 다운로드: .venv/bin/python scripts/download_artifacts.py
+# 업로드:   .venv/bin/python scripts/upload_artifacts.py
 /backend/src/models/anomaly/saved/
 /backend/src/models/forecasting/saved/
 /backend/ml/pipeline/artifacts/

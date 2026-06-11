@@ -53,13 +53,19 @@ def is_available() -> bool: ...
 | `ts` | datetime | 시점 |
 | `actual_w` | float | 실측 전력 (W) |
 | `predicted_w` | float | 모델 예측 (W) |
-| `residual_w` | float | 잔차 = 실측-예측 (W) |
-| `res_flag` | int(0/1) | 잔차 임계 초과 |
-| `if_flag` | int(0/1) | Isolation Forest 플래그 |
-| `vote` | int(0~2) | res_flag+if_flag |
+| `residual_w` | float | 잔차 절댓값 = \|실측-예측\| (W) |
+| `res_flag` | int(0/1) | `residual_w / threshold ≥ 1.0` 이면 1 |
+| `if_flag` | int(0/1) | IsolationForest 플래그 (**현재 구현에서 항상 0**, 미사용) |
+| `vote` | int(0/1) | 현재 `res_flag`와 동일 (if_flag 미사용으로 0~1) |
 | `anomaly_level` | str | `HIGH` / `MEDIUM` / `LOW` / `NORMAL` |
 
-- `is_available()`는 필요한 아티팩트(`residual_threshold.pkl`, `residual_iforest.pkl`, `residual_if_scaler.pkl` 등)가 `ML_MODEL_DIR`에 있을 때 `True`.
+**`anomaly_level` 판정 기준** (`ratio = residual_w / threshold`):
+- ratio ≥ 2.0 → `HIGH`
+- ratio ≥ 1.5 → `MEDIUM`
+- ratio ≥ 1.0 → `LOW`
+- ratio < 1.0 → `NORMAL`
+
+- `is_available()`은 v84 pipeline artifacts(`ml/pipeline/artifacts/1h/{meter_urn}/lstm_*.pt` 등)가 하나 이상 있으면 `True`.
 - 모델이 없으면(`is_available()==False`) 자동으로 아래 앙상블 폴백을 사용.
 
 ### 2-2. 폴백 — `models/anomaly/ensemble.py`
@@ -101,23 +107,27 @@ def run(df: pd.DataFrame, save_to_db: bool = True) -> pd.DataFrame: ...
 
 ## 3. 전력 예측 모델 계약 (보조 — 수요 예측·제어 권고)
 
-### 3-1. 주 모델 — `models/forecasting/vmd_lstm_model.py`
+### 3-1. 주 모델 — `ml/pipeline/inference.py` (v84 앙상블)
 
 ```python
-def predict_future(df, hours: int = 24) -> pd.DataFrame:      # 컬럼: ts, predicted_w, predicted_kw
-def predict_historical(df, start, end) -> pd.DataFrame:       # 컬럼: ts, actual_w, predicted_w, error_w
-def is_available() -> bool: ...
+def is_available(meter_urn: str, horizon: int) -> bool: ...
+# 추론 진입점: backend/src/api/routers/forecast.py → ml.pipeline.inference
 ```
-- `predict_historical`은 이상탐지(잔차)에서도 사용됨 — `error_w`(=actual-pred) 컬럼 필수.
-- 사전학습 모델. 학습 아티팩트는 `ML_MODEL_DIR`에 둘 것.
 
-### 3-2. 폴백 — `models/forecasting/xgboost_model.py`
+**앙상블 구성**: v63·v67·v71 세 LSTM 버전의 예측을 **median**으로 결합 후 시간대별 shrunk bias correction(gain 1.30) 적용.
 
-```python
-def train(df: pd.DataFrame) -> model: ...          # 별도 프로세스에서 학습
-def predict(df, hours: int = 24) -> pd.DataFrame:  # 컬럼: ts, yhat  (단위 kW)
-```
-- 주의: `predict`의 `yhat` 단위는 **kW**. 소비처(`control.py`)가 `yhat/1000` 가정 없이 그대로 kW로 사용하므로 단위 일관성 유지.
+**아티팩트 위치**: `ml/pipeline/artifacts/{1h|3h}/{meter_urn}/`
+- `lstm_{version}.pt` — LSTM 가중치 (v1·v2·v3·v4·v6·v7 중 상위 2개 사용)
+- `catboost.cbm`, `lightgbm_t_plus_{N}.txt` — 부스팅 모델
+- `input_scaler.joblib`, `target_scaler.joblib` — 스케일러
+- `routing.json` — 계량기별 앙상블 구성 및 이상탐지 threshold
+
+**반환 컬럼** (`GET /forecast/predict/v84-ensemble`):
+- `ts`, `predicted_kw`, `actual_kw` (historical), `horizon`
+
+### 3-2. 폴백 — Seasonal Naive
+
+artifacts 없을 때 사용. 동일 요일·시간대의 과거 평균으로 예측.
 
 ---
 
@@ -135,7 +145,7 @@ def predict(df, hours: int = 24) -> pd.DataFrame:  # 컬럼: ts, yhat  (단위 k
 1. `predict_anomaly` 반환 컬럼명 8종 (특히 `anomaly_level`, `residual_w`).
 2. `anomaly_results`의 `timestamp / anomaly_type / severity / gateway_failure`.
 3. `anomaly_type` 고정 어휘 (변경 시 CMS 매핑 동기화 필요).
-4. 예측 함수 반환 컬럼·단위 (`predicted_kw`, `yhat`=kW, `error_w`).
-5. `is_available()` — 아티팩트 파일명과 일치.
+4. 예측 반환 컬럼·단위 (`predicted_kw` 단위 kW).
+5. `is_available()` — `ml/pipeline/artifacts/` 내 `.pt` / `.cbm` / `.joblib` 파일 존재 여부와 일치.
 
 문의/변경은 인터페이스 레이어 담당(keun)과 사전 공유.

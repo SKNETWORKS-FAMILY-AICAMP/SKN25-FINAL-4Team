@@ -20,7 +20,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # 소스 복사
 COPY src/ ./src/
 COPY ml/ ./ml/
+COPY ensure_artifacts.py .
 
 EXPOSE 8000
 
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+# 시작 시 artifacts 없으면 HF Hub에서 자동 다운로드 후 서버 기동
+CMD ["sh", "-c", "python ensure_artifacts.py && uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --workers 1"]

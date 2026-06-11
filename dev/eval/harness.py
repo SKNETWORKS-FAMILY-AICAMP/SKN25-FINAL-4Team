@@ -1,14 +1,16 @@
 """
-sLLM 성능 자동 평가 하니스 — gpt-4o as judge
+sLLM 성능 자동 평가 하니스 — gpt-5.5 as judge
 
 실행 (프로젝트 루트에서):
-    python eval/harness.py
+    python eval/harness.py                          # 기본: openai gpt-4o 평가
+    LLM_MODEL=gpt-5 python eval/harness.py          # gpt-5 평가
+    LLM_PROVIDER=ollama LLM_MODEL=gemma4:12b ...    # 로컬 모델 평가
 
 결과:
     콘솔에 점수 테이블 출력
     eval/results/YYYYMMDD_HHMMSS_{model}.json 저장
 
-평가 기준 (gpt-4o가 1~10점 채점):
+평가 기준 (gpt-5.5가 1~10점 채점):
     한국어  — 자연스럽고 전문적인 한국어 품질
     형식    — 요청한 구조·섹션 준수
     근거성  — 제공된 수치·데이터를 근거로 인용하는지 여부
@@ -25,15 +27,15 @@ from pathlib import Path
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv(Path(__file__).parent.parent / ".env")
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 # ── 평가 대상 모델 설정 ────────────────────────────────────────────────
 PROVIDER   = os.getenv("LLM_PROVIDER", "openai").lower()
 MODEL      = os.getenv("LLM_MODEL", "gpt-4o")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/v1")
 
-# ── 심사위원 (항상 gpt-4o) ────────────────────────────────────────────
-JUDGE_MODEL = "gpt-4o"
+# ── 심사위원 ─────────────────────────────────────────────────────────
+JUDGE_MODEL = os.getenv("JUDGE_MODEL", "gpt-5.5")
 
 # ── 테스트 프롬프트 ───────────────────────────────────────────────────
 PROMPTS = [
@@ -69,7 +71,11 @@ PROMPTS = [
         "messages": [
             {
                 "role": "system",
-                "content": "당신은 에너지 설비 이상탐지 전문가입니다.",
+                "content": (
+                    "당신은 에너지 설비 이상탐지 전문가입니다. "
+                    "반드시 제공된 수치(시각·전력값·역률·지속시간)를 직접 인용해 원인을 설명하세요. "
+                    "제공되지 않은 수치를 추론으로 생성하지 마세요."
+                ),
             },
             {
                 "role": "user",
@@ -128,6 +134,7 @@ PROMPTS = [
     {
         "id":   "intent_classify",
         "name": "의도 분류",
+        "role": "fast",
         "messages": [
             {
                 "role": "system",
@@ -158,7 +165,7 @@ PROMPTS += [
             "- 총 소비: 1,240,500 kWh\n- 자급률: 38.2%\n- 평균 COP: 2.14\n"
             "- 그리드 의존도: 61.8%\n- 이상탐지: 3건\n\n"
             "## 비교\n- 전월(2024-02) 대비 소비량: +4.2%\n- 전년 동월(2023-03) 대비 소비량: -2.1%  자급률: +1.3%p\n\n"
-            "3~4문장으로 월간 트렌드를 분석하세요. 전월 대비와 전년 동월 대비 변화를 모두 언급하고, 주목할 KPI 변화와 가능한 원인을 짚어주세요."
+            "정확히 3~4문장 산문으로 답하세요 (목록·섹션·소제목 없이). 전월·전년 동월 대비 수치를 반드시 인용하고, 주목할 KPI와 가능한 원인을 짚은 뒤, 이상탐지 3건에 대한 운영자 점검 1가지로 마무리하세요."
         )}],
         "expected_format": "3~4문장 산문 (계통 전력 용어 사용)",
         "provided_data":   "소비 1,240,500kWh, 자급률 38.2%, COP 2.14, 전월+4.2%, 전년-2.1%",
@@ -195,7 +202,7 @@ PROMPTS += [
             "  - 2022-06: PV 역률 비정상 (점수 55)\n"
             "  - 2020-08: 게이트웨이 장애 (점수 30)\n\n"
             "## 알려진 게이트웨이 장애 구간\n- 2020-02~03, 2020-08~09, 2021-11~12, 2022-05~07 (인공 보정 데이터)\n\n"
-            "2~3문장으로 데이터 품질 현황을 요약하세요. 문제 월이 있다면 원인과 분석 시 주의사항을 간략히 짚어주세요."
+            "2~3문장으로 데이터 품질 현황을 요약하세요. 문제 월이 있다면 각 원인을 구체적으로(예: PV 역률 비정상, 게이트웨이 장애 등) 명시하고, 해당 기간 데이터를 분석에 사용할 때의 주의사항을 짚어주세요."
         )}],
         "expected_format": "2~3문장 산문",
         "provided_data":   "24개월 중 5개월 문제, 2022-05~07 PV 이상, 2020-08 게이트웨이 장애",
@@ -205,13 +212,16 @@ PROMPTS += [
         "name": "에너지 원단위 분석",
         "messages": [{"role": "user", "content": (
             "당신은 EMS Agent — 외기온 정규화 에너지 원단위(EI) 분석 AI입니다.\n"
-            "시설: Honda R&D Europe GmbH, 독일 오펜바흐.\n\n"
-            "## 분석 결과 (단위: kWh/DD, 낮을수록 에너지 효율 좋음)\n"
+            "시설: Honda R&D Europe GmbH, 독일 오펜바흐.\n"
+            "에너지 원단위(EI) = 총소비량(kWh) ÷ 도일(DD). 낮을수록 날씨 영향을 제거한 실질 효율이 높음.\n\n"
+            "## 분석 결과 (단위: kWh/DD)\n"
             "- 전체 평균 EI: 284.2 kWh/DD\n"
             "- 최근 3개월 평균: 271.8 kWh/DD (-4.4% vs 전체평균)\n"
             "- 최고 효율 월: 2023-05 (198.4 kWh/DD, 외기온 16.2°C)\n"
             "- 최저 효율 월: 2020-12 (412.7 kWh/DD, 외기온 -3.1°C)\n\n"
-            "날씨 영향을 제거한 실질 에너지 효율 추이를 2~3문장으로 분석하세요. 최근 추세가 개선/악화 중인지, 특이 시기가 있다면 그 원인을 짚어주세요."
+            "위 수치만 인용해 날씨 영향을 제거한 실질 에너지 효율 추이를 2~3문장으로 분석하세요. "
+            "최근 추세가 개선/악화 중인지, 특이 시기가 있다면 그 원인을 짚어주세요. "
+            "제공되지 않은 수치를 생성하지 마세요."
         )}],
         "expected_format": "2~3문장 산문, kWh/DD 단위 수치 인용",
         "provided_data":   "전체평균 284.2, 최근3개월 271.8(-4.4%), 최고 2023-05(198.4), 최저 2020-12(412.7)",
@@ -244,7 +254,7 @@ PROMPTS += [
                 "content": (
                     "당신은 CMS 설비 진단 전문가입니다. "
                     "이상이 0건이고 전기 시그니처도 정상 범위면 '현재 정상 — 특이 이상 없음' 한 줄로만 답하세요. "
-                    "반드시 🩺 진단 결과 / 🔍 상세 분석 / ✅ 조치 권고 세 섹션으로 답변하세요."
+                    "이상이 있는 경우에만 🩺 진단 결과 / 🔍 상세 분석 / ✅ 조치 권고 세 섹션으로 답변하세요."
                 ),
             },
             {
@@ -299,9 +309,47 @@ PROMPTS += [
                 "role": "system",
                 "content": (
                     "당신은 CMS 설비 진단 전문가입니다.\n"
-                    "주의: 태양광·열병합 등 발전 설비는 역률이 음수이거나 낮아도 전력 역송(생산) 상태이므로 정상입니다. "
-                    "역률 저하로 단정하지 마세요.\n"
+                    "⚠️ 핵심 규칙: 태양광(PV)·열병합(CHP) 등 발전 설비는 역률이 음수이거나 낮아도 "
+                    "전력을 역송(생산)하고 있는 정상 상태입니다. 역률 저하 이상으로 판단하지 마세요.\n"
+                    "⚠️ 전압 정상 범위: 정격±5% 이내(380~420V)는 정상. 미미한 전압 차이를 이상으로 과대 해석하지 마세요.\n"
+                    "진단에 사용하는 수치는 제공된 데이터에서만 인용하세요.\n"
                     "반드시 🩺 진단 결과 / 🔍 상세 분석 / ✅ 조치 권고 세 섹션으로 답변하세요."
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    "태양광(PV) 설비 최근 30일 이상 탐지 결과:\n"
+                    "[이상 요약] 총 0건\n"
+                    "[전기 시그니처] 역률 -0.88 (역송 상태), 발전량 8,400kWh/월\n"
+                    "위 데이터를 근거로 이 설비의 상태를 진단하세요."
+                ),
+            },
+            {
+                "role": "assistant",
+                "content": (
+                    "🩺 진단 결과\n현재 정상 운영 — 역률 음수는 태양광 역송 정상 상태입니다.\n\n"
+                    "🔍 상세 분석\n역률 -0.88은 PV 설비가 8,400 kWh/월의 전력을 계통에 역송하고 있음을 나타냅니다. "
+                    "발전 설비 특성상 역률 음수는 이상이 아닌 정상 발전 상태입니다.\n\n"
+                    "✅ 조치 권고\n현재 정상 운영 중이므로 추가 조치는 필요하지 않습니다. 발전량 추이를 월간 모니터링하세요."
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    "태양광(PV) 설비 최근 30일 이상 탐지 결과:\n"
+                    "[이상 요약] 총 1건 (LOW 1건)\n"
+                    "[전기 시그니처] 역률 -0.91 (역송 상태), 발전량 7,800kWh/월\n"
+                    "위 데이터를 근거로 이 설비의 상태를 진단하세요."
+                ),
+            },
+            {
+                "role": "assistant",
+                "content": (
+                    "🩺 진단 결과\n현재 정상 운영 — 역률 음수는 역송(발전) 정상 상태, LOW 이상 1건은 경미.\n\n"
+                    "🔍 상세 분석\n역률 -0.91은 PV가 7,800 kWh/월을 계통에 역송 중임을 나타냅니다. "
+                    "LOW 이상 1건은 경미 등급으로, 발전 설비 특성상 허용 범위입니다.\n\n"
+                    "✅ 조치 권고\n이상 등급이 LOW이므로 즉각 조치는 불필요합니다. 다음 30일 추이를 모니터링하세요."
                 ),
             },
             {
@@ -315,13 +363,14 @@ PROMPTS += [
             },
         ],
         "expected_format": "역률 -0.95를 '정상(역송)'으로 해석해야 함. 이상으로 판단하면 오답.",
-        "provided_data":   "PV 역률 -0.95(역송), 이상 LOW 2건, 발전량 9,200kWh",
+        "provided_data":   "PV 역률 -0.95(역송), 전압 402V, 이상 LOW 2건, 발전량 9,200kWh",
     },
 
     # ── 구어체 의도 분류 ───────────────────────────────────────────────────
     {
         "id":   "intent_colloquial",
         "name": "의도 분류 (구어체)",
+        "role": "fast",
         "messages": [
             {
                 "role": "system",
@@ -340,14 +389,20 @@ PROMPTS += [
     {
         "id":   "intent_ambiguous",
         "name": "의도 분류 (모호)",
+        "role": "fast",
         "messages": [
             {
                 "role": "system",
                 "content": (
                     "사용자 메시지의 의도를 다음 중 하나로만 답하세요. "
-                    "다른 말은 절대 하지 마세요: forecast / anomaly / cms / rag / report"
+                    "다른 말은 절대 하지 마세요: forecast / anomaly / cms / rag / report\n"
+                    "요금·비용·전기세 관련 질문은 report, 추세·예측·전망은 forecast."
                 ),
             },
+            {"role": "user", "content": "이번달 전기 요금 보고서 뽑아줘"},
+            {"role": "assistant", "content": "report"},
+            {"role": "user", "content": "앞으로 소비가 얼마나 늘어날까"},
+            {"role": "assistant", "content": "forecast"},
             {"role": "user", "content": "요즘 전기요금이 왜 이렇게 많이 나오지"},
         ],
         "expected_format": "단어 하나 (report 또는 anomaly 가 정답)",
@@ -358,6 +413,7 @@ PROMPTS += [
     {
         "id":   "intent_multi",
         "name": "의도 분류 (복합 질문)",
+        "role": "fast",
         "messages": [
             {
                 "role": "system",
@@ -379,7 +435,32 @@ PROMPTS += [
         "messages": [
             {
                 "role": "system",
-                "content": "당신은 에너지 관리 보고서 작성 전문가입니다. 제공된 데이터에 없는 수치를 만들어내지 마세요.",
+                "content": (
+                    "당신은 에너지 관리 보고서 작성 전문가입니다.\n"
+                    "⚠️ 데이터 부족 시 엄격 규칙:\n"
+                    "1. 제공된 날짜 범위 외 수치를 추정하거나 외삽하지 마세요.\n"
+                    "2. 부분 데이터로 월간·연간 합계를 계산하지 마세요.\n"
+                    "3. 가능한 것: 제공된 일자의 평균·최대·최소. 불가능한 것: 월간 합계·추세·예측."
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    "이번 달 데이터가 1일치밖에 없습니다:\n"
+                    "- 2024-04-01: 소비 40,200 kWh\n\n"
+                    "4월 월간 보고서를 작성해주세요."
+                ),
+            },
+            {
+                "role": "assistant",
+                "content": (
+                    "⚠️ 데이터 부족 — 월간 보고서 작성 불가\n\n"
+                    "제공된 데이터: 2024-04-01 소비 40,200 kWh (1일치)\n"
+                    "1일치 데이터로 월간 합계·추세·예측을 계산하면 신뢰성이 없습니다.\n\n"
+                    "가능한 분석:\n"
+                    "- 2024-04-01 일간 소비: 40,200 kWh\n\n"
+                    "충분한 데이터(7일 이상)가 확보되면 추세 분석이 가능합니다."
+                ),
             },
             {
                 "role": "user",
@@ -548,7 +629,7 @@ PROMPTS += [
             {"role": "user",   "content": "What is the current status of the cooling system? Are there any anomalies detected in the last 30 days?"},
         ],
         "expected_format": "한국어로 답변 (영어 질문이어도), 설비 상태 설명",
-        "provided_data":   "N/A — 언어 처리 테스트, 근거성 자동 5점",
+        "provided_data":   "N/A — 언어 처리 테스트 전용, 근거성 자동 10점",
     },
 
     # ── 한영 혼용 질문 ────────────────────────────────────────────────
@@ -556,7 +637,7 @@ PROMPTS += [
         "id":   "mixed_language",
         "name": "한영 혼용 질문",
         "messages": [
-            {"role": "system", "content": "당신은 CMS 설비 진단 전문가입니다."},
+            {"role": "system", "content": "당신은 CMS 설비 진단 전문가입니다. 기준치: COP 정상 범위 하한 2.06, 이 미만이면 주의 요망."},
             {"role": "user",   "content": "cooling system COP가 1.9인데 이게 normal range야? threshold는 얼마야?"},
         ],
         "expected_format": "한국어로 답변, COP 1.9 평가 + 기준치 2.06 언급",
@@ -586,8 +667,28 @@ PROMPTS += [
         "id":   "seasonal_normal",
         "name": "계절 요인 정상성 판단",
         "messages": [
-            {"role": "system", "content": "당신은 CMS 설비 진단 전문가입니다. 계절·외기온 영향을 반드시 고려하여 판단하세요."},
-            {"role": "user",   "content": (
+            {"role": "system", "content": (
+                "당신은 CMS 설비 진단 전문가입니다. 계절·외기온 영향을 반드시 고려하여 판단하세요.\n"
+                "⚠️ 계절 도메인 지식:\n"
+                "- 냉방 시스템: 외기온이 높을수록 냉방 부하 증가 → COP 저하는 정상. 여름 극더위(35°C+)에서 연간 중앙값 대비 COP 10~20% 낮아도 정상.\n"
+                "- 이상탐지 0건이면 계절 요인에 의한 성능 변동을 이상으로 판단하지 마세요."
+            )},
+            {"role": "user", "content": (
+                "냉방 시스템 현황 (2024-07-20, 한여름):\n"
+                "- 현재 COP: 1.92 (연간 중앙값 2.06)\n"
+                "- 외기온: 33.1°C (평년 7월 평균 26°C 대비 +7.1°C)\n"
+                "- 이상탐지: 0건\n"
+                "- 전류: 36A (정격 내)\n\n"
+                "COP가 중앙값보다 낮은데 이상 판정해야 하나요?"
+            )},
+            {"role": "assistant", "content": (
+                "계절 정상 범위 — 이상 아닙니다.\n\n"
+                "외기온 33.1°C는 평년(26°C) 대비 +7.1°C로 냉방 부하가 크게 증가한 상태입니다. "
+                "이런 조건에서 COP 1.92(중앙값 2.06 대비 -7%)는 계절 요인에 의한 정상 저하입니다. "
+                "이상탐지 0건, 전류 정격 내이므로 현재 정상 운영 중입니다.\n\n"
+                "조치: 폭염 기간 중 COP 지속 모니터링. 외기온 정상화 후에도 저하 지속 시 점검 고려."
+            )},
+            {"role": "user", "content": (
                 "냉방 시스템 현황 (2024-08-14, 한여름):\n"
                 "- 현재 COP: 1.85 (연간 중앙값 2.06)\n"
                 "- 외기온: 35.2°C (평년 8월 평균 28°C 대비 +7.2°C)\n"
@@ -698,6 +799,7 @@ PROMPTS += [
                 "- kWh = 에너지 누적량(전력×시간). 예: '이번 달 소비 890 kWh'\n"
                 "- kWh는 절대 순간 전력 단위로 사용 불가. '순간 전력 X kWh'는 항상 오류.\n"
                 "- 월간·일간·누적 소비량에 kW를 쓰면 항상 오류.\n"
+                "- '시간당 소비'·'순간 소비율'처럼 단위 시간당 개념은 kW. '시간당 소비 X kWh'는 오류 → kW로 정정.\n"
                 "오류 발견 시: 오류 항목 나열 → 올바른 단위로 정정 → 정정값으로 계산 시도."
             )},
             {"role": "user", "content": "설비 소비 데이터: 압축기 가동 전력 850 kWh, 월간 에너지 840 kW. 검토해주세요."},
@@ -724,7 +826,13 @@ PROMPTS += [
         "id":   "seasonal_normal_v2",
         "name": "계절 정상성 (겨울 CHP 효율)",
         "messages": [
-            {"role": "system", "content": "당신은 CMS 설비 진단 전문가입니다. 계절·외기온 영향을 반드시 고려하여 판단하세요."},
+            {"role": "system", "content": (
+                "당신은 CMS 설비 진단 전문가입니다. 계절·외기온 영향을 반드시 고려하여 판단하세요.\n"
+                "⚠️ CHP 계절 도메인 지식:\n"
+                "- 열병합(CHP): 겨울철 열 수요 증가 시 열 회수 우선 운전 → 전기 효율 소폭 감소는 정상.\n"
+                "- 열 회수율이 평균 이상이면서 이상탐지 0건이면 이상이 아닙니다.\n"
+                "- 제공된 수치(열회수율·전기효율·외기온·이상탐지)만 인용하세요."
+            )},
             {"role": "user",   "content": (
                 "열병합(CHP) 시스템 현황 (2024-01-20, 한겨울):\n"
                 "- 전기 효율: 32.1% (연간 평균 34.2%)\n"
@@ -735,7 +843,7 @@ PROMPTS += [
             )},
         ],
         "expected_format": "외기온 -8.2°C 고려 → 겨울철 열 수요 증가로 열 회수 우선 → 전기효율 소폭 감소 정상. 이상 아님 결론.",
-        "provided_data":   "전기효율 32.1%(평균 34.2%), 열회수율 88.4%(평균 81.3%), 외기온 -8.2°C",
+        "provided_data":   "전기효율 32.1%(평균 34.2%), 열회수율 88.4%(평균 81.3%), 외기온 -8.2°C, 이상탐지 0건",
     },
 ]
 
@@ -793,11 +901,36 @@ def _make_client(provider: str) -> OpenAI:
     return OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
+def _uses_completion_tokens(model: str) -> bool:
+    """gpt-5+ / o-시리즈는 max_tokens 대신 max_completion_tokens를 사용."""
+    return model.startswith("gpt-5") or model.startswith("o1") or model.startswith("o3") or model.startswith("o4")
+
+
 def _call(client: OpenAI, model: str, messages: list, max_tokens=3000) -> tuple[str, float]:
+    # gpt-5+ 계열은 추론 토큰이 max_completion_tokens 예산을 소진하므로 여유 있게 설정
+    if _uses_completion_tokens(model):
+        max_tokens = max(max_tokens, 8000)
     t0 = time.time()
-    resp = client.chat.completions.create(
-        model=model, messages=messages, max_tokens=max_tokens
-    )
+    # Ollama: 네이티브 API로 thinking 제어 (OpenAI-compat은 thinking 토큰이 max_tokens를 소진)
+    if PROVIDER == "ollama" and client.base_url and "11434" in str(client.base_url):
+        import httpx
+        base = str(client.base_url).rstrip("/").removesuffix("/v1")
+        payload = {
+            "model": model,
+            "messages": messages,
+            "stream": False,
+            "think": False,  # 하니스는 순수 응답 품질 평가 — thinking 없이 측정
+            "options": {"num_predict": max_tokens},
+        }
+        r = httpx.post(f"{base}/api/chat", json=payload, timeout=300)
+        r.raise_for_status()
+        msg = r.json()["message"]
+        content = msg.get("content") or msg.get("thinking", "")
+        elapsed = round((time.time() - t0) * 1000)
+        return content, elapsed
+    token_kwargs = ({"max_completion_tokens": max_tokens} if _uses_completion_tokens(model)
+                    else {"max_tokens": max_tokens})
+    resp = client.chat.completions.create(model=model, messages=messages, **token_kwargs)
     elapsed = round((time.time() - t0) * 1000)
     return resp.choices[0].message.content or "", elapsed
 
@@ -809,18 +942,25 @@ def _judge(judge_client: OpenAI, prompt: dict, response: str) -> dict:
         f"[제공된 데이터] {prompt['provided_data']}\n\n"
         f"[평가할 응답]\n{response}"
     )
-    raw, _ = _call(
-        judge_client, JUDGE_MODEL,
-        [{"role": "system", "content": JUDGE_SYSTEM},
-         {"role": "user",   "content": user_msg}],
-        max_tokens=120,
+    token_kwargs = ({"max_completion_tokens": 4000} if _uses_completion_tokens(JUDGE_MODEL)
+                    else {"max_tokens": 600})
+    resp = judge_client.chat.completions.create(
+        model=JUDGE_MODEL,
+        messages=[{"role": "system", "content": JUDGE_SYSTEM},
+                  {"role": "user",   "content": user_msg}],
+        response_format={"type": "json_object"},
+        **token_kwargs,
     )
+    raw = resp.choices[0].message.content or ""
     try:
+        return json.loads(raw)
+    except Exception:
         start = raw.find("{")
         end   = raw.rfind("}") + 1
-        return json.loads(raw[start:end])
-    except Exception:
-        return {"korean": 0, "format": 0, "grounding": 0, "reasoning": 0, "actionability": 0, "comment": f"파싱 실패: {raw[:60]}"}
+        try:
+            return json.loads(raw[start:end])
+        except Exception:
+            return {"korean": 0, "format": 0, "grounding": 0, "reasoning": 0, "actionability": 0, "comment": f"파싱 실패: {raw[:60]}"}
 
 
 def _bar(score: int, max_score=10) -> str:
@@ -828,9 +968,20 @@ def _bar(score: int, max_score=10) -> str:
     return "█" * filled + "░" * (5 - filled)
 
 
-def run():
+def run(fast_only: bool = False, quality_only: bool = False):
+    model     = os.getenv("LLM_MODEL_FAST", "exaone3.5:7.8b") if fast_only else MODEL
+    role_label = "fast (EXAONE)" if fast_only else ("quality (Gemma4)" if quality_only else "all")
+
+    if fast_only:
+        prompts = [p for p in PROMPTS if p.get("role") == "fast"]
+    elif quality_only:
+        prompts = [p for p in PROMPTS if p.get("role") != "fast"]
+    else:
+        prompts = PROMPTS
+
     print(f"\n{'='*70}")
-    print(f"  sLLM 성능 평가  |  모델: {MODEL}  |  프로바이더: {PROVIDER}")
+    print(f"  sLLM 성능 평가  |  모델: {model}  |  프로바이더: {PROVIDER}")
+    print(f"  역할: {role_label}  |  문항 수: {len(prompts)}")
     print(f"  심사위원: {JUDGE_MODEL}  |  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"{'='*70}\n")
 
@@ -838,9 +989,9 @@ def run():
     judge_client = _make_client("openai")
 
     results = []
-    for p in PROMPTS:
+    for p in prompts:
         print(f"▶ [{p['id']}] {p['name']} ...", end=" ", flush=True)
-        response, elapsed_ms = _call(test_client, MODEL, p["messages"])
+        response, elapsed_ms = _call(test_client, model, p["messages"])
         scores = _judge(judge_client, p, response)
         scores["elapsed_ms"] = elapsed_ms
         scores["response"]   = response
@@ -891,10 +1042,10 @@ def run():
     out_dir = Path(__file__).parent / "results"
     out_dir.mkdir(exist_ok=True)
     ts      = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe    = MODEL.replace(":", "_").replace("/", "_")
+    safe    = model.replace(":", "_").replace("/", "_")
     out_path = out_dir / f"{ts}_{safe}.json"
     payload  = {
-        "model":    MODEL,
+        "model":    model,
         "provider": PROVIDER,
         "judge":    JUDGE_MODEL,
         "run_at":   datetime.now().isoformat(),
@@ -907,4 +1058,10 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    import argparse
+    parser = argparse.ArgumentParser(description="sLLM 성능 평가 하니스")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--fast",    action="store_true", help="EXAONE(LLM_MODEL_FAST) — 의도 분류 문항만")
+    group.add_argument("--quality", action="store_true", help="Gemma4(LLM_MODEL) — 진단·보고서·분석 문항만")
+    args = parser.parse_args()
+    run(fast_only=args.fast, quality_only=args.quality)

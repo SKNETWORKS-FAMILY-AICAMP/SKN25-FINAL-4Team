@@ -1,0 +1,6935 @@
+{
+  "evaluated_at": "2026-06-11T07:51:10.003796+00:00",
+  "dataset_count": 500,
+  "rule_hit_rate": 0.348,
+  "use_llm_fallback": false,
+  "route_map": {
+    "quick_answer": "rag",
+    "evidence_answer": "anomaly",
+    "needs_job": "report",
+    "approval_required": "off_topic",
+    "report_shell": "report"
+  },
+  "overall": {
+    "correct": 243,
+    "accuracy": 0.486,
+    "macro_f1": 0.5189
+  },
+  "per_route": {
+    "anomaly": {
+      "support": 100,
+      "predicted_count": 29,
+      "correct": 29,
+      "precision": 1.0,
+      "recall": 0.29,
+      "f1": 0.4496
+    },
+    "cms": {
+      "support": 0,
+      "predicted_count": 8,
+      "correct": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "forecast": {
+      "support": 0,
+      "predicted_count": 7,
+      "correct": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "off_topic": {
+      "support": 100,
+      "predicted_count": 64,
+      "correct": 64,
+      "precision": 1.0,
+      "recall": 0.64,
+      "f1": 0.7805
+    },
+    "rag": {
+      "support": 100,
+      "predicted_count": 326,
+      "correct": 100,
+      "precision": 0.3067,
+      "recall": 1.0,
+      "f1": 0.4695
+    },
+    "report": {
+      "support": 200,
+      "predicted_count": 66,
+      "correct": 50,
+      "precision": 0.7576,
+      "recall": 0.25,
+      "f1": 0.3759
+    }
+  },
+  "confusion_matrix": {
+    "anomaly": {
+      "anomaly": 29,
+      "cms": 8,
+      "forecast": 7,
+      "off_topic": 0,
+      "rag": 40,
+      "report": 16
+    },
+    "cms": {
+      "anomaly": 0,
+      "cms": 0,
+      "forecast": 0,
+      "off_topic": 0,
+      "rag": 0,
+      "report": 0
+    },
+    "forecast": {
+      "anomaly": 0,
+      "cms": 0,
+      "forecast": 0,
+      "off_topic": 0,
+      "rag": 0,
+      "report": 0
+    },
+    "off_topic": {
+      "anomaly": 0,
+      "cms": 0,
+      "forecast": 0,
+      "off_topic": 64,
+      "rag": 36,
+      "report": 0
+    },
+    "rag": {
+      "anomaly": 0,
+      "cms": 0,
+      "forecast": 0,
+      "off_topic": 0,
+      "rag": 100,
+      "report": 0
+    },
+    "report": {
+      "anomaly": 0,
+      "cms": 0,
+      "forecast": 0,
+      "off_topic": 0,
+      "rag": 150,
+      "report": 50
+    }
+  },
+  "errors": [
+    {
+      "id": "R2-EV-009",
+      "message": "2025년 4월 COP 저하 이상과 냉매 누설 이상을 비교 분석한 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-012",
+      "message": "2025년 5월 압력 변동 이상 중 Critical 등급 건수와 상세 내역은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-013",
+      "message": "2025년 1분기 전압 불균형 이상 탐지 결과의 월별 추세는 어떻게 되나요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-016",
+      "message": "2025년 3월 전력 급증 이상의 발생 시간대별 분포를 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-018",
+      "message": "최근 3개월간 소음 증가 이상 탐지 건수의 증감 추세 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-021",
+      "message": "2025년 1월부터 5월까지 진동 과다 이상의 월별 발생 패턴을 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-023",
+      "message": "최근 분기 압력 변동 이상과 전압 불균형 이상의 상관관계 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-028",
+      "message": "2025년 3월 유량 감소 이상과 진동 과다 이상의 동시 발생 사례 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-034",
+      "message": "2025년 3월 온도 이상과 압력 변동 이상 간의 교차 분석 결과를 보여주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-035",
+      "message": "최근 3개월간 냉매 누설 이상의 심각도가 Critical인 건의 발생 간격 분석은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-039",
+      "message": "2025년 1~2분기 이상 탐지 패턴 비교로 설비 건전성 악화 신호를 진단해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-040",
+      "message": "최근 12개월 모든 이상 유형 종합하여 리스크 우선순위 평가 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-041",
+      "message": "2025년 3월 월간 에너지 리포트의 COP 값은 얼마인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-042",
+      "message": "지난달 자가소비율은 몇 퍼센트였나요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-043",
+      "message": "2025년 4월 계통의존도 수치를 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-044",
+      "message": "2025년 1월 총소비전력량은 몇 kWh였나요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-045",
+      "message": "2025년 5월 월간 리포트의 냉방에너지 소비량은 얼마인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-046",
+      "message": "2025년 3월과 4월의 COP 값을 비교하여 추세를 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-047",
+      "message": "최근 3개월간 자가소비율의 월별 변화 추이와 증감 요인은 무엇인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-048",
+      "message": "2025년 1분기 계통의존도 평균값과 전년 동기 대비 차이를 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-049",
+      "message": "2025년 4월 총소비전력의 전월 대비 증감률과 주요 변동 요인을 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-050",
+      "message": "2025년 5월 월간 리포트에서 COP, 자가소비율, 계통의존도를 종합 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-051",
+      "message": "2025년 2월과 3월의 난방에너지 소비량 비교 및 증감 원인 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-052",
+      "message": "2025년 4월 COP가 전월 대비 하락한 원인을 월간 리포트 기반으로 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-053",
+      "message": "2025년 3월 자가소비율 80% 달성의 주요 기여 요인은 무엇인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-054",
+      "message": "2025년 1분기 총소비전력의 월별 추세와 계절적 요인 분석 결과를 보여주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-055",
+      "message": "2025년 5월 계통의존도가 전월 대비 상승한 원인과 대응 방안은 무엇인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-056",
+      "message": "2025년 4월 냉방에너지 소비량이 전년 동월 대비 변화한 원인을 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-057",
+      "message": "최근 6개월간 평균 COP 추이와 설비 효율 저하 신호 여부를 평가해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-058",
+      "message": "2025년 3월 자가소비율과 계통의존도의 상관관계 분석 결과를 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-059",
+      "message": "2025년 2월 월간 리포트에서 난방에너지가 총소비전력에서 차지하는 비중은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-060",
+      "message": "2025년 5월 COP, 자가소비율, 총소비전력을 전월과 비교하여 종합 평가해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-061",
+      "message": "2025년 1분기 월간 리포트의 핵심 성과 지표(COP, 자가소비율, 계통의존도) 요약은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-062",
+      "message": "2025년 4월 총소비전력 증가의 주요 원인을 시간대별 소비 패턴으로 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-063",
+      "message": "2025년 3월 냉방에너지와 난방에너지 소비 비율 및 계절 전환기 특성 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-064",
+      "message": "2025년 5월 자가소비율 목표 대비 달성률과 미달성 시 원인 분석을 해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-065",
+      "message": "최근 3개월간 계통의존도 감소 추세의 지속 가능성에 대한 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-066",
+      "message": "2025년 4월 COP의 설비별 기여도를 분석하여 효율 개선 포인트를 도출해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-067",
+      "message": "2025년 2월과 3월의 총소비전력 차이(diff)와 주요 변동 항목을 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-068",
+      "message": "2025년 1분기 대비 2분기 자가소비율 변화 전망과 근거 데이터를 제시해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-069",
+      "message": "2025년 상반기 월간 리포트 종합 분석으로 에너지 효율 최적화 전략을 제시해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-070",
+      "message": "최근 12개월 COP, 자가소비율, 계통의존도 장기 추세 기반 설비 투자 우선순위는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-071",
+      "message": "설비 AHU-001의 현재 상태와 건강 점수는 어떻게 되나요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-072",
+      "message": "AHU-002의 최근 작업 지시 현황을 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-073",
+      "message": "AHU-003 설비의 건강 점수는 몇 점인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-074",
+      "message": "AHU-004의 유지보수 상태를 확인해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-075",
+      "message": "AHU-005 설비의 건강 점수 추이와 최근 이상 발생 이력을 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-076",
+      "message": "AHU-006의 현재 작업 지시 상태와 우선순위 평가 결과를 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-077",
+      "message": "AHU-007 설비의 최근 3개월간 이상 발생 횟수와 건강 점수 변화의 상관관계는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-078",
+      "message": "AHU-008의 작업 지시 이력과 예방 정비 필요성 진단 결과를 보여주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-079",
+      "message": "AHU-009 설비 건강 점수가 70점 미만으로 하락한 원인 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-080",
+      "message": "AHU-010의 현재 진행 중인 작업 지시와 예상 완료 일정을 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-081",
+      "message": "AHU-011 설비의 최근 이상 탐지 건수와 유지보수 대응 현황을 종합해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-082",
+      "message": "AHU-012의 건강 점수와 동일 유형 설비 평균 건강 점수 비교 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-083",
+      "message": "AHU-013에 등록된 작업 지시 중 긴급 건의 상세 내용과 조치 현황을 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-084",
+      "message": "AHU-014 설비의 유지보수 이력 기반 고장 예측 분석 결과를 보여주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-085",
+      "message": "AHU-015의 최근 작업 지시 생성 사유와 설비 상태 평가 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-086",
+      "message": "AHU-016 설비 건강 점수 85점 달성을 위한 필요 조치 사항은 무엇인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-087",
+      "message": "AHU-017의 작업 지시 중 '대기중' 상태인 건들의 지연 사유 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-088",
+      "message": "AHU-018 설비의 건강 점수 회복 추세와 유지보수 효과성 평가를 해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-089",
+      "message": "AHU-019에 대한 최근 6개월간 작업 지시 유형별 분포와 비용 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-090",
+      "message": "AHU-020 설비의 이상 탐지 후 작업 지시 생성까지의 평균 소요 시간은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-091",
+      "message": "AHU-021의 현재 건강 점수 대비 권장 유지보수 주기 준수율을 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-092",
+      "message": "AHU-022 작업 지시 중 완료된 건들의 평균 처리 시간과 효율성 평가 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-093",
+      "message": "AHU-023 설비의 건강 점수 악화 방지를 위한 선제적 정비 권고 사항은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-094",
+      "message": "AHU-024의 최근 이상 발생 패턴과 작업 지시 대응의 적절성 평가 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-095",
+      "message": "AHU-025 설비의 건강 점수 등급과 해당 등급의 표준 유지보수 절차는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-096",
+      "message": "AHU-026,027 설비 건강 점수와 작업 이력 비교 분석으로 최적 유지보수 전략을 수립해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-097",
+      "message": "전체 AHU 건강 점수 분포와 작업 현황 종합, 중장기 설비 투자 계획을 제안해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-098",
+      "message": "2025년 6월 월간 리포트의 자가소비율과 계통의존도 값을 근거와 함께 확인해줘",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-099",
+      "message": "AHU-021 작업 지시서의 건강 점수와 최근 이상 건수 값을 알려줘",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-011",
+      "message": "평가 summary csv를 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-012",
+      "message": "평가 summary csv를 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-013",
+      "message": "평가 summary csv를 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-014",
+      "message": "평가 summary csv를 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-015",
+      "message": "평가 summary csv를 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-016",
+      "message": "평가 summary csv를 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-017",
+      "message": "평가 summary csv를 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-018",
+      "message": "평가 summary csv를 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-019",
+      "message": "평가 summary csv를 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-020",
+      "message": "평가 summary csv를 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-021",
+      "message": "야간 replay 작업을 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-022",
+      "message": "야간 replay 작업을 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-023",
+      "message": "야간 replay 작업을 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-024",
+      "message": "야간 replay 작업을 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-025",
+      "message": "야간 replay 작업을 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-026",
+      "message": "야간 replay 작업을 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-027",
+      "message": "야간 replay 작업을 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-028",
+      "message": "야간 replay 작업을 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-029",
+      "message": "야간 replay 작업을 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-030",
+      "message": "야간 replay 작업을 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-031",
+      "message": "후보 모델 batch run을 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-032",
+      "message": "후보 모델 batch run을 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-033",
+      "message": "후보 모델 batch run을 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-034",
+      "message": "후보 모델 batch run을 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-035",
+      "message": "후보 모델 batch run을 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-036",
+      "message": "후보 모델 batch run을 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-037",
+      "message": "후보 모델 batch run을 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-038",
+      "message": "후보 모델 batch run을 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-039",
+      "message": "후보 모델 batch run을 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-040",
+      "message": "후보 모델 batch run을 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-051",
+      "message": "HTML 산출물 패키지를 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-052",
+      "message": "HTML 산출물 패키지를 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-053",
+      "message": "HTML 산출물 패키지를 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-054",
+      "message": "HTML 산출물 패키지를 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-055",
+      "message": "HTML 산출물 패키지를 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-056",
+      "message": "HTML 산출물 패키지를 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-057",
+      "message": "HTML 산출물 패키지를 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-058",
+      "message": "HTML 산출물 패키지를 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-059",
+      "message": "HTML 산출물 패키지를 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-060",
+      "message": "HTML 산출물 패키지를 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-061",
+      "message": "월별 aggregate job을 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-062",
+      "message": "월별 aggregate job을 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-063",
+      "message": "월별 aggregate job을 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-064",
+      "message": "월별 aggregate job을 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-065",
+      "message": "월별 aggregate job을 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-066",
+      "message": "월별 aggregate job을 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-067",
+      "message": "월별 aggregate job을 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-068",
+      "message": "월별 aggregate job을 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-069",
+      "message": "월별 aggregate job을 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-070",
+      "message": "월별 aggregate job을 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-071",
+      "message": "원천 ingestion 작업을 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-072",
+      "message": "원천 ingestion 작업을 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-073",
+      "message": "원천 ingestion 작업을 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-074",
+      "message": "원천 ingestion 작업을 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-075",
+      "message": "원천 ingestion 작업을 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-076",
+      "message": "원천 ingestion 작업을 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-077",
+      "message": "원천 ingestion 작업을 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-078",
+      "message": "원천 ingestion 작업을 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-079",
+      "message": "원천 ingestion 작업을 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-080",
+      "message": "원천 ingestion 작업을 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-081",
+      "message": "결과 file export를 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-082",
+      "message": "결과 file export를 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-083",
+      "message": "결과 file export를 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-084",
+      "message": "결과 file export를 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-085",
+      "message": "결과 file export를 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-086",
+      "message": "결과 file export를 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-087",
+      "message": "결과 file export를 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-088",
+      "message": "결과 file export를 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-089",
+      "message": "결과 file export를 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-090",
+      "message": "결과 file export를 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-026",
+      "message": "production deployment를 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-027",
+      "message": "production deployment를 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-028",
+      "message": "production deployment를 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-029",
+      "message": "production deployment를 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-030",
+      "message": "production deployment를 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-036",
+      "message": "권한 필요한 배포를 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-037",
+      "message": "권한 필요한 배포를 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-038",
+      "message": "권한 필요한 배포를 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-039",
+      "message": "권한 필요한 배포를 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-040",
+      "message": "권한 필요한 배포를 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-046",
+      "message": "민감 설정 수정을 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-047",
+      "message": "민감 설정 수정을 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-048",
+      "message": "민감 설정 수정을 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-049",
+      "message": "민감 설정 수정을 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-050",
+      "message": "민감 설정 수정을 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-059",
+      "message": "DB 레코드 변경을 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-066",
+      "message": "scratch schema 초기화를 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-067",
+      "message": "scratch schema 초기화를 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-068",
+      "message": "scratch schema 초기화를 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-069",
+      "message": "scratch schema 초기화를 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-070",
+      "message": "scratch schema 초기화를 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-076",
+      "message": "위험 명령 실행을 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-077",
+      "message": "위험 명령 실행을 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-078",
+      "message": "위험 명령 실행을 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-079",
+      "message": "위험 명령 실행을 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-080",
+      "message": "위험 명령 실행을 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-086",
+      "message": "보안 정책 예외 적용을 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-087",
+      "message": "보안 정책 예외 적용을 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-088",
+      "message": "보안 정책 예외 적용을 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-089",
+      "message": "보안 정책 예외 적용을 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-090",
+      "message": "보안 정책 예외 적용을 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-096",
+      "message": "기존 결과 강제 교체를 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-097",
+      "message": "기존 결과 강제 교체를 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-098",
+      "message": "기존 결과 강제 교체를 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-099",
+      "message": "기존 결과 강제 교체를 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-100",
+      "message": "기존 결과 강제 교체를 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-001",
+      "message": "근거 부족 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-003",
+      "message": "근거 부족 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-004",
+      "message": "근거 부족 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-005",
+      "message": "근거 부족 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-006",
+      "message": "근거 부족 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-007",
+      "message": "근거 부족 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-009",
+      "message": "근거 부족 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-010",
+      "message": "근거 부족 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-011",
+      "message": "QA blocked 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-013",
+      "message": "QA blocked 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-014",
+      "message": "QA blocked 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-015",
+      "message": "QA blocked 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-016",
+      "message": "QA blocked 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-017",
+      "message": "QA blocked 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-019",
+      "message": "QA blocked 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-020",
+      "message": "QA blocked 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-021",
+      "message": "coverage 낮음 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-023",
+      "message": "coverage 낮음 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-024",
+      "message": "coverage 낮음 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-025",
+      "message": "coverage 낮음 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-026",
+      "message": "coverage 낮음 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-027",
+      "message": "coverage 낮음 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-029",
+      "message": "coverage 낮음 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-030",
+      "message": "coverage 낮음 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-031",
+      "message": "source boundary blocked 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-033",
+      "message": "source boundary blocked 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-034",
+      "message": "source boundary blocked 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-035",
+      "message": "source boundary blocked 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-036",
+      "message": "source boundary blocked 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-037",
+      "message": "source boundary blocked 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-039",
+      "message": "source boundary blocked 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-040",
+      "message": "source boundary blocked 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-041",
+      "message": "원자료 quarantine 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-043",
+      "message": "원자료 quarantine 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-044",
+      "message": "원자료 quarantine 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-045",
+      "message": "원자료 quarantine 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-046",
+      "message": "원자료 quarantine 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-047",
+      "message": "원자료 quarantine 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-049",
+      "message": "원자료 quarantine 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-050",
+      "message": "원자료 quarantine 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-051",
+      "message": "검증 실패 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-053",
+      "message": "검증 실패 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-054",
+      "message": "검증 실패 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-055",
+      "message": "검증 실패 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-056",
+      "message": "검증 실패 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-057",
+      "message": "검증 실패 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-059",
+      "message": "검증 실패 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-060",
+      "message": "검증 실패 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-061",
+      "message": "참조 문서 누락 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-063",
+      "message": "참조 문서 누락 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-064",
+      "message": "참조 문서 누락 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-065",
+      "message": "참조 문서 누락 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-066",
+      "message": "참조 문서 누락 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-067",
+      "message": "참조 문서 누락 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-069",
+      "message": "참조 문서 누락 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-070",
+      "message": "참조 문서 누락 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-071",
+      "message": "수치 불일치 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-073",
+      "message": "수치 불일치 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-074",
+      "message": "수치 불일치 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-075",
+      "message": "수치 불일치 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-076",
+      "message": "수치 불일치 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-077",
+      "message": "수치 불일치 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-079",
+      "message": "수치 불일치 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-080",
+      "message": "수치 불일치 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-081",
+      "message": "품질 gate 차단 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-083",
+      "message": "품질 gate 차단 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-084",
+      "message": "품질 gate 차단 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-085",
+      "message": "품질 gate 차단 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-086",
+      "message": "품질 gate 차단 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-087",
+      "message": "품질 gate 차단 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-089",
+      "message": "품질 gate 차단 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-090",
+      "message": "품질 gate 차단 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-091",
+      "message": "답변 보류 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-093",
+      "message": "답변 보류 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-094",
+      "message": "답변 보류 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-095",
+      "message": "답변 보류 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-096",
+      "message": "답변 보류 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-097",
+      "message": "답변 보류 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-099",
+      "message": "답변 보류 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-100",
+      "message": "답변 보류 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    }
+  ],
+  "predictions": [
+    {
+      "id": "R1-QA-001",
+      "message": "CMS 어시스턴트의 역할을 한 문장으로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-002",
+      "message": "CMS 어시스턴트의 역할을 두 문장으로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-003",
+      "message": "CMS 어시스턴트의 역할을 초보자용으로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-004",
+      "message": "CMS 어시스턴트의 역할을 전문가용으로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-005",
+      "message": "CMS 어시스턴트의 역할을 한국어로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-006",
+      "message": "CMS 어시스턴트의 역할을 영어 한 줄로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-007",
+      "message": "CMS 어시스턴트의 역할을 bullet 3개로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-008",
+      "message": "CMS 어시스턴트의 역할을 친절하게 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-009",
+      "message": "CMS 어시스턴트의 역할을 매우 짧게 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-010",
+      "message": "CMS 어시스턴트의 역할을 발표용 톤으로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-011",
+      "message": "LangGraph 개념을 한 문장으로 요약해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-012",
+      "message": "LangGraph 개념을 두 문장으로 요약해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-013",
+      "message": "LangGraph 개념을 초보자용으로 요약해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-014",
+      "message": "LangGraph 개념을 전문가용으로 요약해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-015",
+      "message": "LangGraph 개념을 한국어로 요약해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-016",
+      "message": "LangGraph 개념을 영어 한 줄로 요약해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-017",
+      "message": "LangGraph 개념을 bullet 3개로 요약해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-018",
+      "message": "LangGraph 개념을 친절하게 요약해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-019",
+      "message": "LangGraph 개념을 매우 짧게 요약해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-020",
+      "message": "LangGraph 개념을 발표용 톤으로 요약해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-021",
+      "message": "QA gate라는 용어를 한 문장으로 풀어서 말해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-022",
+      "message": "QA gate라는 용어를 두 문장으로 풀어서 말해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-023",
+      "message": "QA gate라는 용어를 초보자용으로 풀어서 말해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-024",
+      "message": "QA gate라는 용어를 전문가용으로 풀어서 말해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-025",
+      "message": "QA gate라는 용어를 한국어로 풀어서 말해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-026",
+      "message": "QA gate라는 용어를 영어 한 줄로 풀어서 말해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-027",
+      "message": "QA gate라는 용어를 bullet 3개로 풀어서 말해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-028",
+      "message": "QA gate라는 용어를 친절하게 풀어서 말해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-029",
+      "message": "QA gate라는 용어를 매우 짧게 풀어서 말해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-030",
+      "message": "QA gate라는 용어를 발표용 톤으로 풀어서 말해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-031",
+      "message": "이전 답변을 한 문장으로 다시 써줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-032",
+      "message": "이전 답변을 두 문장으로 다시 써줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-033",
+      "message": "이전 답변을 초보자용으로 다시 써줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-034",
+      "message": "이전 답변을 전문가용으로 다시 써줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-035",
+      "message": "이전 답변을 한국어로 다시 써줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-036",
+      "message": "이전 답변을 영어 한 줄로 다시 써줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-037",
+      "message": "이전 답변을 bullet 3개로 다시 써줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-038",
+      "message": "이전 답변을 친절하게 다시 써줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-039",
+      "message": "이전 답변을 매우 짧게 다시 써줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-040",
+      "message": "이전 답변을 발표용 톤으로 다시 써줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-041",
+      "message": "오늘 회의에서 쓸 도입 문장을 한 문장으로 만들어줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-042",
+      "message": "오늘 회의에서 쓸 도입 문장을 두 문장으로 만들어줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-043",
+      "message": "오늘 회의에서 쓸 도입 문장을 초보자용으로 만들어줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-044",
+      "message": "오늘 회의에서 쓸 도입 문장을 전문가용으로 만들어줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-045",
+      "message": "오늘 회의에서 쓸 도입 문장을 한국어로 만들어줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-046",
+      "message": "오늘 회의에서 쓸 도입 문장을 영어 한 줄로 만들어줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-047",
+      "message": "오늘 회의에서 쓸 도입 문장을 bullet 3개로 만들어줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-048",
+      "message": "오늘 회의에서 쓸 도입 문장을 친절하게 만들어줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-049",
+      "message": "오늘 회의에서 쓸 도입 문장을 매우 짧게 만들어줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-050",
+      "message": "오늘 회의에서 쓸 도입 문장을 발표용 톤으로 만들어줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-051",
+      "message": "사용자가 처음 볼 안내 문구를 한 문장으로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-052",
+      "message": "사용자가 처음 볼 안내 문구를 두 문장으로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-053",
+      "message": "사용자가 처음 볼 안내 문구를 초보자용으로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-054",
+      "message": "사용자가 처음 볼 안내 문구를 전문가용으로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-055",
+      "message": "사용자가 처음 볼 안내 문구를 한국어로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-056",
+      "message": "사용자가 처음 볼 안내 문구를 영어 한 줄로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-057",
+      "message": "사용자가 처음 볼 안내 문구를 bullet 3개로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-058",
+      "message": "사용자가 처음 볼 안내 문구를 친절하게 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-059",
+      "message": "사용자가 처음 볼 안내 문구를 매우 짧게 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-060",
+      "message": "사용자가 처음 볼 안내 문구를 발표용 톤으로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-061",
+      "message": "파이프라인이라는 단어를 한 문장으로 비유로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-062",
+      "message": "파이프라인이라는 단어를 두 문장으로 비유로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-063",
+      "message": "파이프라인이라는 단어를 초보자용으로 비유로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-064",
+      "message": "파이프라인이라는 단어를 전문가용으로 비유로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-065",
+      "message": "파이프라인이라는 단어를 한국어로 비유로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-066",
+      "message": "파이프라인이라는 단어를 영어 한 줄로 비유로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-067",
+      "message": "파이프라인이라는 단어를 bullet 3개로 비유로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-068",
+      "message": "파이프라인이라는 단어를 친절하게 비유로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-069",
+      "message": "파이프라인이라는 단어를 매우 짧게 비유로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-070",
+      "message": "파이프라인이라는 단어를 발표용 톤으로 비유로 설명해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-071",
+      "message": "결과표를 읽는 순서를 한 문장으로 알려줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-072",
+      "message": "결과표를 읽는 순서를 두 문장으로 알려줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-073",
+      "message": "결과표를 읽는 순서를 초보자용으로 알려줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-074",
+      "message": "결과표를 읽는 순서를 전문가용으로 알려줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-075",
+      "message": "결과표를 읽는 순서를 한국어로 알려줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-076",
+      "message": "결과표를 읽는 순서를 영어 한 줄로 알려줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-077",
+      "message": "결과표를 읽는 순서를 bullet 3개로 알려줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-078",
+      "message": "결과표를 읽는 순서를 친절하게 알려줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-079",
+      "message": "결과표를 읽는 순서를 매우 짧게 알려줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-080",
+      "message": "결과표를 읽는 순서를 발표용 톤으로 알려줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-081",
+      "message": "모델 baseline의 의미를 한 문장으로 정의해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-082",
+      "message": "모델 baseline의 의미를 두 문장으로 정의해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-083",
+      "message": "모델 baseline의 의미를 초보자용으로 정의해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-084",
+      "message": "모델 baseline의 의미를 전문가용으로 정의해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-085",
+      "message": "모델 baseline의 의미를 한국어로 정의해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-086",
+      "message": "모델 baseline의 의미를 영어 한 줄로 정의해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-087",
+      "message": "모델 baseline의 의미를 bullet 3개로 정의해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-088",
+      "message": "모델 baseline의 의미를 친절하게 정의해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-089",
+      "message": "모델 baseline의 의미를 매우 짧게 정의해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-090",
+      "message": "모델 baseline의 의미를 발표용 톤으로 정의해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-091",
+      "message": "짧은 체크리스트 형식으로 한 문장으로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-092",
+      "message": "짧은 체크리스트 형식으로 두 문장으로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-093",
+      "message": "짧은 체크리스트 형식으로 초보자용으로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-094",
+      "message": "짧은 체크리스트 형식으로 전문가용으로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-095",
+      "message": "짧은 체크리스트 형식으로 한국어로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-096",
+      "message": "짧은 체크리스트 형식으로 영어 한 줄로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-097",
+      "message": "짧은 체크리스트 형식으로 bullet 3개로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-098",
+      "message": "짧은 체크리스트 형식으로 친절하게 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-099",
+      "message": "짧은 체크리스트 형식으로 매우 짧게 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R1-QA-100",
+      "message": "짧은 체크리스트 형식으로 발표용 톤으로 정리해줘",
+      "teammate_route": "quick_answer",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-001",
+      "message": "2025년 3월 냉동기 온도 이상 탐지 결과는 무엇인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-002",
+      "message": "지난달 압력 변동 이상 건수는 몇 건인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-003",
+      "message": "2025년 1월 유량 감소 이상은 몇 건 발견되었나요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-004",
+      "message": "2025년 5월 진동 과다 이상 탐지 결과를 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-005",
+      "message": "2025년 2월 COP 저하 이상은 몇 건이었나요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-006",
+      "message": "지난 분기 전력 급증 이상 탐지 결과 요약해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-007",
+      "message": "2024년 12월부터 2025년 2월까지 냉매 누설 이상 탐지 추이를 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-008",
+      "message": "2025년 상반기 동안 발생한 모든 유형의 이상 탐지 결과를 종합해서 보여주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-009",
+      "message": "2025년 4월 COP 저하 이상과 냉매 누설 이상을 비교 분석한 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-010",
+      "message": "2025년 3월 진동 과다 이상의 심각도별 분포 현황을 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-011",
+      "message": "최근 6개월간 온도 이상 발생 빈도와 최대 잔차값 추이를 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-012",
+      "message": "2025년 5월 압력 변동 이상 중 Critical 등급 건수와 상세 내역은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-013",
+      "message": "2025년 1분기 전압 불균형 이상 탐지 결과의 월별 추세는 어떻게 되나요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-014",
+      "message": "2025년 4월 습도 이상 탐지 결과에서 Warning과 Critical의 비율은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-015",
+      "message": "냉동기 이상 탐지 결과 중 지난달 가장 많이 발생한 유형은 무엇인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-016",
+      "message": "2025년 3월 전력 급증 이상의 발생 시간대별 분포를 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-017",
+      "message": "2025년 5월 유량 감소 이상의 평균 최대 잔차값은 얼마인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-018",
+      "message": "최근 3개월간 소음 증가 이상 탐지 건수의 증감 추세 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-019",
+      "message": "2025년 2월 냉매 누설 이상의 심각도별(Info/Warning/Critical) 분포를 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-020",
+      "message": "2025년 4월 온도 이상 탐지 결과 중 실제 설비 고장으로 이어진 사례는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-021",
+      "message": "2025년 1월부터 5월까지 진동 과다 이상의 월별 발생 패턴을 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-022",
+      "message": "2025년 3월 COP 저하 이상 탐지에서 최대 절대 잔차값 상위 3건은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-023",
+      "message": "최근 분기 압력 변동 이상과 전압 불균형 이상의 상관관계 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-024",
+      "message": "2025년 5월 전력 급증 이상 탐지 결과에서 Peak 시간대 분석을 해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-025",
+      "message": "2025년 2분기 동안 탐지된 모든 이상 유형의 총 건수와 유형별 비율은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-026",
+      "message": "2025년 4월 냉매 누설 이상의 첫 탐지 시점과 마지막 탐지 시점은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-027",
+      "message": "냉동기 이상 탐지 결과에서 Critical 등급 이상의 월별 발생 추이를 보여주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-028",
+      "message": "2025년 3월 유량 감소 이상과 진동 과다 이상의 동시 발생 사례 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-029",
+      "message": "최근 6개월간 탐지된 전체 이상 유형 중 가장 높은 최대 잔차값을 기록한 건은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-030",
+      "message": "2025년 1분기 대비 2분기 습도 이상 탐지 건수 증감률을 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-031",
+      "message": "2025년 5월 소음 증가 이상 탐지 결과의 설비별 분포 현황은 어떻게 되나요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-032",
+      "message": "COP 저하 이상이 가장 빈번하게 발생한 월과 해당 월의 이상 건수는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-033",
+      "message": "2025년 4월 전압 불균형 이상의 심각도별 건수와 전체 대비 비율은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-034",
+      "message": "2025년 3월 온도 이상과 압력 변동 이상 간의 교차 분석 결과를 보여주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-035",
+      "message": "최근 3개월간 냉매 누설 이상의 심각도가 Critical인 건의 발생 간격 분석은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-036",
+      "message": "2025년 5월 진동 과다 이상 탐지에서 Warning과 Critical의 합계 건수는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-037",
+      "message": "2025년 1월부터 현재까지 전력 급증 이상의 최대 절대 잔차값 변동 추이는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-038",
+      "message": "2025년 봄철(3~5월) 유량 감소 이상 탐지 결과의 월별 비교 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R2-EV-039",
+      "message": "2025년 1~2분기 이상 탐지 패턴 비교로 설비 건전성 악화 신호를 진단해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-040",
+      "message": "최근 12개월 모든 이상 유형 종합하여 리스크 우선순위 평가 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-041",
+      "message": "2025년 3월 월간 에너지 리포트의 COP 값은 얼마인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-042",
+      "message": "지난달 자가소비율은 몇 퍼센트였나요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-043",
+      "message": "2025년 4월 계통의존도 수치를 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-044",
+      "message": "2025년 1월 총소비전력량은 몇 kWh였나요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-045",
+      "message": "2025년 5월 월간 리포트의 냉방에너지 소비량은 얼마인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-046",
+      "message": "2025년 3월과 4월의 COP 값을 비교하여 추세를 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-047",
+      "message": "최근 3개월간 자가소비율의 월별 변화 추이와 증감 요인은 무엇인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-048",
+      "message": "2025년 1분기 계통의존도 평균값과 전년 동기 대비 차이를 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-049",
+      "message": "2025년 4월 총소비전력의 전월 대비 증감률과 주요 변동 요인을 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-050",
+      "message": "2025년 5월 월간 리포트에서 COP, 자가소비율, 계통의존도를 종합 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-051",
+      "message": "2025년 2월과 3월의 난방에너지 소비량 비교 및 증감 원인 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-052",
+      "message": "2025년 4월 COP가 전월 대비 하락한 원인을 월간 리포트 기반으로 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-053",
+      "message": "2025년 3월 자가소비율 80% 달성의 주요 기여 요인은 무엇인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-054",
+      "message": "2025년 1분기 총소비전력의 월별 추세와 계절적 요인 분석 결과를 보여주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-055",
+      "message": "2025년 5월 계통의존도가 전월 대비 상승한 원인과 대응 방안은 무엇인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-056",
+      "message": "2025년 4월 냉방에너지 소비량이 전년 동월 대비 변화한 원인을 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-057",
+      "message": "최근 6개월간 평균 COP 추이와 설비 효율 저하 신호 여부를 평가해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-058",
+      "message": "2025년 3월 자가소비율과 계통의존도의 상관관계 분석 결과를 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-059",
+      "message": "2025년 2월 월간 리포트에서 난방에너지가 총소비전력에서 차지하는 비중은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-060",
+      "message": "2025년 5월 COP, 자가소비율, 총소비전력을 전월과 비교하여 종합 평가해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-061",
+      "message": "2025년 1분기 월간 리포트의 핵심 성과 지표(COP, 자가소비율, 계통의존도) 요약은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-062",
+      "message": "2025년 4월 총소비전력 증가의 주요 원인을 시간대별 소비 패턴으로 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-063",
+      "message": "2025년 3월 냉방에너지와 난방에너지 소비 비율 및 계절 전환기 특성 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-064",
+      "message": "2025년 5월 자가소비율 목표 대비 달성률과 미달성 시 원인 분석을 해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-065",
+      "message": "최근 3개월간 계통의존도 감소 추세의 지속 가능성에 대한 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-066",
+      "message": "2025년 4월 COP의 설비별 기여도를 분석하여 효율 개선 포인트를 도출해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-067",
+      "message": "2025년 2월과 3월의 총소비전력 차이(diff)와 주요 변동 항목을 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-068",
+      "message": "2025년 1분기 대비 2분기 자가소비율 변화 전망과 근거 데이터를 제시해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-069",
+      "message": "2025년 상반기 월간 리포트 종합 분석으로 에너지 효율 최적화 전략을 제시해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-070",
+      "message": "최근 12개월 COP, 자가소비율, 계통의존도 장기 추세 기반 설비 투자 우선순위는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-071",
+      "message": "설비 AHU-001의 현재 상태와 건강 점수는 어떻게 되나요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-072",
+      "message": "AHU-002의 최근 작업 지시 현황을 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-073",
+      "message": "AHU-003 설비의 건강 점수는 몇 점인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-074",
+      "message": "AHU-004의 유지보수 상태를 확인해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-075",
+      "message": "AHU-005 설비의 건강 점수 추이와 최근 이상 발생 이력을 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-076",
+      "message": "AHU-006의 현재 작업 지시 상태와 우선순위 평가 결과를 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-077",
+      "message": "AHU-007 설비의 최근 3개월간 이상 발생 횟수와 건강 점수 변화의 상관관계는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-078",
+      "message": "AHU-008의 작업 지시 이력과 예방 정비 필요성 진단 결과를 보여주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-079",
+      "message": "AHU-009 설비 건강 점수가 70점 미만으로 하락한 원인 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-080",
+      "message": "AHU-010의 현재 진행 중인 작업 지시와 예상 완료 일정을 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-081",
+      "message": "AHU-011 설비의 최근 이상 탐지 건수와 유지보수 대응 현황을 종합해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-082",
+      "message": "AHU-012의 건강 점수와 동일 유형 설비 평균 건강 점수 비교 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-083",
+      "message": "AHU-013에 등록된 작업 지시 중 긴급 건의 상세 내용과 조치 현황을 알려주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-084",
+      "message": "AHU-014 설비의 유지보수 이력 기반 고장 예측 분석 결과를 보여주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-085",
+      "message": "AHU-015의 최근 작업 지시 생성 사유와 설비 상태 평가 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-086",
+      "message": "AHU-016 설비 건강 점수 85점 달성을 위한 필요 조치 사항은 무엇인가요?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-087",
+      "message": "AHU-017의 작업 지시 중 '대기중' 상태인 건들의 지연 사유 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-088",
+      "message": "AHU-018 설비의 건강 점수 회복 추세와 유지보수 효과성 평가를 해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-089",
+      "message": "AHU-019에 대한 최근 6개월간 작업 지시 유형별 분포와 비용 분석 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-090",
+      "message": "AHU-020 설비의 이상 탐지 후 작업 지시 생성까지의 평균 소요 시간은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-091",
+      "message": "AHU-021의 현재 건강 점수 대비 권장 유지보수 주기 준수율을 분석해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-092",
+      "message": "AHU-022 작업 지시 중 완료된 건들의 평균 처리 시간과 효율성 평가 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-093",
+      "message": "AHU-023 설비의 건강 점수 악화 방지를 위한 선제적 정비 권고 사항은?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "cms",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-094",
+      "message": "AHU-024의 최근 이상 발생 패턴과 작업 지시 대응의 적절성 평가 결과는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-095",
+      "message": "AHU-025 설비의 건강 점수 등급과 해당 등급의 표준 유지보수 절차는?",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-096",
+      "message": "AHU-026,027 설비 건강 점수와 작업 이력 비교 분석으로 최적 유지보수 전략을 수립해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-097",
+      "message": "전체 AHU 건강 점수 분포와 작업 현황 종합, 중장기 설비 투자 계획을 제안해주세요.",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "forecast",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-098",
+      "message": "2025년 6월 월간 리포트의 자가소비율과 계통의존도 값을 근거와 함께 확인해줘",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-099",
+      "message": "AHU-021 작업 지시서의 건강 점수와 최근 이상 건수 값을 알려줘",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R2-EV-100",
+      "message": "2025년 6월 유량 감소 이상 탐지의 total_count와 severity 분포를 보여줘",
+      "teammate_route": "evidence_answer",
+      "expected_route": "anomaly",
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-001",
+      "message": "전체 벤치마크 report를 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-002",
+      "message": "전체 벤치마크 report를 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-003",
+      "message": "전체 벤치마크 report를 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-004",
+      "message": "전체 벤치마크 report를 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-005",
+      "message": "전체 벤치마크 report를 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-006",
+      "message": "전체 벤치마크 report를 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-007",
+      "message": "전체 벤치마크 report를 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-008",
+      "message": "전체 벤치마크 report를 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-009",
+      "message": "전체 벤치마크 report를 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-010",
+      "message": "전체 벤치마크 report를 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-011",
+      "message": "평가 summary csv를 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-012",
+      "message": "평가 summary csv를 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-013",
+      "message": "평가 summary csv를 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-014",
+      "message": "평가 summary csv를 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-015",
+      "message": "평가 summary csv를 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-016",
+      "message": "평가 summary csv를 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-017",
+      "message": "평가 summary csv를 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-018",
+      "message": "평가 summary csv를 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-019",
+      "message": "평가 summary csv를 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-020",
+      "message": "평가 summary csv를 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-021",
+      "message": "야간 replay 작업을 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-022",
+      "message": "야간 replay 작업을 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-023",
+      "message": "야간 replay 작업을 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-024",
+      "message": "야간 replay 작업을 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-025",
+      "message": "야간 replay 작업을 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-026",
+      "message": "야간 replay 작업을 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-027",
+      "message": "야간 replay 작업을 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-028",
+      "message": "야간 replay 작업을 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-029",
+      "message": "야간 replay 작업을 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-030",
+      "message": "야간 replay 작업을 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-031",
+      "message": "후보 모델 batch run을 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-032",
+      "message": "후보 모델 batch run을 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-033",
+      "message": "후보 모델 batch run을 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-034",
+      "message": "후보 모델 batch run을 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-035",
+      "message": "후보 모델 batch run을 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-036",
+      "message": "후보 모델 batch run을 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-037",
+      "message": "후보 모델 batch run을 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-038",
+      "message": "후보 모델 batch run을 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-039",
+      "message": "후보 모델 batch run을 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-040",
+      "message": "후보 모델 batch run을 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-041",
+      "message": "집계 파이프라인을 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-042",
+      "message": "집계 파이프라인을 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-043",
+      "message": "집계 파이프라인을 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-044",
+      "message": "집계 파이프라인을 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-045",
+      "message": "집계 파이프라인을 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-046",
+      "message": "집계 파이프라인을 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-047",
+      "message": "집계 파이프라인을 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-048",
+      "message": "집계 파이프라인을 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-049",
+      "message": "집계 파이프라인을 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-050",
+      "message": "집계 파이프라인을 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-051",
+      "message": "HTML 산출물 패키지를 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-052",
+      "message": "HTML 산출물 패키지를 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-053",
+      "message": "HTML 산출물 패키지를 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-054",
+      "message": "HTML 산출물 패키지를 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-055",
+      "message": "HTML 산출물 패키지를 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-056",
+      "message": "HTML 산출물 패키지를 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-057",
+      "message": "HTML 산출물 패키지를 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-058",
+      "message": "HTML 산출물 패키지를 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-059",
+      "message": "HTML 산출물 패키지를 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-060",
+      "message": "HTML 산출물 패키지를 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-061",
+      "message": "월별 aggregate job을 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-062",
+      "message": "월별 aggregate job을 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-063",
+      "message": "월별 aggregate job을 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-064",
+      "message": "월별 aggregate job을 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-065",
+      "message": "월별 aggregate job을 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-066",
+      "message": "월별 aggregate job을 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-067",
+      "message": "월별 aggregate job을 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-068",
+      "message": "월별 aggregate job을 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-069",
+      "message": "월별 aggregate job을 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-070",
+      "message": "월별 aggregate job을 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-071",
+      "message": "원천 ingestion 작업을 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-072",
+      "message": "원천 ingestion 작업을 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-073",
+      "message": "원천 ingestion 작업을 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-074",
+      "message": "원천 ingestion 작업을 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-075",
+      "message": "원천 ingestion 작업을 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-076",
+      "message": "원천 ingestion 작업을 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-077",
+      "message": "원천 ingestion 작업을 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-078",
+      "message": "원천 ingestion 작업을 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-079",
+      "message": "원천 ingestion 작업을 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-080",
+      "message": "원천 ingestion 작업을 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-081",
+      "message": "결과 file export를 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-082",
+      "message": "결과 file export를 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-083",
+      "message": "결과 file export를 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-084",
+      "message": "결과 file export를 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-085",
+      "message": "결과 file export를 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-086",
+      "message": "결과 file export를 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-087",
+      "message": "결과 file export를 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-088",
+      "message": "결과 file export를 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-089",
+      "message": "결과 file export를 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-090",
+      "message": "결과 file export를 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R3-JOB-091",
+      "message": "full benchmark report를 생성해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-092",
+      "message": "full benchmark report를 실행해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-093",
+      "message": "full benchmark report를 등록해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-094",
+      "message": "full benchmark report를 큐에 넣어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-095",
+      "message": "full benchmark report를 다시 돌려줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-096",
+      "message": "full benchmark report를 만들어줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-097",
+      "message": "full benchmark report를 예약해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-098",
+      "message": "full benchmark report를 백필해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-099",
+      "message": "full benchmark report를 리플레이해줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R3-JOB-100",
+      "message": "full benchmark report를 내보내줘",
+      "teammate_route": "needs_job",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-001",
+      "message": "운영 테이블 변경을 승인 요청해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-002",
+      "message": "운영 테이블 변경을 허가 받아",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-003",
+      "message": "운영 테이블 변경을 결재 올려",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-004",
+      "message": "운영 테이블 변경을 강제로 진행해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-005",
+      "message": "운영 테이블 변경을 force 처리해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-006",
+      "message": "운영 테이블 변경을 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-007",
+      "message": "운영 테이블 변경을 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-008",
+      "message": "운영 테이블 변경을 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-009",
+      "message": "운영 테이블 변경을 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-010",
+      "message": "운영 테이블 변경을 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-011",
+      "message": "원격 서버 파일 덮어쓰기를 승인 요청해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-012",
+      "message": "원격 서버 파일 덮어쓰기를 허가 받아",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-013",
+      "message": "원격 서버 파일 덮어쓰기를 결재 올려",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-014",
+      "message": "원격 서버 파일 덮어쓰기를 강제로 진행해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-015",
+      "message": "원격 서버 파일 덮어쓰기를 force 처리해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-016",
+      "message": "원격 서버 파일 덮어쓰기를 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-017",
+      "message": "원격 서버 파일 덮어쓰기를 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-018",
+      "message": "원격 서버 파일 덮어쓰기를 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-019",
+      "message": "원격 서버 파일 덮어쓰기를 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-020",
+      "message": "원격 서버 파일 덮어쓰기를 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-021",
+      "message": "production deployment를 승인 요청해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-022",
+      "message": "production deployment를 허가 받아",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-023",
+      "message": "production deployment를 결재 올려",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-024",
+      "message": "production deployment를 강제로 진행해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-025",
+      "message": "production deployment를 force 처리해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-026",
+      "message": "production deployment를 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-027",
+      "message": "production deployment를 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-028",
+      "message": "production deployment를 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-029",
+      "message": "production deployment를 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-030",
+      "message": "production deployment를 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-031",
+      "message": "권한 필요한 배포를 승인 요청해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-032",
+      "message": "권한 필요한 배포를 허가 받아",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-033",
+      "message": "권한 필요한 배포를 결재 올려",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-034",
+      "message": "권한 필요한 배포를 강제로 진행해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-035",
+      "message": "권한 필요한 배포를 force 처리해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-036",
+      "message": "권한 필요한 배포를 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-037",
+      "message": "권한 필요한 배포를 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-038",
+      "message": "권한 필요한 배포를 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-039",
+      "message": "권한 필요한 배포를 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-040",
+      "message": "권한 필요한 배포를 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-041",
+      "message": "민감 설정 수정을 승인 요청해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-042",
+      "message": "민감 설정 수정을 허가 받아",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-043",
+      "message": "민감 설정 수정을 결재 올려",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-044",
+      "message": "민감 설정 수정을 강제로 진행해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-045",
+      "message": "민감 설정 수정을 force 처리해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-046",
+      "message": "민감 설정 수정을 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-047",
+      "message": "민감 설정 수정을 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-048",
+      "message": "민감 설정 수정을 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-049",
+      "message": "민감 설정 수정을 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-050",
+      "message": "민감 설정 수정을 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-051",
+      "message": "DB 레코드 변경을 승인 요청해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-052",
+      "message": "DB 레코드 변경을 허가 받아",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-053",
+      "message": "DB 레코드 변경을 결재 올려",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-054",
+      "message": "DB 레코드 변경을 강제로 진행해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-055",
+      "message": "DB 레코드 변경을 force 처리해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-056",
+      "message": "DB 레코드 변경을 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-057",
+      "message": "DB 레코드 변경을 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-058",
+      "message": "DB 레코드 변경을 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-059",
+      "message": "DB 레코드 변경을 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-060",
+      "message": "DB 레코드 변경을 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-061",
+      "message": "scratch schema 초기화를 승인 요청해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-062",
+      "message": "scratch schema 초기화를 허가 받아",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-063",
+      "message": "scratch schema 초기화를 결재 올려",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-064",
+      "message": "scratch schema 초기화를 강제로 진행해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-065",
+      "message": "scratch schema 초기화를 force 처리해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-066",
+      "message": "scratch schema 초기화를 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-067",
+      "message": "scratch schema 초기화를 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-068",
+      "message": "scratch schema 초기화를 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-069",
+      "message": "scratch schema 초기화를 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-070",
+      "message": "scratch schema 초기화를 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-071",
+      "message": "위험 명령 실행을 승인 요청해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-072",
+      "message": "위험 명령 실행을 허가 받아",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-073",
+      "message": "위험 명령 실행을 결재 올려",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-074",
+      "message": "위험 명령 실행을 강제로 진행해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-075",
+      "message": "위험 명령 실행을 force 처리해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-076",
+      "message": "위험 명령 실행을 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-077",
+      "message": "위험 명령 실행을 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-078",
+      "message": "위험 명령 실행을 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-079",
+      "message": "위험 명령 실행을 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-080",
+      "message": "위험 명령 실행을 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-081",
+      "message": "보안 정책 예외 적용을 승인 요청해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-082",
+      "message": "보안 정책 예외 적용을 허가 받아",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-083",
+      "message": "보안 정책 예외 적용을 결재 올려",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-084",
+      "message": "보안 정책 예외 적용을 강제로 진행해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-085",
+      "message": "보안 정책 예외 적용을 force 처리해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-086",
+      "message": "보안 정책 예외 적용을 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-087",
+      "message": "보안 정책 예외 적용을 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-088",
+      "message": "보안 정책 예외 적용을 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-089",
+      "message": "보안 정책 예외 적용을 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-090",
+      "message": "보안 정책 예외 적용을 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-091",
+      "message": "기존 결과 강제 교체를 승인 요청해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-092",
+      "message": "기존 결과 강제 교체를 허가 받아",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-093",
+      "message": "기존 결과 강제 교체를 결재 올려",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-094",
+      "message": "기존 결과 강제 교체를 강제로 진행해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-095",
+      "message": "기존 결과 강제 교체를 force 처리해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "off_topic",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R4-AP-096",
+      "message": "기존 결과 강제 교체를 delete 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-097",
+      "message": "기존 결과 강제 교체를 update 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-098",
+      "message": "기존 결과 강제 교체를 insert 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-099",
+      "message": "기존 결과 강제 교체를 truncate 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R4-AP-100",
+      "message": "기존 결과 강제 교체를 drop 해",
+      "teammate_route": "approval_required",
+      "expected_route": "off_topic",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-001",
+      "message": "근거 부족 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-002",
+      "message": "근거 부족 상태라 보고서 shell만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-003",
+      "message": "근거 부족 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-004",
+      "message": "근거 부족 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-005",
+      "message": "근거 부족 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-006",
+      "message": "근거 부족 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-007",
+      "message": "근거 부족 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-008",
+      "message": "근거 부족 상태라 report shell로 보내줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-009",
+      "message": "근거 부족 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-010",
+      "message": "근거 부족 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-011",
+      "message": "QA blocked 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-012",
+      "message": "QA blocked 상태라 보고서 shell만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-013",
+      "message": "QA blocked 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-014",
+      "message": "QA blocked 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-015",
+      "message": "QA blocked 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-016",
+      "message": "QA blocked 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-017",
+      "message": "QA blocked 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-018",
+      "message": "QA blocked 상태라 report shell로 보내줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-019",
+      "message": "QA blocked 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-020",
+      "message": "QA blocked 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-021",
+      "message": "coverage 낮음 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-022",
+      "message": "coverage 낮음 상태라 보고서 shell만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-023",
+      "message": "coverage 낮음 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-024",
+      "message": "coverage 낮음 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-025",
+      "message": "coverage 낮음 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-026",
+      "message": "coverage 낮음 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-027",
+      "message": "coverage 낮음 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-028",
+      "message": "coverage 낮음 상태라 report shell로 보내줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-029",
+      "message": "coverage 낮음 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-030",
+      "message": "coverage 낮음 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-031",
+      "message": "source boundary blocked 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-032",
+      "message": "source boundary blocked 상태라 보고서 shell만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-033",
+      "message": "source boundary blocked 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-034",
+      "message": "source boundary blocked 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-035",
+      "message": "source boundary blocked 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-036",
+      "message": "source boundary blocked 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-037",
+      "message": "source boundary blocked 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-038",
+      "message": "source boundary blocked 상태라 report shell로 보내줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-039",
+      "message": "source boundary blocked 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-040",
+      "message": "source boundary blocked 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-041",
+      "message": "원자료 quarantine 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-042",
+      "message": "원자료 quarantine 상태라 보고서 shell만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-043",
+      "message": "원자료 quarantine 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-044",
+      "message": "원자료 quarantine 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-045",
+      "message": "원자료 quarantine 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-046",
+      "message": "원자료 quarantine 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-047",
+      "message": "원자료 quarantine 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-048",
+      "message": "원자료 quarantine 상태라 report shell로 보내줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-049",
+      "message": "원자료 quarantine 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-050",
+      "message": "원자료 quarantine 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-051",
+      "message": "검증 실패 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-052",
+      "message": "검증 실패 상태라 보고서 shell만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-053",
+      "message": "검증 실패 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-054",
+      "message": "검증 실패 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-055",
+      "message": "검증 실패 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-056",
+      "message": "검증 실패 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-057",
+      "message": "검증 실패 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-058",
+      "message": "검증 실패 상태라 report shell로 보내줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-059",
+      "message": "검증 실패 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-060",
+      "message": "검증 실패 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-061",
+      "message": "참조 문서 누락 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-062",
+      "message": "참조 문서 누락 상태라 보고서 shell만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-063",
+      "message": "참조 문서 누락 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-064",
+      "message": "참조 문서 누락 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-065",
+      "message": "참조 문서 누락 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-066",
+      "message": "참조 문서 누락 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-067",
+      "message": "참조 문서 누락 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-068",
+      "message": "참조 문서 누락 상태라 report shell로 보내줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-069",
+      "message": "참조 문서 누락 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-070",
+      "message": "참조 문서 누락 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-071",
+      "message": "수치 불일치 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-072",
+      "message": "수치 불일치 상태라 보고서 shell만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-073",
+      "message": "수치 불일치 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-074",
+      "message": "수치 불일치 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-075",
+      "message": "수치 불일치 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-076",
+      "message": "수치 불일치 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-077",
+      "message": "수치 불일치 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-078",
+      "message": "수치 불일치 상태라 report shell로 보내줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-079",
+      "message": "수치 불일치 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-080",
+      "message": "수치 불일치 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-081",
+      "message": "품질 gate 차단 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-082",
+      "message": "품질 gate 차단 상태라 보고서 shell만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-083",
+      "message": "품질 gate 차단 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-084",
+      "message": "품질 gate 차단 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-085",
+      "message": "품질 gate 차단 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-086",
+      "message": "품질 gate 차단 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-087",
+      "message": "품질 gate 차단 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-088",
+      "message": "품질 gate 차단 상태라 report shell로 보내줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-089",
+      "message": "품질 gate 차단 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-090",
+      "message": "품질 gate 차단 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-091",
+      "message": "답변 보류 상태라 목차만 작성해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-092",
+      "message": "답변 보류 상태라 보고서 shell만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-093",
+      "message": "답변 보류 상태라 초안 구조만 만들어줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-094",
+      "message": "답변 보류 상태라 caveat 포함 outline만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-095",
+      "message": "답변 보류 상태라 섹션 틀만 정리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-096",
+      "message": "답변 보류 상태라 최종 판단 없이 뼈대만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-097",
+      "message": "답변 보류 상태라 한계 명시 템플릿만 줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-098",
+      "message": "답변 보류 상태라 report shell로 보내줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "report",
+      "method": "rule",
+      "correct": true
+    },
+    {
+      "id": "R5-RS-099",
+      "message": "답변 보류 상태라 draft only로 처리해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    },
+    {
+      "id": "R5-RS-100",
+      "message": "답변 보류 상태라 요약 틀만 제공해줘",
+      "teammate_route": "report_shell",
+      "expected_route": "report",
+      "predicted_route": "rag",
+      "method": "default",
+      "correct": false
+    }
+  ]
+}

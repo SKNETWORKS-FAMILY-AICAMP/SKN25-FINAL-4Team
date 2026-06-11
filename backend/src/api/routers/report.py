@@ -560,6 +560,7 @@ def _generate_daily_summary(kpi: dict) -> tuple[str, str]:
 - 이상탐지: {anomaly_count}건
 {anomaly_lines}
 
+반드시 위 KPI 수치만 인용하세요. 제공되지 않은 수치를 추론으로 생성하지 마세요.
 다음 두 섹션을 정확히 아래 형식으로 출력하세요. 다른 텍스트 없이.
 
 ---SUMMARY---
@@ -1020,15 +1021,16 @@ def _generate_ei_narrative(items: list[dict], ei_avg: float | None) -> str:
 
     prompt = f"""당신은 EMS Agent — 외기온 정규화 에너지 원단위(EI) 분석 AI입니다.
 시설: Honda R&D Europe GmbH, 독일 오펜바흐.
+에너지 원단위(EI) = 총소비량(kWh) ÷ 도일(DD, Degree-Day). 낮을수록 날씨 영향을 제거한 실질 효율이 높음.
 
-## 분석 결과 (단위: kWh/DD, 낮을수록 에너지 효율 좋음)
+## 분석 결과 (단위: kWh/DD)
 - 전체 평균 EI: {ei_avg:.1f} kWh/DD
 - 최근 3개월 평균: {recent_avg:.1f} kWh/DD ({trend_pct:+.1f}% vs 전체평균)
 - 최고 효율 월: {best['period']} ({best['ei_total']:.1f} kWh/DD, 외기온 {best.get('avg_ta','?')}°C)
 - 최저 효율 월: {worst['period']} ({worst['ei_total']:.1f} kWh/DD, 외기온 {worst.get('avg_ta','?')}°C)
 
-날씨 영향을 제거한 실질 에너지 효율 추이를 2~3문장으로 분석하세요.
-최근 추세가 개선/악화 중인지, 특이 시기가 있다면 그 원인을 짚어주세요."""
+위 수치만 인용해 날씨 영향을 제거한 실질 에너지 효율 추이를 2~3문장으로 분석하세요.
+최근 추세가 개선/악화 중인지, 특이 시기가 있다면 그 원인을 짚어주세요. 제공되지 않은 수치를 생성하지 마세요."""
 
     try:
         return llm_chat([{"role": "user", "content": prompt}], max_tokens=250).strip()

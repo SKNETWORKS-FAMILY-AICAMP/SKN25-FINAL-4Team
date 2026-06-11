@@ -306,7 +306,9 @@ def run_diagnosis(eq_id: str, window_days: int = _WINDOW_DAYS, regenerate: bool 
         from knowledge.domain_knowledge import ANOMALY_DOMAIN_PROMPT
         system = (
             "당신은 에너지 설비 고장 진단 전문가입니다. 데이터에 근거해 간결하고 "
-            "실행 가능한 진단을 작성합니다. 질문 언어와 관계없이 항상 한국어로만 답변하세요.\n\n" + ANOMALY_DOMAIN_PROMPT
+            "실행 가능한 진단을 작성합니다. 질문 언어와 관계없이 항상 한국어로만 답변하세요.\n"
+            "진단에 사용하는 수치는 반드시 제공된 데이터(전기 시그니처·이상탐지 결과)에서만 인용하세요. "
+            "제공되지 않은 수치를 추론으로 생성하지 마세요.\n\n" + ANOMALY_DOMAIN_PROMPT
         )
         # 발전 설비(PV·CHP)는 역률 음수/저값이 정상 — 오진단 방지
         if eq.get("id") in ("pv", "chp"):

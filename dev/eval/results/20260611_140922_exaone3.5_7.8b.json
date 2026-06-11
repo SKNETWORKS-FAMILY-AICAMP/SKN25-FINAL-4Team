@@ -1,0 +1,64 @@
+{
+  "model": "exaone3.5:7.8b",
+  "provider": "ollama",
+  "judge": "gpt-5.5",
+  "run_at": "2026-06-11T14:09:22.298242",
+  "summary": {
+    "korean": 10.0,
+    "format": 10.0,
+    "grounding": 10.0,
+    "reasoning": 10.0,
+    "actionability": 10.0,
+    "total": 10.0
+  },
+  "results": [
+    {
+      "prompt": "intent_classify",
+      "name": "의도 분류",
+      "korean": 10,
+      "format": 10,
+      "grounding": 10,
+      "reasoning": 10,
+      "actionability": 10,
+      "comment": "정답 형식을 완벽히 준수함",
+      "elapsed_ms": 4127,
+      "response": "anomaly"
+    },
+    {
+      "prompt": "intent_colloquial",
+      "name": "의도 분류 (구어체)",
+      "korean": 10,
+      "format": 10,
+      "grounding": 10,
+      "reasoning": 10,
+      "actionability": 10,
+      "comment": "요청 형식에 맞는 단일 라벨 출력",
+      "elapsed_ms": 1181,
+      "response": "anomaly"
+    },
+    {
+      "prompt": "intent_ambiguous",
+      "name": "의도 분류 (모호)",
+      "korean": 10,
+      "format": 10,
+      "grounding": 10,
+      "reasoning": 10,
+      "actionability": 10,
+      "comment": "요구 형식을 완벽히 준수함",
+      "elapsed_ms": 1265,
+      "response": "anomaly"
+    },
+    {
+      "prompt": "intent_multi",
+      "name": "의도 분류 (복합 질문)",
+      "korean": 10,
+      "format": 10,
+      "grounding": 10,
+      "reasoning": 10,
+      "actionability": 10,
+      "comment": "요구 형식에 맞는 단어 응답",
+      "elapsed_ms": 1244,
+      "response": "report"
+    }
+  ]
+}
