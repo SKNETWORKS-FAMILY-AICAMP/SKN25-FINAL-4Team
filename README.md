@@ -176,6 +176,7 @@ SKN25-FINAL-4Team/
 scripts/
 ├── aihub_pmax_validation.py
 ├── aihub_pmax_validation_training.py
+├── aihub_pmax_honda_inference_training.py
 ├── aihub_pmax_inference_v2.py
 ├── Aihub_pmax_honda_inference.py
 ├── aihub_pmax_honda_inference_Minmax.py
