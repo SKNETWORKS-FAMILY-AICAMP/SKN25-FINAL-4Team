@@ -1,7 +1,7 @@
 {
-  "evaluated_at": "2026-06-11T07:51:10.003796+00:00",
+  "evaluated_at": "2026-06-11T07:59:01.356409+00:00",
   "dataset_count": 500,
-  "rule_hit_rate": 0.348,
+  "rule_hit_rate": 0.368,
   "use_llm_fallback": false,
   "route_map": {
     "quick_answer": "rag",
@@ -11,18 +11,18 @@
     "report_shell": "report"
   },
   "overall": {
-    "correct": 243,
-    "accuracy": 0.486,
-    "macro_f1": 0.5189
+    "correct": 253,
+    "accuracy": 0.506,
+    "macro_f1": 0.5496
   },
   "per_route": {
     "anomaly": {
       "support": 100,
-      "predicted_count": 29,
-      "correct": 29,
+      "predicted_count": 39,
+      "correct": 39,
       "precision": 1.0,
-      "recall": 0.29,
-      "f1": 0.4496
+      "recall": 0.39,
+      "f1": 0.5612
     },
     "cms": {
       "support": 0,
@@ -50,11 +50,11 @@
     },
     "rag": {
       "support": 100,
-      "predicted_count": 326,
+      "predicted_count": 316,
       "correct": 100,
-      "precision": 0.3067,
+      "precision": 0.3165,
       "recall": 1.0,
-      "f1": 0.4695
+      "f1": 0.4808
     },
     "report": {
       "support": 200,
@@ -67,11 +67,11 @@
   },
   "confusion_matrix": {
     "anomaly": {
-      "anomaly": 29,
+      "anomaly": 39,
       "cms": 8,
       "forecast": 7,
       "off_topic": 0,
-      "rag": 40,
+      "rag": 30,
       "report": 16
     },
     "cms": {
@@ -116,96 +116,6 @@
     }
   },
   "errors": [
-    {
-      "id": "R2-EV-009",
-      "message": "2025년 4월 COP 저하 이상과 냉매 누설 이상을 비교 분석한 결과는?",
-      "teammate_route": "evidence_answer",
-      "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
-    },
-    {
-      "id": "R2-EV-012",
-      "message": "2025년 5월 압력 변동 이상 중 Critical 등급 건수와 상세 내역은?",
-      "teammate_route": "evidence_answer",
-      "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
-    },
-    {
-      "id": "R2-EV-013",
-      "message": "2025년 1분기 전압 불균형 이상 탐지 결과의 월별 추세는 어떻게 되나요?",
-      "teammate_route": "evidence_answer",
-      "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
-    },
-    {
-      "id": "R2-EV-016",
-      "message": "2025년 3월 전력 급증 이상의 발생 시간대별 분포를 분석해주세요.",
-      "teammate_route": "evidence_answer",
-      "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
-    },
-    {
-      "id": "R2-EV-018",
-      "message": "최근 3개월간 소음 증가 이상 탐지 건수의 증감 추세 분석 결과는?",
-      "teammate_route": "evidence_answer",
-      "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
-    },
-    {
-      "id": "R2-EV-021",
-      "message": "2025년 1월부터 5월까지 진동 과다 이상의 월별 발생 패턴을 분석해주세요.",
-      "teammate_route": "evidence_answer",
-      "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
-    },
-    {
-      "id": "R2-EV-023",
-      "message": "최근 분기 압력 변동 이상과 전압 불균형 이상의 상관관계 분석 결과는?",
-      "teammate_route": "evidence_answer",
-      "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
-    },
-    {
-      "id": "R2-EV-028",
-      "message": "2025년 3월 유량 감소 이상과 진동 과다 이상의 동시 발생 사례 분석 결과는?",
-      "teammate_route": "evidence_answer",
-      "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
-    },
-    {
-      "id": "R2-EV-034",
-      "message": "2025년 3월 온도 이상과 압력 변동 이상 간의 교차 분석 결과를 보여주세요.",
-      "teammate_route": "evidence_answer",
-      "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
-    },
-    {
-      "id": "R2-EV-035",
-      "message": "최근 3개월간 냉매 누설 이상의 심각도가 Critical인 건의 발생 간격 분석은?",
-      "teammate_route": "evidence_answer",
-      "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
-    },
     {
       "id": "R2-EV-039",
       "message": "2025년 1~2분기 이상 탐지 패턴 비교로 설비 건전성 악화 신호를 진단해주세요.",
@@ -3408,9 +3318,9 @@
       "message": "2025년 4월 COP 저하 이상과 냉매 누설 이상을 비교 분석한 결과는?",
       "teammate_route": "evidence_answer",
       "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
     },
     {
       "id": "R2-EV-010",
@@ -3435,18 +3345,18 @@
       "message": "2025년 5월 압력 변동 이상 중 Critical 등급 건수와 상세 내역은?",
       "teammate_route": "evidence_answer",
       "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
     },
     {
       "id": "R2-EV-013",
       "message": "2025년 1분기 전압 불균형 이상 탐지 결과의 월별 추세는 어떻게 되나요?",
       "teammate_route": "evidence_answer",
       "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
     },
     {
       "id": "R2-EV-014",
@@ -3471,9 +3381,9 @@
       "message": "2025년 3월 전력 급증 이상의 발생 시간대별 분포를 분석해주세요.",
       "teammate_route": "evidence_answer",
       "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
     },
     {
       "id": "R2-EV-017",
@@ -3489,9 +3399,9 @@
       "message": "최근 3개월간 소음 증가 이상 탐지 건수의 증감 추세 분석 결과는?",
       "teammate_route": "evidence_answer",
       "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
     },
     {
       "id": "R2-EV-019",
@@ -3516,9 +3426,9 @@
       "message": "2025년 1월부터 5월까지 진동 과다 이상의 월별 발생 패턴을 분석해주세요.",
       "teammate_route": "evidence_answer",
       "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
     },
     {
       "id": "R2-EV-022",
@@ -3534,9 +3444,9 @@
       "message": "최근 분기 압력 변동 이상과 전압 불균형 이상의 상관관계 분석 결과는?",
       "teammate_route": "evidence_answer",
       "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
     },
     {
       "id": "R2-EV-024",
@@ -3579,9 +3489,9 @@
       "message": "2025년 3월 유량 감소 이상과 진동 과다 이상의 동시 발생 사례 분석 결과는?",
       "teammate_route": "evidence_answer",
       "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
     },
     {
       "id": "R2-EV-029",
@@ -3633,18 +3543,18 @@
       "message": "2025년 3월 온도 이상과 압력 변동 이상 간의 교차 분석 결과를 보여주세요.",
       "teammate_route": "evidence_answer",
       "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
     },
     {
       "id": "R2-EV-035",
       "message": "최근 3개월간 냉매 누설 이상의 심각도가 Critical인 건의 발생 간격 분석은?",
       "teammate_route": "evidence_answer",
       "expected_route": "anomaly",
-      "predicted_route": "rag",
-      "method": "default",
-      "correct": false
+      "predicted_route": "anomaly",
+      "method": "rule",
+      "correct": true
     },
     {
       "id": "R2-EV-036",

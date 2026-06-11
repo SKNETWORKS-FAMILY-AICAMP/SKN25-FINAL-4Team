@@ -44,7 +44,7 @@ OUR_ROUTES = ["anomaly", "cms", "forecast", "off_topic", "rag", "report"]
 
 # 기본 파일 경로
 _ROOT = Path(__file__).parent.parent.parent
-DEFAULT_DATASET = _ROOT / "router_5route_eval_500_260610.json"
+DEFAULT_DATASET = _ROOT / "dev/eval/data/router_5route_eval_500_260610.json"
 DEFAULT_OUT_JSON = Path("dev/eval/results/router_accuracy_eval/metrics.json")
 DEFAULT_OUT_MD   = Path("dev/eval/results/router_accuracy_eval/report.md")
 
@@ -52,8 +52,11 @@ DEFAULT_OUT_MD   = Path("dev/eval/results/router_accuracy_eval/report.md")
 
 _KW_ANOMALY = re.compile(
     r"이상\s*탐지|이상\s*발생|이상\s*이력|이상\s*건수|이상\s*원인"
-    r"|비정상|스파이크|급등|급락|오류|탐지|경보|알람|fault|anomal"
+    r"|이상\s*분석|이상\s*추이|이상\s*현황|이상\s*분포|이상\s*비교"
+    r"|비정상|스파이크|급등|급락|급증|오류|탐지|경보|알람|fault|anomal"
     r"|chpoutage|powerspike|copdrop|nightconsumption|pvnightnonzero"
+    r"|냉매\s*누설|진동\s*과다|cop\s*저하|COP\s*저하|압력\s*변동"
+    r"|전압\s*불균형|유량\s*감소|전력\s*급증|소음\s*증가"
     r"|사건|빈도|심각도|발생\s*건수|몇\s*건|잔차|급등\s*이벤트|게이트웨이\s*장애"
 )
 _KW_REPORT = re.compile(

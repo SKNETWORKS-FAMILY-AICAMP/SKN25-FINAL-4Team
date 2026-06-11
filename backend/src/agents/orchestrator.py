@@ -40,8 +40,11 @@ import cms_agent
 
 # q.lower()로 매칭하므로 이상 유형명도 소문자로 작성
 _KW_ANOMALY  = re.compile(r"이상\s*탐지|이상\s*발생|이상\s*이력|이상\s*건수|이상\s*원인"
-                          r"|비정상|스파이크|급등|급락|오류|탐지|경보|알람|fault|anomal"
+                          r"|이상\s*분석|이상\s*추이|이상\s*현황|이상\s*분포|이상\s*비교"
+                          r"|비정상|스파이크|급등|급락|급증|오류|탐지|경보|알람|fault|anomal"
                           r"|chpoutage|powerspike|copdrop|nightconsumption|pvnightnonzero"
+                          r"|냉매\s*누설|진동\s*과다|cop\s*저하|COP\s*저하|압력\s*변동"
+                          r"|전압\s*불균형|유량\s*감소|전력\s*급증|소음\s*증가"
                           r"|사건|빈도|심각도|발생\s*건수|몇\s*건|잔차|급등\s*이벤트|게이트웨이\s*장애")
 _KW_REPORT   = re.compile(r"보고서|리포트|report|kpi|월간|통계|실적|집계|월별\s*현황"
                           r"|요금|비용|cost|전력\s*비용|얼마나\s*나"
