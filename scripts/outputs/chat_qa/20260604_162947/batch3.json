@@ -1,0 +1,158 @@
+[
+  {
+    "id": "chat_03_002",
+    "question": "PV 야간 문제?",
+    "answer": "2022년 12월 29일 3시에 PVNightNonZero 이상이 발생했습니다. 센서 오류 가능성이 높으니 확인이 필요합니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2022-12-29 03:00 PVNightNonZero MEDIUM"
+    ]
+  },
+  {
+    "id": "chat_03_004",
+    "question": "PowerSpike 또?",
+    "answer": "2023년 12월 2일 13시에 MEDIUM 수준의 PowerSpike가 발생했습니다. 한 번 더 확인이 필요합니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "anomaly_results: 2023-12-02 13:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "id": "chat_03_006",
+    "question": "냉방설비 상태 어때?",
+    "answer": "냉방설비의 최근 헬스 스코어는 97로 양호하지만, COPDrop 이상이 5건 발생했습니다. 전류 불평형으로 인해 효율 저하가 우려됩니다.",
+    "category": "cms",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"
+    ]
+  },
+  {
+    "id": "chat_03_007",
+    "question": "태양광 상태는?",
+    "answer": "태양광 설비의 현재 헬스 스코어는 99로 매우 양호합니다. 하지만 야간에 비정상 출력이 관찰되어 센서 점검이 필요합니다.",
+    "category": "cms",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"
+    ]
+  },
+  {
+    "id": "chat_03_010",
+    "question": "냉방설비 점검 가야 해?",
+    "answer": "냉방설비에서 COPDrop 이상이 5건 발생했습니다. 전류 불평형이 발견되었으므로 점검이 필요합니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"
+    ]
+  },
+  {
+    "id": "chat_03_011",
+    "question": "12월 전기 사용량은?",
+    "answer": "2023년 12월의 총 전기 소비량은 201,522 kWh입니다. 자급률은 63.1%로 확인됩니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 total_consumption_kwh=201522 self_sufficiency_pct=63.11"
+    ]
+  },
+  {
+    "id": "chat_03_012",
+    "question": "12월 PV 발전량?",
+    "answer": "2023년 12월의 PV 발전량은 7,835 kWh입니다. 발전 효율을 확인하는 데 참고하세요.",
+    "category": "report",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 pv_kwh=7835"
+    ]
+  },
+  {
+    "id": "chat_03_013",
+    "question": "12월 CHP 발전량?",
+    "answer": "2023년 12월에는 CHP 설비가 119,338 kWh의 발전을 기록했습니다.",
+    "category": "report",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 chp_kwh=119338"
+    ]
+  },
+  {
+    "id": "chat_03_014",
+    "question": "최근 이상 몇 건?",
+    "answer": "2023년 12월에는 총 418건의 이상이 감지되었습니다.",
+    "category": "report",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 anomaly_count=418"
+    ]
+  },
+  {
+    "id": "chat_03_015",
+    "question": "12월 grid 의존도는?",
+    "answer": "2023년 12월의 외부 계통 전력 의존도는 36.9%입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 grid_dependency_pct=36.89"
+    ]
+  },
+  {
+    "id": "chat_03_017",
+    "question": "H1.Z11 전류 확인?",
+    "answer": "H1.Z11의 최근 전류는 P1 기준으로 97.5A입니다.",
+    "category": "rag",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z11 2023-12-21 P1=97.52"
+    ]
+  },
+  {
+    "id": "chat_03_019",
+    "question": "H1.Z11 전력량은?",
+    "answer": "H1.Z11의 최근 전력량은 P 기준으로 177.4 kW입니다.",
+    "category": "rag",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: H1.Z11 2023-10-13 P=177.38"
+    ]
+  },
+  {
+    "id": "chat_03_020",
+    "question": "H1.Z16 주파수는?",
+    "answer": "H1.Z16의 주파수는 50.018 Hz로 정상 범위 내에 있습니다.",
+    "category": "rag",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z16 2018-02-18 f=50.018"
+    ]
+  }
+]

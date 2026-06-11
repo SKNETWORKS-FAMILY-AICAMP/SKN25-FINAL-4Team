@@ -1,0 +1,296 @@
+[
+  {
+    "question": "2023년 5월에 발생한 CHPOutage의 심각도를 어떻게 평가할 수 있나요?",
+    "answer": "2023년 5월 27일에 발생한 CHPOutage는 HIGH 심각도로 평가되었습니다. 잔차는 163.8 kW로 임계치를 초과했으며, IF플래그가 Y로 표시되어 있습니다.",
+    "category": "anomaly",
+    "difficulty": "medium"
+  },
+  {
+    "question": "PowerSpike 이상이 자주 발생한 시간대와 그 가능성 있는 원인은?",
+    "answer": "PowerSpike 이상은 주로 오전 시간대에 발생했으며, 이는 큰 부하의 동시 기동 가능성이 있음을 시사합니다.",
+    "category": "anomaly",
+    "difficulty": "medium"
+  },
+  {
+    "question": "2023년 2월 13일 11시에 발생한 COPDrop에 대한 추정을 부탁드립니다.",
+    "answer": "2023년 2월 13일 11시의 COPDrop은 HIGH 심각도로, 냉각 효율 저하의 원인으로는 냉각수 온도 상승 또는 냉매 부족이 추정됩니다.",
+    "category": "anomaly",
+    "difficulty": "medium"
+  },
+  {
+    "question": "잔차가 155.4 kW인 ResidualSpike의 주요 원인은 무엇인가요?",
+    "answer": "잔차가 155.4 kW로 기록된 ResidualSpike는 HIGH 심각도를 가지며, 이는 데이터의 예측값과 실제값 간 차이가 크다는 것을 의미합니다.",
+    "category": "anomaly",
+    "difficulty": "hard"
+  },
+  {
+    "question": "반복적으로 MEDIUM 등급 이상이 발생하는 Unknown 유형의 이상 조치법은?",
+    "answer": "MEDIUM 등급 이상의 Unknown 유형 이상은 발생 시점의 패턴 분석을 통해 배후 원인을 규명하고, 이를 해결하기 위한 시스템 점검이 필요합니다.",
+    "category": "anomaly",
+    "difficulty": "easy"
+  },
+  {
+    "question": "COPDrop이 연속적으로 발생하는 경우 이에 대한 대비책은 무엇인가요?",
+    "answer": "COPDrop이 연속적으로 발생할 경우, 응축기 청소 및 냉매 상태를 점검하여 즉각적인 효율 개선을 시도하는 것이 권장됩니다.",
+    "category": "anomaly",
+    "difficulty": "medium"
+  },
+  {
+    "question": "야간 NightConsumption 이슈가 발생했을 때, 그리드 의존도에 미치는 영향은?",
+    "answer": "야간 NightConsumption 이슈가 발생하면 불필요한 전력 소비로 인해 그리드 의존도가 증가할 가능성이 있습니다.",
+    "category": "anomaly",
+    "difficulty": "medium"
+  },
+  {
+    "question": "최근 발생한 PVNightNonZero의 원인 중 빈번한 가능성은 무엇인가요?",
+    "answer": "PVNightNonZero가 빈번히 발생하는 경우, 이는 센서 오작동 또는 인버터 오프셋 문제가 있을 가능성이 높습니다.",
+    "category": "anomaly",
+    "difficulty": "easy"
+  },
+  {
+    "question": "2022년 6월에 발생한 PowerSpike의 심각도와 그 결과는 무엇인가요?",
+    "answer": "2022년 6월 발생한 PowerSpike는 MEDIUM 심각도였으며, 이는 변압기 과부하나 동시 기동 장비가 원인일 가능성이 있습니다.",
+    "category": "anomaly",
+    "difficulty": "medium"
+  },
+  {
+    "question": "COP 값 하락이 장기간 지속될 경우의 에너지 시스템 영향은?",
+    "answer": "COP 값 하락이 장기간 지속되면 냉방 시스템의 에너지 효율 저하로 인해 더 많은 전력이 소모될 수 있으며, 이는 운영 비용 증가로 이어질 수 있습니다.",
+    "category": "anomaly",
+    "difficulty": "medium"
+  },
+  {
+    "question": "태양광 정비 작업의 주요 진단 결과를 요약해 주세요.",
+    "answer": "태양광 정비 작업에서는 야간 비정상 출력이 센서 오류 가능성으로 지목되었습니다. 인버터 오프셋 및 배선 누전이 주된 원인으로 추정됩니다.",
+    "category": "cms",
+    "difficulty": "easy"
+  },
+  {
+    "question": "계통/수전 정비 시 낮은 역률에 대한 권장 조치 사항은 무엇인가요?",
+    "answer": "계통/수전 정비에서는 역률 개선 콘덴서의 작동 상태를 점검하고 필요한 경우 보강하는 것이 권장됩니다. 이는 갑작스러운 부하 증가를 피하고 변압기 부하 분포를 확인하는 데 도움이 됩니다.",
+    "category": "cms",
+    "difficulty": "hard"
+  },
+  {
+    "question": "냉방설비에서 최근 5건의 COPDrop 발생 시 조치 권장 사항은?",
+    "answer": "냉방설비에서 COPDrop이 발생하면 응축기의 청소 및 냉매 압력을 확인하고, 냉각탑 팬 및 충진재 상태를 점검하여 문제를 방지하고 냉매 흐름과 냉각 효율을 개선할 것을 권장합니다.",
+    "category": "cms",
+    "difficulty": "medium"
+  },
+  {
+    "question": "열병합발전 설비의 빈번한 CHPOutage에 대한 대응책은?",
+    "answer": "CHPOutage가 빈번히 발생하면 가스 공급 상태를 점검하고, 그리드 의존도 증가를 모니터링하며, chp_P와 chp_heat_P의 동시 0유지 여부를 확인해야 합니다.",
+    "category": "cms",
+    "difficulty": "medium"
+  },
+  {
+    "question": "냉방설비 정비에서는 전류 불평형에 대한 어떤 조치를 취해야 하나요?",
+    "answer": "냉방설비 정비 시 전류 불평형 비율이 기준치를 초과하는 경우, 권선을 점검하여 부하 불균형 문제를 해결할 필요가 있습니다.",
+    "category": "cms",
+    "difficulty": "easy"
+  },
+  {
+    "question": "계통/수전 설비에서 발생한 PowerSpike의 고빈도는 어떤 문제를 제기하나요?",
+    "answer": "계통/수전 설비에서 PowerSpike가 고빈도로 발생하면, 이는 3상 전류 불평형이나 역률 문제로 인해 에너지 효율 저하가 우려되며, 즉각적인 진단과 관리가 필요합니다.",
+    "category": "cms",
+    "difficulty": "medium"
+  },
+  {
+    "question": "태양광 설비의 센서 오류를 어떻게 확인하고 조치할 수 있나요?",
+    "answer": "태양광 설비에서 센서 오류는 야간 PV 출력 로그 분석을 통해 확인할 수 있으며, 필요 시 인버터 재시작 또는 센서 교정을 권장합니다.",
+    "category": "cms",
+    "difficulty": "medium"
+  },
+  {
+    "question": "최근 이상 발생으로 인해 CHP 설비의 신뢰도가 하락했습니다. 개선 조치는?",
+    "answer": "최근 빈번한 이상 발생으로 CHP 설비의 신뢰도가 하락했기 때문에, 설비 상태 점검과 함께 가스 공급 및 제어 시스템의 신뢰성 검토가 필요합니다.",
+    "category": "cms",
+    "difficulty": "medium"
+  },
+  {
+    "question": "PV 설비에서 야간에 나타나는 비정상 출력 문제의 주의사항은?",
+    "answer": "PV 설비에서 야간 비정상 출력 문제는 센서 오류나 인버터 문제를 나타낼 수 있으며, 정상 야간 PV 출력은 NaN으로 설정되어야 합니다.",
+    "category": "cms",
+    "difficulty": "easy"
+  },
+  {
+    "question": "냉방설비 보수 작업 시 체크해야 할 중요한 요소는 무엇인가요?",
+    "answer": "냉방설비 보수 시에는 냉매 압력, 응축기 상태, 그리고 냉각수 온도를 확인하여 냉각 효율과 시스템의 전반적인 성능을 유지해야 합니다.",
+    "category": "cms",
+    "difficulty": "medium"
+  },
+  {
+    "question": "2020년 8월 월간 보고서에서 유틸리티 효율을 어떻게 평가할 수 있나요?",
+    "answer": "2020년 8월의 유틸리티 효율 η는 생산량 대비 에너지 소비를 통해 평가할 수 있으며, 자급률과 그리드 의존도를 비교하면 운영 효율성을 확인할 수 있습니다.",
+    "category": "report",
+    "difficulty": "medium"
+  },
+  {
+    "question": "2022년 3월의 월간 자급률과 그리드 의존도는 어떻게 변화했나요?",
+    "answer": "2022년 3월의 자급률은 76.0%로, 그리드 의존도가 23.9%였습니다. 이는 자급률이 높아 그리드에 대한 의존성이 줄어들었음을 보여줍니다.",
+    "category": "report",
+    "difficulty": "easy"
+  },
+  {
+    "question": "2023년 5월의 KPI 중에 주목할 요소는 무엇인가요?",
+    "answer": "2023년 5월의 KPI에서는 자급률이 68.4%로 높은 편이며, 이는 운영 체계가 충분한 자가 발전을 통해 외부 그리드 의존도를 줄이고 있음을 보여줍니다.",
+    "category": "report",
+    "difficulty": "medium"
+  },
+  {
+    "question": "2022년 6월의 냉방시스템 성능계수는 어떻게 분석할 수 있나요?",
+    "answer": "2022년 6월의 성능계수 COP는 2.169로 기록되어 평균 수준을 유지하고 있으며, 이는 냉방시스템의 효율이 일정하게 유지되고 있음을 나타냅니다.",
+    "category": "report",
+    "difficulty": "easy"
+  },
+  {
+    "question": "2023년 7월의 자급률과 그리드 의존도의 추세는 무엇을 시사하나요?",
+    "answer": "2023년 7월의 자급률은 47.0%로, 그리드 의존도가 52.9%인데 이는 외부 계통 전력에 대한 의존도가 다소 높다는 것을 시사하며, 자가 발전 향상 노력이 필요할 수 있습니다.",
+    "category": "report",
+    "difficulty": "medium"
+  },
+  {
+    "question": "2022년 5월의 운영 지표 가운데 어떤 부분이 개선되어야 하나요?",
+    "answer": "2022년 5월의 COP는 1.147로 저조하여 운영 효율성이 낮은 상태입니다. 이는 냉방 시스템의 성능 개선이 필요함을 시사합니다.",
+    "category": "report",
+    "difficulty": "hard"
+  },
+  {
+    "question": "특정 월별 소비량 변동이 어떻게 자급률에 영향을 미치는지 예를 들어 설명해주세요.",
+    "answer": "2022년 11월의 소비량은 184,076 kWh로 낮은 데 반해 자급률이 61.7%로 높습니다. 이는 자체 생산 전력이 높은 비중을 차지했음을 의미합니다.",
+    "category": "report",
+    "difficulty": "medium"
+  },
+  {
+    "question": "월간 KPI 보고서에서 가장 중요한 지표는 어떤 것인가요?",
+    "answer": "월간 KPI에서 중요한 지표는 자급률과 성능계수(COP)입니다. 이는 외부 전력 의존도와 냉방 시스템 효율성을 평가하는 데 주요한 역할을 합니다.",
+    "category": "report",
+    "difficulty": "easy"
+  },
+  {
+    "question": "2023년 첫 6개월간의 외부 전력 의존도는 어떤 경향을 보이나요?",
+    "answer": "2023년 첫 6개월 동안 외부 전력 의존도는 평균 45.8%로 비교적 안정적인 경향을 보이지만, 자급률 개선을 통해 더 나아질 수 있는 여지가 있습니다.",
+    "category": "report",
+    "difficulty": "medium"
+  },
+  {
+    "question": "냉방 시스템의 성능 저하가 감지되는 순간 어떤 조치를 취해야 하나요?",
+    "answer": "냉방 시스템 성능 저하 시 즉각적인 기계적 점검과 함께 성능계수(COP)를 분석하여 필요 시 냉매 상태나 기기 청소 등의 유지보수 조치를 취해야 합니다.",
+    "category": "report",
+    "difficulty": "medium"
+  },
+  {
+    "question": "H1 계량기의 PF(U1) 피처는 어떤 의미를 가지며 중요성은?",
+    "answer": "H1 계량기의 PF(U1)는 전력 계통에서의 역률을 나타내며, 이는 전력 효율을 평가하고 무효 전력 손실을 줄이는 데 중요합니다.",
+    "category": "rag",
+    "difficulty": "medium"
+  },
+  {
+    "question": "H1.Z12 센서의 역할은 구체적으로 무엇인가요?",
+    "answer": "H1.Z12 센서는 전기 파라미터(U, I, P, Q)를 측정하여 배기가스 시험실의 전력 소비 및 효과적인 에너지 모니터링을 가능하게 합니다.",
+    "category": "rag",
+    "difficulty": "medium"
+  },
+  {
+    "question": "ems.cr_measurement_1h 테이블의 'I2' 피처는 어떤 정보를 제공하나요?",
+    "answer": "'I2' 피처는 전류의 1상 또는 2상을 측정하여, 시스템 내의 전류 불평형을 감지하는 데 중요한 정보를 제공합니다.",
+    "category": "rag",
+    "difficulty": "easy"
+  },
+  {
+    "question": "부호 규약에서 전력 계통과 관계없이 부정적 값을 나타내는 지표는 무엇인가요?",
+    "answer": "부정적 값을 나타내는 지표는 주로 Q 및 PF 지표로, 이는 무효전력 및 역률을 평가하여 전력 품질을 점검하는 데 중요합니다.",
+    "category": "rag",
+    "difficulty": "medium"
+  },
+  {
+    "question": "냉방 시스템의 'cool_output_P'는 구체적으로 어떤 데이터를 나타내나요?",
+    "answer": "'cool_output_P'는 냉방 시스템에서 측정된 냉수 출력 데이터를 나타내며, 이는 에너지 효율(COP) 계산에 중요하게 사용됩니다.",
+    "category": "rag",
+    "difficulty": "easy"
+  },
+  {
+    "question": "H1 건물의 PV(H1.Z310)는 무엇을 측정하며, 왜 중요한가요?",
+    "answer": "PV(H1.Z310)는 H1 건물의 지붕에 설치된 태양광 시스템 출력을 측정합니다. 이는 자가 발전 에너지 비중을 파악하고 자급률을 높이는 데 중요한 데이터입니다.",
+    "category": "rag",
+    "difficulty": "medium"
+  },
+  {
+    "question": "WeatherStation의 'Igm' 피처는 어떤 기능을 제공하나요?",
+    "answer": "WeatherStation의 'Igm' 피처는 일사량(W/m²)을 측정하여 태양광 발전 시스템의 성능 예측 및 최적화를 지원하는데 중요한 자료를 제공합니다.",
+    "category": "rag",
+    "difficulty": "easy"
+  },
+  {
+    "question": "냉방 시스템의 'cool_elec_P' 데이터는 무엇을 의미하나요?",
+    "answer": "'cool_elec_P'는 냉방 시스템에 투입된 전력을 의미하며, 이는 성능계수(COP) 계산 시 필요한 값으로 중요합니다.",
+    "category": "rag",
+    "difficulty": "medium"
+  },
+  {
+    "question": "계량기에서 양의 값과 음의 값을 구분하는 이유는 무엇인가요?",
+    "answer": "양의 값과 음의 값을 구분하는 것은 에너지 흐름 방향을 나타내며, 이는 시스템 상태를 파악하고 효율성을 높이는 데 필수적입니다.",
+    "category": "rag",
+    "difficulty": "medium"
+  },
+  {
+    "question": "2023년 9월 외부 계통 전력의 피크 시점을 어떻게 예측할 수 있을까요?",
+    "answer": "2023년 9월 외부 계통 전력의 피크는 반복되는 패턴을 기반으로 오후 3시에서 5시 사이로 추정되며, 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium"
+  },
+  {
+    "question": "향후 3개월 내의 자급률 향상을 위해 고려할 점은 무엇인가요?",
+    "answer": "현재 추세로 보면 자급률 향상을 위해 태양광 및 CHP의 효율을 증대하는 노력이 필요합니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium"
+  },
+  {
+    "question": "2023년 8월의 냉방 시스템 사용 증가가 주는 함의는?",
+    "answer": "반복 패턴 기반으로 추정하면 2023년 8월 냉방 시스템 사용 증가가 COP 저하로 이어질 수 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium"
+  },
+  {
+    "question": "과거 데이터에 비춰볼 때, 올해 여름철 전력 소비의 추세는?",
+    "answer": "현재 추세로 보면 여름철 전력 소비는 매년 증가하는 경향을 보이며, 이는 외부 온도 상승과 관련이 있을 수 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium"
+  },
+  {
+    "question": "2024년에 예상되는 외부 계통 전력 의존도는 어떤 영향이 있을까요?",
+    "answer": "반복 패턴 기반으로 추정하면 2024년 외부 계통 전력 의존도는 약간 감소할 수 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "hard"
+  },
+  {
+    "question": "월간 보고서 패턴을 보면, 향후 COP의 변동폭 추정은 어떻게 되나요?",
+    "answer": "현재 추세로 보면 COP의 변동폭은 계절 변화에 따라 좁아질 것으로 추정됩니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium"
+  },
+  {
+    "question": "내년에 예상되는 자급률의 최저치는 언제 발생할 것으로 예상되나요?",
+    "answer": "반복 패턴을 기반으로 추정하면 내년 자급률 최저치는 겨울에 발생할 가능성이 높습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "hard"
+  },
+  {
+    "question": "올해 연말에는 외부 계통 전력 피크를 어떻게 모니터링할 수 있을까요?",
+    "answer": "현재 추세로 보면 연말 외부 계통 전력 피크는 약 한달 전부터 모니터링을 시작하여 데이터 패턴을 분석하는 것이 좋습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium"
+  },
+  {
+    "question": "다음 봄철의 냉방 수요는 어떻게 변화할 것으로 예상되나요?",
+    "answer": "반복 패턴에 따르면 다음 봄철 냉방 수요는 점진적으로 증가할 수 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium"
+  },
+  {
+    "question": "향후 5년 내 태양광 발전량의 증가 추세는 무엇을 시사하나요?",
+    "answer": "반복 패턴 기반으로 추정하면 향후 5년 내 태양광 발전량은 점진적인 증가를 기대할 수 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium"
+  }
+]

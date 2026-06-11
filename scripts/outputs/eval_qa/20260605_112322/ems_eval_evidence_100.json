@@ -1,0 +1,1670 @@
+[
+  {
+    "id": "EMS-EVAL-A-001",
+    "query": "2022-05-01부터 2022-05-31까지 COPDrop 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2022-05-01:2022-05-31:COPDrop",
+        "answer_reason": "COPDrop 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2022-05-01~2022-05-31\nanomaly_type=COPDrop\ntotal_count=372\nseverity_counts=HIGH 32건, MEDIUM 340건\nfirst_time=2022-05-01 00:00:00+00:00\nlast_time=2022-05-31 07:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2022년 5월 동안 COPDrop 이상 후보는 총 372건 발생했습니다. 등급 분포는 HIGH 32건, MEDIUM 340건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-002",
+    "query": "2023-11-01부터 2023-11-30까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-11-01:2023-11-30:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-11-01~2023-11-30\nanomaly_type=PowerSpike\ntotal_count=343\nseverity_counts=HIGH 13건, MEDIUM 286건, LOW 44건\nfirst_time=2023-11-01 05:00:00+00:00\nlast_time=2023-11-30 19:00:00+00:00\nmax_abs_residual=71,582.46",
+    "reference_answer": "2023년 11월 동안 PowerSpike 이상 후보는 총 343건 발생했습니다. 등급 분포는 HIGH 13건, MEDIUM 286건, LOW 44건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-003",
+    "query": "2023-12-01부터 2023-12-31까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-12-01:2023-12-31:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-12-01~2023-12-31\nanomaly_type=PowerSpike\ntotal_count=301\nseverity_counts=HIGH 16건, MEDIUM 277건, LOW 8건\nfirst_time=2023-12-01 06:00:00+00:00\nlast_time=2023-12-31 20:00:00+00:00\nmax_abs_residual=75,181.14",
+    "reference_answer": "2023년 12월 동안 PowerSpike 이상 후보는 총 301건 발생했습니다. 등급 분포는 HIGH 16건, MEDIUM 277건, LOW 8건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-004",
+    "query": "2023-02-01부터 2023-02-28까지 COPDrop 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-02-01:2023-02-28:COPDrop",
+        "answer_reason": "COPDrop 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-02-01~2023-02-28\nanomaly_type=COPDrop\ntotal_count=299\nseverity_counts=HIGH 169건, MEDIUM 126건, LOW 4건\nfirst_time=2023-02-08 20:00:00+00:00\nlast_time=2023-02-23 04:00:00+00:00\nmax_abs_residual=69,034.43",
+    "reference_answer": "2023년 2월 동안 COPDrop 이상 후보는 총 299건 발생했습니다. 등급 분포는 HIGH 169건, MEDIUM 126건, LOW 4건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-005",
+    "query": "2023-05-01부터 2023-05-31까지 CHPOutage 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-05-01:2023-05-31:CHPOutage",
+        "answer_reason": "CHPOutage 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-05-01~2023-05-31\nanomaly_type=CHPOutage\ntotal_count=196\nseverity_counts=HIGH 138건, MEDIUM 16건, LOW 42건\nfirst_time=2023-05-01 07:00:00+00:00\nlast_time=2023-05-31 14:00:00+00:00\nmax_abs_residual=367,567.48",
+    "reference_answer": "2023년 5월 동안 CHPOutage 이상 후보는 총 196건 발생했습니다. 등급 분포는 HIGH 138건, MEDIUM 16건, LOW 42건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-006",
+    "query": "2023-04-01부터 2023-04-30까지 CHPOutage 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-04-01:2023-04-30:CHPOutage",
+        "answer_reason": "CHPOutage 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-04-01~2023-04-30\nanomaly_type=CHPOutage\ntotal_count=191\nseverity_counts=HIGH 100건, MEDIUM 16건, LOW 75건\nfirst_time=2023-04-01 07:00:00+00:00\nlast_time=2023-04-30 14:00:00+00:00\nmax_abs_residual=341,455.07",
+    "reference_answer": "2023년 4월 동안 CHPOutage 이상 후보는 총 191건 발생했습니다. 등급 분포는 HIGH 100건, MEDIUM 16건, LOW 75건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-007",
+    "query": "2022-07-01부터 2022-07-31까지 Unknown 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2022-07-01:2022-07-31:Unknown",
+        "answer_reason": "Unknown 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2022-07-01~2022-07-31\nanomaly_type=Unknown\ntotal_count=179\nseverity_counts=HIGH 36건, MEDIUM 143건\nfirst_time=2022-07-01 11:00:00+00:00\nlast_time=2022-07-31 13:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2022년 7월 동안 Unknown 이상 후보는 총 179건 발생했습니다. 등급 분포는 HIGH 36건, MEDIUM 143건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-008",
+    "query": "2023-11-01부터 2023-11-30까지 CHPOutage 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-11-01:2023-11-30:CHPOutage",
+        "answer_reason": "CHPOutage 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-11-01~2023-11-30\nanomaly_type=CHPOutage\ntotal_count=176\nseverity_counts=MEDIUM 36건, LOW 140건\nfirst_time=2023-11-03 06:00:00+00:00\nlast_time=2023-11-30 15:00:00+00:00\nmax_abs_residual=103,085.94",
+    "reference_answer": "2023년 11월 동안 CHPOutage 이상 후보는 총 176건 발생했습니다. 등급 분포는 MEDIUM 36건, LOW 140건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-009",
+    "query": "2023-06-01부터 2023-06-30까지 Unknown 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-06-01:2023-06-30:Unknown",
+        "answer_reason": "Unknown 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-06-01~2023-06-30\nanomaly_type=Unknown\ntotal_count=168\nseverity_counts=HIGH 24건, MEDIUM 144건\nfirst_time=2023-06-01 08:00:00+00:00\nlast_time=2023-06-29 09:00:00+00:00\nmax_abs_residual=48,621.93",
+    "reference_answer": "2023년 6월 동안 Unknown 이상 후보는 총 168건 발생했습니다. 등급 분포는 HIGH 24건, MEDIUM 144건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-010",
+    "query": "2023-03-01부터 2023-03-31까지 CHPOutage 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-03-01:2023-03-31:CHPOutage",
+        "answer_reason": "CHPOutage 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-03-01~2023-03-31\nanomaly_type=CHPOutage\ntotal_count=141\nseverity_counts=HIGH 66건, MEDIUM 9건, LOW 66건\nfirst_time=2023-03-01 12:00:00+00:00\nlast_time=2023-03-31 14:00:00+00:00\nmax_abs_residual=301,560.95",
+    "reference_answer": "2023년 3월 동안 CHPOutage 이상 후보는 총 141건 발생했습니다. 등급 분포는 HIGH 66건, MEDIUM 9건, LOW 66건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-011",
+    "query": "2023-08-01부터 2023-08-31까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-08-01:2023-08-31:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-08-01~2023-08-31\nanomaly_type=PowerSpike\ntotal_count=139\nseverity_counts=HIGH 3건, MEDIUM 136건\nfirst_time=2023-08-01 08:00:00+00:00\nlast_time=2023-08-31 19:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2023년 8월 동안 PowerSpike 이상 후보는 총 139건 발생했습니다. 등급 분포는 HIGH 3건, MEDIUM 136건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-012",
+    "query": "2023-05-01부터 2023-05-31까지 Unknown 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-05-01:2023-05-31:Unknown",
+        "answer_reason": "Unknown 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-05-01~2023-05-31\nanomaly_type=Unknown\ntotal_count=138\nseverity_counts=HIGH 18건, MEDIUM 110건, LOW 10건\nfirst_time=2023-05-01 12:00:00+00:00\nlast_time=2023-05-31 15:00:00+00:00\nmax_abs_residual=52,938.18",
+    "reference_answer": "2023년 5월 동안 Unknown 이상 후보는 총 138건 발생했습니다. 등급 분포는 HIGH 18건, MEDIUM 110건, LOW 10건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-013",
+    "query": "2023-12-01부터 2023-12-31까지 CHPOutage 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-12-01:2023-12-31:CHPOutage",
+        "answer_reason": "CHPOutage 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-12-01~2023-12-31\nanomaly_type=CHPOutage\ntotal_count=136\nseverity_counts=HIGH 12건, MEDIUM 16건, LOW 108건\nfirst_time=2023-12-01 00:00:00+00:00\nlast_time=2023-12-28 11:00:00+00:00\nmax_abs_residual=100,225.34",
+    "reference_answer": "2023년 12월 동안 CHPOutage 이상 후보는 총 136건 발생했습니다. 등급 분포는 HIGH 12건, MEDIUM 16건, LOW 108건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-014",
+    "query": "2022-08-01부터 2022-08-31까지 Unknown 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2022-08-01:2022-08-31:Unknown",
+        "answer_reason": "Unknown 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2022-08-01~2022-08-31\nanomaly_type=Unknown\ntotal_count=132\nseverity_counts=HIGH 28건, MEDIUM 104건\nfirst_time=2022-08-01 10:00:00+00:00\nlast_time=2022-08-30 12:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2022년 8월 동안 Unknown 이상 후보는 총 132건 발생했습니다. 등급 분포는 HIGH 28건, MEDIUM 104건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-015",
+    "query": "2023-12-01부터 2023-12-31까지 PVNightNonZero 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-12-01:2023-12-31:PVNightNonZero",
+        "answer_reason": "PVNightNonZero 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-12-01~2023-12-31\nanomaly_type=PVNightNonZero\ntotal_count=129\nseverity_counts=HIGH 12건, MEDIUM 117건\nfirst_time=2023-12-01 00:00:00+00:00\nlast_time=2023-12-31 22:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2023년 12월 동안 PVNightNonZero 이상 후보는 총 129건 발생했습니다. 등급 분포는 HIGH 12건, MEDIUM 117건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-016",
+    "query": "2023-07-01부터 2023-07-31까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-07-01:2023-07-31:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-07-01~2023-07-31\nanomaly_type=PowerSpike\ntotal_count=123\nseverity_counts=HIGH 4건, MEDIUM 119건\nfirst_time=2023-07-01 09:00:00+00:00\nlast_time=2023-07-31 15:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2023년 7월 동안 PowerSpike 이상 후보는 총 123건 발생했습니다. 등급 분포는 HIGH 4건, MEDIUM 119건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-017",
+    "query": "2022-07-01부터 2022-07-31까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2022-07-01:2022-07-31:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2022-07-01~2022-07-31\nanomaly_type=PowerSpike\ntotal_count=121\nseverity_counts=HIGH 26건, MEDIUM 95건\nfirst_time=2022-07-01 07:00:00+00:00\nlast_time=2022-07-31 18:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2022년 7월 동안 PowerSpike 이상 후보는 총 121건 발생했습니다. 등급 분포는 HIGH 26건, MEDIUM 95건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-018",
+    "query": "2023-07-01부터 2023-07-31까지 Unknown 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-07-01:2023-07-31:Unknown",
+        "answer_reason": "Unknown 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-07-01~2023-07-31\nanomaly_type=Unknown\ntotal_count=120\nseverity_counts=HIGH 26건, MEDIUM 94건\nfirst_time=2023-07-01 07:00:00+00:00\nlast_time=2023-07-30 14:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2023년 7월 동안 Unknown 이상 후보는 총 120건 발생했습니다. 등급 분포는 HIGH 26건, MEDIUM 94건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-019",
+    "query": "2023-03-01부터 2023-03-31까지 COPDrop 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-03-01:2023-03-31:COPDrop",
+        "answer_reason": "COPDrop 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-03-01~2023-03-31\nanomaly_type=COPDrop\ntotal_count=116\nseverity_counts=HIGH 8건, MEDIUM 107건, LOW 1건\nfirst_time=2023-03-22 09:00:00+00:00\nlast_time=2023-03-27 06:00:00+00:00\nmax_abs_residual=99,702.71",
+    "reference_answer": "2023년 3월 동안 COPDrop 이상 후보는 총 116건 발생했습니다. 등급 분포는 HIGH 8건, MEDIUM 107건, LOW 1건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-020",
+    "query": "2022-06-01부터 2022-06-30까지 Unknown 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2022-06-01:2022-06-30:Unknown",
+        "answer_reason": "Unknown 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2022-06-01~2022-06-30\nanomaly_type=Unknown\ntotal_count=114\nseverity_counts=HIGH 15건, MEDIUM 99건\nfirst_time=2022-06-01 13:00:00+00:00\nlast_time=2022-06-30 10:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2022년 6월 동안 Unknown 이상 후보는 총 114건 발생했습니다. 등급 분포는 HIGH 15건, MEDIUM 99건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-021",
+    "query": "2023-10-01부터 2023-10-31까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-10-01:2023-10-31:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-10-01~2023-10-31\nanomaly_type=PowerSpike\ntotal_count=110\nseverity_counts=HIGH 15건, MEDIUM 95건\nfirst_time=2023-10-02 13:00:00+00:00\nlast_time=2023-10-31 18:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2023년 10월 동안 PowerSpike 이상 후보는 총 110건 발생했습니다. 등급 분포는 HIGH 15건, MEDIUM 95건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-022",
+    "query": "2023-01-01부터 2023-01-31까지 COPDrop 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-01-01:2023-01-31:COPDrop",
+        "answer_reason": "COPDrop 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-01-01~2023-01-31\nanomaly_type=COPDrop\ntotal_count=110\nseverity_counts=HIGH 55건, MEDIUM 55건\nfirst_time=2023-01-08 22:00:00+00:00\nlast_time=2023-01-13 12:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2023년 1월 동안 COPDrop 이상 후보는 총 110건 발생했습니다. 등급 분포는 HIGH 55건, MEDIUM 55건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-023",
+    "query": "2023-09-01부터 2023-09-30까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-09-01:2023-09-30:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-09-01~2023-09-30\nanomaly_type=PowerSpike\ntotal_count=108\nseverity_counts=HIGH 5건, MEDIUM 103건\nfirst_time=2023-09-01 08:00:00+00:00\nlast_time=2023-09-30 17:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2023년 9월 동안 PowerSpike 이상 후보는 총 108건 발생했습니다. 등급 분포는 HIGH 5건, MEDIUM 103건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-024",
+    "query": "2022-04-01부터 2022-04-30까지 Unknown 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2022-04-01:2022-04-30:Unknown",
+        "answer_reason": "Unknown 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2022-04-01~2022-04-30\nanomaly_type=Unknown\ntotal_count=102\nseverity_counts=HIGH 7건, MEDIUM 95건\nfirst_time=2022-04-03 11:00:00+00:00\nlast_time=2022-04-29 13:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2022년 4월 동안 Unknown 이상 후보는 총 102건 발생했습니다. 등급 분포는 HIGH 7건, MEDIUM 95건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-025",
+    "query": "2023-04-01부터 2023-04-30까지 ResidualSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-04-01:2023-04-30:ResidualSpike",
+        "answer_reason": "ResidualSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-04-01~2023-04-30\nanomaly_type=ResidualSpike\ntotal_count=100\nseverity_counts=HIGH 100건\nfirst_time=2023-04-01 13:00:00+00:00\nlast_time=2023-04-27 06:00:00+00:00\nmax_abs_residual=638,473.61",
+    "reference_answer": "2023년 4월 동안 ResidualSpike 이상 후보는 총 100건 발생했습니다. 등급 분포는 HIGH 100건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-026",
+    "query": "2022-08-01부터 2022-08-31까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2022-08-01:2022-08-31:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2022-08-01~2022-08-31\nanomaly_type=PowerSpike\ntotal_count=99\nseverity_counts=HIGH 20건, MEDIUM 79건\nfirst_time=2022-08-01 09:00:00+00:00\nlast_time=2022-08-31 13:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2022년 8월 동안 PowerSpike 이상 후보는 총 99건 발생했습니다. 등급 분포는 HIGH 20건, MEDIUM 79건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-027",
+    "query": "2023-04-01부터 2023-04-30까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-04-01:2023-04-30:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-04-01~2023-04-30\nanomaly_type=PowerSpike\ntotal_count=96\nseverity_counts=HIGH 4건, MEDIUM 73건, LOW 19건\nfirst_time=2023-04-01 11:00:00+00:00\nlast_time=2023-04-29 14:00:00+00:00\nmax_abs_residual=121,435.37",
+    "reference_answer": "2023년 4월 동안 PowerSpike 이상 후보는 총 96건 발생했습니다. 등급 분포는 HIGH 4건, MEDIUM 73건, LOW 19건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-028",
+    "query": "2023-04-01부터 2023-04-30까지 Unknown 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-04-01:2023-04-30:Unknown",
+        "answer_reason": "Unknown 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-04-01~2023-04-30\nanomaly_type=Unknown\ntotal_count=93\nseverity_counts=HIGH 26건, MEDIUM 58건, LOW 9건\nfirst_time=2023-04-03 08:00:00+00:00\nlast_time=2023-04-30 13:00:00+00:00\nmax_abs_residual=74,540.45",
+    "reference_answer": "2023년 4월 동안 Unknown 이상 후보는 총 93건 발생했습니다. 등급 분포는 HIGH 26건, MEDIUM 58건, LOW 9건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-029",
+    "query": "2023-06-01부터 2023-06-30까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-06-01:2023-06-30:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-06-01~2023-06-30\nanomaly_type=PowerSpike\ntotal_count=92\nseverity_counts=HIGH 3건, MEDIUM 89건\nfirst_time=2023-06-01 15:00:00+00:00\nlast_time=2023-06-30 19:00:00+00:00\nmax_abs_residual=228,305.47",
+    "reference_answer": "2023년 6월 동안 PowerSpike 이상 후보는 총 92건 발생했습니다. 등급 분포는 HIGH 3건, MEDIUM 89건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-030",
+    "query": "2023-05-01부터 2023-05-31까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-05-01:2023-05-31:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-05-01~2023-05-31\nanomaly_type=PowerSpike\ntotal_count=91\nseverity_counts=HIGH 2건, MEDIUM 57건, LOW 32건\nfirst_time=2023-05-01 09:00:00+00:00\nlast_time=2023-05-31 15:00:00+00:00\nmax_abs_residual=106,324.56",
+    "reference_answer": "2023년 5월 동안 PowerSpike 이상 후보는 총 91건 발생했습니다. 등급 분포는 HIGH 2건, MEDIUM 57건, LOW 32건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-031",
+    "query": "2022-06-01부터 2022-06-30까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2022-06-01:2022-06-30:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2022-06-01~2022-06-30\nanomaly_type=PowerSpike\ntotal_count=91\nseverity_counts=HIGH 21건, MEDIUM 70건\nfirst_time=2022-06-01 06:00:00+00:00\nlast_time=2022-06-30 18:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2022년 6월 동안 PowerSpike 이상 후보는 총 91건 발생했습니다. 등급 분포는 HIGH 21건, MEDIUM 70건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-032",
+    "query": "2022-05-01부터 2022-05-31까지 Unknown 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2022-05-01:2022-05-31:Unknown",
+        "answer_reason": "Unknown 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2022-05-01~2022-05-31\nanomaly_type=Unknown\ntotal_count=91\nseverity_counts=HIGH 9건, MEDIUM 82건\nfirst_time=2022-05-02 10:00:00+00:00\nlast_time=2022-05-31 11:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2022년 5월 동안 Unknown 이상 후보는 총 91건 발생했습니다. 등급 분포는 HIGH 9건, MEDIUM 82건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-033",
+    "query": "2023-03-01부터 2023-03-31까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-03-01:2023-03-31:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-03-01~2023-03-31\nanomaly_type=PowerSpike\ntotal_count=87\nseverity_counts=HIGH 2건, MEDIUM 68건, LOW 17건\nfirst_time=2023-03-01 10:00:00+00:00\nlast_time=2023-03-31 14:00:00+00:00\nmax_abs_residual=125,059.1",
+    "reference_answer": "2023년 3월 동안 PowerSpike 이상 후보는 총 87건 발생했습니다. 등급 분포는 HIGH 2건, MEDIUM 68건, LOW 17건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-034",
+    "query": "2022-03-01부터 2022-03-31까지 Unknown 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2022-03-01:2022-03-31:Unknown",
+        "answer_reason": "Unknown 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2022-03-01~2022-03-31\nanomaly_type=Unknown\ntotal_count=84\nseverity_counts=HIGH 1건, MEDIUM 83건\nfirst_time=2022-03-05 09:00:00+00:00\nlast_time=2022-03-28 13:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2022년 3월 동안 Unknown 이상 후보는 총 84건 발생했습니다. 등급 분포는 HIGH 1건, MEDIUM 83건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-035",
+    "query": "2023-03-01부터 2023-03-31까지 ResidualSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-03-01:2023-03-31:ResidualSpike",
+        "answer_reason": "ResidualSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-03-01~2023-03-31\nanomaly_type=ResidualSpike\ntotal_count=79\nseverity_counts=HIGH 79건\nfirst_time=2023-03-01 11:00:00+00:00\nlast_time=2023-03-31 14:00:00+00:00\nmax_abs_residual=597,062.97",
+    "reference_answer": "2023년 3월 동안 ResidualSpike 이상 후보는 총 79건 발생했습니다. 등급 분포는 HIGH 79건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-036",
+    "query": "2022-04-01부터 2022-04-30까지 COPDrop 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2022-04-01:2022-04-30:COPDrop",
+        "answer_reason": "COPDrop 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2022-04-01~2022-04-30\nanomaly_type=COPDrop\ntotal_count=74\nseverity_counts=MEDIUM 74건\nfirst_time=2022-04-05 13:00:00+00:00\nlast_time=2022-04-30 23:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2022년 4월 동안 COPDrop 이상 후보는 총 74건 발생했습니다. 등급 분포는 MEDIUM 74건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-037",
+    "query": "2022-12-01부터 2022-12-31까지 PowerSpike 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2022-12-01:2022-12-31:PowerSpike",
+        "answer_reason": "PowerSpike 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2022-12-01~2022-12-31\nanomaly_type=PowerSpike\ntotal_count=72\nseverity_counts=HIGH 3건, MEDIUM 69건\nfirst_time=2022-12-07 11:00:00+00:00\nlast_time=2022-12-31 13:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2022년 12월 동안 PowerSpike 이상 후보는 총 72건 발생했습니다. 등급 분포는 HIGH 3건, MEDIUM 69건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-038",
+    "query": "2023-09-01부터 2023-09-30까지 Unknown 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-09-01:2023-09-30:Unknown",
+        "answer_reason": "Unknown 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-09-01~2023-09-30\nanomaly_type=Unknown\ntotal_count=71\nseverity_counts=HIGH 7건, MEDIUM 64건\nfirst_time=2023-09-02 09:00:00+00:00\nlast_time=2023-09-30 12:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2023년 9월 동안 Unknown 이상 후보는 총 71건 발생했습니다. 등급 분포는 HIGH 7건, MEDIUM 64건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-039",
+    "query": "2023-08-01부터 2023-08-31까지 Unknown 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-08-01:2023-08-31:Unknown",
+        "answer_reason": "Unknown 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-08-01~2023-08-31\nanomaly_type=Unknown\ntotal_count=70\nseverity_counts=HIGH 4건, MEDIUM 66건\nfirst_time=2023-08-01 09:00:00+00:00\nlast_time=2023-08-30 11:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2023년 8월 동안 Unknown 이상 후보는 총 70건 발생했습니다. 등급 분포는 HIGH 4건, MEDIUM 66건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-A-040",
+    "query": "2023-11-01부터 2023-11-30까지 PVNightNonZero 이상 후보는 몇 건 발생했나요?",
+    "category": "anomaly",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "anomaly_results",
+    "answer_chunks": [
+      {
+        "chunk_id": "anomaly_results:2023-11-01:2023-11-30:PVNightNonZero",
+        "answer_reason": "PVNightNonZero 기간별 이상 후보 건수 및 등급 분포"
+      }
+    ],
+    "reference_context": "source_table=anomaly_results\nperiod=2023-11-01~2023-11-30\nanomaly_type=PVNightNonZero\ntotal_count=69\nseverity_counts=HIGH 3건, MEDIUM 66건\nfirst_time=2023-11-01 04:00:00+00:00\nlast_time=2023-11-30 21:00:00+00:00\nmax_abs_residual=N/A",
+    "reference_answer": "2023년 11월 동안 PVNightNonZero 이상 후보는 총 69건 발생했습니다. 등급 분포는 HIGH 3건, MEDIUM 66건입니다. 해당 기간의 설비 운전 상태와 관련 이벤트 확인이 권장됩니다."
+  },
+  {
+    "id": "EMS-EVAL-C-001",
+    "query": "태양광 설비의 헬스 스코어와 점검 필요성을 알려주세요.",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:pv",
+        "answer_reason": "설비별 헬스 스코어와 최근 이상 건수"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nequipment_id=pv\ntitle=태양광 정비 작업\nstatus=open\ncreated_at=2026-06-01 10:50:39.149259+00:00\nhealth_score=99\nrecent_anomaly_count=8",
+    "reference_answer": "태양광 설비의 헬스 스코어는 99입니다. 다만 최근 이상 이력이 있다면 관련 항목을 함께 확인하는 것이 좋습니다. 최근 이상은 8건으로 기록되어 있습니다."
+  },
+  {
+    "id": "EMS-EVAL-C-002",
+    "query": "계통/수전 설비의 헬스 스코어와 점검 필요성을 알려주세요.",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:grid",
+        "answer_reason": "설비별 헬스 스코어와 최근 이상 건수"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nequipment_id=grid\ntitle=계통/수전 정비 작업\nstatus=in_progress\ncreated_at=2026-06-01 10:49:10.248758+00:00\nhealth_score=92\nrecent_anomaly_count=72",
+    "reference_answer": "계통/수전 설비의 헬스 스코어는 92입니다. 다만 최근 이상 이력이 있다면 관련 항목을 함께 확인하는 것이 좋습니다. 최근 이상은 72건으로 기록되어 있습니다."
+  },
+  {
+    "id": "EMS-EVAL-C-003",
+    "query": "냉방 설비의 헬스 스코어와 점검 필요성을 알려주세요.",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cooling",
+        "answer_reason": "설비별 헬스 스코어와 최근 이상 건수"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nequipment_id=cooling\ntitle=냉방설비 정비 작업\nstatus=open\ncreated_at=2026-06-01 09:58:17.591866+00:00\nhealth_score=97\nrecent_anomaly_count=5",
+    "reference_answer": "냉방 설비의 헬스 스코어는 97입니다. 다만 최근 이상 이력이 있다면 관련 항목을 함께 확인하는 것이 좋습니다. 최근 이상은 5건으로 기록되어 있습니다."
+  },
+  {
+    "id": "EMS-EVAL-C-004",
+    "query": "CHP 설비의 헬스 스코어와 점검 필요성을 알려주세요.",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:chp",
+        "answer_reason": "설비별 헬스 스코어와 최근 이상 건수"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nequipment_id=chp\ntitle=열병합발전 정비 작업\nstatus=done\ncreated_at=2026-06-01 08:19:26.709101+00:00\nhealth_score=64\nrecent_anomaly_count=98",
+    "reference_answer": "CHP 설비의 헬스 스코어는 64입니다. 주의가 필요한 수준이므로 운전 상태 점검이 권장됩니다. 최근 이상은 98건으로 기록되어 있습니다."
+  },
+  {
+    "id": "EMS-EVAL-C-005",
+    "query": "현재 점검 우선순위가 높은 설비는 무엇인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "hard",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:priority:chp",
+        "answer_reason": "헬스 스코어와 최근 이상 건수 기반 점검 우선순위"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nselected_equipment=chp\ntitle=열병합발전 정비 작업\nhealth_score=64\nrecent_anomaly_count=98",
+    "reference_answer": "제공된 작업지시 기준으로는 CHP 설비를 우선 확인하는 것이 좋습니다. 헬스 스코어는 64입니다. 최근 이상은 98건입니다. 실제 우선순위는 현장 운전 상태와 함께 확인하는 것이 좋습니다."
+  },
+  {
+    "id": "EMS-EVAL-C-006",
+    "query": "현재 점검 우선순위가 높은 설비는 무엇인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "hard",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:priority:grid",
+        "answer_reason": "헬스 스코어와 최근 이상 건수 기반 점검 우선순위"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nselected_equipment=grid\ntitle=계통/수전 정비 작업\nhealth_score=92\nrecent_anomaly_count=72",
+    "reference_answer": "제공된 작업지시 기준으로는 계통/수전 설비를 우선 확인하는 것이 좋습니다. 헬스 스코어는 92입니다. 최근 이상은 72건입니다. 실제 우선순위는 현장 운전 상태와 함께 확인하는 것이 좋습니다."
+  },
+  {
+    "id": "EMS-EVAL-C-007",
+    "query": "현재 점검 우선순위가 높은 설비는 무엇인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "hard",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:priority:cooling",
+        "answer_reason": "헬스 스코어와 최근 이상 건수 기반 점검 우선순위"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nselected_equipment=cooling\ntitle=냉방설비 정비 작업\nhealth_score=97\nrecent_anomaly_count=5",
+    "reference_answer": "제공된 작업지시 기준으로는 냉방 설비를 우선 확인하는 것이 좋습니다. 헬스 스코어는 97입니다. 최근 이상은 5건입니다. 실제 우선순위는 현장 운전 상태와 함께 확인하는 것이 좋습니다."
+  },
+  {
+    "id": "EMS-EVAL-C-008",
+    "query": "현재 점검 우선순위가 높은 설비는 무엇인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "hard",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:priority:pv",
+        "answer_reason": "헬스 스코어와 최근 이상 건수 기반 점검 우선순위"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nselected_equipment=pv\ntitle=태양광 정비 작업\nhealth_score=99\nrecent_anomaly_count=8",
+    "reference_answer": "제공된 작업지시 기준으로는 태양광 설비를 우선 확인하는 것이 좋습니다. 헬스 스코어는 99입니다. 최근 이상은 8건입니다. 실제 우선순위는 현장 운전 상태와 함께 확인하는 것이 좋습니다."
+  },
+  {
+    "id": "EMS-EVAL-C-009",
+    "query": "태양광 설비에 작업지시가 생성된 이유는 무엇인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:reason:pv",
+        "answer_reason": "작업지시 생성 사유와 관련 설비 상태"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nequipment_id=pv\ntitle=태양광 정비 작업\nstatus=open\ncreated_at=2026-06-01 10:50:39.149259+00:00\nhealth_score=99\nrecent_anomaly_count=8",
+    "reference_answer": "태양광 설비의 작업지시는 제공된 작업지시 정보에 근거합니다. 헬스 스코어는 99입니다. 최근 이상 8건이 기록되어 점검 검토가 필요합니다."
+  },
+  {
+    "id": "EMS-EVAL-C-010",
+    "query": "계통/수전 설비에 작업지시가 생성된 이유는 무엇인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:reason:grid",
+        "answer_reason": "작업지시 생성 사유와 관련 설비 상태"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nequipment_id=grid\ntitle=계통/수전 정비 작업\nstatus=in_progress\ncreated_at=2026-06-01 10:49:10.248758+00:00\nhealth_score=92\nrecent_anomaly_count=72",
+    "reference_answer": "계통/수전 설비의 작업지시는 제공된 작업지시 정보에 근거합니다. 헬스 스코어는 92입니다. 최근 이상 72건이 기록되어 점검 검토가 필요합니다."
+  },
+  {
+    "id": "EMS-EVAL-C-011",
+    "query": "냉방 설비에 작업지시가 생성된 이유는 무엇인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:reason:cooling",
+        "answer_reason": "작업지시 생성 사유와 관련 설비 상태"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nequipment_id=cooling\ntitle=냉방설비 정비 작업\nstatus=open\ncreated_at=2026-06-01 09:58:17.591866+00:00\nhealth_score=97\nrecent_anomaly_count=5",
+    "reference_answer": "냉방 설비의 작업지시는 제공된 작업지시 정보에 근거합니다. 헬스 스코어는 97입니다. 최근 이상 5건이 기록되어 점검 검토가 필요합니다."
+  },
+  {
+    "id": "EMS-EVAL-C-012",
+    "query": "CHP 설비에 작업지시가 생성된 이유는 무엇인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:reason:chp",
+        "answer_reason": "작업지시 생성 사유와 관련 설비 상태"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nequipment_id=chp\ntitle=열병합발전 정비 작업\nstatus=done\ncreated_at=2026-06-01 08:19:26.709101+00:00\nhealth_score=64\nrecent_anomaly_count=98",
+    "reference_answer": "CHP 설비의 작업지시는 제공된 작업지시 정보에 근거합니다. 헬스 스코어는 64입니다. 최근 이상 98건이 기록되어 점검 검토가 필요합니다."
+  },
+  {
+    "id": "EMS-EVAL-C-013",
+    "query": "태양광 설비의 최근 이상 건수는 몇 건인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:pv:0",
+        "answer_reason": "설비별 최근 이상 건수"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=pv\ntitle=태양광 정비 작업\nstatus=open\ncreated_at=2026-06-01 10:50:39.149259+00:00\nhealth_score=99\nrecent_anomaly_count=8",
+    "reference_answer": "태양광 설비의 최근 이상 건수는 8건입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-014",
+    "query": "계통/수전 설비는 점검이 필요한가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:grid:1",
+        "answer_reason": "헬스 스코어와 최근 이상 건수 기반 점검 필요성"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=grid\ntitle=계통/수전 정비 작업\nstatus=in_progress\ncreated_at=2026-06-01 10:49:10.248758+00:00\nhealth_score=92\nrecent_anomaly_count=72",
+    "reference_answer": "계통/수전 설비는 제공된 작업지시 정보를 기준으로 점검 검토가 필요합니다. 헬스 스코어는 92입니다. 최근 이상은 72건입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-015",
+    "query": "냉방 설비 상태를 요약해 주세요.",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:cooling:2",
+        "answer_reason": "설비 상태 요약"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=cooling\ntitle=냉방설비 정비 작업\nstatus=open\ncreated_at=2026-06-01 09:58:17.591866+00:00\nhealth_score=97\nrecent_anomaly_count=5",
+    "reference_answer": "냉방 설비 상태는 작업지시 정보를 기준으로 확인할 수 있습니다. 헬스 스코어는 97입니다. 최근 이상은 5건입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-016",
+    "query": "CHP 작업지시 상태는 무엇인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:chp:3",
+        "answer_reason": "작업지시 상태"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=chp\ntitle=열병합발전 정비 작업\nstatus=done\ncreated_at=2026-06-01 08:19:26.709101+00:00\nhealth_score=64\nrecent_anomaly_count=98",
+    "reference_answer": "CHP 작업지시 상태는 done입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-017",
+    "query": "태양광 설비의 헬스 스코어는 얼마인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:pv:4",
+        "answer_reason": "설비별 헬스 스코어"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=pv\ntitle=태양광 정비 작업\nstatus=open\ncreated_at=2026-06-01 10:50:39.149259+00:00\nhealth_score=99\nrecent_anomaly_count=8",
+    "reference_answer": "태양광 설비의 헬스 스코어는 99입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-018",
+    "query": "계통/수전 설비의 최근 이상 건수는 몇 건인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:grid:5",
+        "answer_reason": "설비별 최근 이상 건수"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=grid\ntitle=계통/수전 정비 작업\nstatus=in_progress\ncreated_at=2026-06-01 10:49:10.248758+00:00\nhealth_score=92\nrecent_anomaly_count=72",
+    "reference_answer": "계통/수전 설비의 최근 이상 건수는 72건입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-019",
+    "query": "냉방 설비는 점검이 필요한가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:cooling:6",
+        "answer_reason": "헬스 스코어와 최근 이상 건수 기반 점검 필요성"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=cooling\ntitle=냉방설비 정비 작업\nstatus=open\ncreated_at=2026-06-01 09:58:17.591866+00:00\nhealth_score=97\nrecent_anomaly_count=5",
+    "reference_answer": "냉방 설비는 제공된 작업지시 정보를 기준으로 점검 검토가 필요합니다. 헬스 스코어는 97입니다. 최근 이상은 5건입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-020",
+    "query": "CHP 설비 상태를 요약해 주세요.",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:chp:7",
+        "answer_reason": "설비 상태 요약"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=chp\ntitle=열병합발전 정비 작업\nstatus=done\ncreated_at=2026-06-01 08:19:26.709101+00:00\nhealth_score=64\nrecent_anomaly_count=98",
+    "reference_answer": "CHP 설비 상태는 작업지시 정보를 기준으로 확인할 수 있습니다. 헬스 스코어는 64입니다. 최근 이상은 98건입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-021",
+    "query": "태양광 작업지시 상태는 무엇인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:pv:8",
+        "answer_reason": "작업지시 상태"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=pv\ntitle=태양광 정비 작업\nstatus=open\ncreated_at=2026-06-01 10:50:39.149259+00:00\nhealth_score=99\nrecent_anomaly_count=8",
+    "reference_answer": "태양광 작업지시 상태는 open입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-022",
+    "query": "계통/수전 설비의 헬스 스코어는 얼마인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:grid:9",
+        "answer_reason": "설비별 헬스 스코어"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=grid\ntitle=계통/수전 정비 작업\nstatus=in_progress\ncreated_at=2026-06-01 10:49:10.248758+00:00\nhealth_score=92\nrecent_anomaly_count=72",
+    "reference_answer": "계통/수전 설비의 헬스 스코어는 92입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-023",
+    "query": "냉방 설비의 최근 이상 건수는 몇 건인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:cooling:10",
+        "answer_reason": "설비별 최근 이상 건수"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=cooling\ntitle=냉방설비 정비 작업\nstatus=open\ncreated_at=2026-06-01 09:58:17.591866+00:00\nhealth_score=97\nrecent_anomaly_count=5",
+    "reference_answer": "냉방 설비의 최근 이상 건수는 5건입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-024",
+    "query": "CHP 설비는 점검이 필요한가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:chp:11",
+        "answer_reason": "헬스 스코어와 최근 이상 건수 기반 점검 필요성"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=chp\ntitle=열병합발전 정비 작업\nstatus=done\ncreated_at=2026-06-01 08:19:26.709101+00:00\nhealth_score=64\nrecent_anomaly_count=98",
+    "reference_answer": "CHP 설비는 제공된 작업지시 정보를 기준으로 점검 검토가 필요합니다. 헬스 스코어는 64입니다. 최근 이상은 98건입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-025",
+    "query": "태양광 설비 상태를 요약해 주세요.",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:pv:12",
+        "answer_reason": "설비 상태 요약"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=pv\ntitle=태양광 정비 작업\nstatus=open\ncreated_at=2026-06-01 10:50:39.149259+00:00\nhealth_score=99\nrecent_anomaly_count=8",
+    "reference_answer": "태양광 설비 상태는 작업지시 정보를 기준으로 확인할 수 있습니다. 헬스 스코어는 99입니다. 최근 이상은 8건입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-026",
+    "query": "계통/수전 작업지시 상태는 무엇인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:grid:13",
+        "answer_reason": "작업지시 상태"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=grid\ntitle=계통/수전 정비 작업\nstatus=in_progress\ncreated_at=2026-06-01 10:49:10.248758+00:00\nhealth_score=92\nrecent_anomaly_count=72",
+    "reference_answer": "계통/수전 작업지시 상태는 in_progress입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-027",
+    "query": "냉방 설비의 헬스 스코어는 얼마인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:cooling:14",
+        "answer_reason": "설비별 헬스 스코어"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=cooling\ntitle=냉방설비 정비 작업\nstatus=open\ncreated_at=2026-06-01 09:58:17.591866+00:00\nhealth_score=97\nrecent_anomaly_count=5",
+    "reference_answer": "냉방 설비의 헬스 스코어는 97입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-028",
+    "query": "CHP 설비의 최근 이상 건수는 몇 건인가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:chp:15",
+        "answer_reason": "설비별 최근 이상 건수"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=chp\ntitle=열병합발전 정비 작업\nstatus=done\ncreated_at=2026-06-01 08:19:26.709101+00:00\nhealth_score=64\nrecent_anomaly_count=98",
+    "reference_answer": "CHP 설비의 최근 이상 건수는 98건입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-029",
+    "query": "태양광 설비는 점검이 필요한가요?",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:pv:16",
+        "answer_reason": "헬스 스코어와 최근 이상 건수 기반 점검 필요성"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=pv\ntitle=태양광 정비 작업\nstatus=open\ncreated_at=2026-06-01 10:50:39.149259+00:00\nhealth_score=99\nrecent_anomaly_count=8",
+    "reference_answer": "태양광 설비는 제공된 작업지시 정보를 기준으로 점검 검토가 필요합니다. 헬스 스코어는 99입니다. 최근 이상은 8건입니다."
+  },
+  {
+    "id": "EMS-EVAL-C-030",
+    "query": "계통/수전 설비 상태를 요약해 주세요.",
+    "category": "cms",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "work_orders",
+    "answer_chunks": [
+      {
+        "chunk_id": "work_orders:cms_variant:grid:17",
+        "answer_reason": "설비 상태 요약"
+      }
+    ],
+    "reference_context": "source_table=work_orders\nquestion_type=cms_variant\nequipment_id=grid\ntitle=계통/수전 정비 작업\nstatus=in_progress\ncreated_at=2026-06-01 10:49:10.248758+00:00\nhealth_score=92\nrecent_anomaly_count=72",
+    "reference_answer": "계통/수전 설비 상태는 작업지시 정보를 기준으로 확인할 수 있습니다. 헬스 스코어는 92입니다. 최근 이상은 72건입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-001",
+    "query": "2023년 12월 자급률은 얼마인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:self_sufficiency_pct",
+        "answer_reason": "2023년 12월 자급률 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 12월\nmetric=self_sufficiency_pct\nvalue=63.106303866352555\nunit=%",
+    "reference_answer": "2023년 12월의 자급률은 63.11%입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-002",
+    "query": "2023년 12월 외부 계통 전력 의존도는 몇 %인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:grid_dependency_pct",
+        "answer_reason": "2023년 12월 외부 계통 전력 의존도 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 12월\nmetric=grid_dependency_pct\nvalue=36.89369613364745\nunit=%",
+    "reference_answer": "2023년 12월의 외부 계통 전력 의존도은 36.89%입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-003",
+    "query": "2023년 12월 총 전력 소비량은 몇 kWh인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:total_consumption_kwh",
+        "answer_reason": "2023년 12월 총 전력 소비량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 12월\nmetric=total_consumption_kwh\nvalue=201522.54367042298\nunit=kWh",
+    "reference_answer": "2023년 12월의 총 전력 소비량은 201,522.54 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-004",
+    "query": "2023년 12월 평균 COP는 얼마인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:avg_cop",
+        "answer_reason": "2023년 12월 평균 COP KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 12월\nmetric=avg_cop\nvalue=2.530398972761977\nunit=",
+    "reference_answer": "2023년 12월의 평균 COP은 2.53입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-005",
+    "query": "2023년 12월 CHP 전력 생산량은 몇 kWh인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:chp_kwh",
+        "answer_reason": "2023년 12월 CHP 전력 생산량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 12월\nmetric=chp_kwh\nvalue=119338.41972305375\nunit=kWh",
+    "reference_answer": "2023년 12월의 CHP 전력 생산량은 119,338.42 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-006",
+    "query": "2023년 12월 태양광 발전량은 몇 kWh인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:pv_kwh",
+        "answer_reason": "2023년 12월 태양광 발전량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 12월\nmetric=pv_kwh\nvalue=7835.0090448063975\nunit=kWh",
+    "reference_answer": "2023년 12월의 태양광 발전량은 7,835.01 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-007",
+    "query": "2023년 11월 자급률은 얼마인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 11월:self_sufficiency_pct",
+        "answer_reason": "2023년 11월 자급률 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 11월\nmetric=self_sufficiency_pct\nvalue=57.557687254290165\nunit=%",
+    "reference_answer": "2023년 11월의 자급률은 57.56%입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-008",
+    "query": "2023년 11월 외부 계통 전력 의존도는 몇 %인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 11월:grid_dependency_pct",
+        "answer_reason": "2023년 11월 외부 계통 전력 의존도 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 11월\nmetric=grid_dependency_pct\nvalue=42.442312745709835\nunit=%",
+    "reference_answer": "2023년 11월의 외부 계통 전력 의존도은 42.44%입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-009",
+    "query": "2023년 11월 총 전력 소비량은 몇 kWh인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 11월:total_consumption_kwh",
+        "answer_reason": "2023년 11월 총 전력 소비량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 11월\nmetric=total_consumption_kwh\nvalue=192632.18305026973\nunit=kWh",
+    "reference_answer": "2023년 11월의 총 전력 소비량은 192,632.18 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-010",
+    "query": "2023년 11월 평균 COP는 얼마인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 11월:avg_cop",
+        "answer_reason": "2023년 11월 평균 COP KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 11월\nmetric=avg_cop\nvalue=2.520003175991021\nunit=",
+    "reference_answer": "2023년 11월의 평균 COP은 2.52입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-011",
+    "query": "2023년 11월 CHP 전력 생산량은 몇 kWh인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 11월:chp_kwh",
+        "answer_reason": "2023년 11월 CHP 전력 생산량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 11월\nmetric=chp_kwh\nvalue=97837.38913735402\nunit=kWh",
+    "reference_answer": "2023년 11월의 CHP 전력 생산량은 97,837.39 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-012",
+    "query": "2023년 11월 태양광 발전량은 몇 kWh인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 11월:pv_kwh",
+        "answer_reason": "2023년 11월 태양광 발전량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 11월\nmetric=pv_kwh\nvalue=13037.240333831973\nunit=kWh",
+    "reference_answer": "2023년 11월의 태양광 발전량은 13,037.24 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-013",
+    "query": "2023년 10월 자급률은 얼마인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 10월:self_sufficiency_pct",
+        "answer_reason": "2023년 10월 자급률 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 10월\nmetric=self_sufficiency_pct\nvalue=52.15492051576576\nunit=%",
+    "reference_answer": "2023년 10월의 자급률은 52.15%입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-014",
+    "query": "2023년 10월 외부 계통 전력 의존도는 몇 %인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 10월:grid_dependency_pct",
+        "answer_reason": "2023년 10월 외부 계통 전력 의존도 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 10월\nmetric=grid_dependency_pct\nvalue=47.84507948423423\nunit=%",
+    "reference_answer": "2023년 10월의 외부 계통 전력 의존도은 47.85%입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-015",
+    "query": "2023년 10월 총 전력 소비량은 몇 kWh인가요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "easy",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 10월:total_consumption_kwh",
+        "answer_reason": "2023년 10월 총 전력 소비량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=single_metric\nperiod=2023년 10월\nmetric=total_consumption_kwh\nvalue=198264.84065396566\nunit=kWh",
+    "reference_answer": "2023년 10월의 총 전력 소비량은 198,264.84 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-016",
+    "query": "2023년 12월 자급률과 외부 계통 전력 의존도를 함께 요약해 주세요.",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:self_sufficiency_pct",
+        "answer_reason": "2023년 12월 자급률 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 12월:grid_dependency_pct",
+        "answer_reason": "2023년 12월 외부 계통 전력 의존도 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=multi_metric_summary\nperiod=2023년 12월\nself_sufficiency_pct=63.106303866352555 (자급률, unit=%)\ngrid_dependency_pct=36.89369613364745 (외부 계통 전력 의존도, unit=%)",
+    "reference_answer": "2023년 12월 기준으로 자급률은 63.11%, 외부 계통 전력 의존도은 36.89%입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-017",
+    "query": "2023년 12월 전력 소비량과 자체 발전량을 함께 요약해 주세요.",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:total_consumption_kwh",
+        "answer_reason": "2023년 12월 총 전력 소비량 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 12월:chp_kwh",
+        "answer_reason": "2023년 12월 CHP 전력 생산량 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 12월:pv_kwh",
+        "answer_reason": "2023년 12월 태양광 발전량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=multi_metric_summary\nperiod=2023년 12월\ntotal_consumption_kwh=201522.54367042298 (총 전력 소비량, unit=kWh)\nchp_kwh=119338.41972305375 (CHP 전력 생산량, unit=kWh)\npv_kwh=7835.0090448063975 (태양광 발전량, unit=kWh)",
+    "reference_answer": "2023년 12월 기준으로 총 전력 소비량은 201,522.54 kWh, CHP 전력 생산량은 119,338.42 kWh, 태양광 발전량은 7,835.01 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-018",
+    "query": "2023년 12월 평균 COP와 총 전력 소비량을 함께 알려주세요.",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:avg_cop",
+        "answer_reason": "2023년 12월 평균 COP KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 12월:total_consumption_kwh",
+        "answer_reason": "2023년 12월 총 전력 소비량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=multi_metric_summary\nperiod=2023년 12월\navg_cop=2.530398972761977 (평균 COP, unit=)\ntotal_consumption_kwh=201522.54367042298 (총 전력 소비량, unit=kWh)",
+    "reference_answer": "2023년 12월 기준으로 평균 COP은 2.53, 총 전력 소비량은 201,522.54 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-019",
+    "query": "2023년 12월 CHP와 태양광 발전량을 비교해서 알려주세요.",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:chp_kwh",
+        "answer_reason": "2023년 12월 CHP 전력 생산량 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 12월:pv_kwh",
+        "answer_reason": "2023년 12월 태양광 발전량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=multi_metric_summary\nperiod=2023년 12월\nchp_kwh=119338.41972305375 (CHP 전력 생산량, unit=kWh)\npv_kwh=7835.0090448063975 (태양광 발전량, unit=kWh)",
+    "reference_answer": "2023년 12월 기준으로 CHP 전력 생산량은 119,338.42 kWh, 태양광 발전량은 7,835.01 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-020",
+    "query": "2023년 12월 자급률과 총 전력 소비량을 같이 알려주세요.",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:self_sufficiency_pct",
+        "answer_reason": "2023년 12월 자급률 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 12월:total_consumption_kwh",
+        "answer_reason": "2023년 12월 총 전력 소비량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=multi_metric_summary\nperiod=2023년 12월\nself_sufficiency_pct=63.106303866352555 (자급률, unit=%)\ntotal_consumption_kwh=201522.54367042298 (총 전력 소비량, unit=kWh)",
+    "reference_answer": "2023년 12월 기준으로 자급률은 63.11%, 총 전력 소비량은 201,522.54 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-021",
+    "query": "2023년 11월 자급률과 외부 계통 전력 의존도를 함께 요약해 주세요.",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 11월:self_sufficiency_pct",
+        "answer_reason": "2023년 11월 자급률 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 11월:grid_dependency_pct",
+        "answer_reason": "2023년 11월 외부 계통 전력 의존도 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=multi_metric_summary\nperiod=2023년 11월\nself_sufficiency_pct=57.557687254290165 (자급률, unit=%)\ngrid_dependency_pct=42.442312745709835 (외부 계통 전력 의존도, unit=%)",
+    "reference_answer": "2023년 11월 기준으로 자급률은 57.56%, 외부 계통 전력 의존도은 42.44%입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-022",
+    "query": "2023년 11월 전력 소비량과 자체 발전량을 함께 요약해 주세요.",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 11월:total_consumption_kwh",
+        "answer_reason": "2023년 11월 총 전력 소비량 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 11월:chp_kwh",
+        "answer_reason": "2023년 11월 CHP 전력 생산량 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 11월:pv_kwh",
+        "answer_reason": "2023년 11월 태양광 발전량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=multi_metric_summary\nperiod=2023년 11월\ntotal_consumption_kwh=192632.18305026973 (총 전력 소비량, unit=kWh)\nchp_kwh=97837.38913735402 (CHP 전력 생산량, unit=kWh)\npv_kwh=13037.240333831973 (태양광 발전량, unit=kWh)",
+    "reference_answer": "2023년 11월 기준으로 총 전력 소비량은 192,632.18 kWh, CHP 전력 생산량은 97,837.39 kWh, 태양광 발전량은 13,037.24 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-023",
+    "query": "2023년 11월 평균 COP와 총 전력 소비량을 함께 알려주세요.",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 11월:avg_cop",
+        "answer_reason": "2023년 11월 평균 COP KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 11월:total_consumption_kwh",
+        "answer_reason": "2023년 11월 총 전력 소비량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=multi_metric_summary\nperiod=2023년 11월\navg_cop=2.520003175991021 (평균 COP, unit=)\ntotal_consumption_kwh=192632.18305026973 (총 전력 소비량, unit=kWh)",
+    "reference_answer": "2023년 11월 기준으로 평균 COP은 2.52, 총 전력 소비량은 192,632.18 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-024",
+    "query": "2023년 11월 CHP와 태양광 발전량을 비교해서 알려주세요.",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 11월:chp_kwh",
+        "answer_reason": "2023년 11월 CHP 전력 생산량 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 11월:pv_kwh",
+        "answer_reason": "2023년 11월 태양광 발전량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=multi_metric_summary\nperiod=2023년 11월\nchp_kwh=97837.38913735402 (CHP 전력 생산량, unit=kWh)\npv_kwh=13037.240333831973 (태양광 발전량, unit=kWh)",
+    "reference_answer": "2023년 11월 기준으로 CHP 전력 생산량은 97,837.39 kWh, 태양광 발전량은 13,037.24 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-025",
+    "query": "2023년 11월 자급률과 총 전력 소비량을 같이 알려주세요.",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "medium",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 11월:self_sufficiency_pct",
+        "answer_reason": "2023년 11월 자급률 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 11월:total_consumption_kwh",
+        "answer_reason": "2023년 11월 총 전력 소비량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=multi_metric_summary\nperiod=2023년 11월\nself_sufficiency_pct=57.557687254290165 (자급률, unit=%)\ntotal_consumption_kwh=192632.18305026973 (총 전력 소비량, unit=kWh)",
+    "reference_answer": "2023년 11월 기준으로 자급률은 57.56%, 총 전력 소비량은 192,632.18 kWh입니다."
+  },
+  {
+    "id": "EMS-EVAL-R-026",
+    "query": "2023년 12월의 총 전력 소비량은 전월보다 증가했나요, 감소했나요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "hard",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:total_consumption_kwh",
+        "answer_reason": "현재 월 총 전력 소비량 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 11월:total_consumption_kwh",
+        "answer_reason": "전월 총 전력 소비량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=month_over_month_comparison\nmetric=total_consumption_kwh\ncurrent_period=2023년 12월\ncurrent_value=201522.54367042298\nprevious_period=2023년 11월\nprevious_value=192632.18305026973\ndiff=8890.360620153253\nunit=kWh",
+    "reference_answer": "2023년 12월의 총 전력 소비량은 201,522.54 kWh이고, 2023년 11월의 192,632.18 kWh보다 8,890.36 kWh 증가했습니다."
+  },
+  {
+    "id": "EMS-EVAL-R-027",
+    "query": "2023년 12월의 자급률은 전월보다 증가했나요, 감소했나요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "hard",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:self_sufficiency_pct",
+        "answer_reason": "현재 월 자급률 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 11월:self_sufficiency_pct",
+        "answer_reason": "전월 자급률 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=month_over_month_comparison\nmetric=self_sufficiency_pct\ncurrent_period=2023년 12월\ncurrent_value=63.106303866352555\nprevious_period=2023년 11월\nprevious_value=57.557687254290165\ndiff=5.548616612062389\nunit=%",
+    "reference_answer": "2023년 12월의 자급률은 63.11%이고, 2023년 11월의 57.56%보다 5.55% 증가했습니다."
+  },
+  {
+    "id": "EMS-EVAL-R-028",
+    "query": "2023년 12월의 외부 계통 전력 의존도은 전월보다 증가했나요, 감소했나요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "hard",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:grid_dependency_pct",
+        "answer_reason": "현재 월 외부 계통 전력 의존도 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 11월:grid_dependency_pct",
+        "answer_reason": "전월 외부 계통 전력 의존도 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=month_over_month_comparison\nmetric=grid_dependency_pct\ncurrent_period=2023년 12월\ncurrent_value=36.89369613364745\nprevious_period=2023년 11월\nprevious_value=42.442312745709835\ndiff=-5.548616612062382\nunit=%",
+    "reference_answer": "2023년 12월의 외부 계통 전력 의존도은 36.89%이고, 2023년 11월의 42.44%보다 5.55% 감소했습니다."
+  },
+  {
+    "id": "EMS-EVAL-R-029",
+    "query": "2023년 12월의 평균 COP은 전월보다 증가했나요, 감소했나요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "hard",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:avg_cop",
+        "answer_reason": "현재 월 평균 COP KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 11월:avg_cop",
+        "answer_reason": "전월 평균 COP KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=month_over_month_comparison\nmetric=avg_cop\ncurrent_period=2023년 12월\ncurrent_value=2.530398972761977\nprevious_period=2023년 11월\nprevious_value=2.520003175991021\ndiff=0.010395796770956256\nunit=",
+    "reference_answer": "2023년 12월의 평균 COP은 2.53이고, 2023년 11월의 2.52보다 0.01 증가했습니다."
+  },
+  {
+    "id": "EMS-EVAL-R-030",
+    "query": "2023년 12월의 CHP 전력 생산량은 전월보다 증가했나요, 감소했나요?",
+    "category": "report",
+    "eval_type": "evidence_answer",
+    "difficulty": "hard",
+    "source_doc": "monthly_report",
+    "answer_chunks": [
+      {
+        "chunk_id": "monthly_report:2023년 12월:chp_kwh",
+        "answer_reason": "현재 월 CHP 전력 생산량 KPI 값"
+      },
+      {
+        "chunk_id": "monthly_report:2023년 11월:chp_kwh",
+        "answer_reason": "전월 CHP 전력 생산량 KPI 값"
+      }
+    ],
+    "reference_context": "source_table=monthly_report\nquestion_type=month_over_month_comparison\nmetric=chp_kwh\ncurrent_period=2023년 12월\ncurrent_value=119338.41972305375\nprevious_period=2023년 11월\nprevious_value=97837.38913735402\ndiff=21501.03058569973\nunit=kWh",
+    "reference_answer": "2023년 12월의 CHP 전력 생산량은 119,338.42 kWh이고, 2023년 11월의 97,837.39 kWh보다 21,501.03 kWh 증가했습니다."
+  }
+]

@@ -1,0 +1,234 @@
+[
+  {
+    "question": "2023년 4월의 CHPOutage 발생 건수는 얼마이며, 이 문제가 발생한 원인은 무엇인가요?",
+    "answer": "2023년 4월에는 CHPOutage가 1건 발생했습니다. 대표 시각은 4월 3일 11시이며. 이는 잔차 341.5 kW로 임계치를 초과했습니다. 이는 열병합발전 설비의 예측값과 실측값 간의 큰 차이에서 비롯된 것으로 보입니다. 이는 비정상 정지 가능성을 시사합니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-04-03 11:00 CHPOutage HIGH 잔차=341.5"
+    ]
+  },
+  {
+    "question": "2023년 3월의 PowerSpike가 발생한 시간대와 그 원인을 설명해 주세요.",
+    "answer": "2023년 3월에는 PowerSpike가 2건 발생했습니다. 대표 시각은 3월 7일 14시로, 잔차가 77.1 kW였습니다. 이는 대형 설비의 동시 기동으로 인한 부하 급증 가능성이 있으며, 그리드 실측값과 피더별 전류 확인이 필요합니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-03-07 14:00 PowerSpike MEDIUM 잔차=77.1"
+    ]
+  },
+  {
+    "question": "2023년 9월의 COPDrop 발생 건수를 분석하고 영향을 주었던 주요 요인을 무엇인가요?",
+    "answer": "2023년 9월에는 COPDrop이 1건 발생했습니다. 대표 시각은 9월 15일 11시이며, 이는 냉각기 시스템의 효율 저하를 나타내는 신호입니다. 냉각수 온도의 변화와 냉매 압력 변화가 주요 원인으로 추정됩니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-09-15 11:00 COPDrop MEDIUM"
+    ]
+  },
+  {
+    "question": "COPDrop 유형이 2023년 1월에 발생한 이유는 무엇이며, 어떤 조치를 취해야 하나요?",
+    "answer": "2023년 1월에는 COPDrop 유형이 1건 발생했으며 대표 시각은 1월 10일 11시입니다. 이는 냉각기 효율 저하를 나타내며, 응축기 청소 및 냉매 압력 확인이 필요합니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-01-10 11:00 COPDrop MEDIUM"
+    ]
+  },
+  {
+    "question": "2023년 12월의 CHPOutage와 PowerSpike 이벤트가 시스템 운영에 어떤 영향을 미쳤나요?",
+    "answer": "2023년 12월에는 CHPOutage가 2건 LOW로 발생했고, PowerSpike가 4건 MEDIUM으로 발생했습니다. CHPOutage는 자급률을 낮추고, PowerSpike는 그리드 의존도를 높이는 이벤트로, 설비 대응 및 안전 점검이 필요합니다.",
+    "category": "anomaly",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2023-12-12 01:00 CHPOutage LOW",
+      "anomaly_results: 2023-12-15 15:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "question": "CHP 설비의 2023년 6월 헬스 스코어는 어떠하며, 어떤 주요 문제가 있었나요?",
+    "answer": "2023년 6월 현재 CHP 설비의 헬스 스코어는 64로 경고 수준입니다. 최근 CHPOutage가 빈번히 발생하였으며, 이는 가스 공급 문제나 설비 내의 전기적 불균형 때문일 가능성이 높습니다.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: CHP health_score=64 created_at=2023-06-01"
+    ]
+  },
+  {
+    "question": "냉방설비의 최근 COPDrop 현상에 대해 진단하고 향후 조치사항을 알려주세요.",
+    "answer": "냉방설비의 최근 헬스 스코어는 97로 정상 수준입니다. 다만 COPDrop 유형 이상이 발생하여, 응축기 청소 및 냉매 압력을 점검하고 냉각탑 운영 상태를 확인해야 할 필요가 있습니다.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: cooling health_score=97 created_at=2023-06-01"
+    ]
+  },
+  {
+    "question": "계통/수전 설비의 최근 헬스 스코어는 어떠하며, 개선이 필요한 부분은 무엇인가요?",
+    "answer": "현재 계통/수전 설비의 헬스 스코어는 92로 주의 수준입니다. 최근 낮은 역률 0.36을 기록하고 있으며, PowerSpike가 빈번히 발생해 역률 개선 및 변압기 부하 분산이 필요합니다.",
+    "category": "cms",
+    "difficulty": "hard",
+    "evidence": [
+      "work_orders: grid health_score=92 created_at=2023-06-01"
+    ]
+  },
+  {
+    "question": "최근 태양광 설비의 상태는 어떤가요, 야간 비정상 출력과 관련된 조치는 무엇이 있나요?",
+    "answer": "현재 태양광(PV) 설비의 헬스 스코어는 99로 정상입니다. 그러나 야간 비정상 출력이 관찰되어, 센서 오류를 점검하고 인버터 교정을 권장합니다.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: pv health_score=99 created_at=2023-06-01"
+    ]
+  },
+  {
+    "question": "CHP 설비에서 최근 발생한 여러 CHPOutage의 원인과 권장 조치를 설명하세요.",
+    "answer": "CHP 설비의 최근 헬스 스코어는 64로 경고 상태입니다. 최근 다수의 CHPOutage가 발생했으며, 이는 가스 공급 차단 혹은 설비 자체의 정비 문제가 원인일 가능성이 있습니다. CHP의 전기-열 동시 출력 상태를 점검하고 그리드 의존도를 모니터링해야 합니다.",
+    "category": "cms",
+    "difficulty": "hard",
+    "evidence": [
+      "work_orders: CHP health_score=64 created_at=2023-06-01"
+    ]
+  },
+  {
+    "question": "2023년 8월의 전력 소비량과 자급률을 2023년 7월과 비교해보세요.",
+    "answer": "2023년 8월의 전력 소비량은 217,986 kWh이며, 자급률은 39.52%였습니다. 이는 7월의 211,656 kWh 소비량과 47.04% 자급률에 비해 소비량은 증가하였으나 자급률은 감소했습니다.",
+    "category": "report",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-08 total_electricity_sum_kwh=217986",
+      "monthly_report: 2023-08 self_sufficiency_pct=39.52",
+      "monthly_report: 2023-07 total_electricity_sum_kwh=211656",
+      "monthly_report: 2023-07 self_sufficiency_pct=47.04"
+    ]
+  },
+  {
+    "question": "2023년 10월의 KPI 수치를 전월인 9월과 비교하여 분석해 주세요.",
+    "answer": "2023년 10월의 자급률은 52.15%로, 9월의 40.83%보다 증가했습니다. 또한, 전력 소비량은 198,265 kWh로 감소하였습니다. 이는 전체 에너지 사용 효율성이 개선된 것을 나타냅니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-09 self_sufficiency_pct=40.83",
+      "monthly_report: 2023-09 total_electricity_sum_kwh=210011",
+      "monthly_report: 2023-10 self_sufficiency_pct=52.15",
+      "monthly_report: 2023-10 total_electricity_sum_kwh=198265"
+    ]
+  },
+  {
+    "question": "2023년 12월 전력 소비량과 자급률을 2022년 12월과 비교해주세요.",
+    "answer": "2023년 12월 전력 소비량은 201,523 kWh로 2022년 12월의 159,227 kWh 대비 약간 증가했습니다. 자급률은 2023년 12월에 63.11%였으며 이는 2022년 12월의 45.12%보다 크게 향상되었습니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 total_electricity_sum_kwh=201523",
+      "monthly_report: 2023-12 self_sufficiency_pct=63.11",
+      "monthly_report: 2022-12 total_electricity_sum_kwh=159227",
+      "monthly_report: 2022-12 self_sufficiency_pct=45.12"
+    ]
+  },
+  {
+    "question": "2023년 5월과 2022년 5월의 KPI 수치를 비교해보세요.",
+    "answer": "2023년 5월 전력 소비량은 190,436 kWh로 2022년 5월의 191,412 kWh와 비교해 크게 다른 변화는 없었습니다. 자급률은 2023년 5월에는 68.42%로, 2022년 5월의 51.35%보다 증가했습니다.",
+    "category": "report",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-05 total_electricity_sum_kwh=190436",
+      "monthly_report: 2023-05 self_sufficiency_pct=68.42",
+      "monthly_report: 2022-05 total_electricity_sum_kwh=191412",
+      "monthly_report: 2022-05 self_sufficiency_pct=51.35"
+    ]
+  },
+  {
+    "question": "H1.Z16 계량기의 존재하는 P 값은 운영에 어떤 영향을 미칠 수 있나요?",
+    "answer": "현재 측정된 H1.Z16의 유효전력(P) 값은 443.72 kW입니다. 이는 설비의 에너지 소비를 직접적으로 나타내며, 피크 관리 및 에너지 효율성을 높이는 데 중요한 정보를 제공합니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z16 2023-04-21 P=443.72"
+    ]
+  },
+  {
+    "question": "H1.Z20 계량기의 최근 전류 값이 주는 의미는 무엇인가요?",
+    "answer": "H1.Z20 계량기의 최근 I1 값은 -0.23 A로, 이는 계측 오류의 가능성을 시사합니다. 음수 값으로 인해 센서 교정이 필요한지 확인해 봐야 합니다.",
+    "category": "rag",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 2022-04-11 I1=-0.23"
+    ]
+  },
+  {
+    "question": "V.Z84 계량기의 최근 P 값 변화는 무엇을 의미할까요?",
+    "answer": "V.Z84 계량기의 P 값은 1.65 kW로 측정되었습니다. 이는 태양광 발전의 효율성을 나타내며, 낮 동안의 발전량 평가는 에너지 자급률을 예측하는 데 이용됩니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: V.Z84 2023-10-08 P=1.65"
+    ]
+  },
+  {
+    "question": "H1.Z11 계량기의 최근 전류 소비 패턴이 운영에 미치는 영향은 무엇인가요?",
+    "answer": "H1.Z11의 최근 W_in 값은 318,208 kWh로 확인되었습니다. 이는 해당 구역의 에너지 소비 패턴을 통해 피크 관리 및 효율성을 개선하는 데 기초 자료로 사용할 수 있습니다.",
+    "category": "rag",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: H1.Z11 2023-10-05 W_in=318,208"
+    ]
+  },
+  {
+    "question": "V.Z84 계량기의 최근 PF1 값이 왜 중요한가요?",
+    "answer": "10월 19일 측정된 V.Z84 계량기의 PF1 값은 -0.97로 매우 비정상적입니다. 이는 역률 문제를 의미하며, 전력 손실 최소화를 위한 즉각적인 조치가 필요합니다.",
+    "category": "rag",
+    "difficulty": "hard",
+    "evidence": [
+      "cr_measurement_1h: V.Z84 2023-10-19 PF1=-0.97"
+    ]
+  },
+  {
+    "question": "최근의 COPDrop 추세를 바탕으로 냉방 설비의 운영에 어떤 위험 요인이 있나요?",
+    "answer": "COPDrop 현상이 최근 빈번히 발생하고 있어 냉각 효율 저하가 우려됩니다. 외부 기온의 상승과 함께 냉방 에너지 소비가 더욱 증가할 수 있습니다. 이에 따른 에너지 비용 상승 위험이 존재합니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-09-15 11:00 COPDrop MEDIUM",
+      "anomaly_results: 2023-08-21 11:00 COPDrop HIGH"
+    ]
+  },
+  {
+    "question": "현재 자급률 추세로 인해 CHP 설비에 예상되는 운영 영향은 무엇인가요?",
+    "answer": "가장 최근의 자급률 데이터에 따르면, 자급률의 개선이 없으면 CHP 설비의 추가적인 부담이 예상됩니다. 운영 의존도가 높아질 수 있으며, 유지보수 비용 증가가 우려됩니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-11 self_sufficiency_pct=57.56",
+      "monthly_report: 2023-12 self_sufficiency_pct=63.11"
+    ]
+  },
+  {
+    "question": "PowerSpike 발생 추세를 기반으로 향후 어떤 대응이 요구될 수 있나요?",
+    "answer": "PowerSpike가 최근 여러 번 발생하고 있어 동시 기동 설비 스케줄 조정이 필요합니다. 그렇지 않으면 변압기의 수명 단축과 설비 과부하가 발생할 수 있습니다.",
+    "category": "forecast",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2023-12-12 01:00 PowerSpike LOW",
+      "anomaly_results: 2023-12-15 15:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "question": "PV 설비의 작동 추세가 올해 어떤 결과를 초래할 수 있을까요?",
+    "answer": "PV 설비의 최근 비정상 출력 문제로 인해 에너지 비율이 감소할 가능성이 있습니다. 이는 외부 계통 전력 의존도를 증가시키고 운영 비용을 높일 수 있습니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: pv health_score=99 created_at=2023-06-01"
+    ]
+  },
+  {
+    "question": "보일러와 CHP 간의 열 생산 비율을 조정하기 위해 어떤 예측 변화가 필요할까요?",
+    "answer": "내년 예상 열 수요의 증가는 가스 소비와 운영 비용을 증가시킬 수 있습니다. 이로 인해 CHP 열 생산 비율이 증가될 필요가 있을 것입니다.",
+    "category": "forecast",
+    "difficulty": "easy",
+    "evidence": [
+      "anomaly_results: 2023-01-10 11:00 COPDrop MEDIUM"
+    ]
+  }
+]

@@ -1,0 +1,178 @@
+[
+  {
+    "question": "2023년 3월 28일에 발생한 ResidualSpike 사건에 대해 어떤 원인과 결과가 있었나요?",
+    "answer": "2023년 3월 28일의 ResidualSpike는 잔차가 67.2 kW로 임계치를 초과했습니다. 이는 예상치와의 차이가 컸던 만큼, 에너지 모델의 예측 성공에 문제가 있었을 가능성이 있습니다. 추가적인 데이터 분석 및 모델 재학습을 고려해야 합니다.",
+    "category": "anomaly",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2023-03-28 08:00 ResidualSpike HIGH residual_w=67219"
+    ]
+  },
+  {
+    "question": "2023년 9월 15일의 PVNightNonZero 이상 탐지의 원인은 무엇인가요?",
+    "answer": "2023년 9월 15일의 PVNightNonZero는 MEDIUM 등급으로, 야간에 PV 출력이 비정상적으로 나타났습니다. 이는 인버터 오프셋 또는 센서 오류 가능성이 있으며, 센서를 교정하고 인버터 로그를 점검할 필요가 있습니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-09-15 21:00 PVNightNonZero MEDIUM"
+    ]
+  },
+  {
+    "question": "2023년 4월 16일에 발생한 PowerSpike 현상의 심각도는 어느 정도였나요?",
+    "answer": "2023년 4월 16일의 PowerSpike는 MEDIUM 등급으로, 대형 설비의 동시 기동으로 인한 전력 부하 증가 가능성이 있습니다. 전력 피크를 관리하고 부하를 분산하기 위해 설비 기동 스케줄의 조정이 필요합니다.",
+    "category": "anomaly",
+    "difficulty": "easy",
+    "evidence": [
+      "anomaly_results: 2023-04-16 10:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "question": "2023년 11월 26일에 발생한 NightConsumption 이상은 어떤 조치를 필요로 하나요?",
+    "answer": "2023년 11월 26일의 NightConsumption는 MEDIUM 등급이며, 잔차가 72.4 kW로 나타났습니다. 이는 야간에 불필요한 설비가 작동했을 가능성을 시사하며, 야간 분기별 전력 로그를 확인하고 불필요한 설비를 자동차단 타이머로 설정하는 것이 필요합니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-11-26 01:00 NightConsumption MEDIUM residual_w=72399"
+    ]
+  },
+  {
+    "question": "현재 열병합발전 설비의 진단 결과와 조치 계획은 어떻게 되나요?",
+    "answer": "현재 열병합발전 설비의 헬스 스코어는 64로, 경고 등급입니다. 다수의 CHPOutage가 발생하고 있으며, 특히 HIGH 등급의 이상이 빈번히 발생하고 있어 점검이 필요합니다. 가스 공급 및 전기·열 출력 상태를 점검하고, 비정상 정지를 방지하기 위한 추가 조치가 필요합니다.",
+    "category": "cms",
+    "difficulty": "hard",
+    "evidence": [
+      "work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"
+    ]
+  },
+  {
+    "question": "현재 계통/수전 설비의 상태와 조치 계획에 대해 설명해 주세요.",
+    "answer": "현재 계통/수전 설비의 헬스 스코어는 92로 정상 상태입니다. 다만 최근 30일간 PowerSpike가 다수 발생했으나, 역률이 매우 낮아 효율 개선이 필요합니다. 그리드 실측값과 피더별 전류를 확인하고 역률 개선 콘덴서를 점검하여 부하를 분산시키는 것이 좋습니다.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=grid title=헬스 92 · 최근 이상 72건"
+    ]
+  },
+  {
+    "question": "냉방설비의 최근 진단 결과는 어떤가요?",
+    "answer": "최근 냉방설비의 헬스 스코어는 97로 정상 상태이나, 지난 30일간 COPDrop 유형의 이상이 5건 발생하였습니다. 이는 냉각 효율 저하를 나타낼 수 있어, 응축기 청소 및 냉매 압력 확인이 필요합니다.",
+    "category": "cms",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"
+    ]
+  },
+  {
+    "question": "현재 태양광 설비의 헬스스코어는 어떻게 해석할 수 있나요?",
+    "answer": "현재 태양광 설비의 헬스 스코어는 99로 매우 정상적이지만, 최근 이상 8건이 발생했습니다. 이는 주로 야간에 비정상 출력이 관찰된 사례로 센서와 인버터의 점검이 필요합니다.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"
+    ]
+  },
+  {
+    "question": "태양광 설비의 추정 원인과 긍정적인 상태는 무엇인가요?",
+    "answer": "태양광 설비는 야간 PV 출력 이상이 보고되었으나 헬스 스코어가 99로 긍정적입니다. 이는 주로 센서 오류 가능성이 있으므로 관련 센서와 인버터 점검이 권고됩니다.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"
+    ]
+  },
+  {
+    "question": "2023년 4월의 전력 소비량 추세와 자급률은 어떻게 변화했습니까?",
+    "answer": "2023년 4월의 전력 소비량은 178,624 kWh로 전월의 178,024 kWh와 비교해 소폭 증가하였습니다. 자급률은 75.15%로, 전월 52.04%에 비해 상당한 상승세를 보였습니다. 이는 자가 발전량의 증가 때문입니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-04 total_consumption_kwh=178624",
+      "monthly_report: 2023-04 self_sufficiency_pct=75.15",
+      "monthly_report: 2023-03 total_consumption_kwh=178024",
+      "monthly_report: 2023-03 self_sufficiency_pct=52.04"
+    ]
+  },
+  {
+    "question": "2023년 3월의 평균 COP는 전월 대비 어떻게 변화했나요?",
+    "answer": "2023년 3월의 평균 COP는 1.49로 전월의 0.98에 비해 증가하였습니다. 이는 시스템의 냉방 효율이 개선되었음을 나타냅니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-03 avg_cop=1.49",
+      "monthly_report: 2023-02 avg_cop=0.98"
+    ]
+  },
+  {
+    "question": "2023년 8월의 자급률은 7월에 비해 어떤 변화를 보였나요?",
+    "answer": "2023년 8월의 자급률은 39.52%로, 7월의 47.04%에 비해 감소하였습니다. 이는 주로 외부 계통 전력에 대한 의존도가 증가했음을 나타냅니다.",
+    "category": "report",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-08 self_sufficiency_pct=39.52",
+      "monthly_report: 2023-07 self_sufficiency_pct=47.04"
+    ]
+  },
+  {
+    "question": "H1.Z20의 최근 무효전력량(WQ_out) 측정값이 어떤 변동을 보였나요?",
+    "answer": "H1.Z20의 무효전력량(WQ_out)은 2023년 5월 10일에 275,666.19 kvarh로 기록되었습니다. 이는 이전 값과 비교하여 변동이 있을 수 있어 주의가 필요합니다.",
+    "category": "rag",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 2023-05-10 WQ_out=275666.19"
+    ]
+  },
+  {
+    "question": "H1.Z16 전압 U1의 최근 측정값은 어떻게 나타났나요?",
+    "answer": "H1.Z16 전압 U1의 최근 측정값은 2019년 12월 29일에 231.65V로 기록되었습니다. 전압 변동이 크지 않으므로 안정적인 전력 공급이 유지되고 있는 것으로 보입니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z16 2019-12-29 U1=231.65"
+    ]
+  },
+  {
+    "question": "H1.Z11의 최근 전류 I1값은 어떻게 나타났나요?",
+    "answer": "H1.Z11의 최근 전류 I1값은 2022년 2월 24일 36.97A로 기록되었습니다. 이는 이 시점에서의 전력 부하 상태를 나타냅니다.",
+    "category": "rag",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: H1.Z11 2022-02-24 I1=36.97"
+    ]
+  },
+  {
+    "question": "최근 PowerSpike가 증가하는 추세가 어떤 영향을 미칠 수 있나요?",
+    "answer": "최근 PowerSpike 발생 추세를 보면 설비 기동 시 전력 피크가 잦아지고 있습니다. 이는 추가 전력 요금 부담이 발생할 수 있으며, 설비 기동 스케줄을 조정하여 피크를 관리해야 할 필요성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2023-11-14 16:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "question": "2023년 12월의 현재 전력 소비 증가 추세가 이후에는 어떤 위험을 초래할 수 있을까요?",
+    "answer": "2023년 12월 전력 소비는 201,522 kWh로 증가 추세를 보이며, 이는 외부 계통 전력 의존도가 증가할 수 있는 위험을 초래합니다. 피크 전력을 관리하고 자가 발전 비율을 높이는 전략이 필요합니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 total_consumption_kwh=201522"
+    ]
+  },
+  {
+    "question": "현재의 자급률 추세를 고려할 때, 향후 어떤 대비책이 필요할까요?",
+    "answer": "현재의 자급률 추세를 보면 그리드 의존도가 증가하는 경향이 있어 가용 에너지원의 효율적 활용이 필요한 시점입니다. CHP와 PV의 운영 최적화 전략을 수립하는 것이 중요합니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 self_sufficiency_pct=63.11"
+    ]
+  },
+  {
+    "question": "내년의 CHP 운영 전략은 어떻게 설계해야 할까요?",
+    "answer": "최근 CHP운영 데이터를 고려할 때, 자급률 향상과 외부 전력 의존도 감소를 위해 CHP의 가동률을 높이는 것이 바람직합니다. 주기적인 정기 점검과, 설비의 효율적인 운용이 필요합니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 self_sufficiency_pct=63.11"
+    ]
+  }
+]

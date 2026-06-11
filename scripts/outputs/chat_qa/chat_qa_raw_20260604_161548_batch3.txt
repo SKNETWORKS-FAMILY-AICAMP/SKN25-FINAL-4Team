@@ -1,0 +1,252 @@
+[
+  {
+    "id": "chat_03_001",
+    "question": "이거 제일 심각해?",
+    "answer": "현재 'CHPOutage' 고장은 HIGH 등급으로 판정된 이상이 89건 있습니다. 추가적인 셧다운이 손상을 일으킬 가능성이 있으니 즉시 점검이 권장됩니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_03_002",
+    "question": "태양광이 또 이상?",
+    "answer": "네, 최근 PV에서 야간에 비정상 출력이 관찰되었습니다. 센서 오류 가능성이 높으며, 인버터와 센서를 점검할 필요가 있습니다.",
+    "category": "cms",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"]
+  },
+  {
+    "id": "chat_03_003",
+    "question": "이번 12월 전기 사용량 어때?",
+    "answer": "2023년 12월 전기 사용량은 201,522 kWh였으며, 자급률은 63.11%입니다. 외부 계통 전력 의존도는 36.89%입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 total_consumption_kwh=201522.54 self_sufficiency_pct=63.11"]
+  },
+  {
+    "id": "chat_03_004",
+    "question": "H1.Z20 데이터 확인해도 돼?",
+    "answer": "네, H1.Z20의 최근 전류 I1 값은 -172.06 A로 기록되었습니다.",
+    "category": "rag",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["cr_measurement_1h: H1.Z20 2021-01-27 I1=-172.059"]
+  },
+  {
+    "id": "chat_03_005",
+    "question": "다음 주 전기 사용량 늘어날까?",
+    "answer": "현재 추세로 보면 전기 사용량이 다소 늘어날 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": []
+  },
+  {
+    "id": "chat_03_006",
+    "question": "CHP 정비 필요?",
+    "answer": "CHP의 헬스 스코어는 64로 주의가 필요하며, 최근 이상 98건이 보고되었습니다. 적극적으로 점검이 필요합니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_03_007",
+    "question": "이거 지금 확인할 거 있어?",
+    "answer": "현재 'CHPOutage' HIGH 등급 이상이 89건입니다. 가스 공급 상태와 그리드 의존도를 모니터링하는 것이 좋겠습니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_03_008",
+    "question": "자급률 괜찮아?",
+    "answer": "2023년 12월 자급률은 63.11%로 양호한 편입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 self_sufficiency_pct=63.11"]
+  },
+  {
+    "id": "chat_03_009",
+    "question": "V.Z84는 뭐 측정해?",
+    "answer": "V.Z84는 태양광 발전량을 측정하는 계량기로, 전력량(W_in, W_out)을 모니터링합니다.",
+    "category": "rag",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["cr_measurement_1h: V.Z84"]
+  },
+  {
+    "id": "chat_03_010",
+    "question": "이번 달 COP 어때?",
+    "answer": "2023년 12월의 평균 COP는 2.53으로 높은 편이며, 냉방 효율이 양호합니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 avg_cop=2.53"]
+  },
+  {
+    "id": "chat_03_011",
+    "question": "이 추세 계속 갈까?",
+    "answer": "반복 패턴 기반으로 추정하면 당분간 현재의 전력 소비 추세가 지속될 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": []
+  },
+  {
+    "id": "chat_03_012",
+    "question": "냉방설비 상태 어때?",
+    "answer": "냉방설비 헬스 스코어는 97로 양호하나, 최근 COPDrop 유형의 이상이 5건 발생했습니다. 냉각 효율에 주의가 필요합니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": ["work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"]
+  },
+  {
+    "id": "chat_03_013",
+    "question": "전력 스파이크 있었어?",
+    "answer": "최근 PowerSpike MEDIUM 등급의 이상이 여러 건 발생했습니다. 전력 급증의 원인을 파악하고 조치가 필요합니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["anomaly_results: 2023-12-15 PowerSpike MEDIUM"]
+  },
+  {
+    "id": "chat_03_014",
+    "question": "외부 전력 의존도 어때?",
+    "answer": "2023년 12월 외부 계통 전력 의존도는 36.89%로, 자급률이 높아 의존도가 낮은 편입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 grid_dependency_pct=36.89"]
+  },
+  {
+    "id": "chat_03_015",
+    "question": "CHP 또 문제야?",
+    "answer": "네, 최근 CHPOutage가 빈번히 발생하고 있습니다. 특히 고등급 이상이 많아 점검이 시급합니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_03_016",
+    "question": "다음 달도 자급률 높을까?",
+    "answer": "현재 추세로 보면 자급률이 높은 상태를 유지할 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": []
+  },
+  {
+    "id": "chat_03_017",
+    "question": "이 경보 무시해도 돼?",
+    "answer": "현재 CHPOutage HIGH 등급의 이상이 89건이므로 무시하지 말고 즉시 조치를 취하는 것이 필요합니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_03_018",
+    "question": "이번 11월 자급률 어때?",
+    "answer": "2023년 11월 자급률은 57.56%로 양호한 수준입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-11 self_sufficiency_pct=57.56"]
+  },
+  {
+    "id": "chat_03_019",
+    "question": "H1.Z20 전류값 봐도 돼?",
+    "answer": "H1.Z20의 최근 I3 전류값은 -0.21 A입니다.",
+    "category": "rag",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": ["cr_measurement_1h: H1.Z20 2023-05-30 I3=-0.212"]
+  },
+  {
+    "id": "chat_03_020",
+    "question": "전력 소모량 늘었어?",
+    "answer": "2023년 12월 전력 소모량은 201,522 kWh로 증가 추세입니다.",
+    "category": "report",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 total_consumption_kwh=201522.54"]
+  },
+  {
+    "id": "chat_03_021",
+    "question": "계통/수전 문제 없나?",
+    "answer": "계통/수전의 헬스 스코어는 92로 양호하나, 최근 PowerSpike가 72건 발생하여 점검이 필요합니다.",
+    "category": "cms",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=grid title=헬스 92 · 최근 이상 72건"]
+  },
+  {
+    "id": "chat_03_022",
+    "question": "이거 내일도 문제일까?",
+    "answer": "현재 추세로 보면 내일까지도 문제가 지속될 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "operator",
+    "question_type": "followup",
+    "difficulty": "hard",
+    "evidence": []
+  },
+  {
+    "id": "chat_03_023",
+    "question": "CHP 고장 진단 결과 어때?",
+    "answer": "CHP는 현재 -341.5kW에서 -267.6kW 범위로 실측되어 비정상 정지가 의심됩니다. 가스 공급 상태를 확인하세요.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_03_024",
+    "question": "외부 계통 전력 의존도 줄어?",
+    "answer": "2023년 12월 외부 계통 전력 의존도는 36.89%로 줄어들 가능성이 있습니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 grid_dependency_pct=36.89"]
+  },
+  {
+    "id": "chat_03_025",
+    "question": "다음 달 더 쓸까?",
+    "answer": "반복 패턴 기반으로 추정하면 다음 달 전기 사용량이 증가할 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "followup",
+    "difficulty": "medium",
+    "evidence": []
+  }
+]

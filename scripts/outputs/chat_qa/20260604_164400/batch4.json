@@ -1,0 +1,302 @@
+[
+  {
+    "id": "chat_04_001",
+    "question": "이상 또 떴어?",
+    "answer": "최근 PowerSpike가 MEDIUM 등급으로 발생했습니다. 정확한 시각은 2023년 12월 12일 09시입니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "anomaly_results: 2023-12-12 09:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "id": "chat_04_002",
+    "question": "CHP 상태 어때?",
+    "answer": "최근 CHP에서 LOW 등급의 이상 후보가 발생했습니다. 2023년 12월 9일에 65.9 kW의 잔차가 있는 상태입니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-12-09 17:00 CHPOutage LOW residual_w=65947.33"
+    ]
+  },
+  {
+    "id": "chat_04_003",
+    "question": "남은 이상 뭐 있어?",
+    "answer": "현재 PVNightNonZero가 MEDIUM 등급으로 2023년 11월 27일에 감지되었습니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-11-27 21:00 PVNightNonZero MEDIUM"
+    ]
+  },
+  {
+    "id": "chat_04_004",
+    "question": "잔차 큰 이상 있어?",
+    "answer": "잔차가 318.8 kW인 HIGH 등급의 이상이 ResidualSpike로 2023년 3월 6일에 감지되었습니다.",
+    "category": "anomaly",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2023-03-06 12:00 ResidualSpike HIGH residual_w=318831.65"
+    ]
+  },
+  {
+    "id": "chat_04_005",
+    "question": "야간 전력 이상?",
+    "answer": "야간에 PVNightNonZero 문제가 MEDIUM 등급으로 2023년 11월 10일에 발생했습니다.",
+    "category": "anomaly",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "anomaly_results: 2023-11-10 02:00 PVNightNonZero MEDIUM"
+    ]
+  },
+  {
+    "id": "chat_04_006",
+    "question": "작업지시 또 떴어?",
+    "answer": "네, 최근 CHP 설비에 대한 작업지시가 있습니다. 헬스 64로 주의가 필요합니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"
+    ]
+  },
+  {
+    "id": "chat_04_007",
+    "question": "냉방설비 문제?",
+    "answer": "냉방설비에서 헬스 97로 평가되었습니다. COPDrop이 5건 발생했으므로 주의가 필요합니다.",
+    "category": "cms",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"
+    ]
+  },
+  {
+    "id": "chat_04_008",
+    "question": "태양광 정비해야?",
+    "answer": "태양광 설비에서 헬스 99로 높은 점수를 받았지만 야간 출력 이상이 관찰되었습니다. 점검이 필요합니다.",
+    "category": "cms",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"
+    ]
+  },
+  {
+    "id": "chat_04_009",
+    "question": "계통 정비 필요?",
+    "answer": "계통 설비의 헬스 스코어가 92로 나타났으며, 최근 PowerSpike가 72건 발생했습니다. 역률 개선이 필요합니다.",
+    "category": "cms",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": [
+      "work_orders: equipment_id=grid title=헬스 92 · 최근 이상 72건"
+    ]
+  },
+  {
+    "id": "chat_04_010",
+    "question": "냉방설비 상태?",
+    "answer": "냉방설비에서 헬스 97로 평가되어 주의가 필요합니다. 냉각 효율 저하가 관찰되었습니다.",
+    "category": "cms",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"
+    ]
+  },
+  {
+    "id": "chat_04_011",
+    "question": "이번 달 자급률?",
+    "answer": "2023년 12월 기준 자급률은 63.11%로 기록되었습니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 self_sufficiency_pct=63.11"
+    ]
+  },
+  {
+    "id": "chat_04_012",
+    "question": "이번 달 전기량?",
+    "answer": "2023년 12월의 전기 소비량은 201,522 kWh입니다.",
+    "category": "report",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 total_consumption_kwh=201522"
+    ]
+  },
+  {
+    "id": "chat_04_013",
+    "question": "CHP 전력량?",
+    "answer": "2023년 12월의 CHP 생산 전력량은 119,338 kWh입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 chp_kwh=119338"
+    ]
+  },
+  {
+    "id": "chat_04_014",
+    "question": "외부 전력 의존?",
+    "answer": "2023년 12월 기준 외부 계통 전력 의존도는 36.89%입니다.",
+    "category": "report",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 grid_dependency_pct=36.89"
+    ]
+  },
+  {
+    "id": "chat_04_015",
+    "question": "이번 달 PV 출력?",
+    "answer": "2023년 12월의 태양광 발전량은 7,835 kWh입니다.",
+    "category": "report",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 pv_kwh=7835"
+    ]
+  },
+  {
+    "id": "chat_04_016",
+    "question": "H1.Z20 값 어때?",
+    "answer": "H1.Z20의 최근 전압 값은 U2 기준 228.82 V입니다.",
+    "category": "rag",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 2019-11-27 U2=228.82"
+    ]
+  },
+  {
+    "id": "chat_04_017",
+    "question": "V.Z84 측정 뭐야?",
+    "answer": "V.Z84는 I3 전류를 측정하며 최근 값은 -54.84입니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: V.Z84 2022-03-11 I3=-54.84"
+    ]
+  },
+  {
+    "id": "chat_04_018",
+    "question": "U1 전압 어때?",
+    "answer": "H1.Z20의 U1 전압은 229.62 V로 최근 측정되었습니다.",
+    "category": "rag",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 2020-08-04 U1=229.62"
+    ]
+  },
+  {
+    "id": "chat_04_019",
+    "question": "H1.Z12 전력량?",
+    "answer": "H1.Z12의 최근 W_in 전력량은 125,873 kWh입니다.",
+    "category": "rag",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z12 2020-03-12 W_in=125872.85"
+    ]
+  },
+  {
+    "id": "chat_04_020",
+    "question": "H1.Z20 전류?",
+    "answer": "H1.Z20의 최근 I1 전류 값은 -288.65입니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 2020-12-07 I1=-288.65"
+    ]
+  },
+  {
+    "id": "chat_04_021",
+    "question": "다음 주 전력 어때?",
+    "answer": "현재 추세로 보면 다음 주 전력 소비도 비슷한 수준일 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 total_consumption_kwh=201522"
+    ]
+  },
+  {
+    "id": "chat_04_022",
+    "question": "자급률 추세?",
+    "answer": "현재 추세로 보면 자급률이 60% 이상을 유지할 가능성이 큽니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 self_sufficiency_pct=63.11"
+    ]
+  },
+  {
+    "id": "chat_04_023",
+    "question": "전기량 어떻게 될까?",
+    "answer": "현재 추세로 보면 연간 전기 소비량이 일정 수준을 유지할 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 total_consumption_kwh=201522"
+    ]
+  },
+  {
+    "id": "chat_04_024",
+    "question": "COP 떨어질까?",
+    "answer": "현재 추세로 보면 COP는 2.5 이상을 유지할 것으로 추정됩니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 avg_cop=2.53"
+    ]
+  },
+  {
+    "id": "chat_04_025",
+    "question": "CHP 문제 계속?",
+    "answer": "현재 추세로 보면 CHP의 운전 상태가 지속적으로 주의가 필요할 수 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "field_engineer",
+    "question_type": "followup",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2023-12-09 17:00 CHPOutage LOW residual_w=65947.33"
+    ]
+  }
+]

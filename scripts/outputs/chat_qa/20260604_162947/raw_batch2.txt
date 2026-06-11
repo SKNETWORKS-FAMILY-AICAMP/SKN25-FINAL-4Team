@@ -1,0 +1,252 @@
+[
+  {
+    "id": "chat_02_001",
+    "question": "CHP 상태 어때?",
+    "answer": "현재 CHP 설비는 헬스 스코어 64로 주의가 필요합니다. 최근 98건의 이상이 발생했습니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_02_002",
+    "question": "태양광 이상이야?",
+    "answer": "현재 태양광 설비의 헬스 스코어는 99로 양호하지만, 야간 비정상 출력이 관찰되어 센서 오류 가능성이 높습니다.",
+    "category": "cms",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"]
+  },
+  {
+    "id": "chat_02_003",
+    "question": "이번 달 자급률은?",
+    "answer": "2023년 12월 자급률은 63.1%로 나타났습니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 self_sufficiency_pct=63.106303866352555"]
+  },
+  {
+    "id": "chat_02_004",
+    "question": "12월 grid 의존도는?",
+    "answer": "2023년 12월의 외부 계통 전력 의존도는 36.9%로 기록되었습니다.",
+    "category": "report",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 grid_dependency_pct=36.89369613364745"]
+  },
+  {
+    "id": "chat_02_005",
+    "question": "H1.Z20 전압 어때?",
+    "answer": "2023년 1월 15일 H1.Z20의 전압은 233.42V로 정상 범위 내에 있습니다.",
+    "category": "rag",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["cr_measurement_1h: H1.Z20 2023-01-15 U1=233.42"]
+  },
+  {
+    "id": "chat_02_006",
+    "question": "H1.Z16 역률은?",
+    "answer": "2020년 4월 5일의 H1.Z16 역률은 0.88로 측정되었습니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["cr_measurement_1h: H1.Z16 2020-04-05 PF1=0.8837916666666668"]
+  },
+  {
+    "id": "chat_02_007",
+    "question": "다음 달 자급률 오를까?",
+    "answer": "현재 추세로 보면 자급률이 유지되거나 소폭 상승할 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": ["monthly_report: 2023-12 self_sufficiency_pct=63.106303866352555"]
+  },
+  {
+    "id": "chat_02_008",
+    "question": "제일 큰 문제 뭐야?",
+    "answer": "현재 가장 주의가 필요한 설비는 CHP입니다. 헬스 스코어가 64로 주의 상태이며, 최근 98건의 이상이 발생했습니다.",
+    "category": "cms",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_02_009",
+    "question": "작년 12월 자급률은?",
+    "answer": "2022년 12월 자급률은 45.1%로 기록되었습니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2022-12 self_sufficiency_pct=45.12227659807541"]
+  },
+  {
+    "id": "chat_02_010",
+    "question": "다음 달 전기 더 쓸까?",
+    "answer": "반복 패턴 기반으로 추정하면, 다음 달 전기 사용량이 비슷하게 유지될 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 total_consumption_kwh=201522.54367042298"]
+  },
+  {
+    "id": "chat_02_011",
+    "question": "12월 COP는?",
+    "answer": "2023년 12월 평균 COP는 2.53로 나타났습니다.",
+    "category": "report",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 avg_cop=2.530398972761977"]
+  },
+  {
+    "id": "chat_02_012",
+    "question": "계통 역률 어때?",
+    "answer": "현재 계통/수전 설비의 역률은 0.36으로 매우 낮은 상태입니다.",
+    "category": "cms",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=grid title=헬스 92 · 최근 이상 72건"]
+  },
+  {
+    "id": "chat_02_013",
+    "question": "이거 점검 필요해?",
+    "answer": "CHP 설비는 헬스 스코어 64로 주의가 필요하며, 다수의 CHPOutage가 발생했습니다. 점검이 필요할 수 있습니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_02_014",
+    "question": "냉방 설비 상태 어때?",
+    "answer": "냉방 설비 헬스 스코어는 97로 양호하지만, 최근 COPDrop 유형의 이상이 5건 발생했습니다. 냉각 효율 저하가 의심됩니다.",
+    "category": "cms",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"]
+  },
+  {
+    "id": "chat_02_015",
+    "question": "PV 출력 괜찮아?",
+    "answer": "2021년 10월 7일에 측정된 V.Z84의 출력은 -313780.13로 정상 범위 내입니다.",
+    "category": "rag",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["cr_measurement_1h: V.Z84 2021-10-07 W=-313780.1275102565"]
+  },
+  {
+    "id": "chat_02_016",
+    "question": "12월 이상 건수는?",
+    "answer": "2023년 12월에는 총 418건의 이상이 발생했습니다.",
+    "category": "report",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 anomaly_count=418"]
+  },
+  {
+    "id": "chat_02_017",
+    "question": "다음 달 PV 발전량 늘어날까?",
+    "answer": "현재 추세로 보면 PV 발전량이 소폭 상승할 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": ["monthly_report: 2023-12 pv_kwh=7835.0090448063975"]
+  },
+  {
+    "id": "chat_02_018",
+    "question": "H1.Z20 무효전력은?",
+    "answer": "2023년 7월 3일에 측정된 H1.Z20의 무효전력은 3.8 var로 기록되었습니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["cr_measurement_1h: H1.Z20 2023-07-03 Q=3.770799248811042"]
+  },
+  {
+    "id": "chat_02_019",
+    "question": "CHP 이상 또 떴어?",
+    "answer": "2023년 12월 18일에 LOW 등급의 CHPOutage가 발생했습니다. 잔차는 60.2 kW입니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["anomaly_results: 2023-12-18 07:00 CHPOutage LOW residual_w=60245.54533632031"]
+  },
+  {
+    "id": "chat_02_020",
+    "question": "8월 이상 많았어?",
+    "answer": "2023년 8월에는 총 270건의 이상이 발생했습니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-08 anomaly_count=270"]
+  },
+  {
+    "id": "chat_02_021",
+    "question": "냉방 설비 점검 필요해?",
+    "answer": "냉방 설비에서 COPDrop 이상이 5건 발생했습니다. 냉각 효율 저하가 의심되어 점검이 필요할 수 있습니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "followup",
+    "difficulty": "easy",
+    "evidence": ["work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"]
+  },
+  {
+    "id": "chat_02_022",
+    "question": "내년 전기 소비 줄어들까?",
+    "answer": "반복 패턴 기반으로 추정하면 내년 전기 소비는 현재와 비슷하게 유지될 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": ["monthly_report: 2023-12 total_consumption_kwh=201522.54367042298"]
+  },
+  {
+    "id": "chat_02_023",
+    "question": "냉방설비 헬스 어때?",
+    "answer": "냉방설비의 헬스 스코어는 97로 양호한 상태입니다.",
+    "category": "cms",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"]
+  },
+  {
+    "id": "chat_02_024",
+    "question": "CHP 이상 후보 맞아?",
+    "answer": "2023년 6월 3일에 HIGH 등급의 CHPOutage가 발생했습니다. 잔차는 243.1 kW로 기록되었습니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["anomaly_results: 2023-06-03 10:00 CHPOutage HIGH residual_w=243071.8685476439"]
+  },
+  {
+    "id": "chat_02_025",
+    "question": "V.Z84 전압 보여줘.",
+    "answer": "2021년 10월 11일의 V.Z84 전압 데이터는 기록되어 있지 않습니다.",
+    "category": "rag",
+    "persona": "field_engineer",
+    "question_type": "followup",
+    "difficulty": "hard",
+    "evidence": []
+  }
+]

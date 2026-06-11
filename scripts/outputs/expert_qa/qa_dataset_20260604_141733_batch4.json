@@ -1,0 +1,205 @@
+[
+  {
+    "question": "2023년 5월의 CHPOutage 발생 원인은 무엇이며, 이 문제에 대한 즉각적인 조치는 무엇인가요?",
+    "answer": "### 🚨 핵심 요약\n2023년 5월 CHPOutage가 1건 발생했습니다. LOW 심각도로 보고되었습니다.\n### 🔍 유형별 분석\n**[CHPOutage] 1건 (LOW: 1)**\n- 대표 시각: 2023-05-08 07:00\n- 잔차: 69.5 kW\n- 추정 원인: 가스 공급 차단 가능성\n- ⬇ 일시적 현상\n### ✅ 즉시 조치 목록\n1. 운영팀이 가스 공급 상태를 점검하고 즉시 복구할 것.\n2. CHP의 chp_P와 chp_heat_P를 모니터링하여 정상 출력 복귀 여부 확인.\n3. 그리드 의존도 증가 모니터링 후 추가 이상 발생 시 대응 계획 준비.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-05-08 07:00 CHPOutage LOW residual_w=69495.79"
+    ]
+  },
+  {
+    "question": "최근 계통/수전 설비의 상태와 역률 문제에 대한 해결책은 무엇인가요?",
+    "answer": "### 🩺 진단 요약\n현재 계통/수전 설비의 헬스 스코어는 92로 정상 범위 내에 있습니다. 역률이 0.36으로 크게 낮아 개선이 필요합니다.\n### 🔍 추정 원인\n- 3상 전류 불평형은 허용 범위 내이나, 역률이 0.36으로 무효전력 과다 가능성이 높습니다.\n### ✅ 권장 조치\n1. 역률 개선 콘덴서를 점검하여 효율을 회복하십시오.\n2. 큰 부하 설비의 동시 기동을 피하고 스케줄 조정을 통해 부하 분산을 유도하십시오.\n3. 변압기 및 피더별 부하 상황을 주기적으로 모니터링하여 추가적인 역률 저하를 방지하십시오.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: grid health_score=92 created_at=2026-06-01"
+    ]
+  },
+  {
+    "question": "2023년 12월의 전력 소비량과 자급률을 2023년 11월과 비교해주세요.",
+    "answer": "## 1. 핵심 요약\n2023년 12월 전력 소비량은 201,523 kWh로 11월보다 증가했습니다. 자급률은 63.11%로 상승하였습니다.\n## 2. KPI 분석\n- 전력 소비량: 12월 201,523 kWh, 11월 192,632 kWh → 약 8,891 kWh 증가\n- 자급률: 12월 63.11%, 11월 57.56% → 약 5.55% 증가\n## 3. 이상탐지 현황\n- 12월 PowerSpike 15건, PVNightNonZero 2건 발생\n## 4. 개선 권고사항\n- 발전 설비 점검 및 추가 자급률 상승을 위해 PV 출력 최적화를 고려하십시오.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 total_consumption=201522.543670423",
+      "monthly_report: 2023-12 self_sufficiency_pct=63.106",
+      "monthly_report: 2023-11 total_consumption=192632.18305027",
+      "monthly_report: 2023-11 self_sufficiency_pct=57.558"
+    ]
+  },
+  {
+    "question": "H1.Z20 계량기의 최근 전압 U2 값의 의미를 분석해 주세요.",
+    "answer": "최근 확인된 H1.Z20의 전압 U2 값은 227.27 V입니다. 이는 전압이 안정적으로 공급되고 있음을 시사하며, 변동이 없다는 점에서 설비의 전력 품질 관리가 양호하다고 판단할 수 있습니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 2018-08-23 U2=227.27"
+    ]
+  },
+  {
+    "question": "2023년 10월까지의 이상탐지 추세를 기반으로 향후 어떤 대처가 필요할까요?",
+    "answer": "### 현재 추세\n최근 3개월간 PowerSpike 이벤트 발생이 증가하고 있습니다.\n### 위험 요인\n이 추세가 지속된다면 설비의 부하 안전성에 문제를 초래할 수 있으며, 이로 인해 그리드 의존도가 증가할 수 있습니다.\n### 운영 영향\n특히, 그리드 의존도가 높아져 전력 비용 상승 가능성\n### 권장 대응\n설비의 부하 분산 스케줄을 점검하고, 피크 저감 전략 강화를 통해 그리드 압박을 줄이는 조치가 필요합니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-11-29 PowerSpike MEDIUM",
+      "anomaly_results: 2023-12-06 PowerSpike HIGH"
+    ]
+  },
+  {
+    "question": "2023년 4월의 PowerSpike 발생 원인은 무엇이며, 이를 막기 위해 어떤 조치가 필요한가요?",
+    "answer": "### 🚨 핵심 요약\n2023년 4월 PowerSpike가 1건 발생했습니다. LOW 심각도로 보고되었습니다.\n### 🔍 유형별 분석\n**[PowerSpike] 1건 (LOW: 1)**\n- 대표 시각: 2023-04-14 08:00\n- 잔차: 49.2 kW\n- 추정 원인: 대형 설비의 동시 기동 가능성\n- ⬇ 일시적 현상으로 판단\n### ✅ 즉시 조치 목록\n1. 대형 설비 기동 스케줄을 조정하여 동시 기동을 피하십시오.\n2. 전력 실측값을 분석하여 추가적인 이상 발생 가능성을 모니터링하십시오.\n3. 역률 개선 콘덴서 점검을 통해 전력 품질을 개선하십시오.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-04-14 08:00 PowerSpike LOW residual_w=49155.3"
+    ]
+  },
+  {
+    "question": "냉방설비의 COPDrop 현상은 무엇을 시사하며, 개선을 위해 어떤 조치가 필요합니까?",
+    "answer": "### 🩺 진단 요약\n최근 냉방설비에서 COPDrop 현상이 5건 발생했습니다. 이는 냉각 효율 저하를 나타냅니다.\n### 🔍 추정 원인\n- 전류 불평형 비율이 기준치를 초과하여 계통 내 부하 불균형이 있는 것으로 보입니다.\n- 각 COPDrop 시 발생한 온도 상승과 냉매 압력 변화가 원인일 수 있습니다.\n### ✅ 권장 조치\n1. 응축기 청소 및 냉매 압력을 점검하여 효율 회복을 시도합니다.\n2. 냉각탑 팬을 점검하여 물리적 장애물 확인을 진행합니다.\n3. 냉방 설비의 에너지 소비 패턴을 모니터링합니다.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: cooling health_score=97 created_at=2026-06-01"
+    ]
+  },
+  {
+    "question": "2023년 2월의 전력 소비량과 자급률을 분석하고, 전년 동월과 비교해 주세요.",
+    "answer": "## 1. 핵심 요약\n2023년 2월 전력 소비량은 151,230 kWh, 자급률은 53.06%로 나타났습니다.\n## 2. KPI 분석\n- 전력 소비량: 2023년 2월 151,230 kWh, 전년 동기 199,176 kWh → 약 47,946 kWh 감소\n- 자급률: 2023년 2월 53.06%, 전년 동기 60.63% → 약 7.57% 감소\n## 3. 이상탐지 현황\n- 2월 COPDrop 4건, PVNightNonZero 1건 발생\n## 4. 개선 권고사항\n- 자급률 개선을 위한 PV 시스템 점검 및 확장 가능성 고려가 필요합니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-02 total_consumption=151229.52064128",
+      "monthly_report: 2023-02 self_sufficiency_pct=53.062",
+      "monthly_report: 2022-02 total_consumption=199176.14017263",
+      "monthly_report: 2022-02 self_sufficiency_pct=60.626"
+    ]
+  },
+  {
+    "question": "V.Z84 계량기의 PF1 값 변화는 무엇을 시사하나요?",
+    "answer": "최근 V.Z84 계량기의 PF1 값이 -0.971로 나타났습니다. 이는 역률이 상당히 높아 전력 효율이 좋고, PV가 매우 안정적으로 운영되고 있음을 시사합니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: V.Z84 2023-09-19 PF1=-0.9715"
+    ]
+  },
+  {
+    "question": "2023년의 COP 추세가 앞으로 냉방 운영에 어떤 영향을 미칠 것으로 보이나요?",
+    "answer": "### 현재 추세\n현재 냉방 설비의 COP는 변동성이 있으며 감소의 조짐을 보이고 있습니다.\n### 위험 요인\nCOP가 지속적으로 낮아지면 냉방 설비의 전력 사용이 증가하고, 전반적인 에너지 비용 상승 가능성이 존재합니다.\n### 운영 영향\n냉방 효율 저하로 추가 모니터링 및 정비 주기 단축이 필요할 수 있습니다.\n### 권장 대응\n냉방 설비의 유지보수를 강화하고, 평일 야간 시간대를 활용한 효율 점검을 통해 운영 최적화를 권장합니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-09 COP=3.3230"
+    ]
+  },
+  {
+    "question": "2023년 1월 CHP 설비의 헬스 스코어와 권장 조치는 무엇입니까?",
+    "answer": "### 🚨 핵심 요약\n2023년 1월 CHPOutage가 발생하지 않았습니다.\n### 🔍 유형별 분석\n**[CHPOutage] 0건**\n### ✅ 즉시 조치 목록\n1. 운영팀이 가스 공급 상태를 주기적으로 점검하고 원활한 공급을 보장하십시오.\n2. CHP 전기 및 열 생산 모니터링을 통해 자급률 변동 방지에 주력하십시오.\n3. 그리드 의존도를 주기적으로 체크하여 비계획 전력 증대 방지에 주의하십시오.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-01 self_sufficiency_pct=64.714"
+    ]
+  },
+  {
+    "question": "2023년 5월의 잔차 급등 이벤트는 무엇이었으며, 이에 대한 대처 방안은 무엇인가요?",
+    "answer": "### 🚨 핵심 요약\n2023년 5월 PVNightNonZero가 1건 발생했습니다. LOW 심각도로 보고되었습니다.\n### 🔍 유형별 분석\n**[PVNightNonZero] 1건 (LOW: 1)**\n- 대표 시각: 2023-05-16 05:00\n- 잔차: 47.8 kW\n- 추정 원인: 인버터 오프셋 또는 센서 오류 가능성\n- ⬇ 일시적 현상으로 판단\n### ✅ 즉시 조치 목록\n1. 야간 PV 출력 문제 해결을 위해 인버터를 점검하고, 센서를 교정하여 오류 가능성을 제거하십시오.\n2. 야간 PV 인버터 출력 로그를 확인하여 정상 이상 여부를 확인하십시오.\n3. 정상적인 야간에는 PV 출력이 NaN으로 표시되도록 설정을 확인하고 조정하십시오.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-05-16 05:00 PVNightNonZero LOW residual_w=47812.65"
+    ]
+  },
+  {
+    "question": "V.Z84 계량기의 최근 전력량 W 값이 PV 운영에 어떤 영향을 끼치나요?",
+    "answer": "지금까지 확인된 V.Z84의 전력량 W 값은 -162,950 kWh입니다. 이는 태양광 PV 시스템이 정상적으로 전력을 생산하고 있으며, 전력망과의 연계가 양호함을 보여줍니다. 이러한 안정적인 생산은 자급률 향상에도 기여할 수 있습니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: V.Z84 2020-08-07 W=-162950.42"
+    ]
+  },
+  {
+    "question": "2023년 11월의 전력 소비량과 자급률을 분석하고, 2023년 10월과 비교해 주세요.",
+    "answer": "## 1. 핵심 요약\n2023년 11월 전력 소비량은 192,632 kWh로 10월보다 감소했습니다. 자급률은 57.56%로 하락하였습니다.\n## 2. KPI 분석\n- 전력 소비량: 11월 192,632 kWh, 10월 198,264 kWh → 약 5,632 kWh 감소\n- 자급률: 11월 57.56%, 10월 52.15% → 약 5.41% 상승\n## 3. 이상탐지 현황\n- 11월 PowerSpike 3건, CHPOutage 1건 발생\n## 4. 개선 권고사항\n- 자급률을 더욱 높이기 위해 CHP 운영 최적화 및 그리드 의존도 감소 전략을 마련하십시오.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-11 total_consumption=192632.18305027",
+      "monthly_report: 2023-11 self_sufficiency_pct=57.558",
+      "monthly_report: 2023-10 total_consumption=198264.84065396",
+      "monthly_report: 2023-10 self_sufficiency_pct=52.155"
+    ]
+  },
+  {
+    "question": "현재 CHP 설비의 상태를 진단하고, 제안된 조치 사항은 무엇인가요?",
+    "answer": "### 🩺 진단 요약\n현재 CHP 설비의 헬스 스코어는 64로 주의 수준입니다.\n### 🔍 추정 원인\n- 빈번한 CHPOutage가 일어나고 있으며, 이는 설비의 가스 공급 문제일 수 있습니다.\n- 3상 전류 불평형 11.2%로 부하 불균형 문제 가능성이 존재합니다.\n### ✅ 권장 조치\n1. 열과 전기 생산량을 주기적으로 확인하여 정상 운전 상태를 보장하십시오.\n2. 가스 공급 상태를 확인하고, 필요 시 가스 공급 라인을 점검하십시오.\n3. 설비의 전기적 특성 상태를 분석하여 추가적인 부하 문제 발생 여부 평가를 위한 주기적인 체크를 권장합니다.",
+    "category": "cms",
+    "difficulty": "hard",
+    "evidence": [
+      "work_orders: chp health_score=64 created_at=2026-06-01"
+    ]
+  },
+  {
+    "question": "H1.Z12 계량기의 최근 역률 PF2 값이 전력 효율에 어떤 영향을 미칠까요?",
+    "answer": "최근 H1.Z12의 역률 PF2 값이 0.827로 나타났습니다. 이는 전력 효율이 양호하지만, 약간의 개선 여지가 있음을 나타내며, 역률 개선 장치의 추가 검토가 유용할 수 있습니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z12 2018-12-23 PF2=0.8272583333333333"
+    ]
+  },
+  {
+    "question": "2023년의 PV 생산현황을 바탕으로 어떤 활동이 필요할까요?",
+    "answer": "### 현재 추세\nPV 시스템은 안정적으로 운영 중이나 야간에 잘못된 출력이 나타날 수 있는 조짐이 있습니다.\n### 위험 요인\n야간 비정상 출력으로 인해 시스템 경고 발생률 증가 가능성\n### 운영 영향\n야간의 비정상적인 전력 정보로 운영팀에 혼란을 줄 수 있으며, 계획되지 않은 시스템 점검 필요성이 증가할 수 있습니다.\n### 권장 대응\n야간 출력 문제를 해결하기 위해 인버터 및 센서 상태 점검을 실시하여 정상 작동을 보장하십시오. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "hard",
+    "evidence": [
+      "monthly_report: 2023-09 self_sufficiency_pct=40.828",
+      "monthly_report: 2023-08 self_sufficiency_pct=39.517"
+    ]
+  },
+  {
+    "question": "2023년 6월과 2022년 6월의 COP 추세를 비교해 보고, 향후 개선점을 논의해 주세요.",
+    "answer": "## 1. 핵심 요약\n2023년 6월의 COP는 2.264로 변동성이 적었습니다. 전년 6월의 COP 2.169와 비교했을 때 약간의 개선이 있었습니다.\n## 2. KPI 분석\n- COP: 2023년 2.265, 2022년 2.169 → 약간 개선\n- 전력 소비량 및 자급률은 유지되었음\n## 3. 이상탐지 현황\n- COPDrop 발생 빈도는 일정 수준을 유지\n## 4. 개선 권고사항\n- 효율 개선을 위해 냉각기 및 관련 설비의 예측 유지보수를 계획하여 장기적인 효율을 위한 대비가 필요합니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-06 COP=2.26467",
+      "monthly_report: 2022-06 COP=2.16933"
+    ]
+  },
+  {
+    "question": "실제 H1.Z11과 H1.Z20의 비교를 통해 전력 흐름에 대해 설명해 주세요.",
+    "answer": "H1.Z11의 최근 전력량 W_in은 186,172 kWh, H1.Z20의 최근 W_out은 1,215,654 kWh로 나타났습니다. 두 계량기의 값은 에너지 흐름의 상하관계를 나타내며, H1.Z20에서 생산한 에너지가 H1.Z11으로 소비되는 구조임을 알 수 있습니다.",
+    "category": "rag",
+    "difficulty": "hard",
+    "evidence": [
+      "cr_measurement_1h: H1.Z11 2021-05-03 W_in=186172.65",
+      "cr_measurement_1h: H1.Z20 2019-12-02 W_out=1215654.92"
+    ]
+  },
+  {
+    "question": "PVNightNonZero 유형의 최근 검사 결과와 권장 조치 사항은 무엇인가요?",
+    "answer": "### 🩺 진단 요약\n최근 PV 시스템에서 야간 비정상 출력이 8건 발생했습니다. 이는 센서 오류 가능성을 시사합니다.\n### 🔍 추정 원인\n- 야간 PV 출력이 MEDIUM 수준으로 자주 발생하여, 인버터 또는 센서의 문제일 가능성이 있습니다.\n### ✅ 권장 조치\n1. 시스템 로그를 분석하여 정상적인 동작을 보장하십시오.\n2. 인버터를 점검하고 필요한 경우 교체나 조정을 진행하십시오.\n3. 야간에 비정상적인 데이터가 NaN으로 표시되도록 시스템 설정을 확인하십시오.",
+    "category": "cms",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: pv health_score=99 created_at=2026-06-01"
+    ]
+  },
+  {
+    "question": "2023년 9월의 이상탐지 건수를 기반으로 향후 어떤 조치가 필요한가요?",
+    "answer": "### 현재 추세\n2023년 9월 PowerSpike와 PVNightNonZero 발생이 빈번하게 감지되었습니다.\n### 위험 요인\n이 추세가 지속될 경우 시스템 안정성에 부정적 영향을 미칠 수 있으며, 자급률에 불리하게 작용할 수 있습니다.\n### 운영 영향\nPowerSpike로 인한 그리드 과부하 가능성 및 PV 야간 비정상 출력 문제로 인한 운영팀 혼선\n### 권장 대응\n기존 설비 스케줄 조율을 통해 부하 분산을 유도하며, 인버터 및 센서의 정기적 점검을 통해 비정상 출력 문제를 해결하십시오. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2023-09-02 PVNightNonZero MEDIUM",
+      "anomaly_results: 2023-09-23 PowerSpike MEDIUM"
+    ]
+  }
+]

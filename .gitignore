@@ -35,3 +35,16 @@ compose.dev.yml
 docker/Dockerfile.dev
 docker/local.env.example
 mlruns/
+
+# AI Hub 데이터 (라이선스/용량)
+149.전력_설비_에너지_품질/
+
+# 외부 패키지 (용량)
+share_test6_residual_v84_20260609/
+import_pmax_production_release_20260608/
+test6_residual_v84_3h_share_20260609.zip
+
+# 모델 artifact (용량)
+outputs/aihub_v84_artifacts/
+outputs/aihub_v84_artifacts_v3/
+outputs/anomaly/*.pt

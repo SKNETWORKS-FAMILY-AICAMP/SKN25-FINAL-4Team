@@ -1,0 +1,90 @@
+[
+  {
+    "question": "2023년 11월의 PowerSpike 이력에 대한 분석을 통해 주의해야 할 점은 무엇인가요?",
+    "answer": "### 🚨 핵심 요약\n11월에 2건의 PowerSpike가 발생했으며, 모두 MEDIUM 수준입니다. 대형 부하의 동시 기동 가능성을 염두에 두어야 합니다.\n\n### 🔍 유형별 분석\n**[PowerSpike] 2건 (MEDIUM: 2)**\n- 대표 시각: 2023년 11월 2일 6시 및 17시\n- 센서값: 변압기 전력 급증\n- 추정 원인: 대형 부하 동시 기동 가능성\n- ⬇ 일시적 가능성 있음\n\n### ✅ 즉시 조치 목록\n1. 기술팀이 변압기 부하 상태와 피더별 전류를 점검하고 큰 부하의 동시 기동을 피하기 위한 스케줄 조율이 필요합니다.\n\n### 📋 배경 참고\n이 이상은 기존의 게이트웨이 장애 구간과 겹치지 않으며, 전력 분포 상태도 정상입니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-11-02 06:00 PowerSpike MEDIUM",
+      "anomaly_results: 2023-11-02 17:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "question": "H1.Z11 계량기의 최근 유효전력량(W)의 상태는 어떤가요?",
+    "answer": "H1.Z11의 최신 유효전력량(W)은 318727.89 kWh로 기록되어 있습니다. 일반적인 수준으로 판단됩니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z11 2023-11-30 W=318727.8854550012"
+    ]
+  },
+  {
+    "question": "2023년 8월의 KPI는 전월과 비교하여 어떤 변화가 있었나요?",
+    "answer": "## 1. 핵심 요약\n2023년 8월의 전력 소비량과 자급률 모두 변동이 있었습니다.\n\n## 2. KPI 분석\n- 전력 소비량은 217985.86 kWh로 전월 대비 증가했습니다.\n- 자급률은 39.52%로, 전월 대비 소폭 감소했습니다.\n- COP는 2.16으로, 전월 대비 감소하였습니다.\n\n## 3. 이상탐지 현황\n- 이상 이벤트가 여름철에 주로 발생했습니다.\n\n## 4. 개선 권고사항\n- 자급률 증가를 위한 태양광 발전 설비 점검 및 최적화를 고려해 볼 필요가 있습니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-08 energy_consumption_kwh=217985.86",
+      "monthly_report: 2023-08 self_sufficiency_pct=39.52",
+      "monthly_report: 2023-08 cop=2.16"
+    ]
+  },
+  {
+    "question": "2023년 1월과 2월의 월간 전력 소비량 변화는 어떤 양상을 보였나요?",
+    "answer": "## 1. 핵심 요약\n2023년 2월에는 전력 소비가 감소했습니다.\n\n## 2. KPI 분석\n- 1월 전력 소비량: 158498.97 kWh\n- 2월 전력 소비량: 151229.52 kWh\n- 전월 대비 7239.45 kWh 감소했습니다.\n\n## 3. 이상탐지 현황\n- 2월에는 특이한 이상 탐지 이벤트가 별도로 기록되지 않았습니다.\n\n## 4. 개선 권고사항\n- 난방 수요 감소에 따른 전력 감소로, 이 추세를 유지하기 위한 홍보 및 캠페인 진행을 고려해 볼 수 있습니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-01 energy_consumption_kwh=158498.97",
+      "monthly_report: 2023-02 energy_consumption_kwh=151229.52"
+    ]
+  },
+  {
+    "question": "2023년 5월 CHPOutage 사건의 빈도와 심각도는 어느 정도였나요?",
+    "answer": "### 🚨 핵심 요약\n2023년 5월에는 총 2건의 CHPOutage 사건이 있었으며, 둘 다 HIGH 수준입니다.\n\n### 🔍 유형별 분석\n**[CHPOutage] 2건 (HIGH: 2)**\n- 대표 시각: 2023년 5월 13일 8시 및 5월 26일 11시\n- 센서값: 잔차 153.7 kW 및 175.6 kW로 임계치 초과\n- 추정 원인: 비정상적인 가스 공급 차단 가능성\n- ⬇ 시스템 재부팅 후 회복될 가능성 있음\n\n### ✅ 즉시 조치 목록\n1. 운영팀에서 CHP 연료 공급 상태를 재점검하고 즉시 필요한 조치를 시행합니다.\n\n### 📋 배경 참고\n이번 사례는 다른 센서 이상과 무관하게 독립적으로 감지된 이벤트입니다.",
+    "category": "anomaly",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2023-05-13 08:00 CHPOutage HIGH",
+      "anomaly_results: 2023-05-26 11:00 CHPOutage HIGH"
+    ]
+  },
+  {
+    "question": "H1.Z20의 역률(PF)을 통해 설비의 현재 상태를 평가해 주세요.",
+    "answer": "H1.Z20의 역률(PF3)은 -0.9768로 기록되어 있습니다. 이 값은 전통적으로 발전 설비에서 정상적인 발전 상태와 역능률을 나타낼 수 있습니다.",
+    "category": "rag",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 2021-04-14 PF3=-0.9768416666666668"
+    ]
+  },
+  {
+    "question": "H1.Z12 계량기의 최근 유효전력(P) 값은 어떤가요?",
+    "answer": "H1.Z12의 최근 유효전력(P) 값은 5337.24 W로 측정되었습니다. 일반적인 운영 범위 내이며, 안정적인 상태를 유지하고 있는 것으로 보입니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z12 2023-09-06 P=5337.243698995128"
+    ]
+  },
+  {
+    "question": "2023년 4월의 CHPOutage 이상 탐지 기록을 분석해 주세요.",
+    "answer": "### 🚨 핵심 요약\n4월에는 CHPOutage 이력이 총 2건 발생하였으며, 모두 HIGH 수준입니다.\n\n### 🔍 유형별 분석\n**[CHPOutage] 2건 (HIGH: 2)**\n- 대표 시각: 2023년 4월 7일 15시 및 4월 29일 11시\n- 센서값: 잔차 각각 63.1 kW, 130.2 kW로 임계치 초과 상태\n- 추정 원인: 연료 공급 차단 또는 가스계통 문제 가능성\n- ⬇ 적절한 정비 후 개선될 가능성 있음\n\n### ✅ 즉시 조치 목록\n1. 현재 CHP 연료 공급 상태를 재점검하여 문제를 해결해야 합니다.\n\n### 📋 배경 참고\n기존 게이트웨이 장애는 이와 관련 없으며, 독립적인 이상 발생입니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-04-07 15:00 CHPOutage HIGH",
+      "anomaly_results: 2023-04-29 11:00 CHPOutage HIGH"
+    ]
+  },
+  {
+    "question": "2023년 7월과 8월의 전력 소비량 변화를 분석해 주세요.",
+    "answer": "## 1. 핵심 요약\n2023년 8월에는 전력 소비량이 증가했습니다.\n\n## 2. KPI 분석\n- 7월 전력 소비량: 211656.43 kWh\n- 8월 전력 소비량: 217985.86 kWh\n- 전월 대비 6329.43 kWh 증가했습니다.\n\n## 3. 이상탐지 현황\n- 여름철 피크로 인한 전력 증가와 관련된 이상 탐지 이벤트가 있었습니다.\n\n## 4. 개선 권고사항\n- 비핵심 부하의 시프트와 같은 피크 분산 전략을 권장하며, 냉방 수요를 조절할 필요가 있습니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-07 energy_consumption_kwh=211656.43",
+      "monthly_report: 2023-08 energy_consumption_kwh=217985.86"
+    ]
+  }
+]

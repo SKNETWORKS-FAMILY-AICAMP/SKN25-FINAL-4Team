@@ -1,0 +1,252 @@
+[
+  {
+    "id": "chat_04_001",
+    "question": "이상 많아?",
+    "answer": "12월에 총 418건의 이상이 발견되었습니다. 자급률은 63.1%로 나타났고, 외부 계통 전력 의존도는 36.9%입니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 total_consumption_kwh=201522.54 self_sufficiency_pct=63.11"]
+  },
+  {
+    "id": "chat_04_002",
+    "question": "CHP 계속 문제야?",
+    "answer": "CHP 설비의 헬스스코어는 64로 주의가 필요합니다. 최근 98건의 이상이 기록되었습니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_04_003",
+    "question": "12월 전력 소비?",
+    "answer": "2023년 12월의 총 전력 소비량은 201,522.54 kWh입니다. 자급률은 63.1%로 나타났습니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 total_consumption_kwh=201522.54 self_sufficiency_pct=63.11"]
+  },
+  {
+    "id": "chat_04_004",
+    "question": "V.Z84 전력 측정?",
+    "answer": "V.Z84의 최근 측정값은 P2 -0.202 kW로 기록되었습니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": ["cr_measurement_1h: V.Z84 2019-08-27 22:00 P2=-0.202"]
+  },
+  {
+    "id": "chat_04_005",
+    "question": "자급률 계속 오를까?",
+    "answer": "현재 추세로 보면 자급률이 안정적으로 유지될 가능성이 있습니다. 하지만 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 self_sufficiency_pct=63.11"]
+  },
+  {
+    "id": "chat_04_006",
+    "question": "야간 태양광 이상?",
+    "answer": "야간에 PV 출력이 NaN이 아닌 경우가 반복되며, 센서 오류 가능성이 높습니다. 관련 인버터 점검이 필요합니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"]
+  },
+  {
+    "id": "chat_04_007",
+    "question": "냉방 효율 괜찮아?",
+    "answer": "냉방설비의 COPDrop 관련 이상이 5건 발생했습니다. 효율이 저하될 가능성이 있으니 점검을 권장합니다.",
+    "category": "cms",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"]
+  },
+  {
+    "id": "chat_04_008",
+    "question": "자급률?",
+    "answer": "2023년 12월 기준 자급률은 63.1%입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 self_sufficiency_pct=63.11"]
+  },
+  {
+    "id": "chat_04_009",
+    "question": "계통 전력 불만?",
+    "answer": "계통/수전 설비의 헬스스코어는 92로 양호하지만, 최근 72건의 PowerSpike가 발생해 주의가 필요합니다.",
+    "category": "cms",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": ["work_orders: equipment_id=grid title=헬스 92 · 최근 이상 72건"]
+  },
+  {
+    "id": "chat_04_010",
+    "question": "전력 의존도?",
+    "answer": "2023년 12월 외부 계통 전력 의존도는 36.9%입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 grid_dependency_pct=36.89"]
+  },
+  {
+    "id": "chat_04_011",
+    "question": "냉방설비 점검?",
+    "answer": "냉방설비의 COPDrop 이상으로 점검이 필요할 수 있습니다. 최근 5건의 이상이 발생했습니다.",
+    "category": "cms",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"]
+  },
+  {
+    "id": "chat_04_012",
+    "question": "ResidualSpike 위험해?",
+    "answer": "3월 28일에 잔차 160.4 kW의 ResidualSpike가 HIGH 등급으로 발생했습니다. 점검이 필요합니다.",
+    "category": "anomaly",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": ["anomaly_results: 2023-03-28 14:00 ResidualSpike HIGH residual_w=160394"]
+  },
+  {
+    "id": "chat_04_013",
+    "question": "PowerSpike 심각?",
+    "answer": "12월 12일 MEDIUM 등급의 PowerSpike가 발생했습니다. 주의가 필요합니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["anomaly_results: 2023-12-12 11:00 PowerSpike MEDIUM"]
+  },
+  {
+    "id": "chat_04_014",
+    "question": "태양광 전력량?",
+    "answer": "2023년 12월 PV 생산량은 7,835.01 kWh입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 pv_kwh=7835.01"]
+  },
+  {
+    "id": "chat_04_015",
+    "question": "냉방 점검 필요?",
+    "answer": "냉방설비에 5건의 COPDrop 이상이 발생했습니다. 응축기와 냉매 압력 확인 권장합니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"]
+  },
+  {
+    "id": "chat_04_016",
+    "question": "CHP 운전 중단?",
+    "answer": "5월 31일 LOW 등급의 CHPOutage가 발생했습니다. 운전 중단 가능성이 있습니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["anomaly_results: 2023-05-31 14:00 CHPOutage LOW residual_w=25314"]
+  },
+  {
+    "id": "chat_04_017",
+    "question": "COP 계속 낮아질까?",
+    "answer": "현재 추세로 보면 COP가 크게 변동할 가능성은 낮아 보입니다. 하지만 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 avg_cop=2.53"]
+  },
+  {
+    "id": "chat_04_018",
+    "question": "전력량 늘어?",
+    "answer": "현재 추세로 보면 전력 소비량이 안정적일 가능성이 높습니다. 하지만 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 total_consumption_kwh=201522.54"]
+  },
+  {
+    "id": "chat_04_019",
+    "question": "전력 공급 안정?",
+    "answer": "V.Z84의 최근 측정값은 P -231.04 kW로, 전력 공급이 안정적으로 유지되고 있습니다.",
+    "category": "rag",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": ["cr_measurement_1h: V.Z84 2020-02-09 16:00 P=-231.04"]
+  },
+  {
+    "id": "chat_04_020",
+    "question": "H1.Z20 출력?",
+    "answer": "H1.Z20의 최근 전력 출력은 W_out 3,085,913.91 kWh로 기록되었습니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["cr_measurement_1h: H1.Z20 2023-02-20 22:00 W_out=3085913.91"]
+  },
+  {
+    "id": "chat_04_021",
+    "question": "COP 유지될까?",
+    "answer": "현재 추세로 보면 COP가 안정적으로 유지될 가능성이 있습니다. 하지만 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 avg_cop=2.53"]
+  },
+  {
+    "id": "chat_04_022",
+    "question": "전력 변동?",
+    "answer": "H1.Z16의 최근 전력 소비는 P3 2342.24 kW로 안정적인 상태입니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["cr_measurement_1h: H1.Z16 2023-10-12 00:00 P3=2342.24"]
+  },
+  {
+    "id": "chat_04_023",
+    "question": "잔차 급등?",
+    "answer": "3월 28일 HIGH 등급의 잔차 급등 발생, 잔차 160.4 kW 기록되었습니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "hard",
+    "evidence": ["anomaly_results: 2023-03-28 14:00 ResidualSpike HIGH residual_w=160394"]
+  },
+  {
+    "id": "chat_04_024",
+    "question": "냉방 효율?",
+    "answer": "12월 평균 COP는 2.53으로, 효율은 안정적인 수준입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 avg_cop=2.53"]
+  },
+  {
+    "id": "chat_04_025",
+    "question": "다음 주 더 쓸까?",
+    "answer": "현재 추세로 보면 전력 소비가 크게 증가할 가능성은 낮습니다. 하지만 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "energy_manager",
+    "question_type": "followup",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 total_consumption_kwh=201522.54"]
+  }
+]

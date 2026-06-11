@@ -1,0 +1,13 @@
+EMS Evidence Eval Dataset Summary
+========================================
+total: 100
+
+category counts:
+- anomaly: 40
+- cms: 30
+- report: 30
+
+purpose:
+- SFT 학습에 넣지 않는 평가 전용 데이터셋
+- 모든 질문은 기간/설비/지표/이상유형이 명확한 정답 고정형 evidence_answer
+- Expert QA 100 + Chat QA 100 학습 후 별도 평가에 사용

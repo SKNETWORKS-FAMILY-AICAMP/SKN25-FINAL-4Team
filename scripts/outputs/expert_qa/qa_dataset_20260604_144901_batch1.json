@@ -1,0 +1,151 @@
+[
+  {
+    "question": "2023년 4월 30일 발생한 CHPOutage의 주요 원인은 무엇인가요?",
+    "answer": "2023년 4월 30일의 CHPOutage는 잔차가 151.6 kW로 임계치를 초과하였습니다. 이는 열병합발전기의 비계획적 운전 중단 가능성을 시사합니다. 운전 중단은 가스 공급 문제나 정비 문제가 원인일 수 있습니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-04-30 11:00 CHPOutage HIGH residual_w=151592.24"
+    ]
+  },
+  {
+    "question": "2023년 3월 7일의 CHPOutage 사건은 어떤 문제를 시사하나요?",
+    "answer": "2023년 3월 7일의 CHPOutage 사건에서 잔차가 38.7 kW 였습니다. 이는 CHP의 운전 중단 가능성을 암시하며, 연료 공급 차단이나 설비 불균형일 수도 있습니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-03-07 10:00 CHPOutage LOW residual_w=38726.27"
+    ]
+  },
+  {
+    "question": "2022년 8월 4일의 Unknown 유형의 HIGH 등급은 어떤 조치를 필요로 할까요?",
+    "answer": "2022년 8월 4일의 미분류(Unknown) 유형의 HIGH 등급은 구체적인 원인을 파악하기 위해 설비 상태와 데이터 품질을 검토할 필요가 있습니다. 해당 시점의 여러 데이터와 설비 동작 상태를 함께 살펴보는 것이 필요합니다.",
+    "category": "anomaly",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2022-08-04 12:00 Unknown HIGH"
+    ]
+  },
+  {
+    "question": "2023년 2월 9일에 발생한 ResidualSpike의 심각도는 어떻게 해석할 수 있을까요?",
+    "answer": "2023년 2월 9일 발생한 ResidualSpike의 잔차가 321.3 kW로 아주 크며, 이는 예측 모델의 오차 또는 실제 소비의 급증을 시사합니다. 발생 시점의 설비 상황과 데이터를 점검하여 문제의 원인을 파악해야 합니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-02-09 09:00 ResidualSpike HIGH residual_w=321287.27"
+    ]
+  },
+  {
+    "question": "열병합발전의 헬스스코어에 따라 어떤 조치가 필요할까요?",
+    "answer": "열병합발전 설비의 헬스스코어가 64로 주의 수준입니다. 다수의 CHPOutage가 발생하였으므로, 전기 및 열 출력 상태, 가스 공급 상태를 점검하고 정비 계획을 세워야 합니다.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"
+    ]
+  },
+  {
+    "question": "냉방설비의 최근 정비는 어떤 이유로 진행되고 있나요?",
+    "answer": "냉방설비에서는 최근 30일간 COPDrop이 5건 발생하여 냉각 효율 저하가 관찰되었습니다. 이는 냉각수 온도 상승과 냉매 압력 변화가 원인이었을 가능성이 있습니다. 전류 불평형 문제도 존재해 정비가 필요한 상황입니다.",
+    "category": "cms",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=cooling title=냉방설비 정비 작업"
+    ]
+  },
+  {
+    "question": "계통/수전 설비에서 발생한 PowerSpike는 무엇을 의미하나요?",
+    "answer": "계통/수전 설비에서 역률이 평균 0.36으로 매우 낮은 상태이며, 최근 30일간 72건의 PowerSpike가 발생했습니다. 이는 무효전력 과다 문제로 인해 효율 저하를 초래할 수 있으며, 동시 기동 설비의 점검이 필요합니다.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=grid title=헬스 92 · 최근 이상 72건"
+    ]
+  },
+  {
+    "question": "냉방설비의 전류 불평형 비율이 높은 이유는 무엇인가요?",
+    "answer": "냉방설비에서 전류 불평형 비율이 87%로 기준치를 크게 초과하여, 이는 권선 문제 또는 부하 불균형 가능성을 제기합니다. 냉각수 온도 변화 및 냉매 압력 변화를 점검해야 합니다.",
+    "category": "cms",
+    "difficulty": "hard",
+    "evidence": [
+      "work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"
+    ]
+  },
+  {
+    "question": "2023년 3월의 자기자급률은 전월 대비 어떻게 변화했나요?",
+    "answer": "2023년 3월의 자기자급률은 52.04%로, 2월의 53.06%보다 소폭 감소하였습니다. 이는 외부 계통 전력 의존도가 전월에 비해 소폭 증가했음을 의미합니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-02 self_sufficiency_pct=53.06",
+      "monthly_report: 2023-03 self_sufficiency_pct=52.04"
+    ]
+  },
+  {
+    "question": "2023년 6월의 평균 COP는 어떤 변화가 있었습니까?",
+    "answer": "2023년 6월의 평균 COP는 2.26으로, 5월의 2.18보다 약간 상승했습니다. 이는 냉방 설비의 효율이 향상되었을 가능성을 시사합니다.",
+    "category": "report",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-05 avg_cop=2.18",
+      "monthly_report: 2023-06 avg_cop=2.26"
+    ]
+  },
+  {
+    "question": "2023년 12월의 CHP 발전량은 11월 대비 어떻게 변했습니까?",
+    "answer": "2023년 12월의 CHP 발전량은 119338.42 kWh로, 11월의 97837.39 kWh에 비해 증가하였습니다. 이는 열병합발전기가 적극적으로 가동됨을 의미합니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-11 chp_kwh=97837.39",
+      "monthly_report: 2023-12 chp_kwh=119338.42"
+    ]
+  },
+  {
+    "question": "2022년 1월과 비교했을 때, 2022년 2월의 자급률은 어떻게 변화했나요?",
+    "answer": "2022년 2월의 자급률은 60.63%로, 1월의 31.96%보다 크게 증가했습니다. 이는 CHP의 발전량 증가나 PV 발전의 효과 상승이 의심됩니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2022-01 self_sufficiency_pct=31.96",
+      "monthly_report: 2022-02 self_sufficiency_pct=60.63"
+    ]
+  },
+  {
+    "question": "2023년 9월의 전력 소비는 특정 전월에 비해 어떻게 변화했는지 설명해주십시오.",
+    "answer": "2023년 9월의 전력 소비는 210011.53 kWh로, 8월의 217985.86 kWh보다 줄어들었습니다. 이는 계절적 부하 변화나 설비 운영 방식의 변경을 반영할 수 있습니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-08 total_consumption_kwh=217985.86",
+      "monthly_report: 2023-09 total_consumption_kwh=210011.53"
+    ]
+  },
+  {
+    "question": "H1.Z20의 전압 U2 측정값이 최근 어떤 값을 보였나요?",
+    "answer": "2023년 9월 6일에 H1.Z20의 U2 전압은 228.625 V였습니다. 이는 안정적인 전압 공급을 의미합니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 2023-09-06 U2=228.625"
+    ]
+  },
+  {
+    "question": "H1.Z20의 전류 I2 값이 2020년 12월에 어떤 값이었나요?",
+    "answer": "2020년 12월 9일에 H1.Z20의 I2 값은 -121.41 A로 측정되었습니다. 이는 설비의 전류 흐름 상태를 의미합니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 2020-12-09 I2=-121.41"
+    ]
+  },
+  {
+    "question": "H1.Z16의 전체 유효 전력 값은 최근 어떻게 보고되었나요?",
+    "answer": "H1.Z16의 P 값으로, 2023년 10월 3일에 2455.50 W가 감지되었습니다. 이는 설비가 해당 시간에 소비한 유효 전력을 나타냅니다.",
+    "category": "rag",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: H1.Z16 2023-10-03 P1=2455.50"
+    ]
+  }
+]

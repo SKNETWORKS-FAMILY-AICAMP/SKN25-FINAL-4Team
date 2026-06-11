@@ -1,0 +1,148 @@
+[
+  {
+    "id": "chat_01_001",
+    "question": "이상 또 떴어?",
+    "answer": "네, 2023년 12월 22일과 28일에 PowerSpike MEDIUM 이상이 발생했습니다. 주의가 필요합니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "anomaly_results: 2023-12-22 12:00 PowerSpike MEDIUM",
+      "anomaly_results: 2023-12-28 16:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "id": "chat_01_002",
+    "question": "이거 무시해도 돼?",
+    "answer": "PowerSpike MEDIUM 등급이라 무시하지 않는 게 좋습니다. 필요 시 전력 분포를 확인하세요.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "anomaly_results: 2023-12-22 12:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "id": "chat_01_004",
+    "question": "PV 이상 왜 자꾸 떠?",
+    "answer": "야간 PV 출력이 감지되어 센서 오류 가능성이 큽니다. 7월 16일과 10월 10일에 발생했습니다.",
+    "category": "anomaly",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-07-16 20:00 PVNightNonZero MEDIUM",
+      "anomaly_results: 2023-10-10 23:00 PVNightNonZero MEDIUM"
+    ]
+  },
+  {
+    "id": "chat_01_008",
+    "question": "점검 가야 돼?",
+    "answer": "네, PV 설비에서 센서 오류가 감지되어 인버터 점검이 필요합니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"
+    ]
+  },
+  {
+    "id": "chat_01_010",
+    "question": "계통 정비 완료?",
+    "answer": "아니요, 계통 설비 정비 작업이 진행 중입니다. 헬스 스코어는 92입니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=grid title=헬스 92 · 최근 이상 72건"
+    ]
+  },
+  {
+    "id": "chat_01_014",
+    "question": "COP 어때?",
+    "answer": "2023년 12월 평균 COP는 2.53으로 양호한 수준입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 avg_cop=2.53"
+    ]
+  },
+  {
+    "id": "chat_01_015",
+    "question": "CHP 전력 생산량 어때?",
+    "answer": "2023년 12월 CHP 전력 생산량은 119,338 kWh입니다.",
+    "category": "report",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 chp_kwh=119338.42"
+    ]
+  },
+  {
+    "id": "chat_01_016",
+    "question": "V.Z84가 외부 계통 전력이야?",
+    "answer": "아니요, V.Z84는 태양광 PV 생산 계량기입니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: V.Z84"
+    ]
+  },
+  {
+    "id": "chat_01_019",
+    "question": "W_in과 W_out 차이?",
+    "answer": "W_in은 전력 유입량, W_out은 발전 설비의 전력 유출량을 의미합니다.",
+    "category": "rag",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 W_in"
+    ]
+  },
+  {
+    "id": "chat_01_021",
+    "question": "다음 주 더 쓸까?",
+    "answer": "현재 추세로 보면 에너지 소비가 지속될 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 total_consumption_kwh=201522.54"
+    ]
+  },
+  {
+    "id": "chat_01_023",
+    "question": "앞으로 괜찮을까?",
+    "answer": "현재 추세로 보면 시스템 안정성은 유지될 것으로 보입니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 avg_cop=2.53"
+    ]
+  },
+  {
+    "id": "chat_01_025",
+    "question": "외부 전력 의존도 낮아질까?",
+    "answer": "현재 추세로 보면 큰 변화는 없을 것으로 예상됩니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 grid_dependency_pct=36.89"
+    ]
+  }
+]

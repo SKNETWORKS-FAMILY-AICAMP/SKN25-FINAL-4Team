@@ -1,0 +1,173 @@
+[
+  {
+    "question": "2023년 11월 7일의 CHPOutage 이상 경험에서 발생한 문제는 무엇인가요?",
+    "answer": "CHPOutage 이상이 2023년 11월 7일 6:00에 기록되었습니다. 잔차가 77.7kW로 임계치를 초과하였으며, 이는 운전 중단 가능성을 시사합니다. 가스 공급 상태와 그리드 의존도를 재점검하는 것이 권장됩니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-11-7 6:00 CHPOutage MEDIUM, residual_w=77686.96450445725"
+    ]
+  },
+  {
+    "question": "2023년 4월 23일의 ResidualSpike 이상에 대해 설명해 주세요.",
+    "answer": "2023년 4월 23일 11:00에 ResidualSpike 이상이 HIGH 등급으로 발생했습니다. 잔차가 196.3kW로 임계치를 초과하였습니다. 이는 예측 모델 오차일 가능성이 있으며 실측 데이터를 재검토해야 합니다.",
+    "category": "anomaly",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2023-4-23 11:00 ResidualSpike HIGH, residual_w=196315.9476333472"
+    ]
+  },
+  {
+    "question": "2023년 4월 20일의 CHPOutage 이상 조치가 필요합니까?",
+    "answer": "2023년 4월 20일 4:00에 CHPOutage 이상이 LOW 등급으로 보고되었습니다. 잔차는 58.8kW를 기록했으며, 이는 임계치를 초과하며 CHP의 잠재적 운전 중단을 나타냅니다. 추가적인 모니터링이 필요합니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-4-20 4:00 CHPOutage LOW, residual_w=58827.718267328164"
+    ]
+  },
+  {
+    "question": "냉방설비의 현황을 진단하고 헬스스코어를 기준으로 파악해 주세요.",
+    "answer": "냉방설비의 헬스 스코어는 97로 정상 상태입니다. 최근 30일 동안 COPDrop 이상 5건이 발생하였고, 이는 냉각 효율 저하의 가능성을 시사합니다. 전류 불평형으로 인한 추가 점검이 필요할 수 있습니다.",
+    "category": "cms",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"
+    ]
+  },
+  {
+    "question": "계통/수전 설비의 최근 헬스스코어와 주의해야 할 점은 무엇인가요?",
+    "answer": "계통/수전 설비의 헬스 스코어는 92로 주의가 필요합니다. 최근 72건의 PowerSpike로 인해 역률이 매우 낮으며, 동시 기동에 의한 전력 수요 증가 가능성이 있습니다. 역률 개선과 부하 분산 조치가 요구됩니다.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=grid title=헬스 92 · 최근 이상 72건"
+    ]
+  },
+  {
+    "question": "태양광 발전 설비의 현 상태를 진단해 주세요.",
+    "answer": "태양광 발전 설비의 헬스 스코어는 99로 상태가 양호합니다. 최근 8건의 이상이 야간에 발생하였으며, 이는 센서 오류 가능성이 높습니다. 야간 PV 인버터 점검이 권장됩니다.",
+    "category": "cms",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"
+    ]
+  },
+  {
+    "question": "최근 냉방설비에서 발생한 부하 불균형 문제를 어떻게 해결할 수 있습니까?",
+    "answer": "최근 냉방설비의 전류 불평형 비율이 87%로 나타났습니다. 이는 부하 불균형 가능성이 높으며 응축기 청소, 냉매 압력 확인, 냉각탑 팬 점검을 통해 해결할 수 있습니다.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=cooling cause 키워드 '전류 불평형 87%'"
+    ]
+  },
+  {
+    "question": "2023년 4월의 주요 에너지 KPI를 요약해 주세요.",
+    "answer": "2023년 4월의 총 에너지 소비는 178624kWh로, 자급률은 75.15%였습니다. 이는 전월 대비 자급률이 23.12% 증가했으며 시스템의 전력 의존도가 크게 감소한 것을 나타냅니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-04 total_consumption_kwh=178624.02754389247, self_sufficiency_pct=75.15253399035802, 2023-03 self_sufficiency_pct=52.038873174349035"
+    ]
+  },
+  {
+    "question": "2023년 8월과 9월의 자급률 변화를 설명해 주세요.",
+    "answer": "2023년 8월의 자급률은 39.52%, 9월은 40.83%로 나타났습니다. 이는 자급률이 증가했음을 보여주며, PV 발전량 증가와 관련이 있을 수 있습니다.",
+    "category": "report",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-08 self_sufficiency_pct=39.51689935399938, 2023-09 self_sufficiency_pct=40.82783607869053"
+    ]
+  },
+  {
+    "question": "2023년 10월의 KPI 분석과 자급률 평가를 해 주세요.",
+    "answer": "2023년 10월의 자급률은 52.15%로, 전월에 비해 11.32% 증가했습니다. 자급률의 상승은 주로 CHP 발전량의 향상에 기인할 가능성이 있습니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-10 self_sufficiency_pct=52.15492051576576, 2023-09 self_sufficiency_pct=40.82783607869053"
+    ]
+  },
+  {
+    "question": "2022년 8월과 2023년 8월의 자급률을 비교해 주세요.",
+    "answer": "2022년 8월의 자급률은 39.45%였고, 2023년 8월은 39.52%로 나타났습니다. 자급률은 거의 동등하게 유지되었습니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2022-08 self_sufficiency_pct=39.45000741690369, 2023-08 self_sufficiency_pct=39.51689935399938"
+    ]
+  },
+  {
+    "question": "2022년 3월 8일의 H1.Z11 전압 편차 문제를 해석해 주세요.",
+    "answer": "2022년 3월 8일, H1.Z11의 전압 값은 PF 0.996로 양호하게 유지되었습니다. 전압 편차는 발생하지 않았습니다만, 지속적인 전압 모니터링을 통해 시스템의 안정성을 확보해야 합니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z11 2022-03-08 10:00 PF=0.996025"
+    ]
+  },
+  {
+    "question": "H1.Z20 측정기의 2022년 7월 15일 주파수 상태를 평가해 주세요.",
+    "answer": "H1.Z20의 2022년 7월 15일 주파수 값은 50.043Hz로, 이는 시스템 범위 내에서 양호한 상태입니다. 주파수가 안정적으로 유지되고 있으므로 설비의 전력 수급 상태도 양호하다고 볼 수 있습니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 2022-07-15 04:00 f=50.043416666666666"
+    ]
+  },
+  {
+    "question": "H1.Z20의 2020년 11월 4일 전압 상태를 평가해 주세요.",
+    "answer": "H1.Z20의 2020년 11월 4일 전압은 230V로 측정되었습니다. 이는 표준 전압 수준이며, 전력 공급의 안정성을 유지하고 있음을 나타냅니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 2020-11-04 16:00 U2=229.99666666666664"
+    ]
+  },
+  {
+    "question": "2023년 4월은 자급률이 급증한 이유를 해석해 주세요.",
+    "answer": "2023년 4월의 자급률은 75.15%로, 이는 전월의 52.03%보다 증가한 수치입니다. 이 대폭적 증가의 주요 원인은 PV 및 CHP의 발전량 증가와 연계된 결과일 수 있습니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-04 self_sufficiency_pct=75.15253399035802, 2023-03 self_sufficiency_pct=52.038873174349035"
+    ]
+  },
+  {
+    "question": "최근 에너지 소비 추세를 바탕으로 어떤 위험 요소가 발생할 수 있을까요?",
+    "answer": "최근 에너지 소비 추세에서 자급률이 높게 유지되고 있지만, 겨울철 날씨 변화로 인해 시스템의 의존도가 늘어날 수 있습니다. 적절한 에너지 절약 조치와 감독이 요구됩니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-11 self_sufficiency_pct=57.557687254290165, 2023-12 self_sufficiency_pct=63.106303866352555"
+    ]
+  },
+  {
+    "question": "2023년의 월별 자급률 변동을 바탕으로 향후 어떤 영향을 예상할 수 있을까요?",
+    "answer": "2023년 초부터 자급률은 상승 추세를 보이고 있으나, 변화하는 날씨 패턴과 관련하여 변동성이 있을 수 있습니다. 에너지 관리와 발전 설비 유지보수를 통해 안정적인 자급률 유지가 필요합니다.",
+    "category": "forecast",
+    "difficulty": "hard",
+    "evidence": [
+      "monthly_report: 2023-01 self_sufficiency_pct=64.71390236749454, 2023-11 self_sufficiency_pct=57.557687254290165"
+    ]
+  },
+  {
+    "question": "2023년 여름철 동안 자급률 변화 패턴을 바탕으로 어떤 조치가 필요합니까?",
+    "answer": "2023년 여름철 동안 자급률이 소폭 증가하고 있으나, 날씨 변화에 대응한 조치가 필요합니다. 에너지 공급원의 효율적 이용과 체계적인 유지보수가 안정성에 기여할 것입니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-07 self_sufficiency_pct=47.03801272007722, 2023-08 self_sufficiency_pct=39.51689935399938"
+    ]
+  },
+  {
+    "question": "최근 에너지 KPI의 변화로 예상되는 운영상의 영향을 설명해 주세요.",
+    "answer": "최근 에너지 KPI의 변화로 인해 자급률이 증가하며 외부 의존도가 줄어드는 경향을 보입니다. 이로 인해 그리드 사용량 감소로 운영비 절감 효과가 기대됩니다.",
+    "category": "forecast",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-04 self_sufficiency_pct=75.15253399035802, 2023-03 self_sufficiency_pct=52.038873174349035"
+    ]
+  }
+]

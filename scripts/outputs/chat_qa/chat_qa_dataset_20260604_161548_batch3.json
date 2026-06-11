@@ -1,0 +1,122 @@
+[
+  {
+    "id": "chat_03_001",
+    "question": "이거 제일 심각해?",
+    "answer": "현재 'CHPOutage' 고장은 HIGH 등급으로 판정된 이상이 89건 있습니다. 추가적인 셧다운이 손상을 일으킬 가능성이 있으니 즉시 점검이 권장됩니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"
+    ]
+  },
+  {
+    "id": "chat_03_002",
+    "question": "태양광이 또 이상?",
+    "answer": "네, 최근 PV에서 야간에 비정상 출력이 관찰되었습니다. 센서 오류 가능성이 높으며, 인버터와 센서를 점검할 필요가 있습니다.",
+    "category": "cms",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"
+    ]
+  },
+  {
+    "id": "chat_03_006",
+    "question": "CHP 정비 필요?",
+    "answer": "CHP의 헬스 스코어는 64로 주의가 필요하며, 최근 이상 98건이 보고되었습니다. 적극적으로 점검이 필요합니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"
+    ]
+  },
+  {
+    "id": "chat_03_008",
+    "question": "자급률 괜찮아?",
+    "answer": "2023년 12월 자급률은 63.11%로 양호한 편입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 self_sufficiency_pct=63.11"
+    ]
+  },
+  {
+    "id": "chat_03_010",
+    "question": "이번 달 COP 어때?",
+    "answer": "2023년 12월의 평균 COP는 2.53으로 높은 편이며, 냉방 효율이 양호합니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 avg_cop=2.53"
+    ]
+  },
+  {
+    "id": "chat_03_013",
+    "question": "전력 스파이크 있었어?",
+    "answer": "최근 PowerSpike MEDIUM 등급의 이상이 여러 건 발생했습니다. 전력 급증의 원인을 파악하고 조치가 필요합니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-12-15 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "id": "chat_03_015",
+    "question": "CHP 또 문제야?",
+    "answer": "네, 최근 CHPOutage가 빈번히 발생하고 있습니다. 특히 고등급 이상이 많아 점검이 시급합니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"
+    ]
+  },
+  {
+    "id": "chat_03_018",
+    "question": "이번 11월 자급률 어때?",
+    "answer": "2023년 11월 자급률은 57.56%로 양호한 수준입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-11 self_sufficiency_pct=57.56"
+    ]
+  },
+  {
+    "id": "chat_03_020",
+    "question": "전력 소모량 늘었어?",
+    "answer": "2023년 12월 전력 소모량은 201,522 kWh로 증가 추세입니다.",
+    "category": "report",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 total_consumption_kwh=201522.54"
+    ]
+  },
+  {
+    "id": "chat_03_024",
+    "question": "외부 계통 전력 의존도 줄어?",
+    "answer": "2023년 12월 외부 계통 전력 의존도는 36.89%로 줄어들 가능성이 있습니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 grid_dependency_pct=36.89"
+    ]
+  }
+]

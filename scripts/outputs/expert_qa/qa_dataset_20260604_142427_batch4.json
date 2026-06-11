@@ -1,0 +1,134 @@
+[
+  {
+    "question": "2023년 12월의 PowerSpike 이상탐지 결과를 분석해 주세요.",
+    "answer": "### 🚨 핵심 요약\n2023년 12월에는 PowerSpike 이상이 총 4건 발생하였으며, HIGH 등급 1건, MEDIUM 등급 3건으로 분류되었습니다. PowerSpike는 급격한 전력 수요 증가를 반영하며, 주의 깊게 모니터링할 필요가 있습니다.\n\n### 🔍 유형별 분석\n**[PowerSpike] 4건 (HIGH: 1 / MEDIUM: 3)**\n- 대표 시각: 2023-12-13 8:00\n- 센서값: 잔차 156.8 kW \n- 추정 원인: 대형 설비 동시 기동 또는 변압기 부하 증가에 기인한 과부하\n- ⬆ 장기적 영향 가능성 주의\n\n### ✅ 즉시 조치 목록\n1. 그리드 실측값을 확인하고 변압기 부하 분산 필요\n2. 대형 설비 기동 스케줄을 재조정하여 부하를 분산\n3. 역률 개선 콘덴서 검토 필요\n\n### 📋 배경 참고\n게이트웨이 장애 구간에 해당하지 않으며, 독일 전력망 특성에 의해 나타날 가능성 있음.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-12-13 8:00 PowerSpike HIGH",
+      "anomaly_results: 2023-12-13 9:00 PowerSpike MEDIUM",
+      "anomaly_results: 2023-12-16 20:00 PowerSpike MEDIUM",
+      "anomaly_results: 2023-12-15 13:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "question": "2023년 12월의 KPI 분석 결과와 개선 방안은 무엇인가요?",
+    "answer": "## 1. 핵심 요약\n2023년 12월의 자급률은 63.11%로 전월 대비 상승하였고, COP는 2.53으로 안정적입니다.\n\n## 2. KPI 분석\n- 전력 소비량은 201,522 kWh로 전월 대비 증가\n- 자급률은 63.11%로 5% 상승\n- COP는 2.53으로 9% 개선\n\n## 3. 이상탐지 현황\n12월 총 5건의 PowerSpike 이상 탐지\n\n## 4. 개선 권고사항\n- 자급률 증가를 위해 CHP 운전 강화 및 추가 PV 설치 검토\n- COP 유지 및 냉방 효율 향상 위해 냉각수 온도 및 냉매 상태 점검",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 self_sufficiency_pct=63.11",
+      "monthly_report: 2023-11 self_sufficiency_pct=57.56",
+      "monthly_report: 2023-12 total_power_consumption_kwh=201522.54367042298"
+    ]
+  },
+  {
+    "question": "현재 추세를 기반으로 예상되는 2023년 12월의 전력 소비 추세는 어떻게 될까요?",
+    "answer": "현재 추세를 토대로 보면 2023년 12월 전력 소비 추세는 계속해서 증가할 것입니다. 이러한 소비 증가 추세는 냉방 수요 증가가 주요 요인 중 하나가 될 것으로 보이며, 그리드 의존도가 높아질 우려가 있습니다. 이를 관리하기 위해서는 설비의 효율적인 관리와 불필요한 전력 소비를 차단하는 것이 필요합니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 total_power_consumption_kwh=201522.54367042298",
+      "monthly_report: 2023-11 total_power_consumption_kwh=192632.18305026973"
+    ]
+  },
+  {
+    "question": "2023년 2월의 COPDrop 이상 발생 원인을 분석해 주세요.",
+    "answer": "### 🚨 핵심 요약\n2023년 2월에는 COPDrop 이상이 총 4건 발생하였으며, HIGH 등급 2건으로 주요 원인은 냉매 압력 이상으로 판단됩니다.\n\n### 🔍 유형별 분석\n**[COPDrop] 4건 (HIGH: 2 / MEDIUM: 2)**\n- 대표 시각: 2023-02-09 17:00\n- 냉매 압력 부족 및 온도 상승에 의한 냉각기 성능 저하\n- ⬇ 외기온도 영향에 의해 일시적 가능성\n\n### ✅ 즉시 조치 목록\n1. 냉매 압력을 재차 확인하고 응축기 청소 실시\n2. 냉각탑 팬 상태 점검 및 충진재 교체\n3. 냉방 부하와의 비교를 통해 에너지 소비 패턴 최적화",
+    "category": "anomaly",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2023-02-09 17:00 COPDrop HIGH",
+      "anomaly_results: 2023-02-15 0:00 COPDrop HIGH"
+    ]
+  },
+  {
+    "question": "2023년의 월별 전력 소비 추세 변화는 어떠했나요?",
+    "answer": "## 1. 핵심 요약\n2023년에 전력 소비는 전반적으로 증가 추세를 보였으며, 특히 여름철에 큰 상승이 있었습니다.\n\n## 2. KPI 분석\n- 월별 평균 전력 소비량 203,500 kWh\n- 7월과 8월의 평균 소비량은 210,000 kWh를 초과\n\n## 3. 이상탐지 현황\n전력 소비 증가에 따른 PowerSpike 발생 빈도가 상승\n\n## 4. 개선 권고사항\n- 여름철 냉방 수요 감축을 위한 에너지 효율화 필요\n- 추가 에너지 자원을 통한 자급률 향상 검토",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-07 total_power_consumption_kwh=211656.42834610242",
+      "monthly_report: 2023-08 total_power_consumption_kwh=217985.85765707394"
+    ]
+  },
+  {
+    "question": "H1.Z20 계량기의 최근 주파수(f) 값과 관련하여 설비의 안정성은 어떻게 평가되나요?",
+    "answer": "H1.Z20 계량기의 주파수(f)는 기록되지 않았습니다. 주파수는 에너지 공급의 안정성을 평가하는 주요 지표이며, 주파수 변동이 크다면 설비의 전력 공급 불안정에 영향을 미칠 수 있습니다. 주파수 안정성은 전체 전력망 운영 품질과도 직결되므로, 설비 이상 징후로 인해 발생할 수 있는 주파수 변동을 주의 깊게 모니터링하는 것이 중요합니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 2020-03-12 11:00 U1=231.925"
+    ]
+  },
+  {
+    "question": "최근 PV 설비의 야간 출력 문제에 관한 추세와 관리 방안은 무엇입니까?",
+    "answer": "현재 발전하고 있는 PV 설비의 야간 출력 문제는 센서 오류로 인해 반복적으로 발생하고 있습니다. 이러한 추세는 시스템의 오작동 및 비효율적 운영으로 이어질 수 있으며, 장기적으로 시스템 신뢰도를 감소시킬 수 있습니다. 이를 방지하기 위해 센서 및 인버터 장비의 정기적인 점검과 교정이 필요하며, 시스템의 전반적인 상태를 주기적으로 모니터링하여 문제 발생 시 즉각적인 대응이 필요합니다.",
+    "category": "forecast",
+    "difficulty": "easy",
+    "evidence": [
+      "anomaly_results: 2023-12-21 21:00 PVNightNonZero MEDIUM",
+      "anomaly_results: 2023-12-3 4:00 PVNightNonZero MEDIUM"
+    ]
+  },
+  {
+    "question": "2023년 8월과 9월의 PowerSpike 이상 보고 내역과 그 원인은 무엇인가요?",
+    "answer": "### 🚨 핵심 요약\n2023년 8월과 9월의 PowerSpike 이상 탐지는 각각 5건과 4건 발생하였으며, 이는 대형 기기의 동시 기동 및 계통 안정성 문제로 보입니다.\n\n### 🔍 유형별 분석\n**[PowerSpike] 8월 5건 (HIGH: 0 / MEDIUM: 5)**\n- 대표 시각: 2023-08-06 13:00\n- 부하 급증에 의한 전력력 급등\n\n**[PowerSpike] 9월 4건 (HIGH: 0 / MEDIUM: 4)**\n- 대표 시각: 2023-09-13 10:00\n- 주파수 불안정에 의한 역률 저하\n\n### ✅ 즉시 조치 목록\n1. 부하 분산을 통해 설비 기동 스케줄 최적화\n2. 역률 개선 및 변압기 부하 점검 필요\n3. 에너지 절약을 위한 설비 예비운전 모니터링",
+    "category": "anomaly",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2023-08-06 13:00 PowerSpike MEDIUM",
+      "anomaly_results: 2023-09-10 16:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "question": "2023년 10월의 전력 소비량과 전년 동기 대비 변화는 어떠했나요?",
+    "answer": "## 1. 핵심 요약\n2023년 10월 전력 소비량은 198,265 kWh로, 전년 동기의 201,731 kWh에 비해 약 1.7% 감소하였습니다.\n\n## 2. KPI 분석\n- 전력 소비는 전년 동기에 비해 소폭 감소\n- 자급률과 COP는 소폭 개선\n\n## 3. 이상탐지 현황\n10월 소비량 감소에도 불구하고, 지속적인 PowerSpike 모니터링 필요\n\n## 4. 개선 권고사항\n- 여름철 냉방 수요 이후 전력 사용률을 지속적으로 낮추기 위해 설비 최적화 필요",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-10 total_power_consumption_kwh=198264.84065396566",
+      "monthly_report: 2022-10 total_power_consumption_kwh=201_P __ Add salt to remove hyperlinks __ __265285.736567343"
+    ]
+  },
+  {
+    "question": "2023년 11월 CHP 설비의 운영상 도전 요소는 무엇일까요?",
+    "answer": "2023년 11월 동안, CHP 설비에서는 빈번한 정지 현상이 발생하였습니다. 만약 이러한 정지가 반복된다면 장비의 가속화된 마모 및 유지보수 비용 증가, 예상치 못한 기동 시 에너지 소비 증가 등이 우려됩니다. 이를 방지하기 위해 지속적인 모니터링과 점검이 필요하며, 주기적인 부품 교체 및 예약 정비를 통해 설비의 장기적인 안정성을 유지하는 것이 중요합니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-11 total_power_consumption_kwh=192632.18305026973",
+      "anomaly_results: 2023-11-25 15:00 CHPOutage MEDIUM"
+    ]
+  },
+  {
+    "question": "2023년 4월과 11월의 CHPOutage 이상 내역과 조치 필요성은 무엇입니까?",
+    "answer": "### 🚨 핵심 요약\n2023년 4월과 11월에는 CHPOutage 이상이 각각 2건과 3건 보고되어 주의가 필요합니다.\n\n### 🔍 유형별 분석\n**[CHPOutage] 4월 2건 (HIGH: 1 / MEDIUM: 1)**\n- 대표 시각: 2023-04-30 9:00\n- 공급 연료 차단에 의해 발생 가능성\n\n**[CHPOutage] 11월 3건 (MEDIUM: 1 / LOW: 2)**\n- 대표 시각: 2023-11-13 20:00\n- 전력망 지연에 기인한 설비 정지 발생\n\n### ✅ 즉시 조치 목록\n1. 가스 공급 상태와 설비 보수를 통한 예방적 운영 권장\n2. 그리드 의존도 대비 및 갑작스러운 부하 증가 주의\n3. 책임 관리자가 연료 및 부하 모니터링 실시",
+    "category": "anomaly",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2023-04-28 5:00 CHPOutage MEDIUM",
+      "anomaly_results: 2023-04-30 9:00 CHPOutage HIGH",
+      "anomaly_results: 2023-11-13 20:00 CHPOutage LOW",
+      "anomaly_results: 2023-11-25 15:00 CHPOutage MEDIUM"
+    ]
+  },
+  {
+    "question": "H1.Z12 계량기의 최근 유효전력(P) 추세는 어떤가요?",
+    "answer": "H1.Z12 계량기의 최근 유효전력(P) 추세는 기록되지 않았습니다. 유효전력은 실제로 일을 하는 전력을 나타내어 설비의 에너지 효율성을 평가하는 기준이 됩니다. 꾸준한 유효전력 모니터링은 또한 설비의 갑작스러운 부하 변화에 대비할 수 있는 중요한 데이터를 제공합니다.",
+    "category": "rag",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: H1.Z12 2020-06-30 13:00 P=10812.5695"
+    ]
+  },
+  {
+    "question": "2023년 7월의 COPDrop 이상 탐지 내역과 그 원인은 무엇입니까?",
+    "answer": "### 🚨 핵심 요약\n2023년 7월에는 COPDrop 이상이 3건 보고되어, MEDIUM 등급으로 냉각 효율 문제가 발생했습니다.\n\n### 🔍 유형별 분석\n**[COPDrop] 3건 (HIGH: 0 / MEDIUM: 3)**\n- 대표 시각: 2023-07-07 9:00\n- 추출기능 저하 및 냉매 압력 이상에 기인한 성능 저하\n- ⬇ 온도 하락과 더불어 일시적 효과 가능성\n\n### ✅ 즉시 조치 목록\n1. 냉매 압력 및 충전 상태 확인\n2. 냉각탑 팬 점검 및 운전 상태 분석\n3. 공조 시스템 전체 점검을 통한 냉각 성능 최적화",
+    "category": "anomaly",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2023-07-10 9:00 COPDrop MEDIUM"
+    ]
+  }
+]

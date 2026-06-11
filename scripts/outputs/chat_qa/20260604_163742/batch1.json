@@ -1,0 +1,170 @@
+[
+  {
+    "id": "chat_01_002",
+    "question": "이거 무시해도 돼?",
+    "answer": "2023년 11월 28일에 PowerSpike가 MEDIUM 등급으로 탐지되었습니다. 경보를 무시하는 것보다는 원인 파악이 필요할 수 있습니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-11-28 13:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "id": "chat_01_006",
+    "question": "CHP 괜찮아?",
+    "answer": "CHP 설비의 최근 헬스스코어는 64로 주의가 필요합니다. 최근 98건의 이상이 발생하였으므로 점검이 권장됩니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"
+    ]
+  },
+  {
+    "id": "chat_01_007",
+    "question": "작업지시서 왜 떴어?",
+    "answer": "태양광 설비의 야간 비정상 출력이 관찰되어 센서 오류 가능성 때문에 작업 지시서가 발행되었습니다.",
+    "category": "cms",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"
+    ]
+  },
+  {
+    "id": "chat_01_009",
+    "question": "냉방설비 괜찮아?",
+    "answer": "냉방설비의 헬스스코어는 97로 양호하지만, 최근 5건의 COPDrop 이상이 발생하여 점검이 필요할 수 있습니다.",
+    "category": "cms",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"
+    ]
+  },
+  {
+    "id": "chat_01_011",
+    "question": "이번 달 전기 많이 썼어?",
+    "answer": "2023년 12월의 총 전기 소비량은 201,522 kWh입니다. 자급률은 63.11%였으며, 외부 계통 전력 의존도는 36.89%입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 total_consumption_kwh=201522.54 self_sufficiency_pct=63.11"
+    ]
+  },
+  {
+    "id": "chat_01_012",
+    "question": "12월 자급률 어때?",
+    "answer": "2023년 12월 자급률은 63.11%로, 외부 의존도가 36.89%입니다. 자급률이 높은 상태입니다.",
+    "category": "report",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-12 self_sufficiency_pct=63.11 grid_dependency_pct=36.89"
+    ]
+  },
+  {
+    "id": "chat_01_013",
+    "question": "평균 COP 어때?",
+    "answer": "2023년 12월의 평균 COP는 2.53입니다. 에너지 효율이 안정적으로 유지되고 있습니다.",
+    "category": "report",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 avg_cop=2.53"
+    ]
+  },
+  {
+    "id": "chat_01_014",
+    "question": "CHP 전력 얼마나 나왔어?",
+    "answer": "2023년 12월에는 CHP가 119,338 kWh의 전력을 생산했습니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 chp_kwh=119338.42"
+    ]
+  },
+  {
+    "id": "chat_01_015",
+    "question": "외부 계통 전력 의존도?",
+    "answer": "2023년 12월 외부 계통 전력 의존도는 36.89%입니다. 자급률이 높아 의존도가 낮은 상태입니다.",
+    "category": "report",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-12 grid_dependency_pct=36.89"
+    ]
+  },
+  {
+    "id": "chat_01_016",
+    "question": "V.Z84가 외부 계통 전력이야?",
+    "answer": "아니요, V.Z84는 태양광 PV 생산 계량기입니다. 외부 계통 전력과는 다릅니다.",
+    "category": "rag",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: V.Z84 measurement=P"
+    ]
+  },
+  {
+    "id": "chat_01_017",
+    "question": "H1.Z20 값 봐도 돼?",
+    "answer": "H1.Z20은 CHP 전력 생산을 측정하는 계량기입니다. 전력 생산 상태를 확인하는 데 유용합니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 measurement=P"
+    ]
+  },
+  {
+    "id": "chat_01_018",
+    "question": "V.Z84 전력량 확인해도 돼?",
+    "answer": "V.Z84는 태양광 PV 계량기로, 현재 전력량을 확인할 수 있는 계량기입니다.",
+    "category": "rag",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: V.Z84 measurement=W"
+    ]
+  },
+  {
+    "id": "chat_01_019",
+    "question": "H1.Z11 전압 안정적이야?",
+    "answer": "H1.Z11의 최근 측정 전압은 229.41V입니다. 전압이 안정적으로 유지되고 있습니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: H1.Z11 measurement=U2"
+    ]
+  },
+  {
+    "id": "chat_01_020",
+    "question": "태양광 전력 출력 어때?",
+    "answer": "태양광 PV 계량기 V.Z84의 전력 출력은 -80,567 kW로 기록되었습니다. 이는 정상적인 발전 방향입니다.",
+    "category": "rag",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": [
+      "cr_measurement_1h: V.Z84 measurement=P"
+    ]
+  }
+]

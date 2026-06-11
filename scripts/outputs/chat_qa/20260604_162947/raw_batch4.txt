@@ -1,0 +1,252 @@
+[
+  {
+    "id": "chat_04_001",
+    "question": "PowerSpike 심각해?",
+    "answer": "2023년 12월에 PowerSpike가 MEDIUM 등급으로 감지되었습니다. 바로 조치할 필요는 없지만 주의가 필요합니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["anomaly_results: 2023-12-14 06:00 PowerSpike MEDIUM"]
+  },
+  {
+    "id": "chat_04_002",
+    "question": "CHP 헬스 어때?",
+    "answer": "현재 CHP의 헬스 스코어는 64로 주의가 필요합니다. 최근 이상 건수가 98건 보고되었습니다.",
+    "category": "cms",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_04_003",
+    "question": "12월 자급률 어때?",
+    "answer": "2023년 12월의 자급률은 63.1%로 기록되었습니다. 이전 월 대비 증가한 수치입니다.",
+    "category": "report",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 self_sufficiency_pct=63.106"]
+  },
+  {
+    "id": "chat_04_004",
+    "question": "H1.Z20 전압 어때?",
+    "answer": "H1.Z20의 최근 전압 측정값은 233.42V입니다. 안정적으로 보입니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["ems.cr_measurement_1h: H1.Z20 2023-01-15 U1=233.42"]
+  },
+  {
+    "id": "chat_04_005",
+    "question": "다음 달 전기 더 쓸까?",
+    "answer": "현재 추세로 보면 전기 소비가 증가할 가능성이 있습니다. 하지만 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": []
+  },
+  {
+    "id": "chat_04_006",
+    "question": "PV 센서 문제야?",
+    "answer": "PV 설비에서 센서 오류 가능성이 높습니다. 야간에 비정상 출력이 관찰되고 있습니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"]
+  },
+  {
+    "id": "chat_04_007",
+    "question": "냉방 COP 어떨까?",
+    "answer": "12월 평균 COP는 2.53으로 안정적입니다. 효율 유지를 위해 현재 상태를 지속적으로 모니터링하세요.",
+    "category": "report",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 avg_cop=2.530398972761977"]
+  },
+  {
+    "id": "chat_04_008",
+    "question": "냉방 설비 헬스 어때?",
+    "answer": "냉방 설비의 헬스 스코어는 97로 양호하지만 최근 이상이 5건 보고되었습니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": ["work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"]
+  },
+  {
+    "id": "chat_04_009",
+    "question": "12월 grid 의존도는?",
+    "answer": "2023년 12월의 grid 의존도는 36.9%로 나타났습니다. 전월 대비 감소한 수치입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 grid_dependency_pct=36.89369613364745"]
+  },
+  {
+    "id": "chat_04_010",
+    "question": "PV 야간 이상 또?",
+    "answer": "최근 PV 설비에서 야간에 비정상 출력이 9건 발생했습니다. 센서 점검이 필요합니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "followup",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"]
+  },
+  {
+    "id": "chat_04_011",
+    "question": "냉방설비 점검 가야 해?",
+    "answer": "현재 냉방 설비의 전류 불평형이 높고, COPDrop 이상이 5건 발생했습니다. 점검을 권장합니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": ["work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"]
+  },
+  {
+    "id": "chat_04_012",
+    "question": "다음 주 날씨 어때?",
+    "answer": "날씨에 따라 에너지 사용 패턴이 달라질 수 있습니다. 하지만 현재 기상 예측 데이터를 제공하지 못하고 있습니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": []
+  },
+  {
+    "id": "chat_04_013",
+    "question": "이번 달 전기 어때?",
+    "answer": "2023년 12월의 전기 소비량은 201,522 kWh로 확인됩니다. 전월 대비 소폭 증가했습니다.",
+    "category": "report",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 total_consumption_kwh=201522.54367042298"]
+  },
+  {
+    "id": "chat_04_014",
+    "question": "작업지시 또 떴어?",
+    "answer": "냉방 설비와 CHP에 대한 작업지시가 최근 발행되었습니다. 각 설비의 상태를 점검하세요.",
+    "category": "cms",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건", "work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_04_015",
+    "question": "H1.Z20 전류는?",
+    "answer": "H1.Z20의 최근 전류는 -0.22A로 측정되었습니다. 정상 범위로 보입니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["ems.cr_measurement_1h: H1.Z20 2023-03-17 I1=-0.2197499999999999"]
+  },
+  {
+    "id": "chat_04_016",
+    "question": "PowerSpike 또 발생?",
+    "answer": "최근 PowerSpike가 MEDIUM 등급으로 감지되었습니다. 상황을 주시하는 것이 좋습니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "followup",
+    "difficulty": "medium",
+    "evidence": ["anomaly_results: 2023-12-14 06:00 PowerSpike MEDIUM"]
+  },
+  {
+    "id": "chat_04_017",
+    "question": "COP 떨어질까?",
+    "answer": "현재 추세로 보면 COP가 안정적일 가능성이 높습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": []
+  },
+  {
+    "id": "chat_04_018",
+    "question": "V.Z84 전력량?",
+    "answer": "V.Z84의 최근 전력량은 -11,891.81 kWh로 측정되었습니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["ems.cr_measurement_1h: V.Z84 2023-09-09 P=-11891.813182240809"]
+  },
+  {
+    "id": "chat_04_019",
+    "question": "다음 달 자급률?",
+    "answer": "반복 패턴 기반으로 추정하면 자급률이 유지될 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": []
+  },
+  {
+    "id": "chat_04_020",
+    "question": "계통 설비 점검해야?",
+    "answer": "계통 설비의 헬스 스코어는 92로 양호하지만, 최근 72건의 PowerSpike가 발생했습니다. 점검이 권장됩니다.",
+    "category": "cms",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": ["work_orders: equipment_id=grid title=헬스 92 · 최근 이상 72건"]
+  },
+  {
+    "id": "chat_04_021",
+    "question": "이상 또 떴어?",
+    "answer": "최근 PowerSpike와 COPDrop 등 이상이 반복 감지되었습니다. 주의가 필요합니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["anomaly_results: 2023-12-14 06:00 PowerSpike MEDIUM", "anomaly_results: 2023-02-12 19:00 COPDrop HIGH"]
+  },
+  {
+    "id": "chat_04_022",
+    "question": "12월 PV 발전량은?",
+    "answer": "2023년 12월의 PV 발전량은 7,835 kWh로 기록되었습니다.",
+    "category": "report",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 pv_kwh=7835.0090448063975"]
+  },
+  {
+    "id": "chat_04_023",
+    "question": "V.Z84 전압 어때?",
+    "answer": "V.Z84의 최근 전압은 228.99V로 안정적입니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["ems.cr_measurement_1h: V.Z84 2019-07-29 U2=228.9935615468409"]
+  },
+  {
+    "id": "chat_04_024",
+    "question": "CHP 이상 또?",
+    "answer": "최근 CHP에서 HIGH 수준의 이상이 98건 발생했습니다. 빈번한 셧다운으로 주의가 필요합니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "followup",
+    "difficulty": "hard",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_04_025",
+    "question": "다음 주 전기 어때?",
+    "answer": "현재 추세로 보면 전기 사용량이 지속될 것으로 보입니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": []
+  }
+]

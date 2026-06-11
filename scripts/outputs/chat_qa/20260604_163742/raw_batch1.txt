@@ -1,0 +1,252 @@
+[
+  {
+    "id": "chat_01_001",
+    "question": "이상 또 떴어?",
+    "answer": "2023년 12월 17일에 CHPOutage가 LOW 등급으로 발생했습니다. 잔차는 54.3 kW입니다. 이 문제는 운전 중단 가능성이 있습니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["anomaly_results: 2023-12-17 12:00 CHPOutage LOW residual_w=54348.9379"]
+  },
+  {
+    "id": "chat_01_002",
+    "question": "이거 무시해도 돼?",
+    "answer": "2023년 11월 28일에 PowerSpike가 MEDIUM 등급으로 탐지되었습니다. 경보를 무시하는 것보다는 원인 파악이 필요할 수 있습니다.",
+    "category": "anomaly",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["anomaly_results: 2023-11-28 13:00 PowerSpike MEDIUM"]
+  },
+  {
+    "id": "chat_01_003",
+    "question": "제일 심한 거 뭐야?",
+    "answer": "2023년 2월 12일에 ResidualSpike가 HIGH 등급으로 발생했으며, 잔차는 172.2 kW입니다. 이 부분이 가장 주의가 필요합니다.",
+    "category": "anomaly",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "hard",
+    "evidence": ["anomaly_results: 2023-02-12 11:00 ResidualSpike HIGH residual_w=172228.32"]
+  },
+  {
+    "id": "chat_01_004",
+    "question": "COPDrop 또 떴어?",
+    "answer": "2023년 2월 19일에 COPDrop이 MEDIUM 등급으로 감지되었습니다. 냉각 효율 저하 가능성이 있으니 점검이 필요합니다.",
+    "category": "anomaly",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["anomaly_results: 2023-02-19 00:00 COPDrop MEDIUM"]
+  },
+  {
+    "id": "chat_01_005",
+    "question": "잔차 이상 심각해?",
+    "answer": "2023년 2월 9일에 ResidualSpike가 HIGH 등급으로 발생, 잔차는 124.6 kW입니다. 심각한 상황으로 판단됩니다.",
+    "category": "anomaly",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": ["anomaly_results: 2023-02-09 02:00 ResidualSpike HIGH residual_w=124570.55"]
+  },
+  {
+    "id": "chat_01_006",
+    "question": "CHP 괜찮아?",
+    "answer": "CHP 설비의 최근 헬스스코어는 64로 주의가 필요합니다. 최근 98건의 이상이 발생하였으므로 점검이 권장됩니다.",
+    "category": "cms",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_01_007",
+    "question": "작업지시서 왜 떴어?",
+    "answer": "태양광 설비의 야간 비정상 출력이 관찰되어 센서 오류 가능성 때문에 작업 지시서가 발행되었습니다.",
+    "category": "cms",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"]
+  },
+  {
+    "id": "chat_01_008",
+    "question": "점검 가야 돼?",
+    "answer": "열병합발전 설비에서 다수의 CHPOutage가 발생했습니다. 헬스스코어 64로 주의가 필요하니 점검이 필요합니다.",
+    "category": "cms",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"]
+  },
+  {
+    "id": "chat_01_009",
+    "question": "냉방설비 괜찮아?",
+    "answer": "냉방설비의 헬스스코어는 97로 양호하지만, 최근 5건의 COPDrop 이상이 발생하여 점검이 필요할 수 있습니다.",
+    "category": "cms",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"]
+  },
+  {
+    "id": "chat_01_010",
+    "question": "수전설비 문제야?",
+    "answer": "수전설비의 헬스스코어가 92로 주의가 필요하며, 최근 72건의 PowerSpike가 발생했습니다. 역률 개선이 필요합니다.",
+    "category": "cms",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["work_orders: equipment_id=grid title=헬스 92 · 최근 이상 72건"]
+  },
+  {
+    "id": "chat_01_011",
+    "question": "이번 달 전기 많이 썼어?",
+    "answer": "2023년 12월의 총 전기 소비량은 201,522 kWh입니다. 자급률은 63.11%였으며, 외부 계통 전력 의존도는 36.89%입니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 total_consumption_kwh=201522.54 self_sufficiency_pct=63.11"]
+  },
+  {
+    "id": "chat_01_012",
+    "question": "12월 자급률 어때?",
+    "answer": "2023년 12월 자급률은 63.11%로, 외부 의존도가 36.89%입니다. 자급률이 높은 상태입니다.",
+    "category": "report",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": ["monthly_report: 2023-12 self_sufficiency_pct=63.11 grid_dependency_pct=36.89"]
+  },
+  {
+    "id": "chat_01_013",
+    "question": "평균 COP 어때?",
+    "answer": "2023년 12월의 평균 COP는 2.53입니다. 에너지 효율이 안정적으로 유지되고 있습니다.",
+    "category": "report",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 avg_cop=2.53"]
+  },
+  {
+    "id": "chat_01_014",
+    "question": "CHP 전력 얼마나 나왔어?",
+    "answer": "2023년 12월에는 CHP가 119,338 kWh의 전력을 생산했습니다.",
+    "category": "report",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 chp_kwh=119338.42"]
+  },
+  {
+    "id": "chat_01_015",
+    "question": "외부 계통 전력 의존도?",
+    "answer": "2023년 12월 외부 계통 전력 의존도는 36.89%입니다. 자급률이 높아 의존도가 낮은 상태입니다.",
+    "category": "report",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["monthly_report: 2023-12 grid_dependency_pct=36.89"]
+  },
+  {
+    "id": "chat_01_016",
+    "question": "V.Z84가 외부 계통 전력이야?",
+    "answer": "아니요, V.Z84는 태양광 PV 생산 계량기입니다. 외부 계통 전력과는 다릅니다.",
+    "category": "rag",
+    "persona": "field_engineer",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["cr_measurement_1h: V.Z84 measurement=P"]
+  },
+  {
+    "id": "chat_01_017",
+    "question": "H1.Z20 값 봐도 돼?",
+    "answer": "H1.Z20은 CHP 전력 생산을 측정하는 계량기입니다. 전력 생산 상태를 확인하는 데 유용합니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": ["cr_measurement_1h: H1.Z20 measurement=P"]
+  },
+  {
+    "id": "chat_01_018",
+    "question": "V.Z84 전력량 확인해도 돼?",
+    "answer": "V.Z84는 태양광 PV 계량기로, 현재 전력량을 확인할 수 있는 계량기입니다.",
+    "category": "rag",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": ["cr_measurement_1h: V.Z84 measurement=W"]
+  },
+  {
+    "id": "chat_01_019",
+    "question": "H1.Z11 전압 안정적이야?",
+    "answer": "H1.Z11의 최근 측정 전압은 229.41V입니다. 전압이 안정적으로 유지되고 있습니다.",
+    "category": "rag",
+    "persona": "operator",
+    "question_type": "normal",
+    "difficulty": "medium",
+    "evidence": ["cr_measurement_1h: H1.Z11 measurement=U2"]
+  },
+  {
+    "id": "chat_01_020",
+    "question": "태양광 전력 출력 어때?",
+    "answer": "태양광 PV 계량기 V.Z84의 전력 출력은 -80,567 kW로 기록되었습니다. 이는 정상적인 발전 방향입니다.",
+    "category": "rag",
+    "persona": "energy_manager",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": ["cr_measurement_1h: V.Z84 measurement=P"]
+  },
+  {
+    "id": "chat_01_021",
+    "question": "다음 주 더 쓸까?",
+    "answer": "현재 추세로 보면 에너지 소비가 다소 증가할 가능성이 있지만, 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": []
+  },
+  {
+    "id": "chat_01_022",
+    "question": "이 추세 계속 갈까?",
+    "answer": "반복 패턴 기반으로 추정하면 현재의 소비 패턴이 유지될 가능성이 있지만, 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "operator",
+    "question_type": "short",
+    "difficulty": "medium",
+    "evidence": []
+  },
+  {
+    "id": "chat_01_023",
+    "question": "앞으로 괜찮을까?",
+    "answer": "현재 추세로 보면 시스템이 안정적으로 유지될 가능성이 있습니다. 하지만 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "energy_manager",
+    "question_type": "short",
+    "difficulty": "easy",
+    "evidence": []
+  },
+  {
+    "id": "chat_01_024",
+    "question": "요즘 전력 소비 어때?",
+    "answer": "반복 패턴 기반으로 추정하면 전력 소비가 현재 수준에서 안정적으로 유지될 것으로 보입니다. 하지만 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "field_engineer",
+    "question_type": "normal",
+    "difficulty": "easy",
+    "evidence": []
+  },
+  {
+    "id": "chat_01_025",
+    "question": "미래 자급률 어때?",
+    "answer": "현재 추세로 보면 자급률이 꾸준히 유지될 가능성이 있습니다. 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "persona": "team_lead",
+    "question_type": "normal",
+    "difficulty": "hard",
+    "evidence": []
+  }
+]

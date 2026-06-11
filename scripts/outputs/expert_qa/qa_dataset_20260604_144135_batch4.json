@@ -1,0 +1,179 @@
+[
+  {
+    "question": "2023년 2월 10일에 기록된 COPDrop 이상에 대한 분석을 제공해 주세요.",
+    "answer": "### 🚨 핵심 요약\n2023년 2월 10일의 COPDrop 이상은 HIGH 등급으로 기록되었습니다. 이상은 냉방 효율 저하를 나타내며, 즉각적인 점검이 필요합니다.\n\n### 🔍 유형별 분석\n**[COPDrop] 1건 (HIGH: 1 / MEDIUM: 0)**\n- 대표 시각: 2023-02-10 15:00\n- 센서값: 정보 제공되지 않음\n- 추정 원인: 냉각수 온도 상승, 냉매 부족\n- ⬆ 악화 징조 가능성\n\n### ✅ 즉시 조치 목록\n1. 응축기 청소 및 냉매 압력 확인을 통해 냉각 효율 저하 여부를 조사하세요.\n2. 냉각탑 팬과 충진재 상태를 체크하여 물리적 장애를 점검하세요.\n\n### 📋 배경 참고\n이 COPDrop 이상은 기상 관측소 데이터와 겹치지 않았습니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-02-10 15:00 COPDrop HIGH"
+    ]
+  },
+  {
+    "question": "현재 열병합발전 설비의 상태를 진단해 주세요.",
+    "answer": "### 🩺 진단 요약\n현재 열병합발전 설비의 헬스 스코어는 64로 기록되어 있으며 경고 등급에 속합니다.\n\n### 🔍 추정 원인\n- 실측 전력값이 -341.5kW에서 -267.6kW 범위로 나타나며 예측값과 큰 차이가 발생\n\n### ✅ 권장 조치\n1. chp_P와 chp_heat_P 동시 출력 상태 점검하여 비정상 정지 여부 확인\n2. 가스 공급 상태 점검하여 연료 공급 이상 후보 여부 확인\n3. 그리드 의존도 변동 여부 모니터링",
+    "category": "cms",
+    "difficulty": "hard",
+    "evidence": [
+      "work_orders: equipment_id=chp title=헬스 64 · 최근 이상 98건"
+    ]
+  },
+  {
+    "question": "H1.Z20 계량기의 2022년 2월 22일 전압 상태를 평가해 주세요.",
+    "answer": "H1.Z20 계량기의 2022년 2월 22일 측정된 전압 U2는 230.57 V로 안정적입니다. 이는 전압 변동이 없는 우수한 상태를 나타내며 추가 점검이 필요하지 않습니다.",
+    "category": "rag",
+    "difficulty": "easy",
+    "evidence": [
+      "cr_measurement_1h: H1.Z20 2022-02-22 U2=230.57"
+    ]
+  },
+  {
+    "question": "2023년 11월의 이상탐지 결과를 바탕으로 향후 주의해야 할 점은 무엇인가요?",
+    "answer": "- 현재 추세: 2023년 11월에는 총 364건의 이상이 탐지되어 10월보다 증가했습니다.\n- 위험 요인: 이와 같은 추세가 지속된다면 에너지 효율이 급격히 저하될 수 있습니다.\n- 운영 영향: 빈번한 이상은 설비 운영의 불확실성을 증가시키고 시스템 전반에 부담을 줄 수 있습니다.\n- 권장 대응: 정기적인 설비 점검 및 예방적 정비를 통해 이상 발생의 원인을 사전에 제거하는 것이 중요합니다.\n- 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-11 anomaly_count=364",
+      "monthly_report: 2023-10 anomaly_count=156"
+    ]
+  },
+  {
+    "question": "2023년 11월 11일 PowerSpike 이상에 대해 설명해 주세요.",
+    "answer": "### 🚨 핵심 요약\n2023년 11월 11일에 기록된 PowerSpike 이상은 LOW 등급으로 발생했습니다. 이는 괜찮은 전력 상태로 평가됩니다.\n\n### 🔍 유형별 분석\n**[PowerSpike] 1건 (HIGH: 0 / LOW: 1)**\n- 대표 시각: 2023-11-11 13:00\n- 센서값: 변압기 계통 전력 급증 잔차 51.5 kW\n- 추정 원인: 평균적으로 양호한 전력 상태지만, 한시적 부하 급증일 수 있습니다.\n- ⬇ 일시적인 가능성 있음\n\n### ✅ 즉시 조치 목록\n이미 회복된 상태로 경과 관찰 권장",
+    "category": "anomaly",
+    "difficulty": "easy",
+    "evidence": [
+      "anomaly_results: 2023-11-11 13:00 PowerSpike LOW residual_w=51538.09294851869"
+    ]
+  },
+  {
+    "question": "현재 태양광 설비의 작업 지시를 해석해 주세요.",
+    "answer": "### 🩺 진단 요약\n현재 PV 설비의 헬스 스코어는 99로 기록되어 있으며 정상 등급에 속합니다.\n\n### 🔍 추정 원인\n- PV 설비에서 야간에 비정상 출력이 관찰되고 있으며, 이는 센서 오류 가능성이 높습니다.\n\n### ✅ 권장 조치\n1. 야간 PV 인버터 출력 로그를 확인하여 이상 패턴을 파악합니다.\n2. 해당 인버터를 재시작하거나 센서를 교정하여 오류 가능성을 제거합니다.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=pv title=헬스 99 · 최근 이상 8건"
+    ]
+  },
+  {
+    "question": "2023년 3월의 에너지 KPI를 요약하고 4월과의 주요 차이를 설명해 주세요.",
+    "answer": "## 1. 핵심 요약\n2023년 3월의 자급률은 52.04%로 전월과 비슷한 수준을 유지하고 있습니다.\n\n## 2. KPI 분석\n- **소비량**: 3월 178,024 kWh에서 4월 178,624 kWh로 소폭 증가\n- **자급률**: 3월 52.04%에서 4월 75.15%로 크게 증가\n- **COP**: 3월 1.49에서 4월 2.15로 개선\n\n## 3. 이상탐지 현황\n3월에는 211건의 이상탐지가 있었으며, 4월에 149건으로 감소\n\n## 4. 개선 권고사항\n- CHP 및 PV 시스템 운전을 최적화하여 자급률 증가세를 유지할 수 있도록 점검하세요.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-03 self_sufficiency_pct=52.04",
+      "monthly_report: 2023-04 self_sufficiency_pct=75.15"
+    ]
+  },
+  {
+    "question": "V.Z84의 PF1 역률 데이터는 2020년 4월 19일 기준 어떤 상태였나요?",
+    "answer": "V.Z84의 PF1 역률은 2020년 4월 19일에 -0.972로 기록되었습니다. 이 값은 태양광 발전 시에 부하 역률 상태를 나타내며, 음수는 발전 방향을 반영한 것입니다. 이는 정상적인 상태로 해석됩니다.",
+    "category": "rag",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: V.Z84 2020-04-19 PF1=-0.972"
+    ]
+  },
+  {
+    "question": "2023년 5월 18일 CHPOutage 이상 조치가 필요합니까?",
+    "answer": "### 🚨 핵심 요약\n2023년 5월 18일 발생한 CHPOutage는 HIGH 등급으로 기록되었습니다. 이에 대한 신속한 점검 조치가 필요합니다.\n\n### 🔍 유형별 분석\n**[CHPOutage] 1건 (HIGH: 1 / MEDIUM: 0)**\n- 대표 시각: 2023-05-18 12:00\n- 센서값: 잔차 131.8 kW\n- 추정 원인: CHP 시스템의 비정상 정지 가능성\n- ⬆ 악화 징조 가능성 있음\n\n### ✅ 즉시 조치 목록\n1. chp_P 및 chp_heat_P 동시 출력 상태 점검\n2. 가스 공급 상태 확인 및 그리드 의존도 모니터링\n\n### 📋 배경 참고\n대규모 이상 탐지와 겹치지 않았습니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-05-18 12:00 CHPOutage HIGH residual_w=131790.55359660173"
+    ]
+  },
+  {
+    "question": "냉방설비의 헬스스코어와 주의사항을 알려주세요.",
+    "answer": "### 🩺 진단 요약\n현재 냉방설비의 헬스 스코어는 97로 기록되어 정상에 가까운 상태입니다.\n\n### 🔍 추정 원인\n- COPDrop 유형의 이상이 5건 발생하여 주의가 필요합니다.\n\n### ✅ 권장 조치\n1. 응축기 청소 및 냉매 압력 점검\n2. 냉각탑의 물리적 막힘 점검",
+    "category": "cms",
+    "difficulty": "easy",
+    "evidence": [
+      "work_orders: equipment_id=cooling title=헬스 97 · 최근 이상 5건"
+    ]
+  },
+  {
+    "question": "2023년 3월부터 6월까지의 COP 변화를 설명하고 예측해 주세요.",
+    "answer": "- 현재 추세: 3월부터 6월까지 COP는 점진적으로 상승하여 냉각 효율이 증가하고 있습니다.\n- 위험 요인: COP 상승이 지속되지 않으면 냉각 설비의 효율이 저하되고 추가적인 에너지 소비가 발생할 수 있습니다.\n- 운영 영향: 냉각 효율 개선은 전반적인 에너지 비용 감소에 기여할 수 있습니다.\n- 권장 대응: 냉방 시스템의 정기적 점검과 유지 보수를 통해 COP가 높은 수준을 유지할 수 있도록 관리하세요.\n- 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-03 avg_cop=1.49",
+      "monthly_report: 2023-04 avg_cop=2.15",
+      "monthly_report: 2023-06 avg_cop=2.26"
+    ]
+  },
+  {
+    "question": "2022년 4월의 COPDrop 이상에 대해 설명해 주세요.",
+    "answer": "### 🚨 핵심 요약\n2022년 4월의 COPDrop 이상은 MEDIUM 등급으로 2건 발생하였습니다.\n\n### 🔍 유형별 분석\n**[COPDrop] 2건 (HIGH: 0 / MEDIUM: 2)**\n- 대표 시각: 2022-04-05 21:00\n- 추정 원인: 냉각수 온도 상승 가능성\n- ⬇ 일시적 가능성 있음\n\n### ✅ 즉시 조치 목록\n1. 응축기 보수 및 냉매 시스템 점검.\n\n### 📋 배경 참고\n특정 날씨 조건과 일치하지 않았습니다.",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2022-04-05 21:00 COPDrop MEDIUM"
+    ]
+  },
+  {
+    "question": "2023년 10월의 에너지 자급률 추세와 향후 변화 가능성을 예측해 설명하세요.",
+    "answer": "- 현재 추세: 2023년 10월의 에너지 자급률은 52.15%로 기록되어 있습니다.\n- 위험 요인: 자급률이 유지되지 않으면 외부 계통 전력 의존도가 증가할 위험이 있습니다.\n- 운영 영향: 자급률 저하는 에너지 비용 상승으로 이어질 수 있습니다.\n- 권장 대응: 태양광 및 CHP 발전량을 지속적으로 모니터링하여 자급률 유지에 기여해야 합니다.\n- 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "easy",
+    "evidence": [
+      "monthly_report: 2023-10 self_sufficiency_pct=52.15"
+    ]
+  },
+  {
+    "question": "2023년 9월 26일 기록된 PowerSpike 이상 원인을 분석해 주세요.",
+    "answer": "### 🚨 핵심 요약\n2023년 9월 26일 PowerSpike 이상은 MEDIUM 등급으로 기록되었습니다. 부하 급증 가능성에 주의가 필요합니다.\n\n### 🔍 유형별 분석\n**[PowerSpike] 1건 (HIGH: 0 / MEDIUM: 1)**\n- 대표 시각: 2023-09-26 11:00\n- 센서값: 정보 제공되지 않음\n- 추정 원인: 대형 설비 동시 기동으로 인한 부하 급증 가능성\n- ⬆ 악화 징조 가능성 있음\n\n### ✅ 즉시 조치 목록\n1. 운영팀이 설비 스케줄을 조정하여 대형 설비 동시 기동을 회피하도록 조치하세요.\n2. 전기팀이 피더별 전류와 그리드 실측값을 확인하세요.\n",
+    "category": "anomaly",
+    "difficulty": "medium",
+    "evidence": [
+      "anomaly_results: 2023-09-26 11:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "question": "계통/수전 설비의 상태를 현재 헬스스코어와 함께 분석해 주세요.",
+    "answer": "### 🩺 진단 요약\n현재 계통/수전 설비의 헬스 스코어는 92로 주의가 필요한 상태에 있습니다.\n\n### 🔍 추정 원인\n- 역률이 평균 0.36으로 매우 낮고, 최근 30일간 총 72건의 PowerSpike가 발생하였습니다.\n\n### ✅ 권장 조치\n1. 동시 기동 설비의 스케줄을 분산.\n2. 역률 개선 콘덴서의 상태 점검.",
+    "category": "cms",
+    "difficulty": "medium",
+    "evidence": [
+      "work_orders: equipment_id=grid title=헬스 92 · 최근 이상 72건"
+    ]
+  },
+  {
+    "question": "2023년 7월의 자급률을 분석하고 8월과 비교해 주세요.",
+    "answer": "## 1. 핵심 요약\n2023년 7월의 자급률은 47.04%로 기록되어 있으며, 8월에는 39.52%로 감소하였습니다.\n\n## 2. KPI 분석\n- **소비량**: 7월 211,656 kWh에서 8월 217,985 kWh로 증가\n- **자급률**: 7월 47.04%에서 8월 39.52%로 감소\n- **COP**: 7월 3.63에서 8월 2.16으로 하락\n\n## 3. 이상탐지 현황\n7월에는 270건의 이상탐지가 있었으며, 8월에도 같은 수의 이상탐지가 들어왔습니다.\n\n## 4. 개선 권고사항\n- 태양광 및 CHP 가동 최적화로 자급률 개선을 노려야 합니다.",
+    "category": "report",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-07 self_sufficiency_pct=47.04",
+      "monthly_report: 2023-08 self_sufficiency_pct=39.52"
+    ]
+  },
+  {
+    "question": "2022년 7월의 PowerSpike 이상 발생 상황을 설명해 주세요.",
+    "answer": "### 🚨 핵심 요약\n2022년 7월 기록된 PowerSpike 이상은 MEDIUM 등급으로 평가되었습니다.\n\n### 🔍 유형별 분석\n**[PowerSpike] 1건 (HIGH: 0 / MEDIUM: 1)**\n- 대표 시각: 2022-07-12 17:00\n- 추정 원인: 설비 동시 기동으로 인한 전력 급증 가능성.\n- ⬆ 악화 징조 지속 가능성\n\n### ✅ 즉시 조치 목록\n1. 동시 설비 기동 회피 스케줄링 및 피더별 전류 점검 권장.\n",
+    "category": "anomaly",
+    "difficulty": "hard",
+    "evidence": [
+      "anomaly_results: 2022-07-12 17:00 PowerSpike MEDIUM"
+    ]
+  },
+  {
+    "question": "현재 H1.Z16의 측정값에서 역률 상태는 어떤가요?",
+    "answer": "H1.Z16의 최근 가장 높은 측정값 중 하나로 2020년 12월 5일에 기록된 PF는 0.994로 양호한 상태를 유지하고 있습니다. 이는 정상적인 부하 운용 상황을 나타냅니다.",
+    "category": "rag",
+    "difficulty": "medium",
+    "evidence": [
+      "cr_measurement_1h: H1.Z16 2020-12-05 PF=0.994"
+    ]
+  },
+  {
+    "question": "2023년 11월의 에너지 소비 추세에 기반한 향후 운영 방안을 제시해 주세요.",
+    "answer": "- 현재 추세: 2023년 11월의 총 소비량은 192,632 kWh로 10월 대비 감소 추세를 보이고 있습니다.\n- 위험 요인: 소비량이 증가로 전환된다면 에너지 비용이 증가할 잠재적 위험이 있습니다.\n- 운영 영향: 에너지 비용 최적화를 위해 자급률 유지가 필요합니다.\n- 권장 대응: 비핵심 설비의 가동을 조정하여 소비량 증가 위험을 완화하세요.\n- 실제 예측 모델 수치는 없으므로 참고용입니다.",
+    "category": "forecast",
+    "difficulty": "medium",
+    "evidence": [
+      "monthly_report: 2023-11 total_consumption_kwh=192,632",
+      "monthly_report: 2023-10 total_consumption_kwh=198,264"
+    ]
+  }
+]
