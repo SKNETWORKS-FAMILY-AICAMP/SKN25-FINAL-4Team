@@ -23,7 +23,25 @@ TTF-FMS는 Honda R&D Europe EMS 데이터를 기반으로 전력 수요 예측, 
 
 # 주요 모델
 
-## 1. v84 Residual Forecast
+## 1. Import P-Max Forecast
+
+향후 최대 수요전력을 예측하는 피크 예측 모델입니다.
+
+### 모델 구성
+
+- LightGBM
+- XGBoost
+- CatBoost
+
+### 특징
+
+- 15분 단위 입력
+- 향후 60분 P-Max 예측
+- Peak Alarm 지원
+
+---
+
+## 2. v84 Residual Forecast
 
 Honda EMS 데이터를 기반으로 구축한 계량기별 개인화 수요 예측 모델입니다.
 
@@ -42,23 +60,6 @@ Honda EMS 데이터를 기반으로 구축한 계량기별 개인화 수요 예�
 - Persistence 대비 성능 평가
 - 1시간 / 3시간 예측 지원
 
----
-
-## 2. Import P-Max Forecast
-
-향후 최대 수요전력을 예측하는 피크 예측 모델입니다.
-
-### 모델 구성
-
-- LightGBM
-- XGBoost
-- CatBoost
-
-### 특징
-
-- 15분 단위 입력
-- 향후 60분 P-Max 예측
-- Peak Alarm 지원
 
 ---
 
