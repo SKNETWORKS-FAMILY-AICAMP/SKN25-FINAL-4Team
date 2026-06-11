@@ -1,6 +1,6 @@
 # SKN25 FINAL 4Team — TTF-FMS
 
-## Smart Factory Energy Insight & Facility Operations AI Copilot
+## Smart Factory Energy Insight, CMS Lite & Facility Operations AI Copilot
 
 TTF-FMS는 Honda R&D Europe EMS 데이터를 기반으로 전력 수요 예측, 이상 징후 탐지, 설비 상태 분석, 원인 추정, 작업지시 생성, 보고서 자동화를 수행하는 설비 운영 AI Copilot 프로젝트입니다.
 
@@ -69,10 +69,12 @@ Honda EMS 데이터를 기반으로 구축한 계량기별 개인화 수요 예�
 
 ```text
 v84 Forecast
-    ↓
+ ↓
 Residual 계산
-    ↓
+ ↓
 이상 후보 탐지
+ ↓
+도메인 규칙 기반 이상 유형 분류
 ```
 
 ### 보조 구조
@@ -107,7 +109,7 @@ Honda EMS 기반 모델 구조가 국내 제조설비 데이터에서도 유효�
 
 본 검증은 국내 제조업 전체 적용을 입증하기 위한 것이 아니라,
 
-Honda 데이터 기반 모델 구조가 국내 제조설비 데이터에서도 유효하게 동작하는지 확인하기 위한 전이 검증(Transfer Validation)입니다.
+Honda 데이터 기반 모델 구조가 국내 제조설비 데이터에서도 일정 수준의 전이 가능성을 가지는지 확인하기 위한 전이 검증(Transfer Validation)입니다.
 
 ---
 
@@ -116,14 +118,14 @@ Honda 데이터 기반 모델 구조가 국내 제조설비 데이터에서도 �
 ## Import P-Max
 
 - AI Hub 재학습 수행
-- Persistence 대비 성능 개선 확인
+- Persistence 대비 성능 개선 사례 확인
 - 중앙값 RMSE 개선율 약 17.5%
 
 ## v84 Forecast
 
 - Honda 기반 구조 검증
 - AI Hub 재학습 수행
-- 다수 설비에서 Persistence 대비 개선 확인
+- 다수 설비에서 Persistence 대비 개선 사례 확인
 
 ## 이상탐지
 
@@ -270,4 +272,4 @@ python -m pip install -r requirements.txt
 
 # 한 줄 요약
 
-> Honda EMS 기반 예측·이상탐지 모델을 AI Hub 국내 제조설비 데이터로 외부 검증하고, 설비 운영 AI Copilot 구축을 목표로 수행한 SKN25 Final Project입니다.
+> Honda EMS 기반 예측·이상탐지 모델의 전이 가능성을 AI Hub 국내 제조설비 데이터로 검증하고, 설비 운영 AI Copilot 구축을 목표로 수행한 SKN25 Final Project입니다.
