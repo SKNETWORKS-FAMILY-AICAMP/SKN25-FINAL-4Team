@@ -317,7 +317,7 @@ SKN25-FINAL-4Team/
 - **백엔드**: FastAPI · LangGraph · psycopg2 · APScheduler
 - **DB**: PostgreSQL + TimescaleDB + pgvector (`reference.corrected_resampled_1h`, WeatherStation)
 - **프론트**: React (Vite) · Recharts · lucide-react · react-markdown
-- **sLLM**: Ollama (`gemma4:12b`) — RunPod GPU 서버 또는 로컬. OpenAI / Anthropic / Gemini로 `.env` 1줄 전환 가능
+- **sLLM**: 듀얼 모델 — Gemma4 12B (품질 경로, **8.6/10**) + EXAONE 3.5 7.8B (속도 경로, 의도분류 **10.0/10**). Ollama 기반, RunPod GPU 또는 로컬. OpenAI / Anthropic / Gemini로 `.env` 1줄 전환 가능. gpt-5.5 LLM-as-Judge 33문항 평가 기준
 - **의도 분류**: 키워드 룰 기반 우선 분류 + LLM 폴백 (골든셋 100문항 기준 **92% 정확도**)
 - **ML 예측**: v84 앙상블 — LSTM×6 버전 median + CatBoost + LightGBM + Ridge + Seasonal Naive, 잔차 타겟(P(t)−P(t−1)), 45개 계량기 개인화, shrunk bias correction
 - **ML 이상탐지**: LSTM 잔차 비율 기반(주력, ratio ≥ 2.0=HIGH) / 통계+IF+LSTM-AE 3단 투표(폴백)
