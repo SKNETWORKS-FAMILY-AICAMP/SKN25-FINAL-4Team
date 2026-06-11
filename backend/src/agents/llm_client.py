@@ -81,29 +81,36 @@ def _ollama_base_url() -> str:
 def chat(messages: list[dict], max_tokens: int = 1024, fast: bool = False) -> str:
     """통합 LLM 호출 — 텍스트 응답만 반환.
 
-    fast=True  → LLM_MODEL_FAST (EXAONE 등) 사용: 의도 분류·단순 쿼리용 (빠름)
-    fast=False → LLM_MODEL (Gemma4 등) 사용: 진단·보고서·분석용 (품질 최우선)
+    fast=True  → LLM_MODEL_FAST (EXAONE 등): 의도 분류·단순 쿼리용, think=False
+    fast=False → LLM_MODEL (Gemma4 등): 진단·보고서·분석용, think=True (품질 극대화)
+                 thinking 토큰 소모를 위해 num_predict를 4배 확장
     """
     model = LLM_MODEL_FAST if fast else LLM_MODEL
 
     if LLM_PROVIDER == "ollama":
+        num_ctx = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
+        thinking = not fast  # quality 경로는 thinking ON, fast 경로는 OFF
+        num_predict = max_tokens * 4 if thinking else max_tokens
         payload = {
             "model": model,
             "messages": messages,
             "stream": False,
-            "options": {"num_predict": max_tokens},
+            "keep_alive": -1,  # 모델 영구 적재 — 재요청 시 로딩 대기 없음
+            "think": thinking,
+            "options": {
+                "num_predict": num_predict,
+                "num_ctx": num_ctx,
+                "temperature": 0.1 if fast else 0.3,
+            },
         }
-        # fast 모델(EXAONE 등): thinking 없음 → think 파라미터 불필요
-        # quality 모델(Gemma4): think 파라미터 생략 → thinking 활성화 (품질 극대화)
-        if fast:
-            payload["think"] = False
         resp = httpx.post(
             f"{_ollama_base_url()}/api/chat",
             json=payload,
             timeout=120,
         )
         resp.raise_for_status()
-        return resp.json()["message"]["content"]
+        msg = resp.json()["message"]
+        return msg.get("content") or msg.get("thinking", "")
 
     client = _get_client()
 

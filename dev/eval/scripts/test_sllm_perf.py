@@ -2,13 +2,12 @@
 sLLM 성능 테스트 스크립트.
 
 측정 항목:
-  1. 의도 분류 정확도 (정답 레이블 vs LLM 예측)
-  2. 에이전트별 응답 샘플 + 레이턴시
-  3. 전체 요약
+  1. 의도 분류 정확도 — EXAONE (fast=True)
+  2. 에이전트별 응답 샘플 + 레이턴시 — Gemma4 (fast=False)
+  3. 한국어 능력 — Gemma4 (fast=False)
 
 실행:
-  cd backend/src/agents
-  python ../../scripts/test_sllm_perf.py
+  python dev/eval/scripts/test_sllm_perf.py
 """
 from __future__ import annotations
 
@@ -17,7 +16,6 @@ import time
 import os
 from pathlib import Path
 
-# 에이전트 경로 설정
 _ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(_ROOT / "backend" / "src" / "agents"))
 sys.path.insert(0, str(_ROOT / "backend" / "src"))
@@ -28,7 +26,19 @@ load_dotenv(_ROOT / ".env")
 import llm_client
 
 # ──────────────────────────────────────────────────────────────
-# 1. 의도 분류 정확도 테스트
+# 워밍업 — 첫 호출 시 모델 로딩 대기를 측정에서 제외
+# ──────────────────────────────────────────────────────────────
+
+def warmup():
+    print("  워밍업 중 (EXAONE + Gemma4 로딩)...", end="", flush=True)
+    t0 = time.perf_counter()
+    llm_client.chat([{"role": "user", "content": "안녕"}], max_tokens=5, fast=True)
+    llm_client.chat([{"role": "user", "content": "안녕"}], max_tokens=5, fast=False)
+    print(f" {(time.perf_counter() - t0)*1000:.0f}ms")
+
+
+# ──────────────────────────────────────────────────────────────
+# 1. 의도 분류 정확도 — EXAONE (fast=True)
 # ──────────────────────────────────────────────────────────────
 
 INTENT_PROMPT = """사용자 질문을 읽고 아래 중 하나로만 답하세요. 다른 말은 하지 마세요.
@@ -44,7 +54,6 @@ INTENT_PROMPT = """사용자 질문을 읽고 아래 중 하나로만 답하세�
 질문: {question}"""
 
 INTENT_CASES = [
-    # (질문, 정답)
     ("이번 달 이상탐지 건수 알려줘",                "anomaly"),
     ("COP가 갑자기 떨어진 원인이 뭔가요?",           "anomaly"),
     ("PowerSpike 이상이 자주 발생하는 계량기는?",    "anomaly"),
@@ -65,20 +74,20 @@ INTENT_CASES = [
 
 def test_intent_classification():
     print("\n" + "=" * 65)
-    print(f"  의도 분류 정확도 테스트  |  모델: {llm_client.LLM_MODEL}")
+    print(f"  의도 분류 정확도  |  모델: {llm_client.LLM_MODEL_FAST}  (fast)")
     print("=" * 65)
     print(f"{'질문':<38} {'정답':>8} {'예측':>8} {'결과':>5} {'ms':>6}")
     print("-" * 65)
 
     correct = 0
     total_ms = 0.0
-    results = []
 
     for question, expected in INTENT_CASES:
         t0 = time.perf_counter()
         raw = llm_client.chat(
             [{"role": "user", "content": INTENT_PROMPT.format(question=question)}],
             max_tokens=10,
+            fast=True,
         ).strip().lower()
         elapsed_ms = (time.perf_counter() - t0) * 1000
         total_ms += elapsed_ms
@@ -91,7 +100,6 @@ def test_intent_classification():
         mark = "✓" if ok else "✗"
         q_short = question[:36] + ".." if len(question) > 36 else question
         print(f"{q_short:<38} {expected:>8} {predicted:>8} {mark:>5} {elapsed_ms:>5.0f}")
-        results.append((question, expected, predicted, ok, elapsed_ms))
 
     accuracy = correct / len(INTENT_CASES) * 100
     avg_ms = total_ms / len(INTENT_CASES)
@@ -101,7 +109,7 @@ def test_intent_classification():
 
 
 # ──────────────────────────────────────────────────────────────
-# 2. 에이전트별 응답 품질 + 레이턴시 테스트
+# 2. 에이전트별 응답 품질 + 레이턴시 — Gemma4 (fast=False)
 # ──────────────────────────────────────────────────────────────
 
 GEN_CASES = [
@@ -139,7 +147,7 @@ GEN_CASES = [
 
 def test_generation():
     print("\n" + "=" * 65)
-    print(f"  응답 품질 테스트  |  모델: {llm_client.LLM_MODEL}")
+    print(f"  응답 품질 테스트  |  모델: {llm_client.LLM_MODEL}  (quality)")
     print("=" * 65)
 
     latencies = []
@@ -151,6 +159,7 @@ def test_generation():
         response = llm_client.chat(
             [{"role": "user", "content": prompt}],
             max_tokens=300,
+            fast=False,
         )
         elapsed_ms = (time.perf_counter() - t0) * 1000
         latencies.append(elapsed_ms)
@@ -164,12 +173,12 @@ def test_generation():
 
 
 # ──────────────────────────────────────────────────────────────
-# 3. 한국어 능력 간단 체크
+# 3. 한국어 능력 — Gemma4 (fast=False)
 # ──────────────────────────────────────────────────────────────
 
 def test_korean():
     print("\n" + "=" * 65)
-    print(f"  한국어 능력 체크  |  모델: {llm_client.LLM_MODEL}")
+    print(f"  한국어 능력 체크  |  모델: {llm_client.LLM_MODEL}  (quality)")
     print("=" * 65)
 
     cases = [
@@ -185,6 +194,7 @@ def test_korean():
         resp = llm_client.chat(
             [{"role": "user", "content": question}],
             max_tokens=200,
+            fast=False,
         )
         elapsed_ms = (time.perf_counter() - t0) * 1000
         print(resp.strip())
@@ -198,10 +208,13 @@ def test_korean():
 if __name__ == "__main__":
     print(f"\n{'#'*65}")
     print(f"  sLLM 성능 테스트")
-    print(f"  Provider : {llm_client.LLM_PROVIDER}")
-    print(f"  Model    : {llm_client.LLM_MODEL}")
-    print(f"  URL      : {os.getenv('OLLAMA_URL', 'N/A')}")
+    print(f"  Quality 모델 : {llm_client.LLM_MODEL}")
+    print(f"  Fast 모델    : {llm_client.LLM_MODEL_FAST}")
+    print(f"  URL          : {os.getenv('OLLAMA_URL', 'N/A')}")
+    print(f"  num_ctx      : {os.getenv('OLLAMA_NUM_CTX', '8192')}")
     print(f"{'#'*65}")
+
+    warmup()
 
     acc, cls_ms = test_intent_classification()
     gen_ms = test_generation()
@@ -210,7 +223,7 @@ if __name__ == "__main__":
     print("\n" + "#" * 65)
     print("  최종 요약")
     print("#" * 65)
-    print(f"  의도 분류 정확도 : {acc:.1f}%")
+    print(f"  의도 분류 정확도  : {acc:.1f}%  ({llm_client.LLM_MODEL_FAST})")
     print(f"  분류 평균 레이턴시: {cls_ms:.0f}ms")
-    print(f"  생성 평균 레이턴시: {gen_ms:.0f}ms")
+    print(f"  생성 평균 레이턴시: {gen_ms:.0f}ms  ({llm_client.LLM_MODEL})")
     print("#" * 65)

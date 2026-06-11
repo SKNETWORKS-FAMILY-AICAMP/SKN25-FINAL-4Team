@@ -51,8 +51,8 @@ CLAUDE.md
 /outputs/
 /eval/
 /dev/data/
-/dev/docs/
-/dev/eval/
+/dev/docs/drive/
+/dev/docs/screens/
 honda_energy_eda.ipynb
 
 # 생성 보고서와 런타임 파일

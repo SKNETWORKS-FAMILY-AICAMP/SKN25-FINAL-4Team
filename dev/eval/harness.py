@@ -1,0 +1,910 @@
+"""
+sLLM 성능 자동 평가 하니스 — gpt-4o as judge
+
+실행 (프로젝트 루트에서):
+    python eval/harness.py
+
+결과:
+    콘솔에 점수 테이블 출력
+    eval/results/YYYYMMDD_HHMMSS_{model}.json 저장
+
+평가 기준 (gpt-4o가 1~10점 채점):
+    한국어  — 자연스럽고 전문적인 한국어 품질
+    형식    — 요청한 구조·섹션 준수
+    근거성  — 제공된 수치·데이터를 근거로 인용하는지 여부
+    속도    — 첫 응답까지 실측 (자동 측정, 채점 없음)
+"""
+
+import json
+import os
+import sys
+import time
+from datetime import datetime
+from pathlib import Path
+
+from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv(Path(__file__).parent.parent / ".env")
+
+# ── 평가 대상 모델 설정 ────────────────────────────────────────────────
+PROVIDER   = os.getenv("LLM_PROVIDER", "openai").lower()
+MODEL      = os.getenv("LLM_MODEL", "gpt-4o")
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/v1")
+
+# ── 심사위원 (항상 gpt-4o) ────────────────────────────────────────────
+JUDGE_MODEL = "gpt-4o"
+
+# ── 테스트 프롬프트 ───────────────────────────────────────────────────
+PROMPTS = [
+    {
+        "id":   "cms_diagnosis",
+        "name": "CMS 설비 진단",
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "당신은 CMS 설비 진단 전문가입니다. "
+                    "반드시 🩺 진단 결과 / 🔍 상세 분석 / ✅ 조치 권고 세 섹션으로 답변하세요."
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    "3호 압축기 측정값:\n"
+                    "- 전압: 381V (정격 400V, -4.75%)\n"
+                    "- 전류: 42A (정격 38A, +10.5%)\n"
+                    "- 역률: 0.72 (정상 0.85 이상)\n"
+                    "- 주파수: 49.8Hz\n\n"
+                    "위 데이터를 바탕으로 설비 상태를 진단하세요."
+                ),
+            },
+        ],
+        "expected_format": "🩺 진단 결과 / 🔍 상세 분석 / ✅ 조치 권고 섹션 3개",
+        "provided_data":   "전압 381V(-4.75%), 전류 42A(+10.5%), 역률 0.72, 주파수 49.8Hz",
+    },
+    {
+        "id":   "anomaly_explain",
+        "name": "이상 원인 분석",
+        "messages": [
+            {
+                "role": "system",
+                "content": "당신은 에너지 설비 이상탐지 전문가입니다.",
+            },
+            {
+                "role": "user",
+                "content": (
+                    "2024-03-15 14:32에 다음 이상이 감지됐습니다:\n"
+                    "- 이상 유형: 전류 스파이크\n"
+                    "- 실제 전력: 1,842 kW (예측 대비 +38%)\n"
+                    "- 역률 급락: 0.91 → 0.67\n"
+                    "- 지속 시간: 23분\n\n"
+                    "이 이상의 가능한 원인 3가지와 긴급도를 설명하세요."
+                ),
+            },
+        ],
+        "expected_format": "원인 3가지 목록 + 긴급도 판단",
+        "provided_data":   "전력 +38%(1,842kW), 역률 0.91→0.67, 지속 23분",
+    },
+    {
+        "id":   "report_narrative",
+        "name": "경영진 보고서 요약",
+        "messages": [
+            {
+                "role": "system",
+                "content": "당신은 에너지 관리 보고서 작성 전문가입니다.",
+            },
+            {
+                "role": "user",
+                "content": (
+                    "이번 주 설비 운영 데이터:\n"
+                    "- 가동률: 94.2% (전주 92.1% 대비 +2.1%p)\n"
+                    "- 이상탐지: 총 5건 (HIGH 1건·MEDIUM 2건·LOW 2건)\n"
+                    "- 평균 역률: 0.87 (목표 0.85 초과)\n"
+                    "- 에너지 효율: 전주 대비 +1.8%\n\n"
+                    "위 데이터에 없는 수치를 만들어내지 마세요. 경영진 보고용 요약을 2~3문장으로 작성하세요."
+                ),
+            },
+        ],
+        "expected_format": "2~3문장 간결한 경영진 요약",
+        "provided_data":   "가동률 94.2%, 이상 5건, 역률 0.87, 효율 +1.8%",
+    },
+    {
+        "id":   "rag_query",
+        "name": "도메인 지식 질의",
+        "messages": [
+            {
+                "role": "system",
+                "content": "당신은 전기 설비 및 에너지 관리 전문가입니다.",
+            },
+            {
+                "role": "user",
+                "content": "3상 전압 불평형이 지속될 때 설비에 미치는 영향과 IEC 기준 허용 한도를 설명해 주세요.",
+            },
+        ],
+        "expected_format": "영향 설명 + 허용 기준 수치 포함",
+        "provided_data":   "(사전 지식 기반 — 특정 수치 없음, 근거성 항목은 지식 정확도로 평가)",
+    },
+    {
+        "id":   "intent_classify",
+        "name": "의도 분류",
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "사용자 메시지의 의도를 다음 중 하나로만 답하세요. "
+                    "다른 말은 절대 하지 마세요: forecast / anomaly / cms / rag / report"
+                ),
+            },
+            {
+                "role": "user",
+                "content": "지난달 3호 압축기에서 발생한 이상 패턴의 원인이 뭐야?",
+            },
+        ],
+        "expected_format": "단어 하나 (anomaly 가 정답)",
+        "provided_data":   "N/A — 의도 분류 전용: 단어 하나 출력 여부만 평가, 근거성은 자동 10점",
+    },
+]
+
+PROMPTS += [
+    {
+        "id":   "trend_narrative",
+        "name": "월간 트렌드 분석",
+        "messages": [{"role": "user", "content": (
+            "당신은 EMS Agent — 에너지 월간 트렌드 분석 AI입니다.\n"
+            "시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력 용어는 '계통 전력'만 사용.\n"
+            "기준: 자급률 6년평균 39.6%, COP 중앙값 2.06.\n\n"
+            "## 2024-03 KPI\n"
+            "- 총 소비: 1,240,500 kWh\n- 자급률: 38.2%\n- 평균 COP: 2.14\n"
+            "- 그리드 의존도: 61.8%\n- 이상탐지: 3건\n\n"
+            "## 비교\n- 전월(2024-02) 대비 소비량: +4.2%\n- 전년 동월(2023-03) 대비 소비량: -2.1%  자급률: +1.3%p\n\n"
+            "3~4문장으로 월간 트렌드를 분석하세요. 전월 대비와 전년 동월 대비 변화를 모두 언급하고, 주목할 KPI 변화와 가능한 원인을 짚어주세요."
+        )}],
+        "expected_format": "3~4문장 산문 (계통 전력 용어 사용)",
+        "provided_data":   "소비 1,240,500kWh, 자급률 38.2%, COP 2.14, 전월+4.2%, 전년-2.1%",
+    },
+    {
+        "id":   "daily_summary",
+        "name": "일일 브리핑 (구분자 파싱)",
+        "messages": [{"role": "user", "content": (
+            "당신은 EMS Agent — 공장 에너지 일일 운영 브리핑을 작성하는 AI입니다.\n"
+            "시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력 용어는 '계통 전력'만 사용.\n"
+            "기준: 자급률 6년평균 39.6%, COP 중앙값 2.06.\n\n"
+            "## 2024-03-15 일일 KPI\n"
+            "- 총 소비: 41,200 kWh\n- 자급률: 35.4%  (기준: 39.6%)\n"
+            "- 평균 COP: 1.92  (기준: 2.06)\n- 그리드 의존도: 64.6%\n"
+            "- PV 발전: 8,200 kWh | CHP 발전: 6,400 kWh\n"
+            "- 피크: 14시 1,842 kW\n- 이상탐지: 1건\n"
+            "  - [HIGH] 2024-03-15 14:32 ActualSpike: 전력 급등 +38%\n\n"
+            "다음 두 섹션을 정확히 아래 형식으로 출력하세요. 다른 텍스트 없이.\n\n"
+            "---SUMMARY---\n(3~4문장. 당일 운영 상태를 총평. 자급률·COP·이상탐지 중 평소와 다른 점을 짚는다.)\n\n"
+            "---ACTIONS---\n(오늘 운영자가 실행할 체크리스트. 이상탐지 건이 있으면 해당 설비 점검을 포함.\n"
+            " 없으면 '이상 없음 — 정상 운영 유지' 한 줄.\n 최대 3개 항목, 각 항목은 '· ' 로 시작.)"
+        )}],
+        "expected_format": "---SUMMARY--- 구분자 + ---ACTIONS--- 구분자 정확히 포함",
+        "provided_data":   "소비 41,200kWh, 자급률 35.4%, COP 1.92, HIGH 이상 1건(14:32)",
+    },
+    {
+        "id":   "balance_narrative",
+        "name": "데이터 품질 요약",
+        "messages": [{"role": "user", "content": (
+            "당신은 EMS Agent — 에너지 데이터 품질 분석 AI입니다.\n"
+            "시설: Honda R&D Europe GmbH, 독일 오펜바흐.\n\n"
+            "## 분석 대상: 24개월 데이터\n- 정상 월: 19개월\n- 문제 월: 5개월\n"
+            "  - 2022-05: PV 역률 비정상, 자급률 음수 (점수 45)\n"
+            "  - 2022-06: PV 역률 비정상 (점수 55)\n"
+            "  - 2020-08: 게이트웨이 장애 (점수 30)\n\n"
+            "## 알려진 게이트웨이 장애 구간\n- 2020-02~03, 2020-08~09, 2021-11~12, 2022-05~07 (인공 보정 데이터)\n\n"
+            "2~3문장으로 데이터 품질 현황을 요약하세요. 문제 월이 있다면 원인과 분석 시 주의사항을 간략히 짚어주세요."
+        )}],
+        "expected_format": "2~3문장 산문",
+        "provided_data":   "24개월 중 5개월 문제, 2022-05~07 PV 이상, 2020-08 게이트웨이 장애",
+    },
+    {
+        "id":   "ei_narrative",
+        "name": "에너지 원단위 분석",
+        "messages": [{"role": "user", "content": (
+            "당신은 EMS Agent — 외기온 정규화 에너지 원단위(EI) 분석 AI입니다.\n"
+            "시설: Honda R&D Europe GmbH, 독일 오펜바흐.\n\n"
+            "## 분석 결과 (단위: kWh/DD, 낮을수록 에너지 효율 좋음)\n"
+            "- 전체 평균 EI: 284.2 kWh/DD\n"
+            "- 최근 3개월 평균: 271.8 kWh/DD (-4.4% vs 전체평균)\n"
+            "- 최고 효율 월: 2023-05 (198.4 kWh/DD, 외기온 16.2°C)\n"
+            "- 최저 효율 월: 2020-12 (412.7 kWh/DD, 외기온 -3.1°C)\n\n"
+            "날씨 영향을 제거한 실질 에너지 효율 추이를 2~3문장으로 분석하세요. 최근 추세가 개선/악화 중인지, 특이 시기가 있다면 그 원인을 짚어주세요."
+        )}],
+        "expected_format": "2~3문장 산문, kWh/DD 단위 수치 인용",
+        "provided_data":   "전체평균 284.2, 최근3개월 271.8(-4.4%), 최고 2023-05(198.4), 최저 2020-12(412.7)",
+    },
+    {
+        "id":   "billing_narrative",
+        "name": "비용 분석 요약",
+        "messages": [{"role": "user", "content": (
+            "당신은 EMS Agent — 공장 에너지 비용 분석 AI입니다.\n"
+            "시설: Honda R&D Europe GmbH, 독일 오펜바흐.\n\n"
+            "## 2024-03 비용 현황\n"
+            "- 누적 비용: €32,400\n- 월말 예상: €54,800\n- 목표: €50,000\n"
+            "- 목표 대비: +9.6%\n- 상태: 목표 초과 위험\n"
+            "- 진행률: 20/31일\n- 피크 위험: 78%\n- 최대 피크: 1,842 kW\n\n"
+            "2~3문장으로 비용 현황을 분석하세요. 목표 초과 위험이 있으면 구체적 조치(피크 시프트, 야간 부하 분산 등)를 1개 권고하세요."
+        )}],
+        "expected_format": "2~3문장 산문, 구체적 조치 1개 포함",
+        "provided_data":   "예상 €54,800 vs 목표 €50,000(+9.6%), 피크 위험 78%, 1,842kW",
+    },
+]
+
+PROMPTS += [
+    # ── 정상 케이스 ───────────────────────────────────────────────────────
+    {
+        "id":   "cms_normal",
+        "name": "정상 설비 진단",
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "당신은 CMS 설비 진단 전문가입니다. "
+                    "이상이 0건이고 전기 시그니처도 정상 범위면 '현재 정상 — 특이 이상 없음' 한 줄로만 답하세요. "
+                    "반드시 🩺 진단 결과 / 🔍 상세 분석 / ✅ 조치 권고 세 섹션으로 답변하세요."
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    "계통 설비의 최근 30일 이상 탐지 결과:\n"
+                    "[이상 요약] 총 0건\n"
+                    "[전기 시그니처] 전압 400V(정격), 전류 35A(정격 38A), 역률 0.92, 주파수 50.0Hz\n"
+                    "위 데이터와 도메인 지식을 근거로 이 설비의 상태를 진단하세요."
+                ),
+            },
+        ],
+        "expected_format": "'현재 정상 — 특이 이상 없음' 한 줄 또는 간단한 정상 진단",
+        "provided_data":   "이상 0건, 전압/전류/역률/주파수 모두 정상 범위",
+    },
+
+    # ── 극단값 (다발 이상) ─────────────────────────────────────────────────
+    {
+        "id":   "cms_critical",
+        "name": "다발 이상 진단 (극단값)",
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "당신은 CMS 설비 진단 전문가입니다. "
+                    "반드시 🩺 진단 결과 / 🔍 상세 분석 / ✅ 조치 권고 세 섹션으로 답변하세요."
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    "냉방 시스템 최근 30일 이상 탐지 결과:\n"
+                    "[이상 요약] 총 31건\n"
+                    "- COPDrop: HIGH 8 / MEDIUM 12 / LOW 4\n"
+                    "- PowerSpike: HIGH 5 / MEDIUM 2 / LOW 0\n"
+                    "[전기 시그니처] 전압 372V(-7%), 전류 54A(+42%), 역률 0.58, 주파수 49.6Hz\n"
+                    "[대표 이상] 2024-03-10 14:22 HIGH COPDrop, 실측 890kW / 예측 1,240kW, 잔차 -350kW\n"
+                    "위 데이터와 도메인 지식을 근거로 이 설비의 상태를 진단하세요."
+                ),
+            },
+        ],
+        "expected_format": "🩺/🔍/✅ 섹션, 긴급도 명확히, 제공된 수치(372V, 54A, 역률 0.58 등) 인용",
+        "provided_data":   "이상 31건, 전압 372V(-7%), 전류 54A(+42%), 역률 0.58, COP 급락+전력 스파이크 동시",
+    },
+
+    # ── 함정: 태양광 역률 음수 ─────────────────────────────────────────────
+    {
+        "id":   "pv_diagnosis",
+        "name": "태양광 역률 함정 (발전 설비)",
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "당신은 CMS 설비 진단 전문가입니다.\n"
+                    "주의: 태양광·열병합 등 발전 설비는 역률이 음수이거나 낮아도 전력 역송(생산) 상태이므로 정상입니다. "
+                    "역률 저하로 단정하지 마세요.\n"
+                    "반드시 🩺 진단 결과 / 🔍 상세 분석 / ✅ 조치 권고 세 섹션으로 답변하세요."
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    "태양광(PV) 설비 최근 30일 이상 탐지 결과:\n"
+                    "[이상 요약] 총 2건 (LOW 2건)\n"
+                    "[전기 시그니처] 전압 402V, 역률 -0.95 (역송 상태), 발전량 9,200kWh/월\n"
+                    "위 데이터와 도메인 지식을 근거로 이 설비의 상태를 진단하세요."
+                ),
+            },
+        ],
+        "expected_format": "역률 -0.95를 '정상(역송)'으로 해석해야 함. 이상으로 판단하면 오답.",
+        "provided_data":   "PV 역률 -0.95(역송), 이상 LOW 2건, 발전량 9,200kWh",
+    },
+
+    # ── 구어체 의도 분류 ───────────────────────────────────────────────────
+    {
+        "id":   "intent_colloquial",
+        "name": "의도 분류 (구어체)",
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "사용자 메시지의 의도를 다음 중 하나로만 답하세요. "
+                    "다른 말은 절대 하지 마세요: forecast / anomaly / cms / rag / report"
+                ),
+            },
+            {"role": "user", "content": "3호기 요즘 좀 이상한것같은데 확인해봐"},
+        ],
+        "expected_format": "단어 하나 (cms 또는 anomaly 가 정답)",
+        "provided_data":   "N/A — 의도 분류 전용: 단어 하나 출력 여부만 평가, 근거성은 자동 10점",
+    },
+
+    # ── 모호한 의도 ───────────────────────────────────────────────────────
+    {
+        "id":   "intent_ambiguous",
+        "name": "의도 분류 (모호)",
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "사용자 메시지의 의도를 다음 중 하나로만 답하세요. "
+                    "다른 말은 절대 하지 마세요: forecast / anomaly / cms / rag / report"
+                ),
+            },
+            {"role": "user", "content": "요즘 전기요금이 왜 이렇게 많이 나오지"},
+        ],
+        "expected_format": "단어 하나 (report 또는 anomaly 가 정답)",
+        "provided_data":   "N/A — 의도 분류 전용: 단어 하나 출력 여부만 평가, 근거성은 자동 10점",
+    },
+
+    # ── 복합 의도 ─────────────────────────────────────────────────────────
+    {
+        "id":   "intent_multi",
+        "name": "의도 분류 (복합 질문)",
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "사용자 메시지의 의도를 다음 중 하나로만 답하세요. "
+                    "다른 말은 절대 하지 마세요: forecast / anomaly / cms / rag / report"
+                ),
+            },
+            {"role": "user", "content": "이번달 전기요금이랑 이상탐지 현황 같이 알려줘"},
+        ],
+        "expected_format": "단어 하나 (report 또는 anomaly 가 정답, cms도 허용)",
+        "provided_data":   "N/A — 의도 분류 전용: 단어 하나 출력 여부만 평가, 근거성은 자동 10점",
+    },
+
+    # ── 데이터 부족 할루시네이션 ──────────────────────────────────────────
+    {
+        "id":   "data_missing",
+        "name": "데이터 부족 시 할루시네이션",
+        "messages": [
+            {
+                "role": "system",
+                "content": "당신은 에너지 관리 보고서 작성 전문가입니다. 제공된 데이터에 없는 수치를 만들어내지 마세요.",
+            },
+            {
+                "role": "user",
+                "content": (
+                    "이번 달 데이터가 3일치밖에 없습니다:\n"
+                    "- 2024-03-01: 소비 42,100 kWh, 자급률 38.1%\n"
+                    "- 2024-03-02: 소비 39,800 kWh, 자급률 40.2%\n"
+                    "- 2024-03-03: 소비 41,500 kWh, 자급률 37.9%\n\n"
+                    "이번 달 월간 보고서를 작성해주세요."
+                ),
+            },
+        ],
+        "expected_format": "데이터 부족 명시, 없는 수치 생성 금지, 가능한 범위 내 분석",
+        "provided_data":   "3일치 데이터만 존재 (소비량 3개, 자급률 3개)",
+    },
+
+    # ── 금지 용어 (독일 시설 맥락) ────────────────────────────────────────
+    {
+        "id":   "forbidden_terms",
+        "name": "금지 용어 (한전·수전량 사용 금지)",
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "당신은 에너지 관리 보고서 작성 전문가입니다.\n"
+                    "시설: Honda R&D Europe GmbH, 독일 오펜바흐. 전력망: 독일 공공 전력망.\n"
+                    "전력 용어는 '계통 전력'만 사용. 한전·수전량·한국전력·kWh단가 등 한국 용어 사용 금지."
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    "2024년 3월 에너지 소비 현황:\n"
+                    "- 계통 전력 수급: 762,000 kWh\n"
+                    "- PV 발전: 312,000 kWh\n"
+                    "- CHP 발전: 166,500 kWh\n\n"
+                    "이번 달 에너지 공급원 현황을 2~3문장으로 요약해주세요."
+                ),
+            },
+        ],
+        "expected_format": "'계통 전력' 사용, '한전'/'수전량' 등 한국 용어 미사용",
+        "provided_data":   "계통 762,000kWh, PV 312,000kWh, CHP 166,500kWh",
+    },
+
+    # ── 예지보전 질문 ─────────────────────────────────────────────────────
+    {
+        "id":   "predictive_maintenance",
+        "name": "예지보전 (고장 시점 예측)",
+        "messages": [
+            {
+                "role": "system",
+                "content": "당신은 CMS 설비 예지보전 전문가입니다. 데이터 기반으로 고장 가능성과 대응 시점을 추정합니다.",
+            },
+            {
+                "role": "user",
+                "content": (
+                    "냉방 시스템 COP 추이 (최근 6개월):\n"
+                    "- 2023-10: COP 2.45 (이상 1건)\n"
+                    "- 2023-11: COP 2.31 (이상 2건)\n"
+                    "- 2023-12: COP 2.18 (이상 4건)\n"
+                    "- 2024-01: COP 2.09 (이상 5건)\n"
+                    "- 2024-02: COP 1.97 (이상 7건)\n"
+                    "- 2024-03: COP 1.84 (이상 9건)\n"
+                    "COP 기준치 1.5 이하 시 긴급 정비 필요.\n\n"
+                    "① 각 월별 실제 감소량을 먼저 계산하세요 (제공된 수치만 사용). "
+                    "② 평균 월 감소량을 구하세요. "
+                    "③ 현재 COP에서 기준치 1.5까지 남은 양을 평균 감소량으로 나눠 도달 시점을 추정하세요. "
+                    "④ 권고 조치를 제시하세요."
+                ),
+            },
+        ],
+        "expected_format": "추세 기반 도달 시점 추정 + 불확실성 명시 + 권고 조치",
+        "provided_data":   "COP 2.45→1.84 (6개월간 월 -0.12), 기준치 1.50, 이상건수 증가",
+    },
+
+    # ── 비교 분석 ─────────────────────────────────────────────────────────
+    {
+        "id":   "comparison_analysis",
+        "name": "전월 대비 비교 분석",
+        "messages": [
+            {
+                "role": "system",
+                "content": "당신은 에너지 설비 분석 전문가입니다. 제공된 수치 외의 숫자를 만들어내지 마세요.",
+            },
+            {
+                "role": "user",
+                "content": (
+                    "2월과 3월 설비 운영 비교:\n\n"
+                    "| 지표 | 2월 | 3월 |\n"
+                    "|---|---|---|\n"
+                    "| 이상탐지 | 8건 | 14건 |\n"
+                    "| 평균 COP | 2.21 | 1.97 |\n"
+                    "| 자급률 | 41.3% | 36.8% |\n"
+                    "| 역률 | 0.88 | 0.81 |\n\n"
+                    "3월이 2월보다 악화된 지표를 구체적 수치와 함께 분석하고, 주요 원인을 추정하세요."
+                ),
+            },
+        ],
+        "expected_format": "수치 인용한 비교 분석, 원인 추정 포함",
+        "provided_data":   "이상 8→14건, COP 2.21→1.97, 자급률 41.3→36.8%, 역률 0.88→0.81",
+    },
+
+    # ── 이상 없음 명확성 ──────────────────────────────────────────────────
+    {
+        "id":   "anomaly_none",
+        "name": "이상탐지 결과 없음",
+        "messages": [
+            {
+                "role": "system",
+                "content": "당신은 에너지 설비 이상탐지 전문가입니다.",
+            },
+            {
+                "role": "user",
+                "content": (
+                    "2024-03-20 00:00 ~ 2024-03-20 23:59 구간 이상탐지 결과:\n"
+                    "- 감지된 이상: 없음\n"
+                    "- 전력 소비: 38,400 kWh (평일 평균 범위 내)\n"
+                    "- 역률: 0.89\n\n"
+                    "오늘 이상탐지 현황을 요약해주세요."
+                ),
+            },
+        ],
+        "expected_format": "이상 없음 명확히 서술, 과도한 경고 없음",
+        "provided_data":   "이상 0건, 소비 38,400kWh 정상, 역률 0.89",
+    },
+
+    # ── 긴 시계열 요약 ────────────────────────────────────────────────────
+    {
+        "id":   "long_term_summary",
+        "name": "장기 트렌드 (6개월) 요약",
+        "messages": [
+            {
+                "role": "system",
+                "content": "당신은 에너지 관리 분석 전문가입니다. 제공된 수치 외 숫자를 만들어내지 마세요.",
+            },
+            {
+                "role": "user",
+                "content": (
+                    "2023년 10월~2024년 3월 월별 KPI:\n"
+                    "| 월 | 소비(MWh) | 자급률 | COP | 이상건수 |\n"
+                    "|---|---|---|---|---|\n"
+                    "| 2023-10 | 1,124 | 42.1% | 2.45 | 3 |\n"
+                    "| 2023-11 | 1,089 | 39.8% | 2.31 | 5 |\n"
+                    "| 2023-12 | 1,312 | 35.2% | 2.18 | 8 |\n"
+                    "| 2024-01 | 1,298 | 34.7% | 2.09 | 9 |\n"
+                    "| 2024-02 | 1,187 | 38.4% | 1.97 | 11 |\n"
+                    "| 2024-03 | 1,241 | 36.8% | 1.84 | 14 |\n\n"
+                    "6개월 트렌드에서 가장 우려되는 지표 2가지를 짚고, 원인과 대응 방향을 제시하세요."
+                ),
+            },
+        ],
+        "expected_format": "2가지 지표 명확히 선정, 수치 인용, 원인 추정, 대응 방향",
+        "provided_data":   "6개월 KPI 표 (소비·자급률·COP·이상건수)",
+    },
+]
+
+PROMPTS += [
+    # ── 영어 질문 → 한국어 응답 ───────────────────────────────────────
+    {
+        "id":   "english_query",
+        "name": "영어 질문 처리",
+        "messages": [
+            {"role": "system", "content": "당신은 CMS 설비 진단 전문가입니다. 질문 언어와 관계없이 항상 한국어로만 답변하세요. Never respond in English."},
+            {"role": "user",   "content": "Hello, please answer in Korean only."},
+            {"role": "assistant", "content": "네, 항상 한국어로 답변드리겠습니다."},
+            {"role": "user",   "content": "What is the current status of the cooling system? Are there any anomalies detected in the last 30 days?"},
+        ],
+        "expected_format": "한국어로 답변 (영어 질문이어도), 설비 상태 설명",
+        "provided_data":   "N/A — 언어 처리 테스트, 근거성 자동 5점",
+    },
+
+    # ── 한영 혼용 질문 ────────────────────────────────────────────────
+    {
+        "id":   "mixed_language",
+        "name": "한영 혼용 질문",
+        "messages": [
+            {"role": "system", "content": "당신은 CMS 설비 진단 전문가입니다."},
+            {"role": "user",   "content": "cooling system COP가 1.9인데 이게 normal range야? threshold는 얼마야?"},
+        ],
+        "expected_format": "한국어로 답변, COP 1.9 평가 + 기준치 2.06 언급",
+        "provided_data":   "N/A — COP 1.9 언급됨, 기준치 2.06은 도메인 지식",
+    },
+
+    # ── 범위 밖 질문 ─────────────────────────────────────────────────
+    {
+        "id":   "off_topic",
+        "name": "범위 밖 질문 (안전성)",
+        "messages": [
+            {"role": "system", "content": (
+                "당신은 CMS 설비 상태감시 AI입니다. "
+                "에너지·설비와 관련 없는 질문에는 절대 답하지 말고, "
+                "한 문장으로 범위 밖임을 안내한 뒤 에너지·설비 질문으로 유도하세요."
+            )},
+            {"role": "user",      "content": "오늘 주식 뭐 살까?"},
+            {"role": "assistant", "content": "저는 에너지·설비 관련 질문만 답변할 수 있습니다. 설비 상태나 이상탐지에 대해 질문해 주세요."},
+            {"role": "user",      "content": "오늘 점심 뭐 먹을까? 구내식당 메뉴 추천해줘"},
+        ],
+        "expected_format": "한 문장으로 범위 밖 안내 + 에너지/설비 질문 유도. 점심 메뉴 추천 절대 금지.",
+        "provided_data":   "N/A — 범위 밖 질문, 근거성 자동 10점",
+    },
+
+    # ── 계절 정상성 판단 ───────────────────────────────────────────────
+    {
+        "id":   "seasonal_normal",
+        "name": "계절 요인 정상성 판단",
+        "messages": [
+            {"role": "system", "content": "당신은 CMS 설비 진단 전문가입니다. 계절·외기온 영향을 반드시 고려하여 판단하세요."},
+            {"role": "user",   "content": (
+                "냉방 시스템 현황 (2024-08-14, 한여름):\n"
+                "- 현재 COP: 1.85 (연간 중앙값 2.06)\n"
+                "- 외기온: 35.2°C (평년 8월 평균 28°C 대비 +7.2°C)\n"
+                "- 이상탐지: 0건\n"
+                "- 전류: 38A (정격 내)\n\n"
+                "COP가 기준치보다 낮은데 이상 판정해야 하나요?"
+            )},
+        ],
+        "expected_format": "외기온 35.2°C 고려 → 계절 정상 범위로 판단, 이상 아님 결론",
+        "provided_data":   "COP 1.85, 외기온 35.2°C(+7.2°C), 이상 0건",
+    },
+
+    # ── 멀티턴 대화 참조 ───────────────────────────────────────────────
+    {
+        "id":   "multiturn",
+        "name": "멀티턴 이전 대화 참조",
+        "messages": [
+            {"role": "system",    "content": "당신은 CMS 설비 진단 전문가입니다."},
+            {"role": "user",      "content": "냉방 시스템 최근 이상 현황 알려줘"},
+            {"role": "assistant", "content": "냉방 시스템 최근 30일 이상: COPDrop 총 8건(HIGH 3건·MEDIUM 5건), 평균 역률 0.78로 기준(0.85) 미달, 전압 382V로 정격 대비 4.5% 낮음."},
+            {"role": "user",      "content": "방금 말한 내용 기반으로 원인이 뭐고 뭘 먼저 점검해야 해?"},
+        ],
+        "expected_format": "이전 대화(역률 0.78, 전압 382V, HIGH 3건) 참조한 원인 분석 및 우선순위",
+        "provided_data":   "이전 응답: COPDrop 8건(HIGH 3건), 역률 0.78, 전압 382V(-4.5%)",
+    },
+
+    # ── 극단 짧은 입력 ────────────────────────────────────────────────
+    {
+        "id":   "ultra_short",
+        "name": "극단 짧은 질문",
+        "messages": [
+            {"role": "system", "content": "당신은 CMS 설비 진단 전문가입니다. 질문이 모호하거나 데이터가 없으면 어떤 정보가 필요한지 안내하세요."},
+            {"role": "user",   "content": "냉방?"},
+        ],
+        "expected_format": "질문 의도 파악 시도 + 필요한 정보 안내 또는 일반적 상태 설명",
+        "provided_data":   "N/A — 데이터 없음, 근거성 자동 5점",
+    },
+
+    # ── 긍정 KPI 네거티브 바이어스 ───────────────────────────────────
+    {
+        "id":   "positive_kpi",
+        "name": "긍정 KPI 과도한 경고 금지",
+        "messages": [
+            {"role": "system", "content": "당신은 에너지 관리 보고서 작성 전문가입니다. 제공된 데이터에 없는 수치를 만들어내지 마세요."},
+            {"role": "user",   "content": (
+                "이번 달 설비 운영 실적:\n"
+                "- 자급률: 48.2% (6년 평균 39.6% 대비 +8.6%p, 역대 최고)\n"
+                "- 평균 COP: 2.87 (중앙값 2.06 대비 +39%)\n"
+                "- 이상탐지: 0건\n"
+                "- 에너지 비용: 목표 대비 12% 절감\n\n"
+                "경영진 보고용 요약을 2~3문장으로 작성하세요."
+            )},
+        ],
+        "expected_format": "긍정적 성과를 정확히 반영. 없는 문제를 만들어내거나 과도한 주의사항 금지.",
+        "provided_data":   "자급률 48.2%(역대최고), COP 2.87(+39%), 이상 0건, 비용 12% 절감",
+    },
+
+    # ── 게이트웨이 장애 구간 ───────────────────────────────────────────
+    {
+        "id":   "gateway_failure",
+        "name": "게이트웨이 장애 구간 데이터",
+        "messages": [
+            {"role": "system", "content": (
+                "당신은 에너지 데이터 분석 전문가입니다.\n"
+                "알려진 게이트웨이 장애 구간: 2020-02~03, 2020-08~09, 2021-11~12, 2022-05~07.\n"
+                "이 구간의 데이터는 인공 보정값으로 신뢰성이 낮습니다. 반드시 명시하세요."
+            )},
+            {"role": "user",   "content": (
+                "2020년 8월 에너지 소비 분석을 해주세요:\n"
+                "- 총 소비: 892,400 kWh\n"
+                "- 자급률: 61.3%\n"
+                "- 평균 COP: 3.41\n"
+                "- 이상탐지: 0건\n\n"
+                "이 수치가 신뢰할 만한가요?"
+            )},
+        ],
+        "expected_format": "2020-08이 게이트웨이 장애 구간임을 명시, 데이터 신뢰성 경고",
+        "provided_data":   "2020-08 데이터 (알려진 장애 구간), 소비 892,400kWh, 자급률 61.3%",
+    },
+
+    # ── 복수 설비 동시 이상 우선순위 ─────────────────────────────────
+    {
+        "id":   "multi_equipment_priority",
+        "name": "복수 설비 동시 이상 우선순위",
+        "messages": [
+            {"role": "system", "content": "당신은 CMS 설비 진단 전문가입니다. 여러 설비가 동시에 이상일 때 긴급도와 영향도 기준으로 점검 우선순위를 제시하세요."},
+            {"role": "user",   "content": (
+                "현재 3개 설비에서 동시에 이상이 감지됐습니다:\n\n"
+                "① 계통(그리드): 전압 368V(-8%), HIGH 이상 2건, 전체 시설 전력 공급에 영향\n"
+                "② 냉방 시스템: COP 1.42(기준 1.5 하회), HIGH 이상 5건, 냉각 기능 저하\n"
+                "③ 열병합(CHP): 발전량 30% 급감, MEDIUM 이상 3건, 자급률 저하\n\n"
+                "점검 우선순위와 각 이유를 설명하세요."
+            )},
+        ],
+        "expected_format": "우선순위 1~3위 명확히, 각 근거(영향 범위·긴급도) 포함",
+        "provided_data":   "계통 전압 368V(-8%), 냉방 COP 1.42(기준치 하회), CHP 발전량 -30%",
+    },
+
+    # ── 수치 단위 오류 감지 ───────────────────────────────────────────
+    {
+        "id":   "unit_error_detection",
+        "name": "수치 단위 오류 감지",
+        "messages": [
+            {"role": "system", "content": (
+                "당신은 에너지 데이터 검증 전문가입니다.\n"
+                "엄격한 단위 규칙:\n"
+                "- kW  = 순간 전력(그 순간의 출력). 예: '현재 소비 전력 42 kW'\n"
+                "- kWh = 에너지 누적량(전력×시간). 예: '이번 달 소비 890 kWh'\n"
+                "- kWh는 절대 순간 전력 단위로 사용 불가. '순간 전력 X kWh'는 항상 오류.\n"
+                "- 월간·일간·누적 소비량에 kW를 쓰면 항상 오류.\n"
+                "오류 발견 시: 오류 항목 나열 → 올바른 단위로 정정 → 정정값으로 계산 시도."
+            )},
+            {"role": "user", "content": "설비 소비 데이터: 압축기 가동 전력 850 kWh, 월간 에너지 840 kW. 검토해주세요."},
+            {"role": "assistant", "content": (
+                "단위 오류 2건 발견:\n"
+                "① '순간 전력 850 kWh' ✗ → kWh는 누적 에너지량. 순간 전력은 kW → 850 kW\n"
+                "② '월간 에너지 840 kW' ✗ → kW는 순간 전력. 누적 소비량은 kWh → 840 kWh\n\n"
+                "정정값 기준 비용: 840 kWh × €0.20 = €168"
+            )},
+            {"role": "user", "content": (
+                "이번 달 설비별 에너지 소비량입니다. 검토해 주세요:\n"
+                "- 압축기 3호: 순간 전력 42 kWh\n"
+                "- 냉방 시스템: 월간 소비 890 kW\n"
+                "- 계통 전체: 시간당 소비 1,240,000 kWh\n\n"
+                "총 월간 에너지 비용을 €0.20/kWh 기준으로 계산해 주세요."
+            )},
+        ],
+        "expected_format": "단위 오류 3건 모두 지적 (kWh↔kW 혼용), 올바른 단위 안내 후 계산 불가 또는 정정값으로 계산",
+        "provided_data":   "순간전력 단위 kWh(오류→kW), 월간소비 단위 kW(오류→kWh), 시간당소비 kWh(오류→kW)",
+    },
+
+    # ── 계절 정상성 (few-shot 강화) ────────────────────────────────────
+    {
+        "id":   "seasonal_normal_v2",
+        "name": "계절 정상성 (겨울 CHP 효율)",
+        "messages": [
+            {"role": "system", "content": "당신은 CMS 설비 진단 전문가입니다. 계절·외기온 영향을 반드시 고려하여 판단하세요."},
+            {"role": "user",   "content": (
+                "열병합(CHP) 시스템 현황 (2024-01-20, 한겨울):\n"
+                "- 전기 효율: 32.1% (연간 평균 34.2%)\n"
+                "- 열 회수율: 88.4% (연간 평균 81.3%)\n"
+                "- 외기온: -8.2°C\n"
+                "- 이상탐지: 0건\n\n"
+                "전기 효율이 평균보다 낮은데 이상인가요?"
+            )},
+        ],
+        "expected_format": "외기온 -8.2°C 고려 → 겨울철 열 수요 증가로 열 회수 우선 → 전기효율 소폭 감소 정상. 이상 아님 결론.",
+        "provided_data":   "전기효율 32.1%(평균 34.2%), 열회수율 88.4%(평균 81.3%), 외기온 -8.2°C",
+    },
+]
+
+JUDGE_SYSTEM = """당신은 LLM 응답 품질 평가 전문가입니다.
+주어진 응답을 아래 5가지 기준으로 각 1~10점 채점하고 JSON으로만 출력하세요.
+
+채점 기준 (각 1~10점):
+- korean  : 자연스럽고 전문적인 한국어 품질
+    10=전문가 수준의 완벽한 한국어
+    7~9=자연스럽고 이해하기 쉬움, 경미한 어색함
+    4~6=대체로 이해 가능하나 어색한 표현 다수
+    1~3=심각한 비문, 외국어 혼용, 이해 어려움
+
+- format  : 요청한 구조·섹션·출력 형식 준수
+    10=요청한 형식 완벽 준수
+    7~9=대체로 준수, 사소한 일탈
+    4~6=형식 일부 누락 또는 과잉
+    1~3=형식 대부분 무시
+
+- grounding: 제공된 수치·데이터를 실제로 인용하는지
+    10=제공된 모든 핵심 수치를 정확히 인용
+    7~9=대부분 인용, 일부 누락
+    4~6=일부만 인용하거나 수치 오류
+    1~3=수치 무시·일반론으로만 답변·할루시네이션
+    N/A(데이터 없는 질문)=10점 부여
+
+- reasoning: 인용한 데이터로부터 논리적으로 올바른 결론을 도출하는지
+    10=데이터 근거와 결론이 완벽히 논리적으로 연결됨
+    7~9=대체로 타당, 경미한 논리 비약
+    4~6=일부 결론이 데이터와 맞지 않거나 인과관계 오류
+    1~3=데이터와 무관한 결론, 오진단, 틀린 추론
+    N/A(추론 불필요한 단순 질문)=10점 부여
+
+- actionability: 운영자가 실제로 실행할 수 있는 구체적 조치를 제시하는지
+    10=언제·어디서·무엇을 하는지 명확한 체크리스트
+    7~9=대체로 구체적, 일부 모호
+    4~6=조치가 있지만 모호하거나 실행 불가 수준
+    1~3=조치 없음, 또는 "점검하세요" 수준의 공허한 권고
+    N/A(조치 불필요한 질문: 보고서·의도분류·지식 질의 등)=10점 부여
+
+- comment : 가장 큰 문제점 또는 칭찬 한 줄 (한국어, 40자 이내)
+
+출력 형식 (JSON만, 다른 말 금지):
+{"korean": X, "format": X, "grounding": X, "reasoning": X, "actionability": X, "comment": "..."}"""
+
+
+def _make_client(provider: str) -> OpenAI:
+    if provider == "ollama":
+        return OpenAI(base_url=OLLAMA_URL, api_key="ollama")
+    if provider == "gemini":
+        return OpenAI(
+            api_key=os.getenv("GEMINI_API_KEY"),
+            base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+        )
+    return OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+
+def _call(client: OpenAI, model: str, messages: list, max_tokens=3000) -> tuple[str, float]:
+    t0 = time.time()
+    resp = client.chat.completions.create(
+        model=model, messages=messages, max_tokens=max_tokens
+    )
+    elapsed = round((time.time() - t0) * 1000)
+    return resp.choices[0].message.content or "", elapsed
+
+
+def _judge(judge_client: OpenAI, prompt: dict, response: str) -> dict:
+    user_msg = (
+        f"[프롬프트 ID] {prompt['id']}\n"
+        f"[기대 형식] {prompt['expected_format']}\n"
+        f"[제공된 데이터] {prompt['provided_data']}\n\n"
+        f"[평가할 응답]\n{response}"
+    )
+    raw, _ = _call(
+        judge_client, JUDGE_MODEL,
+        [{"role": "system", "content": JUDGE_SYSTEM},
+         {"role": "user",   "content": user_msg}],
+        max_tokens=120,
+    )
+    try:
+        start = raw.find("{")
+        end   = raw.rfind("}") + 1
+        return json.loads(raw[start:end])
+    except Exception:
+        return {"korean": 0, "format": 0, "grounding": 0, "reasoning": 0, "actionability": 0, "comment": f"파싱 실패: {raw[:60]}"}
+
+
+def _bar(score: int, max_score=10) -> str:
+    filled = round(score / 2)   # 10점 → 5칸 바
+    return "█" * filled + "░" * (5 - filled)
+
+
+def run():
+    print(f"\n{'='*70}")
+    print(f"  sLLM 성능 평가  |  모델: {MODEL}  |  프로바이더: {PROVIDER}")
+    print(f"  심사위원: {JUDGE_MODEL}  |  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"{'='*70}\n")
+
+    test_client  = _make_client(PROVIDER)
+    judge_client = _make_client("openai")
+
+    results = []
+    for p in PROMPTS:
+        print(f"▶ [{p['id']}] {p['name']} ...", end=" ", flush=True)
+        response, elapsed_ms = _call(test_client, MODEL, p["messages"])
+        scores = _judge(judge_client, p, response)
+        scores["elapsed_ms"] = elapsed_ms
+        scores["response"]   = response
+        results.append({"prompt": p["id"], "name": p["name"], **scores})
+
+        avg = round((scores["korean"] + scores["format"] + scores["grounding"] +
+                     scores.get("reasoning", 0) + scores.get("actionability", 0)) / 5, 1)
+        print(f"완료 ({elapsed_ms}ms) — 평균 {avg}/10")
+
+    AXES = ["korean", "format", "grounding", "reasoning", "actionability"]
+    LABELS = {"korean": "한국어", "format": "형식", "grounding": "근거성",
+              "reasoning": "논리성", "actionability": "실용성"}
+
+    # ── 결과 테이블 ─────────────────────────────────────────────────
+    print(f"\n{'─'*80}")
+    print(f"  {'프롬프트':<18} {'한국어':^8} {'형식':^8} {'근거성':^8} {'논리성':^8} {'실용성':^8} {'속도':^8} {'평균':^6}")
+    print(f"{'─'*80}")
+    scores_sum = {ax: [] for ax in AXES}
+    for r in results:
+        avg = round(sum(r.get(ax, 0) for ax in AXES) / len(AXES), 1)
+        print(
+            f"  {r['name']:<18} "
+            + "".join(f"{_bar(r.get(ax,0)):^8}" for ax in AXES)
+            + f"{r['elapsed_ms']:>5}ms  "
+            f"{avg:>4.1f}"
+        )
+        print(f"  {'':18} " + " ".join(f"{r.get(ax,0)}/10{' ':2}" for ax in AXES))
+        print(f"  {'':18} 💬 {r['comment']}")
+        print()
+        for ax in AXES:
+            scores_sum[ax].append(r.get(ax, 0))
+
+    avgs = {ax: round(sum(scores_sum[ax]) / len(results), 1) for ax in AXES}
+    total = round(sum(avgs.values()) / len(AXES), 1)
+
+    print(f"{'─'*80}")
+    print(f"  {'전체 평균':<18} " + "".join(f"{avgs[ax]:^8.1f}" for ax in AXES) + f"{'':8} {total:^6.1f}")
+    print(f"{'─'*80}\n")
+
+    # 개선 포인트 요약
+    weak = sorted(results, key=lambda r: sum(r.get(ax,0) for ax in AXES) / len(AXES))[:3]
+    print("⚠️  우선 개선 대상 (하위 3개):")
+    for r in weak:
+        avg = round(sum(r.get(ax,0) for ax in AXES) / len(AXES), 1)
+        print(f"   • [{r['prompt']}] 평균 {avg}/10 — {r['comment']}")
+
+    # ── JSON 저장 ────────────────────────────────────────────────────
+    out_dir = Path(__file__).parent / "results"
+    out_dir.mkdir(exist_ok=True)
+    ts      = datetime.now().strftime("%Y%m%d_%H%M%S")
+    safe    = MODEL.replace(":", "_").replace("/", "_")
+    out_path = out_dir / f"{ts}_{safe}.json"
+    payload  = {
+        "model":    MODEL,
+        "provider": PROVIDER,
+        "judge":    JUDGE_MODEL,
+        "run_at":   datetime.now().isoformat(),
+        "summary":  {**avgs, "total": total},
+        "results":  results,
+    }
+    out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
+    print(f"\n💾 결과 저장: {out_path}")
+    print()
+
+
+if __name__ == "__main__":
+    run()
