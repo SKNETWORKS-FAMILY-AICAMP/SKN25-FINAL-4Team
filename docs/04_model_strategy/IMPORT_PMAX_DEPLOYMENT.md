@@ -7,14 +7,22 @@ src/forecasting/import_pmax/
   training.py
   inference.py
   batch_inference.py
+  validation.py
+  promotion.py
+  operations.py
 
 scripts/forecasting/
   train_import_pmax.py
   predict_import_pmax.py
   predict_all_import_pmax.py
+  promote_import_pmax.py
+  rollback_import_pmax.py
 
 artifacts/import_pmax_v29_60min/
   input_24h/predict_60min/{meter}/
+
+artifacts/import_pmax_candidates/{run_id}/
+artifacts/import_pmax_archives/{timestamp}_{previous_run_id}/
 ```
 
 The `test*_15min` directories remain experiment archives. Production commands
@@ -76,7 +84,9 @@ Missing-data policy:
 ## Retraining
 
 ```bash
-python scripts/forecasting/train_import_pmax.py --device gpu
+python -m scripts.forecasting.train_import_pmax \
+  --device gpu \
+  --run-id <run_id>
 ```
 
 This single command queries, preprocesses, trains, validates, tests, and saves
@@ -92,27 +102,45 @@ The training configuration is fixed to:
 - 22 features without weather inputs
 
 Training writes new artifacts to
-`artifacts/import_pmax_v29_60min_candidate/` by default. Validate that directory
-before promoting it to the deployed `artifacts/import_pmax_v29_60min/` path.
+`artifacts/import_pmax_candidates/{run_id}/`. Each training run is isolated
+from the deployed `artifacts/import_pmax_v29_60min/` path.
 
 Validate the candidate without changing production:
 
 ```bash
-python scripts/forecasting/promote_import_pmax.py
+python -m scripts.forecasting.promote_import_pmax --run-id <run_id>
 ```
 
 Promote an approved candidate:
 
 ```bash
-python scripts/forecasting/promote_import_pmax.py \
+python -m scripts.forecasting.promote_import_pmax \
+  --run-id <run_id> \
   --execute \
   --approval-note "approved by model review"
 ```
 
-Promotion verifies all four manifests, feature order, ensemble weights, and
-model files by loading them before deployment. It copies only runtime files to
-a staging directory, validates staging, backs up the current deployed
-directory with a UTC timestamp, and then swaps staging into the deployed path.
+Promotion requires a current `validation.json`. Validation verifies all four
+manifests, feature order, ensemble weights, model files, and training summary.
+It also compares candidate RMSE with active deployment metrics when available.
+Promotion copies only runtime files to a staging directory, validates staging,
+backs up the current deployed directory under
+`artifacts/import_pmax_archives/`, and swaps staging into the deployed path.
+It then runs the normal four-meter local inference path without writing output
+files. A smoke failure automatically restores the previous deployment and
+keeps the candidate. A smoke success records `promotion.json` and removes the
+candidate directory.
+
+Rollback:
+
+```bash
+python -m scripts.forecasting.rollback_import_pmax \
+  --archive-root artifacts/import_pmax_archives/<archive_name> \
+  --approval-note "approved rollback"
+```
+
+The complete RunPod, FastAPI, Cloudflare, validation, promotion, and rollback
+procedure is documented in `IMPORT_PMAX_OPERATIONS.md`.
 
 ## Artifact Policy
 
@@ -131,8 +159,9 @@ v29/ensemble_weights.csv
 ```
 
 Candidate and legacy folders are local validation or rollback assets and are
-excluded from Git. Evaluation reports, plots, and saved test predictions are
-also excluded from the deployed runtime artifact.
+excluded from Git. A successfully promoted candidate is deleted after the
+inference smoke passes. Evaluation reports, plots, and saved test predictions
+are excluded from the deployed runtime artifact.
 
 The final 22-feature candidate was validated for all four meters and promoted
 to the deployed runtime path on June 6, 2026. The previous runtime artifact is

@@ -1,0 +1,34 @@
+# syntax=docker/dockerfile:1
+
+ARG BASE_IMAGE=pytorch/pytorch:2.3.1-cuda12.1-cudnn8-runtime@sha256:fc47f8018254e6df30f48c48f2db1c758d44de21a8c553de1a1c451a65baa70a
+FROM ${BASE_IMAGE}
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/workspace/import-pmax \
+    MPLCONFIGDIR=/tmp/matplotlib \
+    CUDA_VISIBLE_DEVICES=0
+
+WORKDIR /workspace/import-pmax
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements-runpod.txt ./requirements-runpod.txt
+RUN python -m pip install --upgrade pip==25.2 \
+    && python -m pip install -r requirements-runpod.txt
+
+COPY src ./src
+COPY scripts ./scripts
+COPY runpod_job ./runpod_job
+
+RUN python -m py_compile \
+    runpod_job/handler.py \
+    src/forecasting/import_pmax/training.py \
+    src/forecasting/import_pmax/inference.py \
+    && python -c "import runpod_job.handler; import src.forecasting.import_pmax.training"
+
+CMD ["python", "-m", "runpod_job.handler"]

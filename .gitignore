@@ -1,4 +1,3 @@
-api/
 experiments/
 .env
 AGENTS.md
@@ -37,6 +36,10 @@ env/
 *.joblib
 !artifacts/import_pmax_v29_60min/**/*.joblib
 artifacts/import_pmax_v29_60min_candidate*/
+artifacts/import_pmax_candidates/
+artifacts/import_pmax_archives/
+artifacts/import_pmax_incoming/
+artifacts/import_pmax_training_jobs/
 artifacts/import_pmax_v29_60min_legacy*/
 artifacts/import_pmax_v29_60min_backup_*/
 artifacts/import_pmax_v29_60min/**/candidate_metrics.csv

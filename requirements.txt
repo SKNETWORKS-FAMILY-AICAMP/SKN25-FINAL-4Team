@@ -28,6 +28,7 @@ langchain-community
 fastapi
 uvicorn[standard]
 python-multipart
+httpx
 
 # 기타
 python-dotenv

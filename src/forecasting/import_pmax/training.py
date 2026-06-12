@@ -8,6 +8,7 @@ import random
 import re
 import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +24,8 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import URL
 from xgboost import XGBRegressor
 
+from . import operations
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -30,7 +33,6 @@ import matplotlib.pyplot as plt
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_TABLE = "mart.peak_feature_15min"
-DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "artifacts" / "import_pmax_v29_60min_candidate"
 STEP_MINUTES = 15
 INPUT_WINDOW_HOURS = [24]
 OUTPUT_HORIZON_STEPS = {"60min": 4}
@@ -101,6 +103,10 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Forecast 15-minute import P max from mart.peak_feature_15min.")
     parser.add_argument("--table", default=DEFAULT_TABLE)
     parser.add_argument("--output-dir", type=Path, default=None)
+    parser.add_argument(
+        "--run-id",
+        help="Candidate run identifier. Used only when --output-dir is omitted.",
+    )
     parser.add_argument("--meters", nargs="*", default=list(LOGICAL_METERS), choices=list(LOGICAL_METERS))
     parser.add_argument("--input-hours", nargs="*", type=int, default=INPUT_WINDOW_HOURS, choices=INPUT_WINDOW_HOURS)
     parser.add_argument("--outputs", nargs="*", default=list(OUTPUT_HORIZON_STEPS), choices=list(OUTPUT_HORIZON_STEPS))
@@ -130,7 +136,13 @@ def build_engine():
         port=int(db_port),
         database=db_name,
     )
-    return create_engine(database_url, pool_pre_ping=True)
+    return create_engine(
+        database_url,
+        pool_pre_ping=True,
+        connect_args={
+            "options": "-c default_transaction_read_only=on",
+        },
+    )
 
 
 def feature_sql(table_name: str, meter_urn: str) -> str:
@@ -1144,9 +1156,30 @@ def main() -> None:
     table_name = validate_table_name(args.table)
     random.seed(args.seed)
     np.random.seed(args.seed)
-    output_dir = args.output_dir or DEFAULT_OUTPUT_DIR
+    if args.output_dir is not None:
+        output_dir = args.output_dir
+        run_id = args.run_id or output_dir.name
+    else:
+        run_id = operations.validate_run_id(args.run_id) if args.run_id else operations.new_run_id()
+        output_dir = operations.candidate_root(run_id)
     output_dir.mkdir(parents=True, exist_ok=True)
     write_root_readme(output_dir)
+    (output_dir / "training_run.json").write_text(
+        json.dumps(
+            {
+                "run_id": run_id,
+                "started_at": datetime.now(timezone.utc).isoformat(),
+                "table": table_name,
+                "meters": args.meters,
+                "device": args.device,
+                "seed": args.seed,
+            },
+            indent=2,
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     engine = build_engine()
     rows: list[dict[str, Any]] = []
     data_cache: dict[str, pd.DataFrame] = {}

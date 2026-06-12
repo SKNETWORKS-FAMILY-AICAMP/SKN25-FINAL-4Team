@@ -9,11 +9,11 @@ from typing import Any
 import joblib
 import numpy as np
 import pandas as pd
-from . import training
+from . import operations, training
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_MODEL_ROOT = PROJECT_ROOT / "artifacts" / "import_pmax_v29_60min"
+DEFAULT_MODEL_ROOT = operations.DEPLOYED_ROOT
 DEFAULT_LOOKBACK_DAYS = 14
 EXPECTED_OUTPUT_RANGE = "60min"
 EXPECTED_HORIZON_STEPS = 4
