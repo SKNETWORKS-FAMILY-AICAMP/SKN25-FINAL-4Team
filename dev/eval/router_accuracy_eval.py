@@ -29,6 +29,9 @@ import sys
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
+
+from common_metrics import build_metrics_envelope, default_output_paths, infer_run_id, write_json
 
 # ── 팀원 라우트 → 우리 라우트 매핑 ───────────────────────────────
 
@@ -45,8 +48,10 @@ OUR_ROUTES = ["anomaly", "cms", "forecast", "off_topic", "rag", "report"]
 # 기본 파일 경로
 _ROOT = Path(__file__).parent.parent.parent
 DEFAULT_DATASET = _ROOT / "dev/eval/data/router_5route_eval_500_260610.json"
-DEFAULT_OUT_JSON = Path("dev/eval/results/router_accuracy_eval/metrics.json")
-DEFAULT_OUT_MD   = Path("dev/eval/results/router_accuracy_eval/report.md")
+TEST_ID = "test09_router_5route_eval"
+METRIC_FAMILY = "router_classification"
+DEFAULT_OUT_JSON: Path | None = None
+DEFAULT_OUT_MD: Path | None = None
 
 # ── 규칙 기반 분류기 (orchestrator.py 동일 로직) ─────────────────
 
@@ -244,6 +249,42 @@ def evaluate(rows: list[dict], use_llm: bool = False) -> dict:
     }
 
 
+def to_common_metrics(raw: dict[str, Any], *, dataset_path: Path, out_json: Path) -> dict[str, Any]:
+    """Wrap router eval output in the shared experiment metrics schema."""
+    overall = raw.get("overall", {})
+    summary = {
+        "accuracy": overall.get("accuracy", 0.0),
+        "macro_f1": overall.get("macro_f1", 0.0),
+        "correct": overall.get("correct", 0),
+        "total": raw.get("dataset_count", 0),
+        "rule_hit_rate": raw.get("rule_hit_rate", 0.0),
+        "use_llm_fallback": raw.get("use_llm_fallback", False),
+    }
+    return build_metrics_envelope(
+        test_id=TEST_ID,
+        run_id=infer_run_id(out_json),
+        metric_family=METRIC_FAMILY,
+        dataset_path=dataset_path,
+        dataset_count=raw.get("dataset_count", 0),
+        phase_latency_ms={"route": 0.0, "total": 0.0},
+        component_latency_ms={"workflow": 0.0, "total": 0.0},
+        summary=summary,
+        gates={
+            "accuracy_min_0_80": summary["accuracy"] >= 0.80,
+            "macro_f1_min_0_80": summary["macro_f1"] >= 0.80,
+        },
+        errors=raw.get("errors", []),
+        details={
+            "evaluated_at_raw": raw.get("evaluated_at"),
+            "route_map": raw.get("route_map", {}),
+            "per_route": raw.get("per_route", {}),
+            "confusion_matrix": raw.get("confusion_matrix", {}),
+            "predictions": raw.get("predictions", []),
+        },
+        evaluated_at=raw.get("evaluated_at"),
+    )
+
+
 # ── 마크다운 리포트 ────────────────────────────────────────────────
 
 def write_markdown(result: dict, out_md: Path) -> None:
@@ -333,9 +374,24 @@ def main() -> None:
                         help="팀원 JSON 파일 경로 (기본: 프로젝트 루트)")
     parser.add_argument("--llm", action="store_true",
                         help="규칙 미분류 시 EXAONE LLM 폴백 사용 (Ollama 필요)")
-    parser.add_argument("--out-json", type=Path, default=DEFAULT_OUT_JSON)
-    parser.add_argument("--out-md",   type=Path, default=DEFAULT_OUT_MD)
+    parser.add_argument("--out-json", type=Path, default=DEFAULT_OUT_JSON,
+                        help="공통 metrics.json 출력 경로. 기본값: reports/experiments/test09_router_5route_eval/run_*/metrics.json")
+    parser.add_argument("--out-md",   type=Path, default=DEFAULT_OUT_MD,
+                        help="Markdown report 출력 경로. 기본값: metrics.json과 같은 run 폴더/report.md")
+    parser.add_argument("--run-id", type=str, default=None,
+                        help="reports/experiments/<test_id>/<run_id>/ 아래에 저장할 run id")
     args = parser.parse_args()
+
+    if args.out_json is None or args.out_md is None:
+        default_json, default_md = default_output_paths(
+            TEST_ID,
+            args.run_id,
+            suffix="llm" if args.llm else "rule",
+        )
+        if args.out_json is None:
+            args.out_json = default_json
+        if args.out_md is None:
+            args.out_md = default_md
 
     if not args.dataset.exists():
         print(f"[오류] 데이터셋 없음: {args.dataset}", file=sys.stderr)
@@ -344,18 +400,20 @@ def main() -> None:
     rows = json.loads(args.dataset.read_text(encoding="utf-8"))
     print(f"[평가 시작] {len(rows)}문항 | LLM 폴백: {'ON' if args.llm else 'OFF'}")
 
-    result = evaluate(rows, use_llm=args.llm)
+    raw_result = evaluate(rows, use_llm=args.llm)
+    metrics = to_common_metrics(raw_result, dataset_path=args.dataset, out_json=args.out_json)
 
-    args.out_json.parent.mkdir(parents=True, exist_ok=True)
-    args.out_json.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-    write_markdown(result, args.out_md)
+    write_json(args.out_json, metrics)
+    write_markdown(raw_result, args.out_md)
 
-    ov = result["overall"]
+    ov = raw_result["overall"]
     print(json.dumps({
+        "schema_version": metrics["schema_version"],
+        "test_id": metrics["test_id"],
         "accuracy":       f"{ov['accuracy']:.1%}",
         "macro_f1":       f"{ov['macro_f1']:.1%}",
-        "correct":        f"{ov['correct']}/{result['dataset_count']}",
-        "rule_hit_rate":  f"{result['rule_hit_rate']:.1%}",
+        "correct":        f"{ov['correct']}/{raw_result['dataset_count']}",
+        "rule_hit_rate":  f"{raw_result['rule_hit_rate']:.1%}",
         "out_json":       str(args.out_json),
         "out_md":         str(args.out_md),
     }, ensure_ascii=False, indent=2))

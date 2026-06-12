@@ -23,9 +23,12 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 from dotenv import load_dotenv
 from openai import OpenAI
+
+from common_metrics import build_metrics_envelope, default_output_paths, infer_run_id, write_json
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
@@ -36,6 +39,9 @@ OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/v1")
 
 # ── 심사위원 ─────────────────────────────────────────────────────────
 JUDGE_MODEL = os.getenv("JUDGE_MODEL", "gpt-5.5")
+
+TEST_ID = "test07_llm_answer_gate"
+METRIC_FAMILY = "llm_answer_gate"
 
 # ── 테스트 프롬프트 ───────────────────────────────────────────────────
 PROMPTS = [
@@ -1045,7 +1051,7 @@ def _bar(score: int, max_score=10) -> str:
     return "█" * filled + "░" * (5 - filled)
 
 
-def run(fast_only: bool = False, quality_only: bool = False):
+def run(fast_only: bool = False, quality_only: bool = False, out_json: Path | None = None, out_md: Path | None = None, run_id: str | None = None):
     model     = os.getenv("LLM_MODEL_FAST", "exaone3.5:7.8b") if fast_only else MODEL
     role_label = "fast (EXAONE)" if fast_only else ("quality (Gemma4)" if quality_only else "all")
 
@@ -1115,22 +1121,68 @@ def run(fast_only: bool = False, quality_only: bool = False):
         avg = round(sum(r.get(ax,0) for ax in AXES) / len(AXES), 1)
         print(f"   • [{r['prompt']}] 평균 {avg}/10 — {r['comment']}")
 
-    # ── JSON 저장 ────────────────────────────────────────────────────
-    out_dir = Path(__file__).parent / "results"
-    out_dir.mkdir(exist_ok=True)
-    ts      = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe    = model.replace(":", "_").replace("/", "_")
-    out_path = out_dir / f"{ts}_{safe}.json"
-    payload  = {
-        "model":    model,
+    # ── 공통 metrics schema 저장 ───────────────────────────────────────
+    if out_json is None or out_md is None:
+        default_json, default_md = default_output_paths(TEST_ID, run_id, suffix=model)
+        out_json = out_json or default_json
+        out_md = out_md or default_md
+
+    elapsed_values = [float(r.get("elapsed_ms", 0.0)) for r in results]
+    total_llm_ms = round(sum(elapsed_values), 2)
+    avg_llm_ms = round(total_llm_ms / len(elapsed_values), 2) if elapsed_values else 0.0
+    summary = {
+        "model": model,
         "provider": PROVIDER,
-        "judge":    JUDGE_MODEL,
-        "run_at":   datetime.now().isoformat(),
-        "summary":  {**avgs, "total": total},
-        "results":  results,
+        "judge": JUDGE_MODEL,
+        "role": role_label,
+        **avgs,
+        "total": total,
+        "prompt_count": len(prompts),
+        "avg_elapsed_ms": avg_llm_ms,
+        "total_elapsed_ms": total_llm_ms,
     }
-    out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
-    print(f"\n💾 결과 저장: {out_path}")
+    metrics = build_metrics_envelope(
+        test_id=TEST_ID,
+        run_id=infer_run_id(out_json),
+        metric_family=METRIC_FAMILY,
+        dataset_path="dev/eval/harness.py::PROMPTS",
+        dataset_count=len(prompts),
+        phase_latency_ms={"answer": total_llm_ms, "qa": total_llm_ms, "total": total_llm_ms},
+        component_latency_ms={"llm": total_llm_ms, "api": total_llm_ms, "total": total_llm_ms},
+        payload_metrics={
+            "prompt_count": len(prompts),
+            "response_characters": sum(len(str(r.get("response", ""))) for r in results),
+        },
+        summary=summary,
+        gates={"total_score_min_8_0": total >= 8.0},
+        errors=[r for r in results if any(int(r.get(ax, 0)) <= 0 for ax in AXES)],
+        details={"results": results},
+    )
+    write_json(out_json, metrics)
+    out_md.parent.mkdir(parents=True, exist_ok=True)
+    out_md.write_text(
+        "\n".join([
+            "# Test 07 — LLM answer gate",
+            "",
+            f"> model: `{model}` | provider: `{PROVIDER}` | judge: `{JUDGE_MODEL}` | prompts: {len(prompts)}",
+            "",
+            "## Summary",
+            "",
+            "| metric | value |",
+            "|---|---:|",
+            *[f"| {ax} | {avgs[ax]} |" for ax in AXES],
+            f"| total | {total} |",
+            f"| avg_elapsed_ms | {avg_llm_ms} |",
+            "",
+            "## Weak prompts",
+            "",
+            *[f"- `{r['prompt']}`: {round(sum(r.get(ax,0) for ax in AXES) / len(AXES), 1)}/10 — {r['comment']}" for r in weak],
+            "",
+        ]) + "\n",
+        encoding="utf-8",
+    )
+    print(f"\n💾 metrics 저장: {out_json}")
+    print(f"💾 report 저장: {out_md}")
     print()
 
 
@@ -1140,5 +1192,10 @@ if __name__ == "__main__":
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--fast",    action="store_true", help="EXAONE(LLM_MODEL_FAST) — 의도 분류 문항만")
     group.add_argument("--quality", action="store_true", help="Gemma4(LLM_MODEL) — 진단·보고서·분석 문항만")
+    parser.add_argument("--out-json", type=Path, default=None,
+                        help="공통 metrics.json 출력 경로. 기본값: reports/experiments/test07_llm_answer_gate/run_*/metrics.json")
+    parser.add_argument("--out-md", type=Path, default=None,
+                        help="Markdown report 출력 경로. 기본값: metrics.json과 같은 run 폴더/report.md")
+    parser.add_argument("--run-id", type=str, default=None)
     args = parser.parse_args()
-    run(fast_only=args.fast, quality_only=args.quality)
+    run(fast_only=args.fast, quality_only=args.quality, out_json=args.out_json, out_md=args.out_md, run_id=args.run_id)

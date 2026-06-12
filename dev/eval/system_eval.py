@@ -25,16 +25,21 @@ import time
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import requests
 from dotenv import load_dotenv
 from openai import OpenAI
+
+from common_metrics import build_metrics_envelope, default_output_paths, infer_run_id, write_json
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 JUDGE_MODEL  = "gpt-4o"
 DATASET_PATH = Path(__file__).parent / "qa_dataset.json"
+TEST_ID = "test07_llm_answer_gate"
+METRIC_FAMILY = "system_answer_quality"
 
 JUDGE_SYSTEM = """당신은 CMS 에너지 관리 시스템 응답 품질 평가 전문가입니다.
 [정답]과 [증거 데이터]를 기준으로 [시스템 응답]을 3개 축으로 1~10점 채점하고 JSON만 출력하세요.
@@ -106,7 +111,7 @@ def _avg(r: dict) -> float:
     return round((r["correctness"] + r["completeness"] + r["grounding"]) / 3, 1)
 
 
-def run(items: list[dict]):
+def run(items: list[dict], out_json: Path | None = None, out_md: Path | None = None, run_id: str | None = None, dataset_path: Path = DATASET_PATH):
     judge_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     results = []
 
@@ -170,25 +175,65 @@ def run(items: list[dict]):
         print(f"    [{r['avg']}/10] [{r['category']}/{r['difficulty']}] {r['question'][:45]}...")
         print(f"          💬 {r['comment']}")
 
-    # ── JSON 저장 ─────────────────────────────────────────────────────
-    out_dir = Path(__file__).parent / "results"
-    out_dir.mkdir(exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    out_path = out_dir / f"syseval_{ts}.json"
-    payload = {
-        "run_at":   datetime.now().isoformat(),
-        "backend":  BACKEND_URL,
-        "judge":    JUDGE_MODEL,
-        "n":        len(results),
-        "summary": {
-            "total": round(sum(r["avg"] for r in results) / len(results), 1),
-            "by_category":   {k: round(sum(v)/len(v), 1) for k, v in by_cat.items()},
-            "by_difficulty": {k: round(sum(v)/len(v), 1) for k, v in by_diff.items()},
+    # ── 공통 metrics schema 저장 ───────────────────────────────────────
+    if out_json is None or out_md is None:
+        default_json, default_md = default_output_paths(TEST_ID, run_id, suffix="system")
+        out_json = out_json or default_json
+        out_md = out_md or default_md
+
+    total_score = round(sum(r["avg"] for r in results) / len(results), 1)
+    avg_elapsed_s = round(sum(r["elapsed_s"] for r in results) / len(results), 2)
+    total_elapsed_ms = round(sum(float(r["elapsed_s"]) for r in results) * 1000, 2)
+    by_cat_summary = {k: round(sum(v) / len(v), 1) for k, v in by_cat.items()}
+    by_diff_summary = {k: round(sum(v) / len(v), 1) for k, v in by_diff.items()}
+    metrics = build_metrics_envelope(
+        test_id=TEST_ID,
+        run_id=infer_run_id(out_json),
+        metric_family=METRIC_FAMILY,
+        dataset_path=dataset_path,
+        dataset_count=len(results),
+        phase_latency_ms={"answer": total_elapsed_ms, "qa": total_elapsed_ms, "total": total_elapsed_ms},
+        component_latency_ms={"api": total_elapsed_ms, "llm": total_elapsed_ms, "total": total_elapsed_ms},
+        summary={
+            "backend": BACKEND_URL,
+            "judge": JUDGE_MODEL,
+            "total": total_score,
+            "avg_elapsed_s": avg_elapsed_s,
+            "by_category": by_cat_summary,
+            "by_difficulty": by_diff_summary,
         },
-        "results": results,
-    }
-    out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
-    print(f"\n💾 결과 저장: {out_path}\n")
+        gates={"total_score_min_8_0": total_score >= 8.0},
+        errors=[r for r in results if r["avg"] <= 0],
+        details={"results": results},
+    )
+    write_json(out_json, metrics)
+    out_md.parent.mkdir(parents=True, exist_ok=True)
+    out_md.write_text(
+        "\n".join([
+            "# Test 07 — System answer quality",
+            "",
+            f"> backend: `{BACKEND_URL}` | judge: `{JUDGE_MODEL}` | n: {len(results)}",
+            "",
+            "## Summary",
+            "",
+            "| metric | value |",
+            "|---|---:|",
+            f"| total | {total_score} |",
+            f"| avg_elapsed_s | {avg_elapsed_s} |",
+            "",
+            "## By category",
+            "",
+            *[f"- `{k}`: {v}" for k, v in sorted(by_cat_summary.items())],
+            "",
+            "## By difficulty",
+            "",
+            *[f"- `{k}`: {v}" for k, v in sorted(by_diff_summary.items())],
+            "",
+        ]) + "\n",
+        encoding="utf-8",
+    )
+    print(f"\n💾 metrics 저장: {out_json}")
+    print(f"💾 report 저장: {out_md}\n")
 
 
 def main():
@@ -197,6 +242,11 @@ def main():
     parser.add_argument("--cat",  type=str, default="", help="카테고리 필터 (anomaly/cms/report/rag/forecast)")
     parser.add_argument("--diff", type=str, default="", help="난이도 필터 (easy/medium/hard)")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--out-json", type=Path, default=None,
+                        help="공통 metrics.json 출력 경로. 기본값: reports/experiments/test07_llm_answer_gate/run_*/metrics.json")
+    parser.add_argument("--out-md", type=Path, default=None,
+                        help="Markdown report 출력 경로. 기본값: metrics.json과 같은 run 폴더/report.md")
+    parser.add_argument("--run-id", type=str, default=None)
     args = parser.parse_args()
 
     items = json.loads(DATASET_PATH.read_text())
@@ -213,7 +263,7 @@ def main():
         print("조건에 맞는 항목이 없습니다.")
         return
 
-    run(items)
+    run(items, out_json=args.out_json, out_md=args.out_md, run_id=args.run_id, dataset_path=DATASET_PATH)
 
 
 if __name__ == "__main__":
