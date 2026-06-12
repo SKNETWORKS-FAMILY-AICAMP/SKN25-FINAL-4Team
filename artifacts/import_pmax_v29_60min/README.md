@@ -17,4 +17,14 @@ input_24h/predict_60min/{logical_meter}/
 ```
 
 추론 코드는 이 폴더에서 모델과 가중치를 불러와 최종 예측값을 생성한다.
-평가 보고서와 저장된 test 예측은 candidate 폴더에 보관한다.
+
+운영 시 추가될 수 있는 메타데이터:
+
+| 파일 | 내용 |
+|---|---|
+| `deployment_metrics.json` | 승격한 candidate의 검증 지표와 digest |
+| `promotion.json` | 승격 시각, archive 경로, inference smoke 결과 |
+| `rollback.json` | 명시적 롤백 이력 |
+
+평가 보고서와 test 예측은 운영 artifact에 포함하지 않는다. candidate는 승격
+성공 후 삭제되며, 승격 실패 시 원인 확인과 재시도를 위해 보존한다.

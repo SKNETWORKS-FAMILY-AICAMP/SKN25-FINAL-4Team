@@ -8,8 +8,11 @@ on:
       - Dockerfile.runpod
       - requirements-runpod.txt
       - src/**
+      - "!src/**/README.md"
       - scripts/**
+      - "!scripts/**/README.md"
       - runpod_job/**
+      - "!runpod_job/README.md"
       - .github/workflows/import-pmax-runpod-image.yml
   workflow_dispatch:
 
