@@ -423,13 +423,20 @@ def main() -> None:
     if args.preflight:
         stem = args.dataset.name.lower()
         if args.dataset_schema is not None or "stage1" in stem or "stage2" in stem:
-            run_router_preflight(args.dataset, schema_path=args.dataset_schema)
+            preflight_result = run_router_preflight(args.dataset, schema_path=args.dataset_schema)
+            if not preflight_result["ok"]:
+                print("[오류] preflight 실패: 파이프라인을 중단합니다.", file=sys.stderr)
+                sys.exit(1)
         else:
             print("[알림] preflight은 stage1/stage2 데이터셋 또는 --dataset-schema 지정 시 동작합니다.", file=sys.stderr)
+            sys.exit(1)
 
     if args.preflight_only:
         if not args.preflight and ("stage1" in args.dataset.name.lower() or "stage2" in args.dataset.name.lower() or args.dataset_schema is not None):
-            run_router_preflight(args.dataset, schema_path=args.dataset_schema)
+            preflight_result = run_router_preflight(args.dataset, schema_path=args.dataset_schema)
+            if not preflight_result["ok"]:
+                print("[오류] preflight 실패: 파이프라인을 중단합니다.", file=sys.stderr)
+                sys.exit(1)
         elif not args.preflight:
             print("[오류] preflight-only는 stage1/stage2 데이터셋 또는 --dataset-schema 지정 시에만 사용 가능합니다.", file=sys.stderr)
             sys.exit(1)

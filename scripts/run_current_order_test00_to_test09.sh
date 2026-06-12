@@ -34,11 +34,21 @@ printf '\n== test07 fast answer gate ==\n'
 printf '\n== test07 quality answer gate ==\n'
 "$PYTHON_BIN" dev/eval/harness.py --quality --run-id "${RUN_STAMP}_test07_quality"
 
+# Override these for legacy dataset mode:
+#   ROUTER_DATASET=dev/eval/data/router_5route_eval_500_260610.json
+#   ROUTER_DATASET_SCHEMA=<matching schema path>
+ROUTER_DATASET="${ROUTER_DATASET:-dev/eval/data/router_stage2_agent_route_500_260612.json}"
+ROUTER_DATASET_SCHEMA="${ROUTER_DATASET_SCHEMA:-dev/eval/schemas/router_stage2_agent_route.schema.json}"
+ROUTER_PRE_ARGS=(--dataset "$ROUTER_DATASET" --preflight)
+if [[ -n "${ROUTER_DATASET_SCHEMA}" ]]; then
+  ROUTER_PRE_ARGS+=(--dataset-schema "$ROUTER_DATASET_SCHEMA")
+fi
+
 printf '\n== test09 router rule baseline ==\n'
-"$PYTHON_BIN" dev/eval/router_accuracy_eval.py --run-id "${RUN_STAMP}_test09_rule"
+"$PYTHON_BIN" dev/eval/router_accuracy_eval.py "${ROUTER_PRE_ARGS[@]}" --run-id "${RUN_STAMP}_test09_rule"
 
 printf '\n== test09 router LLM fallback ==\n'
-"$PYTHON_BIN" dev/eval/router_accuracy_eval.py --llm --run-id "${RUN_STAMP}_test09_llm"
+"$PYTHON_BIN" dev/eval/router_accuracy_eval.py --llm "${ROUTER_PRE_ARGS[@]}" --run-id "${RUN_STAMP}_test09_llm"
 
 printf '\n== comparison ==\n'
 "$PYTHON_BIN" dev/eval/compare_results.py
