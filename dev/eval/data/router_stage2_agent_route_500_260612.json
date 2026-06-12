@@ -1,0 +1,4502 @@
+[
+  {
+    "id": "S2-CMS-001",
+    "message": "설비 상태 점검 기준에서 C동은(는) 어떤 상태야? 다음 달 추세도 같이 알려줄 수 있어? [S2-CMS-001]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-001",
+    "message": "지난 6개월 A동 보고서에서 개선 포인트와 리스크 지점을 각각 3개씩 도출해줘? [S2-REPORT-001]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-002",
+    "message": "CHP2 라인 최근 3개월 월간 리포트에서 핵심 지표 5개를 정리해주면 좋겠어 [S2-REPORT-002]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-001",
+    "message": "부탁드려요. 다음 분기 공조기 전력비용이 높아질 가능성이 있나? [S2-FORECAST-001]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-003",
+    "message": "11월 에너지 사용량 보고서 만들어줘 [S2-REPORT-003]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-001",
+    "message": "[OPS] COP이 뭐야? [S2-RAG-001]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-001",
+    "message": "D동의 발생 추이 건수가 예전 대비 이상 급증했는지 건수/비율로 분석해줘 [S2-ANOMALY-001]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-002",
+    "message": "[OPS] 4호 압축기 설비가 최근 진동/노이즈가 증가했다면 유지관리 관점에서 추가 진단 질문을 정리해줘 [S2-CMS-002]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-003",
+    "message": "[OPS] PV 구역 설비의 최근 이상 징후를 점검하고 상태만 알려줘 [S2-CMS-003]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-004",
+    "message": "부탁드려요. 12월 에너지 사용량 보고서 만들어줘 [S2-REPORT-004]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-002",
+    "message": "[OPS] 대시보드에서 D동 이상 건수 추이만 간단히 정리해줘 [S2-ANOMALY-002]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-005",
+    "message": "[OPS] CHP1 라인 최근 3개월 월간 리포트에서 핵심 지표 5개를 정리해줘 [S2-REPORT-005]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-004",
+    "message": "부탁드려요. 공조기 최근 2주간 작동 상태와 오작동 징후를 한 번 점검해줘 [S2-CMS-004]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-005",
+    "message": "부탁드려요. A동에서 정비 이력과 현재 상태 지표를 함께 고려해 고장 위험 구간 후보를 선별해줘 [S2-CMS-005]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-006",
+    "message": "[OPS] CHP2 라인 최근 3개월 월간 리포트에서 핵심 지표 5개를 정리해줘 [S2-REPORT-006]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-007",
+    "message": "부탁드려요. 이번 분기 3호 압축기 전력 의존도 지표 정리해줘 [S2-REPORT-007]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-002",
+    "message": "부탁드려요. 설비 데이터에서 이벤트 라벨링이 중요한 이유를 알려줘 [S2-RAG-002]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-006",
+    "message": "C동 최근 2주간 작동 상태와 오작동 징후를 한 번 점검해줘 다음 달 추세도 같이 알려줄 수 있어? [S2-CMS-006]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-008",
+    "message": "이번 분기 4호 압축기 전력 의존도 지표 정리해줘? [S2-REPORT-008]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-009",
+    "message": "배전반 월별 자급률 지표 알려줄래? [S2-REPORT-009]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-007",
+    "message": "부탁드려요. D동에서 정비 이력과 현재 상태 지표를 함께 고려해 고장 위험 구간 후보를 선별해줘 [S2-CMS-007]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-003",
+    "message": "PV 구역에서 최근 30일간 CurrentRipple 이상 원인 후보 3개를 정리해줘? [S2-ANOMALY-003]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-010",
+    "message": "4호 압축기의 장기 리포트 형식으로 사용량/비용/의존도에 대한 인사이트를 제시해줘 (dashboard 기준으로) [S2-REPORT-010]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-011",
+    "message": "[OPS] 공조기 최근 3개월 월간 리포트에서 핵심 지표 5개를 정리해줘 [S2-REPORT-011]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-008",
+    "message": "보일러실 설비가 안정적이지 않더라도 즉시 조치가 필요한지, 모니터링만으로 충분한지 구분해줘 (dashboard 기준으로) [S2-CMS-008]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-012",
+    "message": "CHP1 라인에 대한 월간 운영 리포트 양식으로 핵심 수치만 정리해주면 좋겠어 [S2-REPORT-012]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-009",
+    "message": "요약해줘: 보일러실의 설비 건전성을 기준으로 보고서용 한 줄 평가를 내려줘 [S2-CMS-009]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-FORECAST-002",
+    "message": "B동의 다음 분기 예측에서 연휴/휴일 민감도가 클 경우 방향성만 요약해줘 원인도 같이 추정해줘. [S2-FORECAST-002]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-FORECAST-003",
+    "message": "부탁드려요. 수전반의 다음 분기 냉방 부하 전망을 주관적으로라도 추정해줘 [S2-FORECAST-003]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-FORECAST-004",
+    "message": "부탁드려요. 공조기에서 냉방 부하가 계속 증가하면 다음 2개월 유지비와 예측 오차 리스크가 어떻게 될지 알려줘 [S2-FORECAST-004]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-013",
+    "message": "지난 6개월 배전반 보고서에서 개선 포인트와 리스크 지점을 각각 3개씩 도출해줘? [S2-REPORT-013]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-014",
+    "message": "냉동기실 KPI의 안정성/변동성을 같이 본 월간 리포트를 제안해줘? [S2-REPORT-014]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-015",
+    "message": "요약해줘: 지난달 에너지 비용과 사용량 통계만 정리해줘 [S2-REPORT-015]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-005",
+    "message": "3호 압축기의 전력 수요 추세가 3개월 뒤에도 상승세로 가는지 예측해줘 (dashboard 기준으로) [S2-FORECAST-005]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-003",
+    "message": "예지보전이 뭔지 실무적으로 설명해줘? [S2-RAG-003]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-006",
+    "message": "수전반에서 냉방 부하가 계속 증가하면 다음 2개월 유지비와 예측 오차 리스크가 어떻게 될지 알려줄래? [S2-FORECAST-006]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-CMS-010",
+    "message": "부탁드려요. 예지보전 관점에서 PV 구역 점검 주기를 검토해줘 [S2-CMS-010]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-016",
+    "message": "D동 월별 자급률 지표 알려줄래? [S2-REPORT-016]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-007",
+    "message": "부탁드려요. 주간 예측 관점에서 A동 peak 재현성(계절·설비 요인)을 같이 설명해줘 [S2-FORECAST-007]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-004",
+    "message": "계통 설비 도메인에서 오탐(false positive)과 미탐(false negative)의 운영 리스크 차이를 설명해줘? [S2-RAG-004]",
+    "expected_route": "rag",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-004",
+    "message": "D동에서 최근 30일간 ReactivePower 이상 원인 후보 3개를 정리해줘 참고로 보고서에도 반영해줘. [S2-ANOMALY-004]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-011",
+    "message": "요약해줘: 공조기 설비가 안정적이지 않더라도 즉시 조치가 필요한지, 모니터링만으로 충분한지 구분해줘 [S2-CMS-011]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-FORECAST-008",
+    "message": "요약해줘: 현재 패턴 기준으로 앞으로 2주 보일러실 사용량 전망해줘 [S2-FORECAST-008]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-005",
+    "message": "지난주 B동 이상탐지 건수/심각도도 볼 수 있어? [S2-ANOMALY-005]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-012",
+    "message": "보일러실의 규칙 점검 체계로 보면 어느 설비군이 CMS 조치 우선 대상인지 말해줘 다음 달 추세도 같이 알려줄 수 있어? [S2-CMS-012]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-006",
+    "message": "PV 구역 기준으로 이상 이벤트 중 실제 조치가 필요한 후보와 모니터링만으로 충분한 후보를 구분해줘 [S2-ANOMALY-006]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-017",
+    "message": "이번 분기 CHP2 라인 전력 의존도 지표 정리해줘 (dashboard 기준으로) [S2-REPORT-017]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-018",
+    "message": "12월 에너지 사용량 보고서 만들어줘 (dashboard 기준으로) [S2-REPORT-018]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-009",
+    "message": "보일러실의 월간 사용량이 다음 달에도 비슷한 패턴으로 유지될지 전망해줘? [S2-FORECAST-009]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-007",
+    "message": "요약해줘: D동의 이상 원인 건수가 예전 대비 이상 급증했는지 건수/비율로 분석해줘 [S2-ANOMALY-007]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-013",
+    "message": "[OPS] A동 최근 2주간 작동 상태와 오작동 징후를 한 번 점검해줘 [S2-CMS-013]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-005",
+    "message": "EMS와 CMS는 어떻게 달라? [S2-RAG-005]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-010",
+    "message": "다음 달 C동 이상치 가능성도 같이 예측해줘 원인도 같이 추정해줘. [S2-FORECAST-010]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-008",
+    "message": "수전반에서 COPDrop가 반복되는 경향이 있는데, 지금까지의 이상 건수 분포/전후 관계를 이상탐지 관점에서 요약해줘? [S2-ANOMALY-008]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-019",
+    "message": "보일러실 월간 KPI 요약 보고서 1페이지로 알려줘 (dashboard 기준으로) [S2-REPORT-019]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-011",
+    "message": "요약해줘: B동의 2주 후 사용량 전망을 하면서 장기 추세와 단기 이벤트 효과를 분리해서 말해줘 [S2-FORECAST-011]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-FORECAST-012",
+    "message": "부탁드려요. 현재 지표 반영해서 배전반의 2주 예측값(증가/감소) 알려줘 [S2-FORECAST-012]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-020",
+    "message": "[OPS] 지난 6개월 공조기 보고서에서 개선 포인트와 리스크 지점을 각각 3개씩 도출해줘 [S2-REPORT-020]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-009",
+    "message": "대시보드에서 수전반 anomaly 건수 추이만 간단히 정리해줘 (dashboard 기준으로) [S2-ANOMALY-009]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-010",
+    "message": "[OPS] 지난주 CHP1 라인 이상탐지 건수/심각도도 볼 수 있어? [S2-ANOMALY-010]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-021",
+    "message": "요약해줘: CHP1 라인에 대한 월간 운영 리포트 양식으로 핵심 수치만 정리해줘 [S2-REPORT-021]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-014",
+    "message": "3호 압축기 점검 스케줄 상태 알려줘? [S2-CMS-014]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-015",
+    "message": "[OPS] CHP1 라인 정비 이력 중 최근 1건만 보여줘 [S2-CMS-015]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-016",
+    "message": "PV 구역의 CMS 관점에서 경보 미발생 설비 리스크를 요약해줘? [S2-CMS-016]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-022",
+    "message": "PV 구역 최근 3개월 월간 리포트에서 핵심 지표 5개를 정리해줘 (dashboard 기준으로) [S2-REPORT-022]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-023",
+    "message": "B동 월간 KPI 요약 보고서 1페이지로 알려줘? [S2-REPORT-023]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-011",
+    "message": "부탁드려요. PV 구역에서 발생한 이상 이벤트가 계측 노이즈인지 실제 이슈인지 구간별(심각도/시간대)로 판별해줄 수 있어? [S2-ANOMALY-011]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-012",
+    "message": "최근 3개월 4호 압축기 PowerSpike 이상 이벤트의 평균 심각도 변화를 알려줄래? [S2-ANOMALY-012]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-017",
+    "message": "CHP1 라인에서 설비 상태가 악화되기 전에 CMS 기반으로 점검 우선순위를 1순위~3순위로 제안해줘 [S2-CMS-017]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-018",
+    "message": "유사 설비군 기준으로 보일러실의 점검 기준 위반 가능성을 판단해줘? [S2-CMS-018]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-006",
+    "message": "계통 설비 도메인에서 오탐(false positive)과 미탐(false negative)의 운영 리스크 차이를 설명해줘 개념적으로도 설명해줄래? [S2-RAG-006]",
+    "expected_route": "rag",
+    "difficulty": "hard",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-019",
+    "message": "부탁드려요. CHP1 라인 밸브/펌프 동작 이상 징후가 있는지 확인해줘 [S2-CMS-019]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-020",
+    "message": "설비 상태 점검 기준에서 수전반은(는) 어떤 상태야? (dashboard 기준으로) [S2-CMS-020]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-007",
+    "message": "무효전력이 뭐야? [S2-RAG-007]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-021",
+    "message": "B동 설비가 최근 진동/노이즈가 증가했다면 유지관리 관점에서 추가 진단 질문을 정리해주면 좋겠어 [S2-CMS-021]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-024",
+    "message": "[OPS] CHP2 라인 기준 이번 분기 이상치 포함 월간 현황표를 해석해줘 [S2-REPORT-024]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-008",
+    "message": "설비 데이터에서 이벤트 라벨링이 중요한 이유를 알려줘 개념적으로도 설명해줄래? [S2-RAG-008]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-013",
+    "message": "[OPS] 3호 압축기 최근 GridImport 이상치가 있나? [S2-ANOMALY-013]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-022",
+    "message": "B동 설비 상태가 지금 괜찮은지 요약해줘? [S2-CMS-022]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-025",
+    "message": "부탁드려요. 수전반 월간 KPI 요약 보고서 1페이지로 알려줘 [S2-REPORT-025]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-009",
+    "message": "요약해줘: 무효전력이 뭐야? [S2-RAG-009]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-023",
+    "message": "요약해줘: 설비 상태 점검 기준에서 4호 압축기은(는) 어떤 상태야? [S2-CMS-023]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-024",
+    "message": "요약해줘: A동 센서/밸브/펌프 중 선제 유지보수 필요성이 높은 항목이 무엇인지 알려줘 [S2-CMS-024]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-014",
+    "message": "냉동기실 기준으로 anomaly 이벤트 중 실제 조치가 필요한 후보와 모니터링만으로 충분한 후보를 구분해줘 (dashboard 기준으로) [S2-ANOMALY-014]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-013",
+    "message": "요약해줘: 계절 전환기에 C동 forecast 방향이 어떻게 바뀔지 말해줘 [S2-FORECAST-013]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-015",
+    "message": "수전반 기준으로 이상 이벤트 중 실제 조치가 필요한 후보와 모니터링만으로 충분한 후보를 구분해줘? [S2-ANOMALY-015]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-016",
+    "message": "부탁드려요. ESS 구역에서 NightConsumption 이상 알람 발생 시각별 군집 특성을 원인 가설 중심으로 정리해줘 [S2-ANOMALY-016]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-014",
+    "message": "요약해줘: 다음 달 수전반 전력 사용량이 어떻게 될까? [S2-FORECAST-014]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-026",
+    "message": "CHP2 라인 KPI의 안정성/변동성을 같이 본 월간 리포트를 제안해줘 [S2-REPORT-026]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-027",
+    "message": "PV 구역 월간 KPI 요약 보고서 1페이지로 알려줘 (dashboard 기준으로) [S2-REPORT-027]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-010",
+    "message": "데이터 스키마 변동이 라우팅 정확도에 미치는 영향은 어떤가? [S2-RAG-010]",
+    "expected_route": "rag",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-015",
+    "message": "이번 주 수전반 로드 변화 예측해줘 [S2-FORECAST-015]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-CMS-025",
+    "message": "요약해줘: CHP2 라인 설비 상태가 지금 괜찮은지 요약해줘 [S2-CMS-025]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-FORECAST-016",
+    "message": "배전반 다음 주 peak 시간대가 언제쯤 될지 전망 중심으로 정리해줘 원인도 같이 추정해줘. [S2-FORECAST-016]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-FORECAST-017",
+    "message": "이번 주 CHP1 라인 로드 변화 예측해줘? [S2-FORECAST-017]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-CMS-026",
+    "message": "부탁드려요. 정비이력 기반으로 C동의 설비 상태를 추정해줘 [S2-CMS-026]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-028",
+    "message": "요약해줘: 12월 3호 압축기 자급률, 사용량, 비용 KPI 한 번에 요약해줘 [S2-REPORT-028]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-011",
+    "message": "[OPS] EMS와 CMS는 어떻게 달라? [S2-RAG-011]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-017",
+    "message": "공조기에서 심각도 등급이(가) 자주 발생하는 건 어떤 게 있어? (dashboard 기준으로) [S2-ANOMALY-017]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-018",
+    "message": "8월 수전반의 잔차가 큰 anomaly 이벤트 패턴을 원인별로 분류해줘 (dashboard 기준으로) [S2-ANOMALY-018]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-019",
+    "message": "[OPS] 원시 로그 기준으로 A동의 이상 심각도 패턴을 보여줘. [S2-ANOMALY-019]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-029",
+    "message": "PV 구역 기준 최근 분기 보고서 지표(요약+트렌드) 알려줘 왜 이렇게 나왔는지도 짧게 알려줘. [S2-REPORT-029]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-012",
+    "message": "[OPS] 전압 변동과 전류 불균형이 설비 성능에 미치는 영향이 뭔지 알려줘 [S2-RAG-012]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-020",
+    "message": "원시 로그 기준으로 수전반의 발생 추이 패턴을 보여줘.? [S2-ANOMALY-020]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-027",
+    "message": "D동에서 설비 상태가 악화되기 전에 CMS 기반으로 점검 우선순위를 1순위~3순위로 제안해줘 다음 달 추세도 같이 알려줄 수 있어? [S2-CMS-027]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-013",
+    "message": "요약해줘: KPI를 한 줄로 설명해줘 [S2-RAG-013]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-028",
+    "message": "[OPS] 정비이력 기반으로 PV 구역의 설비 상태를 추정해줘 [S2-CMS-028]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-014",
+    "message": "부탁드려요. 전압 변동과 전류 불균형이 설비 성능에 미치는 영향이 뭔지 알려줘 [S2-RAG-014]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-REPORT-030",
+    "message": "요약해줘: 지난달 에너지 비용과 사용량 통계만 정리해줘 [S2-REPORT-030]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-018",
+    "message": "현재 지표 반영해서 3호 압축기의 2주 예측값(증가/감소) 알려줘 (dashboard 기준으로) [S2-FORECAST-018]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-021",
+    "message": "D동 기준으로 이상 이벤트 중 실제 조치가 필요한 후보와 모니터링만으로 충분한 후보를 구분해줘? [S2-ANOMALY-021]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-019",
+    "message": "부탁드려요. 보일러실의 월간 사용량이 다음 달에도 비슷한 패턴으로 유지될지 전망해줘 [S2-FORECAST-019]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-022",
+    "message": "부탁드려요. CHP2 라인에서 이상 건수이(가) 자주 발생하는 건 어떤 게 있어? [S2-ANOMALY-022]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-015",
+    "message": "실시간 모니터링 파이프라인에서 latency와 정확도의 trade-off를 설명해줘 개념적으로도 설명해줄래? [S2-RAG-015]",
+    "expected_route": "rag",
+    "difficulty": "hard",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-023",
+    "message": "3호 압축기의 이상 심각도 건수가 예전 대비 이상 급증했는지 건수/비율로 분석해줘 [S2-ANOMALY-023]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-031",
+    "message": "이번 주 KPI 추이 요약해줘? [S2-REPORT-031]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-024",
+    "message": "[OPS] 수전반에서 최근 30일간 PVNightNonZero 이상 원인 후보 3개를 정리해줘 [S2-ANOMALY-024]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-025",
+    "message": "CHP1 라인 최근 GridImport 이상치가 있나? [S2-ANOMALY-025]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-020",
+    "message": "요약해줘: 2월 기준으로 보일러실 앞으로 4주 동안 사용량 변동성을 예측해줘 [S2-FORECAST-020]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-026",
+    "message": "A동에서 30일간 VoltageSag 이상 원인 후보 3개를 정리해줘? [S2-ANOMALY-026]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-032",
+    "message": "[OPS] 4호 압축기 월별 자급률 지표 알려줘 [S2-REPORT-032]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-016",
+    "message": "요약해줘: 시계열 이상탐지에서 윈도우 기반 분석의 장단점이 뭔지 알려줘 [S2-RAG-016]",
+    "expected_route": "rag",
+    "difficulty": "hard",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-027",
+    "message": "CHP2 라인의 이상 건수 건수가 예전 대비 이상 급증했는지 건수/비율로 분석해줘? [S2-ANOMALY-027]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-033",
+    "message": "지난 6개월 수전반 보고서에서 개선 포인트와 리스크 지점을 각각 3개씩 도출해줘? [S2-REPORT-033]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-028",
+    "message": "10월 공조기의 잔차가 큰 anomaly 이벤트 패턴을 원인별로 분류해줘 (dashboard 기준으로) [S2-ANOMALY-028]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-034",
+    "message": "CHP1 라인 KPI의 안정성/변동성을 같이 본 월간 리포트를 제안해줘? [S2-REPORT-034]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-029",
+    "message": "요약해줘: A동 설비 상태가 지금 괜찮은지 요약해줘 [S2-CMS-029]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-035",
+    "message": "D동 월별 수익성/비용 효율 한 줄씩 정리해주면 좋겠어 [S2-REPORT-035]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-029",
+    "message": "부탁드려요. 냉동기실 12월 CurrentRipple 관련 이상 건수이 비정상적으로 증가한 구간이 있어? 원시 로그 기준으로 설명해줘 [S2-ANOMALY-029]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-021",
+    "message": "PV 구역의 future trend를 근거 없이 단정하지 않고 범위(낮음/보통/높음)로 제시해줘? [S2-FORECAST-021]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-017",
+    "message": "부하 곡선이 무엇이고 왜 보는지 알려줄래? [S2-RAG-017]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-REPORT-036",
+    "message": "D동의 비용 효율을 설명하기 위한 보고서 문단 틀을 만들어줘? [S2-REPORT-036]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-037",
+    "message": "[OPS] PV 구역 대시보드 지표를 일관된 보고서 톤으로 정리해줘 [S2-REPORT-037]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-030",
+    "message": "A동에서 정비 이력과 현재 상태 지표를 함께 고려해 고장 위험 구간 후보를 선별해줘 [S2-CMS-030]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-030",
+    "message": "수전반에서 심각도 등급 이상이 급증한 구간이 기존 추세에서 벗어난지 검정 관점에서 설명해줘 [S2-ANOMALY-030]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-022",
+    "message": "CHP2 라인의 월간 사용량이 다음 달에도 비슷한 패턴으로 유지될지 전망해줘? [S2-FORECAST-022]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-031",
+    "message": "수전반 9월 GridImport 관련 심각도 등급이 비정상적으로 증가한 구간이 있어? 원시 로그 기준으로 설명해줘? [S2-ANOMALY-031]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-031",
+    "message": "PV 구역의 정비 우선순위 후보를 알려줄래? [S2-CMS-031]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-038",
+    "message": "A동 월간 KPI 요약 보고서 1페이지로 알려줘? [S2-REPORT-038]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-039",
+    "message": "[OPS] 배전반 월별 수익성/비용 효율 한 줄씩 정리해줘 [S2-REPORT-039]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-040",
+    "message": "B동 월간 리포트 원고를 보고서 스타일로 요약해줘: 수치, 추세, 권고 [S2-REPORT-040]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-032",
+    "message": "PV 구역의 핵심 설비(압축기/냉동기) 점검 포인트 3개를 뽑아줘 [S2-CMS-032]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-FORECAST-023",
+    "message": "A동의 future trend를 근거 없이 단정하지 않고 범위(낮음/보통/높음)로 제시해줘 원인도 같이 추정해줘. [S2-FORECAST-023]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-018",
+    "message": "부탁드려요. RAG 기반 응답에서 근거 정합성(grounding) 검증이 왜 필요한지 설명해줘 [S2-RAG-018]",
+    "expected_route": "rag",
+    "difficulty": "hard",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-REPORT-041",
+    "message": "요약해줘: C동 월간 KPI 요약 보고서 1페이지로 알려줘 [S2-REPORT-041]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-033",
+    "message": "[OPS] 3호 압축기에서 정비 이력과 현재 상태 지표를 함께 고려해 고장 위험 구간 후보를 선별해줘 [S2-CMS-033]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-032",
+    "message": "[OPS] 작년 동기와 올해 동기를 비교해 3호 압축기 이상 패턴에서 통계적 이상 징후가 보이나? [S2-ANOMALY-032]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-042",
+    "message": "수전반 월간 이상 건수와 비용 상관을 중심으로 보고서형으로 정리해줘? [S2-REPORT-042]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-034",
+    "message": "부탁드려요. B동 배전설비와 회전기 설비의 상태지표를 비교해 상태 불일치 포인트를 잡아줘 [S2-CMS-034]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-FORECAST-024",
+    "message": "[OPS] 내일부터 일주일간 4호 압축기 사용량 추세는 올라가나 내려가나? [S2-FORECAST-024]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-043",
+    "message": "A동 최근 3개월 월간 리포트에서 핵심 지표 5개를 정리해줘? [S2-REPORT-043]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-044",
+    "message": "ESS 구역 기준 최근 분기 보고서 지표(요약+트렌드) 알려줘? [S2-REPORT-044]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-019",
+    "message": "요약해줘: 예지보전이 뭔지 실무적으로 설명해줘 [S2-RAG-019]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-RAG-020",
+    "message": "부탁드려요. 이상탐지에서 F1, precision, recall가 운영 판단에 어떻게 연결되는지 설명해줘 [S2-RAG-020]",
+    "expected_route": "rag",
+    "difficulty": "hard",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-035",
+    "message": "3호 압축기 최근 2주간 작동 상태와 오작동 징후를 한 번 점검해줘 (dashboard 기준으로) [S2-CMS-035]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-045",
+    "message": "A동 최근 3개월 월간 리포트에서 핵심 지표 5개를 정리해주면 좋겠어 [S2-REPORT-045]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-036",
+    "message": "정비이력 기반으로 B동의 설비 상태를 추정해줘? [S2-CMS-036]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-046",
+    "message": "4호 압축기 월별 자급률 지표 알려줄래? [S2-REPORT-046]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-037",
+    "message": "공조기의 규칙 점검 체계로 보면 어느 설비군이 CMS 조치 우선 대상인지 말해줘 [S2-CMS-037]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-021",
+    "message": "부탁드려요. RAG 기반 응답에서 근거 정합성(grounding) 검증이 왜 필요한지 설명해줘 [S2-RAG-021]",
+    "expected_route": "rag",
+    "difficulty": "hard",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-038",
+    "message": "부탁드려요. 보일러실의 CMS 관점에서 경보 미발생 설비 리스크를 요약해줘 [S2-CMS-038]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-047",
+    "message": "7월 CHP2 라인 자급률, 사용량, 비용 KPI 한 번에 요약해줘 (dashboard 기준으로) [S2-REPORT-047]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-048",
+    "message": "[OPS] D동 월별 수익성/비용 효율 한 줄씩 정리해줘 [S2-REPORT-048]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-022",
+    "message": "예지보전이 뭔지 실무적으로 설명해줘? [S2-RAG-022]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-039",
+    "message": "요약해줘: D동의 CMS 관점에서 경보 미발생 설비 리스크를 요약해줘 [S2-CMS-039]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-023",
+    "message": "설비 데이터에서 이벤트 라벨링이 중요한 이유를 알려줘? [S2-RAG-023]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-REPORT-049",
+    "message": "[OPS] D동의 비용 효율을 설명하기 위한 보고서 문단 틀을 만들어줘 [S2-REPORT-049]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-025",
+    "message": "내일부터 일주일간 배전반 사용량 추세는 올라가나 내려가나? 원인도 같이 추정해줘. [S2-FORECAST-025]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-024",
+    "message": "원시 로그와 정제 데이터 차이를 이해하기 쉽게 설명해줘 개념적으로도 설명해줄래? [S2-RAG-024]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-033",
+    "message": "부탁드려요. 냉동기실에서 경보가 이상 원인로 오인될 수 있는 유사 신호가 있었는지 이상 건수 기준으로 알려줘 [S2-ANOMALY-033]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-040",
+    "message": "보일러실의 핵심 설비(압축기/냉동기) 점검 포인트 3개를 뽑아줘 [S2-CMS-040]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-FORECAST-026",
+    "message": "[OPS] 주간 예측 관점에서 CHP1 라인 peak 재현성(계절·설비 요인)을 같이 설명해줘 [S2-FORECAST-026]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-025",
+    "message": "[OPS] 전압 변동과 전류 불균형이 설비 성능에 미치는 영향이 뭔지 알려줘 [S2-RAG-025]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-027",
+    "message": "다음 분기 배전반 peak 수요가 어느 정도일지 알려줘 원인도 같이 추정해줘. [S2-FORECAST-027]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-034",
+    "message": "2월 CHP1 라인 PowerSpike 알림이 몇 건인지 확인해줘.? [S2-ANOMALY-034]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-026",
+    "message": "부하 곡선이 무엇이고 왜 보는지 알려줘? [S2-RAG-026]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-RAG-027",
+    "message": "예지보전이 뭔지 실무적으로 설명해줘 개념적으로도 설명해줄래? [S2-RAG-027]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-035",
+    "message": "D동에서 ReactivePower 이상 발생 시점과 배경 지표를 함께 확인해줘? [S2-ANOMALY-035]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-036",
+    "message": "3호 압축기에서 NightConsumption 이상 알람 발생 시각별 군집 특성을 원인 가설 중심으로 정리해줘? [S2-ANOMALY-036]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-028",
+    "message": "부탁드려요. 현재 상태에서 CHP2 라인가 보수적으로는 하락, 공격적으로는 상승 시나리오일 때 예측 차이를 보여줘 [S2-FORECAST-028]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-037",
+    "message": "ESS 구역 11월 NightConsumption 관련 이상 원인이 비정상적으로 증가한 구간이 있어? 원시 로그 기준으로 설명해줘 [S2-ANOMALY-037]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-029",
+    "message": "향후 예측에서 3호 압축기의 기준선 대비 편차 가능성을 설명해줘 (dashboard 기준으로) [S2-FORECAST-029]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-CMS-041",
+    "message": "A동 최근 2주간 작동 상태와 오작동 징후를 한 번 점검해줘? [S2-CMS-041]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-028",
+    "message": "예지보전이 뭔지 실무적으로 설명해줘 개념적으로도 설명해줄래? [S2-RAG-028]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-038",
+    "message": "보일러실의 NightConsumption 이상 징후를 심각도 중심으로 추적해줘 참고로 보고서에도 반영해줘. [S2-ANOMALY-038]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-050",
+    "message": "부탁드려요. 이번 주 KPI 추이 요약해줘 [S2-REPORT-050]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-030",
+    "message": "부탁드려요. 이번 주 CHP2 라인 로드 변화 예측해줘 [S2-FORECAST-030]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-CMS-042",
+    "message": "요약해줘: 예지보전 관점에서 ESS 구역 점검 주기를 검토해줘 [S2-CMS-042]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-043",
+    "message": "부탁드려요. PV 구역 최근 2주간 작동 상태와 오작동 징후를 한 번 점검해줘 [S2-CMS-043]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-051",
+    "message": "지난 6개월 ESS 구역 보고서에서 개선 포인트와 리스크 지점을 각각 3개씩 도출해줘 왜 이렇게 나왔는지도 짧게 알려줘. [S2-REPORT-051]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-052",
+    "message": "요약해줘: A동 월간 KPI 요약 보고서 1페이지로 알려줘 [S2-REPORT-052]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-044",
+    "message": "부탁드려요. C동의 CMS 관점에서 경보 미발생 설비 리스크를 요약해줘 [S2-CMS-044]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-045",
+    "message": "[OPS] CHP1 라인 설비 상태가 지금 괜찮은지 요약해줘 [S2-CMS-045]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-039",
+    "message": "부탁드려요. 공조기에서 경보가 발생 추이로 오인될 수 있는 유사 신호가 있었는지 이상 건수 기준으로 알려줘 [S2-ANOMALY-039]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-031",
+    "message": "냉동기실의 2주 후 사용량 전망을 하면서 장기 추세와 단기 이벤트 효과를 분리해서 말해줘 (dashboard 기준으로) [S2-FORECAST-031]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-040",
+    "message": "[OPS] 보일러실에서 최근 30일간 NightConsumption 이상 원인 후보 3개를 정리해줘 [S2-ANOMALY-040]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-041",
+    "message": "요약해줘: 보일러실의 NightConsumption 이상 징후를 심각도 중심으로 추적해줘 [S2-ANOMALY-041]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-042",
+    "message": "CHP1 라인 2월 NightConsumption 관련 이상 건수이 비정상적으로 증가한 구간이 있어? 원시 로그 기준으로 설명해줘? [S2-ANOMALY-042]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-032",
+    "message": "요약해줘: 현재 상태에서 PV 구역가 보수적으로는 하락, 공격적으로는 상승 시나리오일 때 예측 차이를 보여줘 [S2-FORECAST-032]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-053",
+    "message": "보일러실 KPI의 안정성/변동성을 같이 본 월간 리포트를 제안해줘? [S2-REPORT-053]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-054",
+    "message": "요약해줘: 배전반 보고서에 들어갈 핵심 지표(원인/영향/권고)을 구조화해서 정리해줘 [S2-REPORT-054]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-046",
+    "message": "부탁드려요. 배전반 설비 상태가 지금 괜찮은지 요약해줘 [S2-CMS-046]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-055",
+    "message": "3월 수전반 자급률, 사용량, 비용 KPI 한 번에 요약해줘 왜 이렇게 나왔는지도 짧게 알려줘. [S2-REPORT-055]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-056",
+    "message": "보일러실 월별 자급률 지표 알려줘? [S2-REPORT-056]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-029",
+    "message": "전압 변동과 전류 불균형이 설비 성능에 미치는 영향이 뭔지 알려줘? [S2-RAG-029]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-043",
+    "message": "3월 CHP1 라인의 잔차가 큰 이상 이벤트 패턴을 원인별로 분류해줘? [S2-ANOMALY-043]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-030",
+    "message": "수요반응이 에너지 비용에 어떤 의미인지 설명해줘 [S2-RAG-030]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-044",
+    "message": "냉동기실에서 이상 심각도 이상 건수 몇 건이었어? [S2-ANOMALY-044]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-033",
+    "message": "현재 패턴 기준으로 앞으로 2주 D동 사용량 전망해줘? [S2-FORECAST-033]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-031",
+    "message": "무효전력이 뭐야? 개념적으로도 설명해줄래? [S2-RAG-031]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-045",
+    "message": "배전반 최근 PVNightNonZero 이상치가 있나? [S2-ANOMALY-045]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-032",
+    "message": "요약해줘: KPI를 한 줄로 설명해줘 [S2-RAG-032]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-047",
+    "message": "수전반의 설비 건전성을 기준으로 보고서용 한 줄 평가를 내려줘 (dashboard 기준으로) [S2-CMS-047]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-057",
+    "message": "수전반 월별 수익성/비용 효율 한 줄씩 정리해줘? [S2-REPORT-057]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-046",
+    "message": "요약해줘: B동에서 이상 원인 이상 건수 몇 건이었어? [S2-ANOMALY-046]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-058",
+    "message": "공조기 대시보드 지표를 일관된 보고서 톤으로 정리해주면 좋겠어 [S2-REPORT-058]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-047",
+    "message": "CHP1 라인에서 VoltageSag 이상 발생 시점과 배경 지표를 함께 확인해줘? [S2-ANOMALY-047]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-034",
+    "message": "CHP1 라인의 future trend를 근거 없이 단정하지 않고 범위(낮음/보통/높음)로 제시해줘 (dashboard 기준으로) [S2-FORECAST-034]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-048",
+    "message": "4호 압축기에서 심각도 등급 이상 건수 몇 건이었어? [S2-ANOMALY-048]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-049",
+    "message": "부탁드려요. 냉동기실에서 최근 30일간 NightConsumption 이상 원인 후보 3개를 정리해줘 [S2-ANOMALY-049]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-050",
+    "message": "6월 수전반의 잔차가 큰 이상 이벤트 패턴을 원인별로 분류해줘 참고로 보고서에도 반영해줘. [S2-ANOMALY-050]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-051",
+    "message": "최근 3개월 CHP2 라인 PowerSpike anomaly 이벤트의 평균 심각도 변화를 알려줘 (dashboard 기준으로) [S2-ANOMALY-051]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-048",
+    "message": "배전반 최근 2주간 작동 상태와 오작동 징후를 한 번 점검해줘 (dashboard 기준으로) [S2-CMS-048]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-FORECAST-035",
+    "message": "다음 분기 A동 peak 수요가 어느 정도일지 알려줘 (dashboard 기준으로) [S2-FORECAST-035]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-052",
+    "message": "냉동기실의 발생 추이 이상과 COPDrop 간의 동행 패턴이 의심되는데 원시 로그 중심으로 어떤 이상이 유력한지 말해줘? [S2-ANOMALY-052]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-053",
+    "message": "A동에서 COPDrop가 반복되는 경향이 있는데, 지금까지의 심각도 등급 분포/전후 관계를 이상탐지 관점에서 요약해줘 참고로 보고서에도 반영해줘. [S2-ANOMALY-053]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-036",
+    "message": "현재 지표 반영해서 4호 압축기의 2주 예측값(증가/감소) 알려줘 원인도 같이 추정해줘. [S2-FORECAST-036]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-054",
+    "message": "최근 5월 배전반 VoltageSag 알림이 몇 건인지 확인해줘. (dashboard 기준으로) [S2-ANOMALY-054]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-049",
+    "message": "3호 압축기 점검 스케줄 상태 알려줄래? [S2-CMS-049]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-FORECAST-037",
+    "message": "다음 분기 PV 구역 peak 수요가 어느 정도일지 알려줘 원인도 같이 추정해줘. [S2-FORECAST-037]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-CMS-050",
+    "message": "B동 설비의 최근 이상 징후를 점검하고 상태만 알려줘? [S2-CMS-050]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-051",
+    "message": "C동의 핵심 설비(압축기/냉동기) 점검 포인트 3개를 뽑아줘? [S2-CMS-051]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-052",
+    "message": "배전반 설비의 최근 이상 징후를 점검하고 상태만 알려줘 다음 달 추세도 같이 알려줄 수 있어? [S2-CMS-052]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-055",
+    "message": "공조기에서 경보가 심각도 등급로 오인될 수 있는 유사 신호가 있었는지 이상 건수 기준으로 알려줘? [S2-ANOMALY-055]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-038",
+    "message": "요약해줘: 4월~4월 3호 압축기 수요가 반등하거나 둔화할 가능성을 수치적으로 가정해줘 [S2-FORECAST-038]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-059",
+    "message": "A동 대시보드 지표를 일관된 보고서 톤으로 정리해주면 좋겠어 [S2-REPORT-059]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-056",
+    "message": "ESS 구역 데이터에서 ReactivePower 이상 이벤트 중 1회성 오탐과 지속성 이상을 나눠서 제시해줘? [S2-ANOMALY-056]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-057",
+    "message": "냉동기실에서 COPDrop가 반복되는 경향이 있는데, 지금까지의 이상 건수 분포/전후 관계를 이상탐지 관점에서 요약해줘? [S2-ANOMALY-057]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-039",
+    "message": "계절 전환기에 D동 forecast 방향이 어떻게 바뀔지 말해줘? [S2-FORECAST-039]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-033",
+    "message": "예지보전이 뭔지 실무적으로 설명해줘? [S2-RAG-033]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-058",
+    "message": "[OPS] C동 5월 NightConsumption 관련 이상 건수이 비정상적으로 증가한 구간이 있어? 원시 로그 기준으로 설명해줘 [S2-ANOMALY-058]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-053",
+    "message": "PV 구역에서 과거 조치 빈도와 현재 상태 신호를 결합해 위험도를 점수화해줘 [S2-CMS-053]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-FORECAST-040",
+    "message": "4호 압축기 다음 주 peak 시간대가 언제쯤 될지 전망 중심으로 정리해줘 (dashboard 기준으로) [S2-FORECAST-040]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-FORECAST-041",
+    "message": "[OPS] 향후 예측에서 C동의 기준선 대비 편차 가능성을 설명해줘 [S2-FORECAST-041]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-060",
+    "message": "요약해줘: 이번 분기 B동 전력 의존도 지표 정리해줘 [S2-REPORT-060]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-059",
+    "message": "부탁드려요. 냉동기실에서 발생 추이이(가) 자주 발생하는 건 어떤 게 있어? [S2-ANOMALY-059]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-054",
+    "message": "C동 설비가 진동/노이즈가 증가했다면 유지관리 관점에서 추가 진단 질문을 정리해줘? [S2-CMS-054]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-034",
+    "message": "[OPS] 태양광 출력 예측 모델에서 RMSE는 무슨 뜻이야? [S2-RAG-034]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-REPORT-061",
+    "message": "[OPS] CHP2 라인 기준 최근 분기 보고서 지표(요약+트렌드) 알려줘 [S2-REPORT-061]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-042",
+    "message": "[OPS] 다음 달 ESS 구역 이상치 가능성도 같이 예측해줘 [S2-FORECAST-042]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-060",
+    "message": "최근 12월 B동 ReactivePower 알림이 몇 건인지 확인해줘. (dashboard 기준으로) [S2-ANOMALY-060]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-043",
+    "message": "[OPS] 내일부터 일주일간 D동 사용량 추세는 올라가나 내려가나? [S2-FORECAST-043]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-061",
+    "message": "PV 구역의 이상 심각도 이상과 VoltageSag 간의 동행 패턴이 의심되는데 원시 로그 중심으로 어떤 이상이 유력한지 말해줘? [S2-ANOMALY-061]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-062",
+    "message": "요약해줘: 4호 압축기 기준으로 이상 이벤트 중 실제 조치가 필요한 후보와 모니터링만으로 충분한 후보를 구분해줘 [S2-ANOMALY-062]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-055",
+    "message": "D동의 정비 우선순위 후보를 알려줘 다음 달 추세도 같이 알려줄 수 있어? [S2-CMS-055]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-063",
+    "message": "지난달 PV 구역 데이터에서 Harmonic 이상 이벤트 중 1회성 오탐과 지속성 이상을 나눠서 제시해줘 [S2-ANOMALY-063]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-064",
+    "message": "최근 7월 4호 압축기 ReactivePower 알림이 몇 건인지 확인해줘.? [S2-ANOMALY-064]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-062",
+    "message": "[OPS] 이번 달 CHP2 라인 리포트 요약해줘 [S2-REPORT-062]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-056",
+    "message": "3호 압축기 점검 스케줄 상태 알려줄래? [S2-CMS-056]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-FORECAST-044",
+    "message": "내일부터 일주일간 D동 사용량 추세는 올라가나 내려가나? [S2-FORECAST-044]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-FORECAST-045",
+    "message": "이번 주 D동 로드 변화 예측해줘? [S2-FORECAST-045]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-065",
+    "message": "D동에서 발생 추이이(가) 자주 발생하는 건 어떤 게 있어? [S2-ANOMALY-065]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-066",
+    "message": "요약해줘: 공조기에서 발생 추이이(가) 자주 발생하는 건 어떤 게 있어? [S2-ANOMALY-066]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-057",
+    "message": "설비 상태 점검 기준에서 D동은(는) 어떤 상태야? [S2-CMS-057]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-035",
+    "message": "부탁드려요. 역률이 뭔지 쉽게 설명해줘 [S2-RAG-035]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-REPORT-063",
+    "message": "[OPS] 이번 분기 4호 압축기 전력 의존도 지표 정리해줘 [S2-REPORT-063]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-036",
+    "message": "설비 데이터에서 이벤트 라벨링이 중요한 이유를 알려줘? [S2-RAG-036]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-046",
+    "message": "요약해줘: B동 다음 주 peak 시간대가 언제쯤 될지 전망 중심으로 정리해줘 [S2-FORECAST-046]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-067",
+    "message": "CHP1 라인에서 이상 원인 이상이 급증한 구간이 기존 추세에서 벗어난지 검정 관점에서 설명해줘 [S2-ANOMALY-067]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-047",
+    "message": "A동의 2주 후 사용량 전망을 하면서 장기 추세와 단기 이벤트 효과를 분리해서 말해줘? [S2-FORECAST-047]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-CMS-058",
+    "message": "4호 압축기의 정비 우선순위 후보를 알려줘 (dashboard 기준으로) [S2-CMS-058]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-059",
+    "message": "부탁드려요. 수전반의 핵심 설비(압축기/냉동기) 점검 포인트 3개를 뽑아줘 [S2-CMS-059]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-037",
+    "message": "COP이 뭐야? [S2-RAG-037]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-RAG-038",
+    "message": "[OPS] PF와 THD의 차이를 실무적으로 설명해줘 [S2-RAG-038]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-068",
+    "message": "지난주 보일러실 이상탐지 건수/심각도도 볼 수 있어? [S2-ANOMALY-068]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-064",
+    "message": "3호 압축기의 장기 리포트 형식으로 사용량/비용/의존도에 대한 인사이트를 제시해줘 (dashboard 기준으로) [S2-REPORT-064]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-039",
+    "message": "피크 부하가 뭔지 알려줘? [S2-RAG-039]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-069",
+    "message": "최근 4월 D동 PVNightNonZero 알림이 몇 건인지 확인해줘. [S2-ANOMALY-069]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-065",
+    "message": "5월 3호 압축기 자급률, 사용량, 비용 KPI 한 번에 요약해줘? [S2-REPORT-065]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-060",
+    "message": "[OPS] ESS 구역 정비 이력 중 최근 1건만 보여줘 [S2-CMS-060]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-040",
+    "message": "무효전력이 뭐야? [S2-RAG-040]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-070",
+    "message": "대시보드에서 PV 구역 이상 건수 추이만 간단히 정리해줘? [S2-ANOMALY-070]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-061",
+    "message": "3호 압축기 점검 스케줄 상태 알려줘? [S2-CMS-061]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-041",
+    "message": "부탁드려요. 역률이 뭔지 쉽게 설명해줘 [S2-RAG-041]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-071",
+    "message": "대시보드에서 배전반 anomaly 건수 추이만 간단히 정리해줘 (dashboard 기준으로) [S2-ANOMALY-071]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-042",
+    "message": "설비 데이터에서 이벤트 라벨링이 중요한 이유를 알려줘 (dashboard 기준으로) [S2-RAG-042]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-072",
+    "message": "부탁드려요. 최근 5월 D동 COPDrop 알림이 몇 건인지 확인해줘. [S2-ANOMALY-072]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-066",
+    "message": "12월 A동 자급률, 사용량, 비용 KPI 한 번에 요약해줘 (dashboard 기준으로) [S2-REPORT-066]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-073",
+    "message": "3호 압축기 최근 Harmonic 이상치가 있나? 참고로 보고서에도 반영해줘. [S2-ANOMALY-073]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-043",
+    "message": "오류 예산(error budget) 관점에서 챗봇 운영 품질을 어떻게 정의하면 될까? [S2-RAG-043]",
+    "expected_route": "rag",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-RAG-044",
+    "message": "전압 변동과 전류 불균형이 설비 성능에 미치는 영향이 뭔지 알려줘 개념적으로도 설명해줄래? [S2-RAG-044]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-062",
+    "message": "CHP2 라인 설비 상태가 지금 괜찮은지 요약해줘 [S2-CMS-062]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-074",
+    "message": "[OPS] B동 최근 CurrentRipple 이상치가 있나? [S2-ANOMALY-074]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-067",
+    "message": "이번 주 KPI 추이 요약해줘? [S2-REPORT-067]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-063",
+    "message": "요약해줘: B동의 핵심 설비(압축기/냉동기) 점검 포인트 3개를 뽑아줘 [S2-CMS-063]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-068",
+    "message": "배전반 사용량/비용 비교 리포트 보여줘? [S2-REPORT-068]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-064",
+    "message": "보일러실 정비 이력 중 최근 1건만 보여줄 수 있어? [S2-CMS-064]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-069",
+    "message": "이번 달 수전반 리포트 요약해줘 (dashboard 기준으로) [S2-REPORT-069]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-045",
+    "message": "요약해줘: COP이 뭐야? [S2-RAG-045]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-048",
+    "message": "배전반의 다음 분기 냉방 부하 전망을 주관적으로라도 추정해줘? [S2-FORECAST-048]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-070",
+    "message": "수전반의 비용 효율을 설명하기 위한 보고서 문단 틀을 만들어줘 (dashboard 기준으로) [S2-REPORT-070]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-065",
+    "message": "CHP2 라인 정비 이력 중 최근 1건만 보여줘? [S2-CMS-065]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-066",
+    "message": "[OPS] CHP1 라인 설비의 최근 이상 징후를 점검하고 상태만 알려줘 [S2-CMS-066]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-067",
+    "message": "부탁드려요. CHP2 라인 최근 2주간 작동 상태와 오작동 징후를 한 번 점검해줘 [S2-CMS-067]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-075",
+    "message": "[OPS] 3호 압축기 최근 NightConsumption 이상치가 있나? [S2-ANOMALY-075]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-049",
+    "message": "내일부터 일주일간 D동 사용량 추세는 올라가나 내려가나? 원인도 같이 추정해줘. [S2-FORECAST-049]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-071",
+    "message": "이번 분기 D동 전력 의존도 지표 정리해줘 (dashboard 기준으로) [S2-REPORT-071]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-072",
+    "message": "4호 압축기 월간 리포트에서 KPI, 비용, 자급률, 이상건수 항목 간 상관을 함께 보는 방식으로 요약해줘? [S2-REPORT-072]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-073",
+    "message": "지난달 에너지 비용과 사용량 통계만 정리해줘 왜 이렇게 나왔는지도 짧게 알려줘. [S2-REPORT-073]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-046",
+    "message": "원시 로그와 정제 데이터 차이를 이해하기 쉽게 설명해줘 (dashboard 기준으로) [S2-RAG-046]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-REPORT-074",
+    "message": "CHP1 라인 보고서에 들어갈 핵심 지표(원인/영향/권고)을 구조화해서 정리해주면 좋겠어 [S2-REPORT-074]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-076",
+    "message": "배전반에서 이상 건수이(가) 자주 발생하는 건 어떤 게 있어? [S2-ANOMALY-076]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-077",
+    "message": "부탁드려요. 배전반에서 발생 추이 이상이 급증한 구간이 기존 추세에서 벗어난지 검정 관점에서 설명해줘 [S2-ANOMALY-077]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-050",
+    "message": "다음 달 D동 전력 사용량이 어떻게 될까? [S2-FORECAST-050]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-FORECAST-051",
+    "message": "요약해줘: 현재 지표 반영해서 4호 압축기의 2주 예측값(증가/감소) 알려줘 [S2-FORECAST-051]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-075",
+    "message": "냉동기실 월간 리포트 원고를 보고서 스타일로 요약해줘: 수치, 추세, 권고 (dashboard 기준으로) [S2-REPORT-075]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-052",
+    "message": "냉동기실의 다음 분기 냉방 부하 전망을 주관적으로라도 추정해줘? [S2-FORECAST-052]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-078",
+    "message": "요약해줘: 3월 수전반의 잔차가 큰 이상 이벤트 패턴을 원인별로 분류해줘 [S2-ANOMALY-078]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-079",
+    "message": "[OPS] ESS 구역 8월 CurrentRipple 관련 이상 원인이 비정상적으로 증가한 구간이 있어? 원시 로그 기준으로 설명해줘 [S2-ANOMALY-079]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-080",
+    "message": "4호 압축기 기준으로 anomaly 이벤트 중 실제 조치가 필요한 후보와 모니터링만으로 충분한 후보를 구분해줘 (dashboard 기준으로) [S2-ANOMALY-080]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-076",
+    "message": "요약해줘: 7월 에너지 사용량 보고서 만들어줘 [S2-REPORT-076]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-081",
+    "message": "C동의 이상 심각도 이상과 PowerSpike 간의 동행 패턴이 의심되는데 원시 로그 중심으로 어떤 이상이 유력한지 말해줘 참고로 보고서에도 반영해줘. [S2-ANOMALY-081]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-047",
+    "message": "설비 데이터에서 이벤트 라벨링이 중요한 이유를 알려줘 개념적으로도 설명해줄래? [S2-RAG-047]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-082",
+    "message": "2월 ESS 구역의 잔차가 큰 이상 이벤트 패턴을 원인별로 분류해줘 참고로 보고서에도 반영해줘. [S2-ANOMALY-082]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-068",
+    "message": "[OPS] CHP1 라인 설비 상태가 지금 괜찮은지 요약해줘 [S2-CMS-068]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-083",
+    "message": "요약해줘: 대시보드에서 냉동기실 이상 건수 추이만 간단히 정리해줘 [S2-ANOMALY-083]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-077",
+    "message": "보일러실에 대한 월간 운영 리포트 양식으로 핵심 수치만 정리해줘? [S2-REPORT-077]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-078",
+    "message": "지난 6개월 CHP2 라인 보고서에서 개선 포인트와 리스크 지점을 각각 3개씩 도출해줘 왜 이렇게 나왔는지도 짧게 알려줘. [S2-REPORT-078]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-079",
+    "message": "이번 주 KPI 추이 요약해줘? [S2-REPORT-079]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-048",
+    "message": "부하 곡선이 무엇이고 왜 보는지 알려줘? [S2-RAG-048]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-084",
+    "message": "최근 3개월 A동 PowerSpike 이상 이벤트의 평균 심각도 변화를 알려줘 참고로 보고서에도 반영해줘. [S2-ANOMALY-084]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-053",
+    "message": "[OPS] 내일부터 일주일간 ESS 구역 사용량 추세는 올라가나 내려가나? [S2-FORECAST-053]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-085",
+    "message": "이번 달 PV 구역에서 경보 발생 건수 알려줘? [S2-ANOMALY-085]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-049",
+    "message": "[OPS] EMS와 CMS는 어떻게 달라? [S2-RAG-049]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-086",
+    "message": "[OPS] 원시 로그 기준으로 CHP2 라인의 이상 원인 패턴을 보여줘. [S2-ANOMALY-086]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-080",
+    "message": "요약해줘: 8월 PV 구역 자급률, 사용량, 비용 KPI 한 번에 요약해줘 [S2-REPORT-080]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-081",
+    "message": "요약해줘: 보일러실 월간 이상 건수와 비용 상관을 중심으로 보고서형으로 정리해줘 [S2-REPORT-081]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-082",
+    "message": "A동 대시보드 지표를 일관된 보고서 톤으로 정리해주면 좋겠어 [S2-REPORT-082]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-083",
+    "message": "6월 에너지 사용량 보고서 만들어줘? [S2-REPORT-083]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-084",
+    "message": "공조기 월별 수익성/비용 효율 한 줄씩 정리해줘? [S2-REPORT-084]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-050",
+    "message": "부탁드려요. 안전계수가 뭐야? [S2-RAG-050]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-087",
+    "message": "요약해줘: 수전반 기준으로 이상 이벤트 중 실제 조치가 필요한 후보와 모니터링만으로 충분한 후보를 구분해줘 [S2-ANOMALY-087]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-088",
+    "message": "공조기에서 경보가 이상 원인로 오인될 수 있는 유사 신호가 있었는지 이상 건수 기준으로 알려줘 참고로 보고서에도 반영해줘. [S2-ANOMALY-088]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-085",
+    "message": "요약해줘: 공조기 보고서에 들어갈 핵심 지표(원인/영향/권고)을 구조화해서 정리해줘 [S2-REPORT-085]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-069",
+    "message": "CHP2 라인에서 과거 조치 빈도와 상태 신호를 결합해 위험도를 점수화해줘? [S2-CMS-069]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-089",
+    "message": "보일러실 3월 Harmonic 관련 이상 원인이 비정상적으로 증가한 구간이 있어? 원시 로그 기준으로 설명해줘? [S2-ANOMALY-089]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-051",
+    "message": "다단계 라우팅을 쓸 때 request_type과 agent_route 분리의 장점을 설명해줘? [S2-RAG-051]",
+    "expected_route": "rag",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-070",
+    "message": "부탁드려요. D동의 정비 우선순위 후보를 알려줘 [S2-CMS-070]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-086",
+    "message": "ESS 구역에 대한 월간 운영 리포트 양식으로 핵심 수치만 정리해주면 좋겠어 [S2-REPORT-086]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-071",
+    "message": "보일러실 설비의 최근 이상 징후를 점검하고 상태만 알려줄래? [S2-CMS-071]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-087",
+    "message": "이번 달 3호 압축기 리포트 요약해줘? [S2-REPORT-087]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-052",
+    "message": "요약해줘: 설비 데이터에서 이벤트 라벨링이 중요한 이유를 알려줘 [S2-RAG-052]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-REPORT-088",
+    "message": "[OPS] 보일러실 사용량/비용 비교 리포트 보여줘 [S2-REPORT-088]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-090",
+    "message": "부탁드려요. 이번 달 PV 구역에서 경보 발생 건수 알려줘 [S2-ANOMALY-090]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-091",
+    "message": "부탁드려요. 작년 동기와 올해 동기를 비교해 냉동기실 이상 패턴에서 통계적 이상 징후가 보이나? [S2-ANOMALY-091]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-054",
+    "message": "다음 달 PV 구역 전력 사용량이 어떻게 될까? (dashboard 기준으로) [S2-FORECAST-054]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-CMS-072",
+    "message": "4호 압축기 센서/밸브/펌프 중 선제 유지보수 필요성이 높은 항목이 무엇인지 알려줘? [S2-CMS-072]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-089",
+    "message": "D동 월간 KPI 요약 보고서 1페이지로 알려줄래? [S2-REPORT-089]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-055",
+    "message": "CHP2 라인의 월간 사용량이 다음 달에도 비슷한 패턴으로 유지될지 전망해줘? [S2-FORECAST-055]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-FORECAST-056",
+    "message": "패턴 기준으로 앞으로 2주 3호 압축기 사용량 전망해줘? [S2-FORECAST-056]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-092",
+    "message": "CHP1 라인의 이상 심각도 이상과 Harmonic 간의 동행 패턴이 의심되는데 원시 로그 중심으로 어떤 이상이 유력한지 말해줘 [S2-ANOMALY-092]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-053",
+    "message": "원시 로그와 정제 데이터 차이를 이해하기 쉽게 설명해줘? [S2-RAG-053]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-REPORT-090",
+    "message": "CHP2 라인에 대한 월간 운영 리포트 양식으로 핵심 수치만 정리해줘 왜 이렇게 나왔는지도 짧게 알려줘. [S2-REPORT-090]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-091",
+    "message": "2월 에너지 사용량 보고서 만들어줘 (dashboard 기준으로) [S2-REPORT-091]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-092",
+    "message": "CHP2 라인 월간 리포트 원고를 보고서 스타일로 요약해줘: 수치, 추세, 권고? [S2-REPORT-092]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-093",
+    "message": "[OPS] 지난주 C동 이상탐지 건수/심각도도 볼 수 있어? [S2-ANOMALY-093]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-093",
+    "message": "ESS 구역 월간 리포트에서 KPI, 비용, 자급률, 이상건수 항목 간 상관을 함께 보는 방식으로 요약해줘 [S2-REPORT-093]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-057",
+    "message": "ESS 구역의 전력 수요 추세가 3개월 뒤에도 상승세로 가는지 예측해줘 원인도 같이 추정해줘. [S2-FORECAST-057]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-CMS-073",
+    "message": "부탁드려요. 예지보전 관점에서 CHP1 라인 점검 주기를 검토해줘 [S2-CMS-073]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-054",
+    "message": "전압 변동과 전류 불균형이 설비 성능에 미치는 영향이 뭔지 알려줘? [S2-RAG-054]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-094",
+    "message": "지난주 CHP2 라인 이상탐지 건수/심각도도 볼 수 있어? [S2-ANOMALY-094]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-074",
+    "message": "3호 압축기 점검 스케줄 상태 알려줘? [S2-CMS-074]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-094",
+    "message": "2월 에너지 사용량 보고서 만들어줘 [S2-REPORT-094]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-095",
+    "message": "부탁드려요. 4호 압축기 월간 이상 건수와 비용 상관을 중심으로 보고서형으로 정리해줘 [S2-REPORT-095]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-058",
+    "message": "다음 분기 4호 압축기 peak 수요가 어느 정도일지 알려줘 원인도 같이 추정해줘. [S2-FORECAST-058]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-096",
+    "message": "CHP1 라인 월간 KPI 요약 보고서 1페이지로 알려줘 (dashboard 기준으로) [S2-REPORT-096]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-097",
+    "message": "[OPS] 이번 주 KPI 추이 요약해줘 [S2-REPORT-097]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-055",
+    "message": "요약해줘: 원시 로그와 정제 데이터 차이를 이해하기 쉽게 설명해줘 [S2-RAG-055]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-059",
+    "message": "현재 패턴 기준으로 앞으로 2주 수전반 사용량 전망해줘 (dashboard 기준으로) [S2-FORECAST-059]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-CMS-075",
+    "message": "요약해줘: 배전반의 설비 건전성을 기준으로 보고서용 한 줄 평가를 내려줘 [S2-CMS-075]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-076",
+    "message": "A동의 CMS 관점에서 경보 미발생 설비 리스크를 요약해줘 다음 달 추세도 같이 알려줄 수 있어? [S2-CMS-076]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-077",
+    "message": "요약해줘: 보일러실의 규칙 점검 체계로 보면 어느 설비군이 CMS 조치 우선 대상인지 말해줘 [S2-CMS-077]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-095",
+    "message": "최근 7월 C동 COPDrop 알림이 몇 건인지 확인해줘. 참고로 보고서에도 반영해줘. [S2-ANOMALY-095]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-078",
+    "message": "요약해줘: 수전반 설비가 안정적이지 않더라도 즉시 조치가 필요한지, 모니터링만으로 충분한지 구분해줘 [S2-CMS-078]",
+    "expected_route": "cms",
+    "difficulty": "hard",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-079",
+    "message": "보일러실의 설비 건전성을 기준으로 보고서용 한 줄 평가를 내려줘 (dashboard 기준으로) [S2-CMS-079]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-080",
+    "message": "[OPS] D동 최근 2주간 작동 상태와 오작동 징후를 한 번 점검해줘 [S2-CMS-080]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-081",
+    "message": "설비 상태 점검 기준에서 PV 구역은(는) 어떤 상태야? (dashboard 기준으로) [S2-CMS-081]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-056",
+    "message": "예지보전이 뭔지 실무적으로 설명해줘 [S2-RAG-056]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-082",
+    "message": "4호 압축기 최근 2주간 작동 상태와 오작동 징후를 한 번 점검해줘 [S2-CMS-082]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-057",
+    "message": "부탁드려요. 안전계수가 뭐야? [S2-RAG-057]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-083",
+    "message": "[OPS] 3호 압축기 점검 스케줄 상태 알려줘 [S2-CMS-083]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-FORECAST-060",
+    "message": "[OPS] 다음 달 냉동기실 전력 사용량이 어떻게 될까? [S2-FORECAST-060]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-058",
+    "message": "자급률 개념이 뭐야? [S2-RAG-058]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-096",
+    "message": "3호 압축기에서 경보가 anomaly 원인로 오인될 수 있는 유사 신호가 있었는지 anomaly 건수 기준으로 알려줘 (dashboard 기준으로) [S2-ANOMALY-096]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-098",
+    "message": "CHP1 라인에 대한 월간 운영 리포트 양식으로 핵심 수치만 정리해줘 왜 이렇게 나왔는지도 짧게 알려줘. [S2-REPORT-098]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-061",
+    "message": "내일부터 일주일간 냉동기실 사용량 추세는 올라가나 내려가나? 원인도 같이 추정해줘. [S2-FORECAST-061]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-099",
+    "message": "요약해줘: 냉동기실 리포트에서 비용/에너지 효율 개선 포인트가 어디인지 뽑아줘 [S2-REPORT-099]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-062",
+    "message": "배전반의 다음 분기 냉방 부하 전망을 주관적으로라도 추정해줘 (dashboard 기준으로) [S2-FORECAST-062]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-100",
+    "message": "[OPS] A동 리포트에서 비용/에너지 효율 개선 포인트가 어디인지 뽑아줘 [S2-REPORT-100]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-097",
+    "message": "원시 로그 기준으로 수전반의 발생 추이 패턴을 보여줘.? [S2-ANOMALY-097]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-101",
+    "message": "수전반 기준 이번 분기 이상치 포함 월간 현황표를 해석해줘 [S2-REPORT-101]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-059",
+    "message": "[OPS] EMS와 CMS는 어떻게 달라? [S2-RAG-059]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-REPORT-102",
+    "message": "수전반 월간 이상 건수와 비용 상관을 중심으로 보고서형으로 정리해주면 좋겠어 [S2-REPORT-102]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-103",
+    "message": "부탁드려요. 공조기 기준 최근 분기 보고서 지표(요약+트렌드) 알려줘 [S2-REPORT-103]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-060",
+    "message": "부탁드려요. 오류 예산(error budget) 관점에서 챗봇 운영 품질을 어떻게 정의하면 될까? [S2-RAG-060]",
+    "expected_route": "rag",
+    "difficulty": "hard",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-098",
+    "message": "요약해줘: C동 3월 COPDrop 관련 심각도 등급이 비정상적으로 증가한 구간이 있어? 원시 로그 기준으로 설명해줘 [S2-ANOMALY-098]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-104",
+    "message": "[OPS] 수전반 월간 이상 건수와 비용 상관을 중심으로 보고서형으로 정리해줘 [S2-REPORT-104]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-063",
+    "message": "12월~2월 B동 수요가 반등하거나 둔화할 가능성을 수치적으로 가정해줘 [S2-FORECAST-063]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-099",
+    "message": "요약해줘: 최근 3개월 배전반 PowerSpike 이상 이벤트의 평균 심각도 변화를 알려줘 [S2-ANOMALY-099]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-061",
+    "message": "전압 변동과 전류 불균형이 설비 성능에 미치는 영향이 뭔지 알려줘 개념적으로도 설명해줄래? [S2-RAG-061]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-100",
+    "message": "CHP1 라인 최근 NightConsumption 이상치가 있나? [S2-ANOMALY-100]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-101",
+    "message": "대시보드에서 보일러실 이상 건수 추이만 간단히 정리해줘? [S2-ANOMALY-101]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-105",
+    "message": "공조기 최근 3개월 월간 리포트에서 핵심 지표 5개를 정리해줘 (dashboard 기준으로) [S2-REPORT-105]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-064",
+    "message": "4호 압축기의 전력 수요 추세가 3개월 뒤에도 상승세로 가는지 예측해줘? [S2-FORECAST-064]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-106",
+    "message": "냉동기실 월간 리포트 원고를 보고서 스타일로 요약해줘: 수치, 추세, 권고 [S2-REPORT-106]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-107",
+    "message": "3호 압축기 대시보드 지표를 일관된 보고서 톤으로 정리해주면 좋겠어 [S2-REPORT-107]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-108",
+    "message": "냉동기실 월간 이상 건수와 비용 상관을 중심으로 보고서형으로 정리해줘 왜 이렇게 나왔는지도 짧게 알려줘. [S2-REPORT-108]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-102",
+    "message": "부탁드려요. D동에서 이상 심각도이(가) 자주 발생하는 건 어떤 게 있어? [S2-ANOMALY-102]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-REPORT-109",
+    "message": "D동 대시보드 지표를 일관된 보고서 톤으로 정리해줘? [S2-REPORT-109]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-CMS-084",
+    "message": "요약해줘: 수전반의 CMS 관점에서 경보 미발생 설비 리스크를 요약해줘 [S2-CMS-084]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-110",
+    "message": "요약해줘: 공조기의 장기 리포트 형식으로 사용량/비용/의존도에 대한 인사이트를 제시해줘 [S2-REPORT-110]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-062",
+    "message": "RAG 기반 응답에서 근거 정합성(grounding) 검증이 왜 필요한지 설명해줘? [S2-RAG-062]",
+    "expected_route": "rag",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-065",
+    "message": "현재 패턴 기준으로 앞으로 2주 4호 압축기 사용량 전망해줘 (dashboard 기준으로) [S2-FORECAST-065]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-111",
+    "message": "요약해줘: 보일러실 기준 최근 분기 보고서 지표(요약+트렌드) 알려줘 [S2-REPORT-111]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-REPORT-112",
+    "message": "부탁드려요. 3호 압축기 리포트에서 비용/에너지 효율 개선 포인트가 어디인지 뽑아줘 [S2-REPORT-112]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-066",
+    "message": "앞으로 주간 추세로 C동 사용량이 계속 증가할까? [S2-FORECAST-066]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-103",
+    "message": "공조기의 CurrentRipple 이상 징후를 심각도 중심으로 추적해줘? [S2-ANOMALY-103]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-085",
+    "message": "CHP2 라인 설비의 이상 징후를 점검하고 상태만 알려줘? [S2-CMS-085]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-086",
+    "message": "설비 상태 점검 기준에서 배전반은(는) 어떤 상태야? [S2-CMS-086]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-113",
+    "message": "3호 압축기 월간 KPI 요약 보고서 1페이지로 알려줘? [S2-REPORT-113]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-104",
+    "message": "CHP2 라인의 심각도 등급 건수가 예전 대비 anomaly 급증했는지 건수/비율로 분석해줘 (dashboard 기준으로) [S2-ANOMALY-104]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-105",
+    "message": "[OPS] 이번 달 배전반에서 경보 발생 건수 알려줘 [S2-ANOMALY-105]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-106",
+    "message": "CHP2 라인 최근 NightConsumption anomaly치가 있나? (dashboard 기준으로) [S2-ANOMALY-106]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-063",
+    "message": "예지보전이 뭔지 실무적으로 설명해줘 개념적으로도 설명해줄래? [S2-RAG-063]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-RAG-064",
+    "message": "안전계수가 뭐야? (dashboard 기준으로) [S2-RAG-064]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-067",
+    "message": "다음 달 C동 전력 사용량이 어떻게 될까? [S2-FORECAST-067]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-107",
+    "message": "D동에서 COPDrop가 반복되는 경향이 있는데, 지금까지의 이상 건수 분포/전후 관계를 이상탐지 관점에서 요약해줘? [S2-ANOMALY-107]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-108",
+    "message": "부탁드려요. 4월 ESS 구역의 잔차가 큰 이상 이벤트 패턴을 원인별로 분류해줘 [S2-ANOMALY-108]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-065",
+    "message": "안전계수가 뭐야? [S2-RAG-065]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-068",
+    "message": "지표 반영해서 D동의 2주 예측값(증가/감소) 알려줘? [S2-FORECAST-068]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-066",
+    "message": "부하 곡선이 무엇이고 왜 보는지 알려줘? [S2-RAG-066]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-069",
+    "message": "이번 주 A동 로드 변화 예측해줘? [S2-FORECAST-069]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-FORECAST-070",
+    "message": "냉동기실의 future trend를 근거 없이 단정하지 않고 범위(낮음/보통/높음)로 제시해줘? [S2-FORECAST-070]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-114",
+    "message": "부탁드려요. C동 월간 이상 건수와 비용 상관을 중심으로 보고서형으로 정리해줘 [S2-REPORT-114]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-067",
+    "message": "자급률 개념이 뭐야? (dashboard 기준으로) [S2-RAG-067]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-RAG-068",
+    "message": "부하 곡선이 무엇이고 왜 보는지 알려줘 개념적으로도 설명해줄래? [S2-RAG-068]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-REPORT-115",
+    "message": "지난달 에너지 비용과 사용량 통계만 정리해줘 왜 이렇게 나왔는지도 짧게 알려줘. [S2-REPORT-115]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-FORECAST-071",
+    "message": "향후 예측에서 CHP2 라인의 기준선 대비 편차 가능성을 설명해줘 (dashboard 기준으로) [S2-FORECAST-071]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-ANOMALY-109",
+    "message": "ESS 구역에서 ReactivePower 이상 알람 발생 시각별 군집 특성을 원인 가설 중심으로 정리해주면 좋겠어 [S2-ANOMALY-109]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-069",
+    "message": "안전계수가 뭐야? [S2-RAG-069]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-087",
+    "message": "CHP1 라인 설비의 이상 징후를 점검하고 상태만 알려줘? [S2-CMS-087]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-116",
+    "message": "요약해줘: 지난 6개월 공조기 보고서에서 개선 포인트와 리스크 지점을 각각 3개씩 도출해줘 [S2-REPORT-116]",
+    "expected_route": "report",
+    "difficulty": "hard",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-110",
+    "message": "작년 동기와 올해 동기를 비교해 배전반 이상 패턴에서 통계적 이상 징후가 보이나? 참고로 보고서에도 반영해줘. [S2-ANOMALY-110]",
+    "expected_route": "anomaly",
+    "difficulty": "hard",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-RAG-070",
+    "message": "KPI를 한 줄로 설명해줘 개념적으로도 설명해줄래? [S2-RAG-070]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-072",
+    "message": "부탁드려요. 이번 주 냉동기실 로드 변화 예측해줘 [S2-FORECAST-072]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-071",
+    "message": "안전계수가 뭐야? 개념적으로도 설명해줄래? [S2-RAG-071]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-RAG-072",
+    "message": "요약해줘: 피크 부하가 뭔지 알려줘 [S2-RAG-072]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-111",
+    "message": "요약해줘: 최근 3개월 PV 구역 PowerSpike 이상 이벤트의 평균 심각도 변화를 알려줘 [S2-ANOMALY-111]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-073",
+    "message": "앞으로 주간 추세로 3호 압축기 사용량이 계속 증가할까? 원인도 같이 추정해줘. [S2-FORECAST-073]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-073",
+    "message": "RAG 기반 응답에서 근거 정합성(grounding) 검증이 왜 필요한지 설명해줘 [S2-RAG-073]",
+    "expected_route": "rag",
+    "difficulty": "hard",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-112",
+    "message": "냉동기실의 이상 건수 건수가 예전 대비 이상 급증했는지 건수/비율로 분석해줘 참고로 보고서에도 반영해줘. [S2-ANOMALY-112]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-088",
+    "message": "부탁드려요. 4호 압축기의 설비 건전성을 기준으로 보고서용 한 줄 평가를 내려줘 [S2-CMS-088]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-113",
+    "message": "A동에서 PVNightNonZero 이상 발생 시점과 배경 지표를 함께 확인해줘 참고로 보고서에도 반영해줘. [S2-ANOMALY-113]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-074",
+    "message": "현재 지표 반영해서 ESS 구역의 2주 예측값(증가/감소) 알려줄래? [S2-FORECAST-074]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-117",
+    "message": "이번 달 CHP2 라인 리포트 요약해줘 (dashboard 기준으로) [S2-REPORT-117]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-114",
+    "message": "배전반에서 이상 건수이(가) 자주 발생하는 건 어떤 게 있어? 참고로 보고서에도 반영해줘. [S2-ANOMALY-114]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-075",
+    "message": "C동에서 냉방 부하가 계속 증가하면 다음 2개월 유지비와 예측 오차 리스크가 어떻게 될지 알려줘 (dashboard 기준으로) [S2-FORECAST-075]",
+    "expected_route": "forecast",
+    "difficulty": "hard",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-CMS-089",
+    "message": "예지보전 관점에서 PV 구역 점검 주기를 검토해줘 (dashboard 기준으로) [S2-CMS-089]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-FORECAST-076",
+    "message": "부탁드려요. 8월 기준으로 배전반 앞으로 4주 동안 사용량 변동성을 예측해줘 [S2-FORECAST-076]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-074",
+    "message": "요약해줘: 무효전력이 뭐야? [S2-RAG-074]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-CMS-090",
+    "message": "정비이력 기반으로 A동의 설비 상태를 추정해줘? [S2-CMS-090]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-091",
+    "message": "[OPS] 설비 상태 점검 기준에서 냉동기실은(는) 어떤 상태야? [S2-CMS-091]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-REPORT-118",
+    "message": "부탁드려요. 이번 주 KPI 추이 요약해줘 [S2-REPORT-118]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-075",
+    "message": "[OPS] 역률이 뭔지 쉽게 설명해줘 [S2-RAG-075]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-077",
+    "message": "다음 달 CHP1 라인 이상치 가능성도 같이 예측해줘? [S2-FORECAST-077]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-CMS-092",
+    "message": "정비이력 기반으로 B동의 설비 상태를 추정해줘 (dashboard 기준으로) [S2-CMS-092]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-RAG-076",
+    "message": "수요반응이 에너지 비용에 어떤 의미인지 설명해줘? [S2-RAG-076]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-FORECAST-078",
+    "message": "향후 예측에서 공조기의 기준선 대비 편차 가능성을 설명해줘 원인도 같이 추정해줘. [S2-FORECAST-078]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-077",
+    "message": "EMS와 CMS는 어떻게 달라? [S2-RAG-077]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "colloquial",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-REPORT-119",
+    "message": "공조기 월간 anomaly 건수와 비용 상관을 중심으로 보고서형으로 정리해줘 (dashboard 기준으로) [S2-REPORT-119]",
+    "expected_route": "report",
+    "difficulty": "medium",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-RAG-078",
+    "message": "부탁드려요. 자급률 개념이 뭐야? [S2-RAG-078]",
+    "expected_route": "rag",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-115",
+    "message": "부탁드려요. 지난주 냉동기실 이상탐지 건수/심각도도 볼 수 있어? [S2-ANOMALY-115]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-ANOMALY-116",
+    "message": "[OPS] 4호 압축기에서 경보가 발생 추이로 오인될 수 있는 유사 신호가 있었는지 이상 건수 기준으로 알려줘 [S2-ANOMALY-116]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "ops_console",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-079",
+    "message": "ESS 구역의 월간 사용량이 다음 달에도 비슷한 패턴으로 유지될지 전망해줘? [S2-FORECAST-079]",
+    "expected_route": "forecast",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-REPORT-120",
+    "message": "요약해줘: 이번 분기 ESS 구역 전력 의존도 지표 정리해줘 [S2-REPORT-120]",
+    "expected_route": "report",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "리포트/KPI/비용/통계/요약 문항"
+  },
+  {
+    "id": "S2-ANOMALY-117",
+    "message": "지난주 3호 압축기 이상탐지 건수/심각도도 볼 수 있어? 참고로 보고서에도 반영해줘. [S2-ANOMALY-117]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-093",
+    "message": "부탁드려요. ESS 구역에서 정비 이력과 현재 상태 지표를 함께 고려해 고장 위험 구간 후보를 선별해줘 [S2-CMS-093]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-118",
+    "message": "4호 압축기 12월 GridImport 관련 심각도 등급이 비정상적으로 증가한 구간이 있어? 원시 로그 기준으로 설명해줘? [S2-ANOMALY-118]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-FORECAST-080",
+    "message": "다음 분기 C동 전력비용이 높아질 가능성이 있나? (dashboard 기준으로) [S2-FORECAST-080]",
+    "expected_route": "forecast",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "미래 추세/예측/전망 중심 질의"
+  },
+  {
+    "id": "S2-RAG-079",
+    "message": "부탁드려요. 원시 로그와 정제 데이터 차이를 이해하기 쉽게 설명해줘 [S2-RAG-079]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-RAG-080",
+    "message": "전압 변동과 전류 불균형이 설비 성능에 미치는 영향이 뭔지 알려줘? [S2-RAG-080]",
+    "expected_route": "rag",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "개념 설명/정의/도메인 지식 질의"
+  },
+  {
+    "id": "S2-ANOMALY-119",
+    "message": "보일러실의 COPDrop 이상 징후를 심각도 중심으로 추적해줘? [S2-ANOMALY-119]",
+    "expected_route": "anomaly",
+    "difficulty": "medium",
+    "style": "direct",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-094",
+    "message": "4호 압축기의 CMS 관점에서 경보 미발생 설비 리스크를 요약해줘? [S2-CMS-094]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-095",
+    "message": "공조기 설비의 최근 이상 징후를 점검하고 상태만 알려줘 다음 달 추세도 같이 알려줄 수 있어? [S2-CMS-095]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-096",
+    "message": "부탁드려요. 배전반의 정비 우선순위 후보를 알려줘 [S2-CMS-096]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "polite",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-ANOMALY-120",
+    "message": "요약해줘: 이번 달 4호 압축기에서 경보 발생 건수 알려줘 [S2-ANOMALY-120]",
+    "expected_route": "anomaly",
+    "difficulty": "easy",
+    "style": "report_like",
+    "source": "generated_two_stage_260612",
+    "notes": "이상탐지 이벤트/건수/원인 분석 질의"
+  },
+  {
+    "id": "S2-CMS-097",
+    "message": "PV 구역 설비의 최근 anomaly 징후를 점검하고 상태만 알려줘 (dashboard 기준으로) [S2-CMS-097]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-098",
+    "message": "4호 압축기 센서/밸브/펌프 중 선제 유지보수 필요성이 높은 항목이 무엇인지 알려줘? [S2-CMS-098]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "short",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-099",
+    "message": "3호 압축기 밸브/펌프 동작 anomaly 징후가 있는지 확인해줘 (dashboard 기준으로) [S2-CMS-099]",
+    "expected_route": "cms",
+    "difficulty": "easy",
+    "style": "mixed_korean_english",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  },
+  {
+    "id": "S2-CMS-100",
+    "message": "3호 압축기 센서/밸브/펌프 중 선제 유지보수 필요성이 높은 항목이 무엇인지 알려줘 다음 달 추세도 같이 알려줄 수 있어? [S2-CMS-100]",
+    "expected_route": "cms",
+    "difficulty": "medium",
+    "style": "ambiguous",
+    "source": "generated_two_stage_260612",
+    "notes": "설비 상태/정비/예지보전 중심의 설비 점검 질의"
+  }
+]
