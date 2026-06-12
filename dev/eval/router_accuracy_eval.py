@@ -32,6 +32,7 @@ from pathlib import Path
 from typing import Any
 
 from common_metrics import build_metrics_envelope, default_output_paths, infer_run_id, write_json
+from router_dataset_preflight import run_preflight as run_router_preflight
 
 # ── 팀원 라우트 → 우리 라우트 매핑 ───────────────────────────────
 
@@ -41,9 +42,20 @@ ROUTE_MAP: dict[str, str] = {
     "needs_job":         "report",
     "approval_required": "off_topic",
     "report_shell":      "report",
+    # Stage-1/2 새 스키마와의 호환성
+    "cms": "cms",
+    "forecast": "forecast",
+    "anomaly": "anomaly",
+    "rag": "rag",
+    "report": "report",
+    # Stage-1 request_type 호환성
+    "query": "query",
+    "action_request": "action_request",
+    "approval_required": "approval_required",
+    "off_topic": "off_topic",
 }
 
-OUR_ROUTES = ["anomaly", "cms", "forecast", "off_topic", "rag", "report"]
+OUR_ROUTES = ["anomaly", "cms", "forecast", "off_topic", "rag", "report", "query", "action_request", "approval_required"]
 
 # 기본 파일 경로
 _ROOT = Path(__file__).parent.parent.parent
@@ -157,7 +169,8 @@ def llm_classify(question: str) -> str:
             max_tokens=10,
             fast=True,
         ).strip().lower()
-        valid = ("anomaly", "report", "rag", "forecast", "cms", "off_topic")
+        valid = ("anomaly", "report", "rag", "forecast", "cms", "off_topic",
+                 "query", "action_request", "approval_required")
         return raw if raw in valid else "rag"
     except Exception as e:
         print(f"[LLM 폴백 실패] {e}", file=sys.stderr)
@@ -177,7 +190,11 @@ def evaluate(rows: list[dict], use_llm: bool = False) -> dict:
     rule_hit = 0
 
     for row in rows:
-        teammate_route = row["expected_route"]
+        teammate_route = row.get("expected_route")
+        if teammate_route is None:
+            teammate_route = row.get("expected_request_type")
+        if teammate_route is None:
+            raise KeyError("expected_route 또는 expected_request_type이 없습니다")
         expected = ROUTE_MAP[teammate_route]
         question = row["message"]
 
@@ -380,6 +397,12 @@ def main() -> None:
                         help="Markdown report 출력 경로. 기본값: metrics.json과 같은 run 폴더/report.md")
     parser.add_argument("--run-id", type=str, default=None,
                         help="reports/experiments/<test_id>/<run_id>/ 아래에 저장할 run id")
+    parser.add_argument("--preflight", action="store_true",
+                        help="실행 전 dataset preflight(schema+id unique+label 분포) 수행")
+    parser.add_argument("--preflight-only", action="store_true",
+                        help="preflight만 수행하고 점수 계산은 생략")
+    parser.add_argument("--dataset-schema", type=Path, default=None,
+                        help="Preflight에서 사용할 JSON schema 경로(기본: stage1/stage2 파일명 추론)")
     args = parser.parse_args()
 
     if args.out_json is None or args.out_md is None:
@@ -396,6 +419,21 @@ def main() -> None:
     if not args.dataset.exists():
         print(f"[오류] 데이터셋 없음: {args.dataset}", file=sys.stderr)
         sys.exit(1)
+
+    if args.preflight:
+        stem = args.dataset.name.lower()
+        if args.dataset_schema is not None or "stage1" in stem or "stage2" in stem:
+            run_router_preflight(args.dataset, schema_path=args.dataset_schema)
+        else:
+            print("[알림] preflight은 stage1/stage2 데이터셋 또는 --dataset-schema 지정 시 동작합니다.", file=sys.stderr)
+
+    if args.preflight_only:
+        if not args.preflight and ("stage1" in args.dataset.name.lower() or "stage2" in args.dataset.name.lower() or args.dataset_schema is not None):
+            run_router_preflight(args.dataset, schema_path=args.dataset_schema)
+        elif not args.preflight:
+            print("[오류] preflight-only는 stage1/stage2 데이터셋 또는 --dataset-schema 지정 시에만 사용 가능합니다.", file=sys.stderr)
+            sys.exit(1)
+        sys.exit(0)
 
     rows = json.loads(args.dataset.read_text(encoding="utf-8"))
     print(f"[평가 시작] {len(rows)}문항 | LLM 폴백: {'ON' if args.llm else 'OFF'}")

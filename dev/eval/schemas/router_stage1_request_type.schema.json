@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/router-stage1-request-type-260612.schema.json",
+  "title": "Stage 1 Router Request-Type Dataset",
+  "description": "Schema for two-stage router Stage 1 dataset used in test05_stage1",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "$ref": "#/definitions/sample"
+  },
+  "definitions": {
+    "sample": {
+      "type": "object",
+      "required": [
+        "id",
+        "message",
+        "expected_request_type",
+        "difficulty",
+        "style",
+        "source",
+        "notes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^S1-(QUERY|ACTION|APPROVAL|OFFTOPIC)-\\d{3}$"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 8
+        },
+        "expected_request_type": {
+          "type": "string",
+          "enum": ["query", "action_request", "approval_required", "off_topic"]
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["easy", "medium", "hard"]
+        },
+        "style": {
+          "type": "string",
+          "enum": [
+            "direct",
+            "colloquial",
+            "short",
+            "polite",
+            "ambiguous",
+            "ops_console",
+            "report_like",
+            "mixed_korean_english"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        },
+        "query_subtype": {
+          "type": "string",
+          "enum": ["anomaly", "report", "cms", "forecast", "rag"]
+        },
+        "request_subtype": {
+          "type": "string",
+          "enum": [
+            "job_or_workflow",
+            "safety_or_control",
+            "주식",
+            "음식",
+            "날씨",
+            "연예",
+            "스포츠",
+            "의료",
+            "생활"
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "expected_request_type": { "const": "query" },
+            "query_subtype": { "$ref": "#/definitions/querySubtype" },
+            "request_subtype": { "not": {} }
+          },
+          "required": ["query_subtype"]
+        },
+        {
+          "properties": {
+            "expected_request_type": { "const": "action_request" },
+            "request_subtype": { "const": "job_or_workflow" },
+            "query_subtype": { "not": {} }
+          },
+          "required": ["request_subtype"]
+        },
+        {
+          "properties": {
+            "expected_request_type": { "const": "approval_required" },
+            "request_subtype": { "const": "safety_or_control" },
+            "query_subtype": { "not": {} }
+          },
+          "required": ["request_subtype"]
+        },
+        {
+          "properties": {
+            "expected_request_type": { "const": "off_topic" },
+            "request_subtype": {
+              "type": "string",
+              "enum": ["주식", "음식", "날씨", "연예", "스포츠", "의료", "생활"]
+            },
+            "query_subtype": { "not": {} }
+          },
+          "required": ["request_subtype"]
+        }
+      ]
+    },
+    "querySubtype": {
+      "type": "string",
+      "enum": ["anomaly", "report", "cms", "forecast", "rag"]
+    }
+  }
+}
