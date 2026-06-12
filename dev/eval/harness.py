@@ -1071,17 +1071,25 @@ def run(fast_only: bool = False, quality_only: bool = False, out_json: Path | No
     test_client  = _make_client(PROVIDER)
     judge_client = _make_client("openai")
 
+    AXES = ["korean", "format", "grounding", "reasoning", "actionability"]
     results = []
     for p in prompts:
         print(f"▶ [{p['id']}] {p['name']} ...", end=" ", flush=True)
         response, elapsed_ms = _call(test_client, model, p["messages"])
         scores = _judge(judge_client, p, response)
+        # Some local judges emit partial or malformed JSON. Keep the run alive
+        # and mark missing axes as zero instead of aborting the whole benchmark.
+        for ax in AXES:
+            try:
+                scores[ax] = int(scores.get(ax, 0))
+            except (TypeError, ValueError):
+                scores[ax] = 0
+        scores.setdefault("comment", "")
         scores["elapsed_ms"] = elapsed_ms
         scores["response"]   = response
         results.append({"prompt": p["id"], "name": p["name"], **scores})
 
-        avg = round((scores["korean"] + scores["format"] + scores["grounding"] +
-                     scores.get("reasoning", 0) + scores.get("actionability", 0)) / 5, 1)
+        avg = round(sum(scores.get(ax, 0) for ax in AXES) / len(AXES), 1)
         print(f"완료 ({elapsed_ms}ms) — 평균 {avg}/10")
 
     AXES = ["korean", "format", "grounding", "reasoning", "actionability"]
