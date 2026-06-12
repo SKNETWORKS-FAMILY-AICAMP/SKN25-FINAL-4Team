@@ -68,6 +68,10 @@ outputs/**
 !outputs/
 !outputs/raw_eda/
 !outputs/raw_eda/README.md
+
+# Local tests
+tests/
+
 test2_15min/
 test4_15min_no_v16/
 test1_15min/**/_candidate_models/
