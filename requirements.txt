@@ -1,0 +1,43 @@
+# DB
+sqlalchemy>=2.0
+psycopg2-binary
+pgvector
+
+# 전처리
+pandas>=2.0
+numpy
+statsmodels
+
+# 이상탐지
+scikit-learn
+torch
+joblib
+
+# 예측
+prophet
+xgboost
+catboost
+lightgbm
+
+# 시각화/리포트
+matplotlib
+
+# 에이전트/RAG
+langchain
+langgraph
+langchain-community
+
+# 실험 추적
+mlflow
+
+# API
+fastapi
+uvicorn[standard]
+python-multipart
+
+# RunPod Serverless worker
+runpod>=1.6,<2
+
+# 기타
+python-dotenv
+pyyaml

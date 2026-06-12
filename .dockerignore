@@ -1,0 +1,35 @@
+# Keep RunPod build context focused on training code only.
+*
+
+!Dockerfile.runpod
+!Dockerfile.runpod-smoke
+!requirements-runpod.txt
+!energy_v84/
+!energy_v84/**
+!runpod_job/
+!runpod_job/**
+!runpod_smoke/
+!runpod_smoke/**
+
+# Never bake secrets or local/generated state into the image.
+.env
+.git/
+.venv/
+venv/
+env/
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# Generated model outputs are created by the serverless job, not baked in.
+artifacts/
+artifacts/**
+energy_v84/pattern_verification/
+energy_v84/pattern_verification/**

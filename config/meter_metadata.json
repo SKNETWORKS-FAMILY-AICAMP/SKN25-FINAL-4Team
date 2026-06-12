@@ -1,0 +1,752 @@
+{
+  "H1.Z20": {
+    "meter_type": "electric",
+    "energy_type": "production",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "chp",
+    "redundant_pair": "H1.ZE20",
+    "description": "CHP 전기 생산 메인",
+    "location_prefix": "H1",
+    "note": "H1 prefix denotes a physical location / sub-distribution group. Redundant electric production metering for CHP."
+  },
+  "H1.ZE20": {
+    "meter_type": "electric",
+    "energy_type": "production",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "chp",
+    "redundant_pair": "H1.Z20",
+    "description": "CHP 전기 생산 redundant",
+    "location_prefix": "H1",
+    "note": "H1 prefix denotes a physical location / sub-distribution group. Redundant electric production metering for CHP."
+  },
+  "V.Z84": {
+    "meter_type": "electric",
+    "energy_type": "production",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "pv",
+    "redundant_pair": "V.ZE84",
+    "description": "PV Parking Lot",
+    "location_prefix": "V",
+    "installation_note": "PV groups 1 and 2 were installed from 2019-06.",
+    "note": "V prefix denotes a physical location / sub-distribution group."
+  },
+  "V.ZE84": {
+    "meter_type": "electric",
+    "energy_type": "production",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "pv",
+    "redundant_pair": "V.Z84",
+    "description": "PV Parking Lot redundant",
+    "location_prefix": "V",
+    "installation_note": "Redundant metering for PV groups 1 and 2; installed from 2022-11.",
+    "note": "V prefix denotes a physical location / sub-distribution group."
+  },
+  "H1.Z310": {
+    "meter_type": "electric",
+    "energy_type": "production",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "pv",
+    "redundant_pair": null,
+    "description": "PV Emission Lab",
+    "location_prefix": "H1",
+    "installation_note": "PV group 3 was installed from 2020-06.",
+    "note": "H1 prefix denotes a physical location / sub-distribution group."
+  },
+  "H2.Z311": {
+    "meter_type": "electric",
+    "energy_type": "production",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "pv",
+    "redundant_pair": null,
+    "description": "PV Office Building",
+    "location_prefix": "H2",
+    "installation_note": "PV groups 4 and 5 were installed from 2020-06.",
+    "note": "H2 prefix denotes a physical location / sub-distribution group."
+  },
+  "H3.Z312": {
+    "meter_type": "electric",
+    "energy_type": "production",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "pv",
+    "redundant_pair": null,
+    "description": "PV Design Studio",
+    "location_prefix": "H3",
+    "installation_note": "PV group 6 was installed from 2020-06.",
+    "note": "H3 prefix denotes a physical location / sub-distribution group."
+  },
+  "H1.Z16": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "cooling_central",
+    "redundant_pair": null,
+    "description": "CM1"
+  },
+  "H1.Z11": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "cooling_central",
+    "redundant_pair": null,
+    "description": "CM2-1"
+  },
+  "H1.Z12": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "cooling_central",
+    "redundant_pair": null,
+    "description": "CM2-2"
+  },
+  "H1.Z24": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "cooling_central",
+    "redundant_pair": null,
+    "description": "CM3-1"
+  },
+  "H1.Z25": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "cooling_central",
+    "redundant_pair": null,
+    "description": "CM3-2"
+  },
+  "H3.Z45": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "cooling_local",
+    "redundant_pair": null,
+    "description": "Design Studio 로컬 냉각기"
+  },
+  "H2.Z66": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "cooling_local",
+    "redundant_pair": "H2.ZE66",
+    "description": "Workshop 로컬 냉각기1 메인"
+  },
+  "H2.ZE66": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "cooling_local",
+    "redundant_pair": "H2.Z66",
+    "description": "Workshop 로컬 냉각기1 redundant"
+  },
+  "H2.Z67": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "cooling_local",
+    "redundant_pair": "H2.ZE67",
+    "description": "Workshop 로컬 냉각기2 메인"
+  },
+  "H2.ZE67": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "cooling_local",
+    "redundant_pair": "H2.Z67",
+    "description": "Workshop 로컬 냉각기2 redundant"
+  },
+  "V.K21": {
+    "meter_type": "thermal",
+    "energy_type": "neutral",
+    "thermal_mode": "cooling",
+    "anomaly_target": "P",
+    "group_name": "cooling_thermal",
+    "redundant_pair": null,
+    "description": "중앙 냉수 공급 메인"
+  },
+  "H1.K11": {
+    "meter_type": "thermal",
+    "energy_type": "neutral",
+    "thermal_mode": "cooling",
+    "anomaly_target": "P",
+    "group_name": "cooling_thermal",
+    "redundant_pair": null,
+    "description": "HVAC 3&5"
+  },
+  "H1.K12": {
+    "meter_type": "thermal",
+    "energy_type": "neutral",
+    "thermal_mode": "cooling",
+    "anomaly_target": "P",
+    "group_name": "cooling_thermal",
+    "redundant_pair": null,
+    "description": "Emission lab HVAC 1/2"
+  },
+  "H1.K14": {
+    "meter_type": "thermal",
+    "energy_type": "neutral",
+    "thermal_mode": "cooling",
+    "anomaly_target": "P",
+    "group_name": "cooling_thermal",
+    "redundant_pair": null,
+    "description": "Emission lab cooling to office"
+  },
+  "H1.K15": {
+    "meter_type": "thermal",
+    "energy_type": "neutral",
+    "thermal_mode": "cooling",
+    "anomaly_target": "P",
+    "group_name": "cooling_thermal",
+    "redundant_pair": null,
+    "description": "HVAC 3"
+  },
+  "H1.K16": {
+    "meter_type": "thermal",
+    "energy_type": "neutral",
+    "thermal_mode": "cooling",
+    "anomaly_target": "P",
+    "group_name": "cooling_thermal",
+    "redundant_pair": null,
+    "description": "Server O1"
+  },
+  "H2.K21": {
+    "meter_type": "thermal",
+    "energy_type": "neutral",
+    "thermal_mode": "cooling",
+    "anomaly_target": "P",
+    "group_name": "cooling_thermal",
+    "redundant_pair": null,
+    "description": "Office 냉방"
+  },
+  "H1.W11": {
+    "meter_type": "thermal",
+    "energy_type": "neutral",
+    "thermal_mode": "heating",
+    "anomaly_target": "P",
+    "group_name": "heating_thermal",
+    "redundant_pair": null,
+    "description": "총 난방"
+  },
+  "H1.W12": {
+    "meter_type": "thermal",
+    "energy_type": "neutral",
+    "thermal_mode": "heating",
+    "anomaly_target": "P",
+    "group_name": "heating_thermal",
+    "redundant_pair": null,
+    "description": "CHP 열 생산",
+    "location_prefix": "H1",
+    "note": "H1 prefix denotes a physical location / sub-distribution group. Thermal side metering for CHP."
+  },
+  "WeatherStation.Weather": {
+    "meter_type": "weather",
+    "energy_type": "neutral",
+    "thermal_mode": null,
+    "anomaly_target": null,
+    "group_name": "weather",
+    "redundant_pair": null,
+    "description": "기상관측소"
+  },
+  "V.Z81": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "transformer",
+    "redundant_pair": null,
+    "description": "Parking lot transformer 2"
+  },
+  "V.Z82": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "transformer",
+    "redundant_pair": null,
+    "description": "Parking lot transformer 1"
+  },
+  "H2.Z35": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "transformer",
+    "redundant_pair": "H2.Z351",
+    "description": "Transformer"
+  },
+  "H2.Z351": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "transformer",
+    "redundant_pair": "H2.Z35",
+    "description": "Transformer redundant"
+  },
+  "H2.Z36": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "transformer",
+    "redundant_pair": "H2.Z361",
+    "description": "Transformer"
+  },
+  "H2.Z361": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "transformer",
+    "redundant_pair": "H2.Z36",
+    "description": "Transformer redundant"
+  },
+  "H1.Z15": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": null,
+    "group_name": "distribution",
+    "redundant_pair": null,
+    "description": "Distribution"
+  },
+  "H1.Z28": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": null,
+    "group_name": "distribution",
+    "redundant_pair": null,
+    "description": "Distribution"
+  },
+  "H2.T.Z31": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "hvac",
+    "redundant_pair": null,
+    "description": "HVAC office 50/51"
+  },
+  "H2.T.Z32": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "distribution",
+    "redundant_pair": null,
+    "description": "Distribution"
+  },
+  "H2.T.Z33": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "distribution",
+    "redundant_pair": null,
+    "description": "Distribution"
+  },
+  "H2.T.Z34": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "distribution",
+    "redundant_pair": null,
+    "description": "Distribution"
+  },
+  "H2.T.Z30": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "distribution",
+    "redundant_pair": null,
+    "description": "Distribution"
+  },
+  "H1.Z13": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "hvac",
+    "redundant_pair": null,
+    "description": "Cooling 1 / HVAC 1.1"
+  },
+  "H1.Z14": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "hvac",
+    "redundant_pair": null,
+    "description": "Cooling 1 / HVAC 1.2"
+  },
+  "H1.Z10": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "test",
+    "redundant_pair": null,
+    "description": "Test"
+  },
+  "H1.Z17": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": null,
+    "group_name": "test",
+    "redundant_pair": null,
+    "description": "Test"
+  },
+  "H1.Z18": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "test",
+    "redundant_pair": null,
+    "description": "Test"
+  },
+  "H1.Z19": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "test",
+    "redundant_pair": null,
+    "description": "Test"
+  },
+  "H1.Z21": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "test",
+    "redundant_pair": null,
+    "description": "Test"
+  },
+  "H1.Z22": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "test",
+    "redundant_pair": null,
+    "description": "Test"
+  },
+  "H1.Z23": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "test",
+    "redundant_pair": null,
+    "description": "Test"
+  },
+  "H1.Z26": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "test",
+    "redundant_pair": null,
+    "description": "Test"
+  },
+  "H1.Z27": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "test",
+    "redundant_pair": null,
+    "description": "Test"
+  },
+  "H1.Z29": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": null,
+    "group_name": "test",
+    "redundant_pair": null,
+    "description": "Test"
+  },
+  "H2.Z61": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "server",
+    "redundant_pair": null,
+    "description": "Server"
+  },
+  "H2.Z62": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "server",
+    "redundant_pair": null,
+    "description": "Server"
+  },
+  "H2.Z63": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "server",
+    "redundant_pair": null,
+    "description": "Server"
+  },
+  "H2.Z64": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "server",
+    "redundant_pair": "H2.ZE64",
+    "description": "Server"
+  },
+  "H2.ZE64": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "server",
+    "redundant_pair": "H2.Z64",
+    "description": "Server redundant"
+  },
+  "H2.Z65": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "server",
+    "redundant_pair": "H2.ZE65",
+    "description": "Server"
+  },
+  "H2.ZE65": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "server",
+    "redundant_pair": "H2.Z65",
+    "description": "Server redundant"
+  },
+  "H3.Z71": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "server",
+    "redundant_pair": null,
+    "description": "Server O4 power supply"
+  },
+  "H3.Z46": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "server",
+    "redundant_pair": null,
+    "description": "Server"
+  },
+  "H3.Z43": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "server",
+    "redundant_pair": "H3.ZE43",
+    "description": "Server"
+  },
+  "H3.ZE43": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "server",
+    "redundant_pair": "H3.Z43",
+    "description": "Server redundant"
+  },
+  "H3.Z44": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "server",
+    "redundant_pair": "H3.ZE44",
+    "description": "Server"
+  },
+  "H3.ZE44": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "server",
+    "redundant_pair": "H3.Z44",
+    "description": "Server redundant"
+  },
+  "H2.Z68": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "ventilation",
+    "redundant_pair": null,
+    "description": "Ventilation"
+  },
+  "H2.Z69": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "ventilation",
+    "redundant_pair": null,
+    "description": "Ventilation"
+  },
+  "H2.Z70": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "ventilation",
+    "redundant_pair": null,
+    "description": "Ventilation"
+  },
+  "H3.Z42": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "ventilation",
+    "redundant_pair": null,
+    "description": "Ventilation"
+  },
+  "H3.Z40": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "design_dis",
+    "redundant_pair": "H3.ZE40",
+    "description": "Design distribution"
+  },
+  "H3.ZE40": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "design_dis",
+    "redundant_pair": "H3.Z40",
+    "description": "Design distribution redundant"
+  },
+  "H3.Z41": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "design_dis",
+    "redundant_pair": "H3.ZE41",
+    "description": "Design distribution"
+  },
+  "H3.ZE41": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "design_dis",
+    "redundant_pair": "H3.Z41",
+    "description": "Design distribution redundant"
+  },
+  "H4.Z50": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "office_dis",
+    "redundant_pair": "H4.ZE50",
+    "description": "Office distribution"
+  },
+  "H4.ZE50": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "office_dis",
+    "redundant_pair": "H4.Z50",
+    "description": "Office distribution redundant"
+  },
+  "H4.Z51": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "office_dis",
+    "redundant_pair": "H4.ZE51",
+    "description": "Office distribution"
+  },
+  "H4.ZE51": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "office_dis",
+    "redundant_pair": "H4.Z51",
+    "description": "Office distribution redundant"
+  },
+  "H3.Z47": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "simulation",
+    "redundant_pair": null,
+    "description": "Driving simulator general"
+  },
+  "H3.Z48": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "simulation",
+    "redundant_pair": null,
+    "description": "Driving simulator control"
+  },
+  "H3.Z49": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "simulation",
+    "redundant_pair": null,
+    "description": "Driving simulator HVAC"
+  },
+  "H2.ZE74": {
+    "meter_type": "electric",
+    "energy_type": "consumption",
+    "thermal_mode": null,
+    "anomaly_target": "P",
+    "group_name": "robolab",
+    "redundant_pair": null,
+    "description": "Robolab"
+  }
+}

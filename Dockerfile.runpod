@@ -1,0 +1,34 @@
+# syntax=docker/dockerfile:1
+
+ARG BASE_IMAGE=pytorch/pytorch:2.3.1-cuda12.1-cudnn8-runtime
+FROM ${BASE_IMAGE}
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/workspace/skn25_final/src:/workspace/skn25_final \
+    MPLCONFIGDIR=/tmp/matplotlib \
+    CUDA_VISIBLE_DEVICES=0
+
+WORKDIR /workspace/skn25_final
+
+# libgomp1 is required by LightGBM/CatBoost runtime wheels.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements-runpod.txt ./requirements-runpod.txt
+RUN python -m pip install --upgrade pip \
+    && python -m pip install -r requirements-runpod.txt
+
+COPY src ./src
+COPY runpod_job ./runpod_job
+RUN mkdir -p artifacts/candidate artifacts/archive artifacts/incoming_uploads artifacts/training_jobs artifacts/inference_results
+
+RUN python -m py_compile \
+    runpod_job/handler.py \
+    src/energy_v84/train.py \
+    && python -c "import runpod_job.handler; import energy_v84.train"
+
+CMD ["python", "-m", "runpod_job.handler"]

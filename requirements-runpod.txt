@@ -1,0 +1,16 @@
+# RunPod Serverless entrypoint
+runpod>=1.6,<2
+
+# Data / DB
+pandas>=2.0,<3
+numpy>=1.24,<3
+sqlalchemy>=2.0,<3
+psycopg2-binary>=2.9,<3
+python-dotenv>=1.0,<2
+
+# Model training
+scikit-learn>=1.3,<2
+joblib>=1.3,<2
+catboost>=1.2,<2
+lightgbm>=4.0,<5
+matplotlib>=3.7,<4

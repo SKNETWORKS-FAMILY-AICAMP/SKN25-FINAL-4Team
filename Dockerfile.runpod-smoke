@@ -1,0 +1,19 @@
+# syntax=docker/dockerfile:1
+
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
+
+WORKDIR /app
+
+RUN python -m pip install --no-cache-dir --upgrade pip \
+    && python -m pip install --no-cache-dir "runpod>=1.6,<2"
+
+COPY runpod_smoke ./runpod_smoke
+
+RUN python -m py_compile runpod_smoke/handler.py \
+    && python -c "import runpod_smoke.handler"
+
+CMD ["python", "-m", "runpod_smoke.handler"]

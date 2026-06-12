@@ -1,0 +1,71 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Local agent/work notes
+AGENTS.md
+WORKLOG.md
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Generated outputs
+outputs/
+logs/
+*.log
+
+# Data/model artifacts: do not push trained weights, scalers, predictions, or run outputs
+artifacts/**
+!artifacts/
+!artifacts/**/
+!artifacts/**/README.md
+!artifacts/**/.gitkeep
+*.h5
+*.pkl
+*.pt
+*.pth
+*.onnx
+*.joblib
+*.cbm
+*.parquet
+*.feather
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.npy
+*.npz
+
+# Optional local experiment folders
+experiments/
+mlflow/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node / frontend
+node_modules/
+.next/
