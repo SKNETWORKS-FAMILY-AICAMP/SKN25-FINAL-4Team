@@ -19,7 +19,7 @@ Knowledge DB는 CMS 기준 문서를 검색 가능한 knowledge source로 제공
 ## 3. 적재 대상 문서
 
 ```text
-README.md
+readme.md
 docs/specs/project_overview.md
 docs/specs/data_platform_contract.md
 docs/specs/runtime_architecture.md

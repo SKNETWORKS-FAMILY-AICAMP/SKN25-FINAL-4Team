@@ -23,7 +23,7 @@
 - AWS: PostgreSQL/TimescaleDB, Grafana, postgres/node exporters.
 - Kafka lag는 API latency가 아니라 consumer offset backlog다.
 - 2023 timestamp는 historical replay/virtual-clock event time이다.
-- P-Max direct runtime input은 `mart.peak_feature_15min`이다. `mart.peak_input_15min`은 legacy/helper projection으로만 표기한다.
+- P-Max direct runtime input은 `mart.peak_feature_15min`이다. `mart.peak_feature_15min`은 legacy/helper projection으로만 표기한다.
 - Graphify/LLM Wiki는 docs/specs context grounding 영역이며 active data pipeline node가 아니다.
 
 ## 3. Diagram 목록
@@ -87,4 +87,4 @@ git diff --check
 2. `.mmd` 수정 후 대응 `.svg`를 재생성한다.
 3. DB ERD 의미를 바꿀 때는 `.dbml`을 수정하고 dbdiagram.io에서 렌더링을 확인한다.
 4. 새 diagram을 추가하면 이 문서의 목록에 source/render/설명을 추가한다.
-5. Diagram 설명 문서는 이 `README.md` 하나로 유지한다.
+5. Diagram 설명 문서는 이 `readme.md` 하나로 유지한다.

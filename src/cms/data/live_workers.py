@@ -171,7 +171,7 @@ class PeakInputRecord:
 
     def __post_init__(self) -> None:
         if self.table != MART_PEAK_INPUT_15MIN:
-            raise ValueError("deprecated peak input records must stay in mart.peak_input_15min")
+            raise ValueError("deprecated peak input records must stay in mart.peak_feature_15min")
         if self.rolling_1h_valid_bucket_count < 0:
             raise ValueError("rolling valid bucket count must be non-negative")
         require_live_observed_source(self.source_layer, self.source_mode)

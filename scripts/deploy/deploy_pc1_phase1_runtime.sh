@@ -30,7 +30,7 @@ RSYNC_SSH="sshpass -e ssh -o PubkeyAuthentication=no -o PreferredAuthentications
 export SSHPASS="$SKN25_SSH_PASSWORD"
 
 required=(
-  docker/Dockerfile.phase1
+  docker/dockerfile_phase1
   docker/requirements.phase1.txt
   scripts/live/run_consumer_service.py
   scripts/live/run_live_stream_injector.py
@@ -44,7 +44,7 @@ cd "$REPO_ROOT"
 LOCAL_SHA="$(python3 - <<'PY'
 from pathlib import Path
 import hashlib
-roots=['src','scripts/live','docker/Dockerfile.phase1','docker/requirements.phase1.txt']
+roots=['src','scripts/live','docker/dockerfile_phase1','docker/requirements.phase1.txt']
 paths=[]
 for root in roots:
     p=Path(root)
@@ -62,7 +62,7 @@ PY
 LOCAL_RUNTIME_PATHS_JSON="$(python3 - <<'PY'
 from pathlib import Path
 import json
-roots=['src','scripts/live','docker/Dockerfile.phase1','docker/requirements.phase1.txt']
+roots=['src','scripts/live','docker/dockerfile_phase1','docker/requirements.phase1.txt']
 paths=[]
 for root in roots:
     p=Path(root)
@@ -89,7 +89,7 @@ rsync -azR --no-owner --no-group \
   --exclude '.ruff_cache/' \
   --exclude '**/__pycache__/' \
   -e "$RSYNC_SSH" \
-  docker/Dockerfile.phase1 docker/requirements.phase1.txt docker/backend_containerfile docker/compose.edge_stream.yml pyproject.toml requirements.txt \
+  docker/dockerfile_phase1 docker/requirements.phase1.txt docker/backend_containerfile docker/compose_edge_stream.yml pyproject.toml requirements.txt \
   src scripts evaluation knowledge \
   "$SKN25_SSH_USER@$SKN25_PC1_SSH_HOST:$REMOTE_ROOT/"
 

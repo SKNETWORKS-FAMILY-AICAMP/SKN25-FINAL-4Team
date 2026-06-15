@@ -79,7 +79,7 @@ live.measurement_1min + live.bucket_queue
 -> API/dashboard read-only serving
 ```
 
-`mart.peak_feature_15min`은 P-Max adapter의 직접 input boundary입니다. `mart.peak_input_15min`은 legacy/helper projection view/table이며 direct runtime input으로 설명하지 않습니다. `mart.anomaly_feature_1h`은 anomaly v84 adapter의 1h model input boundary입니다. P-Max/anomaly inference 결과는 forecast/warning serving output이며 observed canonical table에 write하지 않습니다.
+`mart.peak_feature_15min`은 P-Max adapter의 직접 input boundary입니다. `mart.peak_feature_15min`은 legacy/helper projection view/table이며 direct runtime input으로 설명하지 않습니다. `mart.anomaly_feature_1h`은 anomaly v84 adapter의 1h model input boundary입니다. P-Max/anomaly inference 결과는 forecast/warning serving output이며 observed canonical table에 write하지 않습니다.
 
 ## 5. Final P-Max model-serving boundary
 
@@ -94,7 +94,7 @@ Final P-Max model release는 `v29`를 기준으로 공유합니다.
 | History requirement | 288 history windows 필요 |
 | Forecast horizons | 15 / 30 / 45 / 60 minutes |
 | Direct model input boundary | `mart.peak_feature_15min` |
-| Optional projection boundary | `mart.peak_input_15min` |
+| Optional projection boundary | `mart.peak_feature_15min` |
 | Forecast result table | `mart.pmax_forecast_15min` |
 | Inference audit log | `ops.pmax_forecast_inference_log` |
 | Evaluation table | `qa.pmax_forecast_evaluation` |
@@ -152,7 +152,7 @@ SKN25-FINAL-4Team/
 | Current active observability | `live.measurement_event`, `ops.pipeline_metric`, `qa.meter_tag`, `qa.bad_row`, `mart.peak_feature_15min`, `mart.pmax_forecast_15min`, `ops.pmax_forecast_inference_log`, `qa.pmax_forecast_evaluation`, `mart.anomaly_warning_1h`, `ops.anomaly_warning_inference_log`, `qa.model_serving_evidence_packet` when the corresponding runtime lane has written evidence |
 | Model-serving input/output | `mart.peak_feature_15min`, `mart.anomaly_feature_1h`, `mart.pmax_forecast_15min`, `mart.anomaly_warning_1h`, `ops.*_inference_log`, `qa.model_serving_evidence_packet` |
 | Target-only observability before DDL approval | `live.measurement_policy`, `qa.live_measurement_issue`, `ops.worker_heartbeat`, `ops.kafka_consumer_lag`, `ops.fastapi_ingest_metric`, `live.bucket_queue`, `live.promotion_check` |
-| Peak/P-Max input | direct runtime input is `mart.peak_feature_15min`; `mart.peak_input_15min` is legacy/helper projection only |
+| Peak/P-Max input | direct runtime input is `mart.peak_feature_15min`; `mart.peak_feature_15min` is legacy/helper projection only |
 | P-Max serving output | `mart.pmax_forecast_15min` |
 | P-Max ops/QA | `ops.pmax_forecast_inference_log`, `qa.pmax_forecast_evaluation` |
 | Anomaly input/output | `mart.anomaly_feature_1h`, `mart.anomaly_warning_1h` |

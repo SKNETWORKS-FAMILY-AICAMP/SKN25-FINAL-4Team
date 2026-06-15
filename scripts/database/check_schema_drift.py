@@ -103,7 +103,7 @@ EXPECTED_COLUMNS: dict[str, tuple[str, ...]] = {
     ),
 }
 
-OPTIONAL_TABLES = frozenset({"mart.peak_input_15min"})
+OPTIONAL_TABLES = frozenset({"mart.peak_feature_15min"})
 KNOWN_ABSENT_TABLES = frozenset(
     {
         "mart.peak_training_frame_15min",

@@ -47,7 +47,7 @@ services:
   cms-api:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.phase1
+      dockerfile: docker/dockerfile_phase1
     image: cms:phase1
     container_name: cms-api
     restart: unless-stopped

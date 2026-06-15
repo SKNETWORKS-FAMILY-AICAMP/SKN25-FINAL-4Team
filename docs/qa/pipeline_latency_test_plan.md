@@ -20,7 +20,7 @@ source event
 -> live.measurement_1min + live.bucket_queue
 -> mean_rollup_worker -> live.measurement_15min / live.measurement_1h
 -> peak_feature_worker -> mart.peak_feature_15min
--> optional helper projection -> mart.peak_input_15min
+-> optional helper projection -> mart.peak_feature_15min
 -> qa_eligibility_worker -> live.promotion_check
 -> approval-gated promotion readiness
 ```

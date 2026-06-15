@@ -42,8 +42,8 @@ config files:
 Sanitized DEV templates:
 
 ```text
-docker/compose.aws.db.yml
-docker/compose.aws.db.observability.yml
+docker/compose_aws_db.yml
+docker/compose_aws_db_observability.yml
 ```
 
 Concrete `.env` values remain server-local and must not be committed.
@@ -52,15 +52,15 @@ Concrete `.env` values remain server-local and must not be committed.
 
 | Host | Runtime role | Compose/template path |
 |---|---|---|
-| PC1 | ingestion API, backend API, frontend, Airflow, Kafka broker, 3x DB-writing consumers, live bucket worker | `docker/compose.edge_stream.yml` plus service-specific server env |
-| PC2 | Kafka broker, Prometheus, Grafana, exporters | `docker/compose.local.kafka-broker.yml` and observability provisioning |
-| PC3 | Kafka broker, canonical/anomaly/model-serving workers | `docker/compose.model_serving.yml`, `docker/model_serving_containerfile` |
+| PC1 | ingestion API, backend API, frontend, Airflow, Kafka broker, 3x DB-writing consumers, live bucket worker | `docker/compose_edge_stream.yml` plus service-specific server env |
+| PC2 | Kafka broker, Prometheus, Grafana, exporters | `docker/compose_local_kafka_broker.yml` and observability provisioning |
+| PC3 | Kafka broker, canonical/anomaly/model-serving workers | `docker/compose_model_serving.yml`, `docker/model_serving_containerfile` |
 
 PC3 model-serving Compose commands should be run with an explicit env file for interpolation:
 
 ```bash
-docker compose --env-file docker/model_serving.env -f docker/compose.model_serving.yml --profile operational-scheduler config --quiet
-docker compose --env-file docker/model_serving.env -f docker/compose.model_serving.yml --profile operational-scheduler up -d --build cms-canonical-promotion-worker cms-anomaly-feature-worker cms-hybrid-model-serving-scheduler
+docker compose --env-file docker/model_serving.env -f docker/compose_model_serving.yml --profile operational-scheduler config --quiet
+docker compose --env-file docker/model_serving.env -f docker/compose_model_serving.yml --profile operational-scheduler up -d --build cms-canonical-promotion-worker cms-anomaly-feature-worker cms-hybrid-model-serving-scheduler
 ```
 
 `env_file:` inside a service is not enough for `${POSTGRES_DB:? ...}` interpolation at Compose parse time.

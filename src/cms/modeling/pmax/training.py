@@ -813,7 +813,7 @@ def weight_table(method: str, versions: list[str], weights: np.ndarray, val_pred
 
 
 def write_method_readme(output_dir: Path, method: str) -> None:
-    (output_dir / "README.md").write_text(
+    (output_dir / "readme.md").write_text(
         f"""# {method}
 
 This folder contains one P-max forecasting result.
@@ -1130,7 +1130,7 @@ def write_summary(rows: list[dict[str, Any]], output_dir: Path) -> None:
 
 
 def write_root_readme(output_dir: Path) -> None:
-    (output_dir / "README.md").write_text(
+    (output_dir / "readme.md").write_text(
         """# P-max Model Comparison Outputs
 
 This output folder contains model comparison artifacts for forecasting

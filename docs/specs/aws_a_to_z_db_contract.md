@@ -8,7 +8,7 @@ Audit note: this document is the repo-local DB/access plan only. It must not be 
 - `canonical.measurement_1min`, `canonical.measurement_15min`, `canonical.measurement_1h`: present but `0` rows in the audited fact set; no default A-to-Z pipeline writes target canonical.
 - `reference.corrected_resampled_15min`, `reference.corrected_resampled_1h`: populated reference/audit sources, not default serving truth.
 - `mart.peak_feature_15min`: present/populated and is the direct P-Max serving feature source.
-- `mart.peak_input_15min`: present legacy compatibility view/table. Do not add new `*_input_*` DB tables.
+- `mart.peak_feature_15min`: present legacy compatibility view/table. Do not add new `*_input_*` DB tables.
 - `mart.peak_training_frame_15min`: target standard alias over the legacy peak frame, to be created only by approved migration.
 - Missing target-only live lane objects: `live.measurement_policy`, `live.measurement_1min`, `live.bucket_queue`, `live.measurement_15min`, `live.measurement_1h`, `live.promotion_check`, `qa.live_measurement_issue`.
 - Missing target-only anomaly/evidence objects: `mart.anomaly_feature_1h`, `mart.anomaly_warning_1h`, `ops.anomaly_warning_inference_log`, `qa.anomaly_warning_evaluation`, `qa.model_serving_evidence_packet`.
@@ -18,7 +18,7 @@ Audit note: this document is the repo-local DB/access plan only. It must not be 
 - Standard anomaly feature object: `mart.anomaly_feature_1h`.
 - Forbidden new DB table name: `mart.anomaly_input_1h` and any new table matching `*._input_*`.
 - Standard peak training frame alias: `mart.peak_training_frame_15min`.
-- Legacy compatibility only: `mart.peak_input_15min`; keep read-only while callers migrate.
+- Legacy compatibility only: `mart.peak_feature_15min`; keep read-only while callers migrate.
 - P-Max direct runtime feature source remains `mart.peak_feature_15min` until the alias is approved and present.
 
 ## Role separation

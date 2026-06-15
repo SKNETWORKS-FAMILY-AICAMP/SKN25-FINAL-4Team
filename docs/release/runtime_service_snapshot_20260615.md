@@ -17,7 +17,7 @@ This document is a secret-safe runtime snapshot for DEV push preparation. It rec
 - 2023 event timestamps are intentional for the historical replay/virtual-clock stream.
 - PC1 injector was a host Python process and has been stopped. Latest checked Kafka consumer lag was `90756` total and draining; existing backlog should continue draining before additional source events are produced.
 - Future ingestion should continue through a FastAPI/containerized injector service, not another unmanaged host process.
-- PC1 backend and ingestion health labels should be `CMS Backend API` and `CMS Ingestion API`, not `cms-api-skeleton`.
+- PC1 backend and ingestion health labels are `CMS Backend API` and `CMS Ingestion API`; the legacy skeleton health label is no longer accepted.
 - PC3 model-serving now runs the rebuilt torch-capable image. P-Max operational negative prediction handling uses `clip_zero`.
 - PC3 Compose rebuild was completed with `--env-file docker/model_serving.env`; keep this invocation in docs because service-level `env_file:` does not participate in Compose interpolation.
 
@@ -25,11 +25,11 @@ This document is a secret-safe runtime snapshot for DEV push preparation. It rec
 
 | Source | Repo path | Action |
 |---|---|---|
-| AWS `/home/ubuntu/cms-deploy/compose.yml` | `docker/compose.aws.db.yml` | Added sanitized template. |
-| AWS `/home/ubuntu/cms-deploy/compose.observability.yml` | `docker/compose.aws.db.observability.yml` | Existing template retained; use with server-local `.env`. |
-| PC2/PC3 `/home/skn25/cms-local/docker/compose.local.kafka-broker.yml` | `docker/compose.local.kafka-broker.yml` | Added sanitized broker template. |
-| PC1 `/home/skn25/cms-stream-deploy/docker/compose.local.stream.yml` | `docker/compose.edge_stream.yml` | Repo keeps renamed edge-stream template instead of old local-name copy. |
-| PC3 `/home/skn25/cms-stream-deploy/docker/compose.model_serving.yml` | `docker/compose.model_serving.yml` | Repo keeps current service template; rebuild invocation documented. |
+| AWS `/home/ubuntu/cms-deploy/compose.yml` | `docker/compose_aws_db.yml` | Added sanitized template. |
+| AWS `/home/ubuntu/cms-deploy/compose.observability.yml` | `docker/compose_aws_db_observability.yml` | Existing template retained; use with server-local `.env`. |
+| PC2/PC3 `/home/skn25/cms-local/docker/compose_local_kafka_broker.yml` | `docker/compose_local_kafka_broker.yml` | Added sanitized broker template. |
+| PC1 `/home/skn25/cms-stream-deploy/docker/compose.local.stream.yml` | `docker/compose_edge_stream.yml` | Repo keeps renamed edge-stream template instead of old local-name copy. |
+| PC3 `/home/skn25/cms-stream-deploy/docker/compose_model_serving.yml` | `docker/compose_model_serving.yml` | Repo keeps current service template; rebuild invocation documented. |
 
 ## 4. Push exclusion policy
 

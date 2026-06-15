@@ -18,7 +18,7 @@ from cms.data.peak_features import PeakFeatureRow, PeakSample, aggregate_peak_fe
 DEFAULT_ROOT = Path("/data/fems/src/corrected_resampled")
 DEFAULT_ENV_PATH = Path("/home/ubuntu/cms-deploy/.env")
 TARGET_TABLE = "mart.peak_feature_15min"
-INPUT_VIEW = "mart.peak_input_15min"
+INPUT_VIEW = "mart.peak_feature_15min"
 
 
 def parse_env(path: Path) -> dict[str, str]:

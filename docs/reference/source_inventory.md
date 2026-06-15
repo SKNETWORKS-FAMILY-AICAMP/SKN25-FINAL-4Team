@@ -26,7 +26,7 @@ Nature 원문 제목은 **A Real-World Energy Management Dataset from a Smart Co
 
 | Source | 역할 |
 |---|---|
-| `README.md` | 저장소 목적, 실행 기준, 주요 문서 index |
+| `readme.md` | 저장소 목적, 실행 기준, 주요 문서 index |
 | `docs/specs/project_overview.md` | CMS architecture 개요 |
 | `docs/specs/data_platform_contract.md` | source, raw, staging, candidate, canonical, reference, mart boundary |
 | `docs/specs/runtime_architecture.md` | Data/Service/Workflow plane과 side-effect boundary |
@@ -45,7 +45,7 @@ HRI-EU `MonitoringDatasetAnalysis` repository는 원문 dataset validation code�
 
 | 파일 | 용도 |
 |---|---|
-| `README.md` | validation, reduced dataset, downsampling code provenance |
+| `readme.md` | validation, reduced dataset, downsampling code provenance |
 | `meters.yaml` | meter category grouping 보조 확인 |
 | `issue_template.yml` | issue/event metadata schema 보조 확인 |
 | `src/ReadFiles.py` | data file naming/loading convention reference |

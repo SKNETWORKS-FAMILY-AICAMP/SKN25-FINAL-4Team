@@ -8,7 +8,7 @@ name: cms-edge-stream
 # - backend: start the separated backend API.
 # - db-writer: start the Kafka -> PostgreSQL consumer after the D1 write gate.
 # - observability: start edge exporters/Prometheus.
-# PC2/PC3 run docker/compose.kafka_cluster.yml as broker2/broker3.
+# PC2/PC3 run docker/compose_kafka_cluster.yml as broker2/broker3.
 # - PostgreSQL is the reachable AWS cms-db endpoint supplied via POSTGRES_HOST.
 # - The gzip source archive is authoritative on PC1 only and is not mounted by this stack.
 

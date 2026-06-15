@@ -31,7 +31,7 @@ CLASSIFICATION_RULES: tuple[tuple[str, str], ...] = (
     ("scripts/", "operator_scripts"),
     ("tests/", "verification_tests"),
     ("docker/", "container_runtime_config"),
-    ("docker-compose.yml", "container_runtime_config"),
+    ("docker_compose.yml", "container_runtime_config"),
     ("frontend/", "frontend_source"),
     ("evaluation/", "evaluation_assets"),
     ("knowledge/", "knowledge_graph_assets"),
@@ -106,13 +106,13 @@ def include_in_release_packet(path: str) -> bool:
     if is_secret_path(path):
         return False
     if path.startswith(BINARY_ARTIFACT_PREFIXES):
-        return path.endswith(("README.md", "manifest.json", "ensemble_weights.csv", "routing.json", "train_meta.json", "feature_columns.json", "val_thresholds.csv"))
+        return path.endswith(("readme.md", "manifest.json", "ensemble_weights.csv", "routing.json", "train_meta.json", "feature_columns.json", "val_thresholds.csv"))
     if path.startswith(("frontend/node_modules/", "frontend/dist/")):
         return False
     return path.startswith(("src/", "scripts/", "tests/", "docker/", "docs/", "frontend/", "evaluation/", "knowledge/")) or path in {
-        "docker-compose.yml",
+        "docker_compose.yml",
         "requirements.txt",
-        "README.md",
+        "readme.md",
     }
 
 
@@ -126,7 +126,7 @@ def runtime_reflection() -> dict[str, Any]:
         "frontend": {
             "compose_service": "cms-frontend",
             "profile": "frontend",
-            "dockerfile": "frontend/Dockerfile",
+            "dockerfile": "frontend/dockerfile",
             "build_command": "npm run build",
         },
         "backend": {

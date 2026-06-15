@@ -55,7 +55,7 @@ GRANT SELECT ON TABLE mart.active_peak_feature_15min TO cms_model_serving;
 GRANT SELECT ON TABLE ops.active_data_exclusion_window TO cms_model_serving;
 GRANT SELECT ON TABLE mart.peak_training_frame_15min TO cms_model_serving;
 -- Current AWS legacy compatibility object; keep SELECT-only while migrating callers to peak_training_frame.
-GRANT SELECT ON TABLE mart.peak_input_15min TO cms_model_serving;
+GRANT SELECT ON TABLE mart.peak_feature_15min TO cms_model_serving;
 GRANT SELECT ON TABLE mart.anomaly_feature_1h TO cms_model_serving;
 
 GRANT SELECT, INSERT, UPDATE ON TABLE mart.pmax_forecast_15min TO cms_model_serving;

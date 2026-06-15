@@ -2,7 +2,7 @@
 -- REVIEW ONLY / DO NOT EXECUTE on AWS or production without an approved migration ticket,
 -- backup plan, rollback plan, and an explicitly gated admin session.
 -- Current AWS alignment (2026-06-11 audit): live.measurement_event, mart.peak_feature_15min,
--- mart.peak_input_15min legacy view/table, mart.pmax_forecast_15min,
+-- mart.peak_feature_15min legacy view/table, mart.pmax_forecast_15min,
 -- ops.pmax_forecast_inference_log, and qa.pmax_forecast_evaluation are present.
 -- Missing/target-only: mart.peak_training_frame_15min alias view, mart.anomaly_feature_1h,
 -- mart.anomaly_warning_1h, ops.anomaly_warning_inference_log,
@@ -15,11 +15,11 @@ CREATE SCHEMA IF NOT EXISTS ops;
 CREATE SCHEMA IF NOT EXISTS qa;
 
 -- Standard P-Max training/serving frame name.  The current AWS compatibility object is
--- mart.peak_input_15min; do not create a new *_input_* table.  The alias gives new code
+-- mart.peak_feature_15min; do not create a new *_input_* table.  The alias gives new code
 -- a stable peak_training_frame name while legacy dashboards/scripts migrate.
 CREATE OR REPLACE VIEW mart.peak_training_frame_15min AS
 SELECT *
-FROM mart.peak_input_15min;
+FROM mart.peak_feature_15min;
 
 -- Existing AWS mart.peak_feature_15min predates the live-observed provenance guard.
 -- Add nullable provenance columns only; do not backfill old rows as live_observed.

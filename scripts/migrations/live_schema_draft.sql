@@ -368,7 +368,7 @@ CREATE TABLE IF NOT EXISTS mart.peak_feature_15min (
 CREATE INDEX IF NOT EXISTS peak_feature_window_idx
     ON mart.peak_feature_15min (meter_urn, measurement, bucket_ts);
 
-CREATE TABLE IF NOT EXISTS mart.peak_input_15min (
+CREATE TABLE IF NOT EXISTS mart.peak_feature_15min (
     bucket_ts TIMESTAMPTZ NOT NULL,
     meter_urn TEXT NOT NULL,
     measurement TEXT NOT NULL,

@@ -24,7 +24,7 @@ services:
   cms-frontend:
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: frontend/dockerfile
       args:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
     image: cms-frontend:latest
@@ -46,7 +46,7 @@ services:
       - observability
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in local .env}
       GRAFANA_POSTGRES_HOST: ${GRAFANA_POSTGRES_HOST:-cms-postgres}
       GRAFANA_POSTGRES_PORT: ${GRAFANA_POSTGRES_PORT:-5432}
       GRAFANA_POSTGRES_DB: ${GRAFANA_POSTGRES_DB:-cms}

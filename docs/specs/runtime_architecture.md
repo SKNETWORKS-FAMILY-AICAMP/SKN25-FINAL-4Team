@@ -183,7 +183,7 @@ Trigger가 생성하는 queue job은 최소 다음 세 종류다.
 |---|---|---|---|
 | `kafka_to_postgres_consumer` | Kafka `measurement_raw_v1` envelope | `live.measurement_event` | business idempotency key로 idempotent insert. Kafka topic/partition/offset/key와 raw payload hash/source lineage 보존. DB transaction success 이후 offset commit. canonical/mart write 없음. |
 | `mean_rollup_worker` | `live.bucket_queue`, `live.measurement_1min`, `live.measurement_policy` | `live.measurement_15min`, `live.measurement_1h` | `job_kind='mean_rollup'`만 처리. mean observed rollup과 coverage/missing/quality/provenance 보존. cumulative/unknown policy는 block 또는 candidate-only. peak value를 live 대표값으로 쓰지 않음. |
-| `peak_feature_worker` | `live.bucket_queue`, `live.measurement_1min` | `mart.peak_feature_15min`, optional `mart.peak_input_15min` | `job_kind='peak_feature'`만 처리. `peak_value`, `peak_ts`, rolling 1h projection을 mart에만 기록. canonical promotion 대상이 아님. P-Max inference를 직접 호출하지 않음. |
+| `peak_feature_worker` | `live.bucket_queue`, `live.measurement_1min` | `mart.peak_feature_15min`, optional `mart.peak_feature_15min` | `job_kind='peak_feature'`만 처리. `peak_value`, `peak_ts`, rolling 1h projection을 mart에만 기록. canonical promotion 대상이 아님. P-Max inference를 직접 호출하지 않음. |
 | `anomaly_input_materializer` | observed 1h source, policy/QA refs | `mart.anomaly_feature_1h` | anomaly v84용 343시간 1h input boundary를 구성한다. model-specific derived feature와 imputation/provenance는 mart input에만 기록하고 canonical을 수정하지 않음. |
 | `qa_eligibility_worker` | live 1min/15min/1h candidates, policy, issues | `live.promotion_check`, QA/anomaly evidence packet | observed source, policy validity, coverage arithmetic, NULL/0 distinction, lineage, blocking issue, anomaly evidence를 평가. pass/warn/block을 재현 가능하게 기록. |
 | `promotion_worker` | approved `promotion_run`, eligible `promotion_check` | `canonical.measurement_1min/15min/1h` | explicit approval과 `promotion_id` 없이는 실행하지 않음. canonical에는 approved observed mean rows만 upsert. peak feature는 제외. |
@@ -200,7 +200,7 @@ Trigger가 생성하는 queue job은 최소 다음 세 종류다.
 
 ### 5.4 Model-serving branch rules
 
-- P-Max branch의 direct runtime source는 `mart.peak_feature_15min`이며, `mart.peak_input_15min`은 optional projection/view다. Kafka event stream이나 PostgreSQL trigger에서 직접 inference를 호출하지 않는다.
+- P-Max branch의 direct runtime source는 `mart.peak_feature_15min`이며, `mart.peak_feature_15min`은 optional projection/view다. Kafka event stream이나 PostgreSQL trigger에서 직접 inference를 호출하지 않는다.
 - P-Max input 생성 조건은 15min 기준 288개 window 확보 후 96x22 input 구성 가능 여부다. window 부족은 inference skip/block evidence로 남긴다.
 - Anomaly branch의 runtime source는 `mart.anomaly_feature_1h`이며, upstream observed 1h source와 model-specific derived/imputation feature를 분리한다.
 - Anomaly input 생성 조건은 1h 기준 343시간 history와 63 meter coverage 검증이다. output은 warning/model-serving evidence이며 canonical observed value가 아니다.
@@ -274,7 +274,7 @@ Artifact는 source evidence, row counts, QA status, cleanup command를 포함한
 
 ## 10. Diagram reference
 
-Pipeline diagram은 `docs/specs/diagrams/README.md`에서 관리한다. 개별 Mermaid source와 render는 서로 다른 pipeline 관점을 표현하므로 유지한다.
+Pipeline diagram은 `docs/specs/diagrams/readme.md`에서 관리한다. 개별 Mermaid source와 render는 서로 다른 pipeline 관점을 표현하므로 유지한다.
 
 ## 11. Verification
 

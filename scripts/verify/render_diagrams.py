@@ -180,8 +180,9 @@ def main() -> int:
         )
     for row in rows:
         print(row)
-    if len(rows) != 10:
-        raise SystemExit(f"expected 10 diagram sources, got {len(rows)}")
+    expected_sources = 12
+    if len(rows) != expected_sources:
+        raise SystemExit(f"expected {expected_sources} diagram sources, got {len(rows)}")
     return 0
 
 

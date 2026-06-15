@@ -110,7 +110,7 @@ Table mart.peak_feature_15min [headercolor: #2563EB, note: 'ACTIVE AWS confirmed
   }
 }
 
-Table mart.peak_input_15min [headercolor: #F97316, note: 'LEGACY/HELPER projection. Direct P-Max runtime input is mart.peak_feature_15min.'] {
+Table mart.peak_feature_15min [headercolor: #F97316, note: 'LEGACY/HELPER projection. Direct P-Max runtime input is mart.peak_feature_15min.'] {
   bucket_ts timestamptz [not null]
   meter_urn text [not null]
   measurement text [not null]
@@ -381,7 +381,7 @@ TableGroup active_aws_confirmed [note: 'Confirmed AWS tables used by current Gra
   qa.meter_tag
   qa.bad_row
   mart.peak_feature_15min
-  mart.peak_input_15min legacy/helper projection
+  mart.peak_feature_15min legacy/helper projection
   mart.pmax_forecast_15min
   ops.pmax_forecast_inference_log
   qa.pmax_forecast_evaluation
@@ -405,7 +405,7 @@ Ref: live.measurement_policy.policy_id < live.bucket_queue.policy_id
 Ref: live.measurement_policy.policy_id < live.promotion_check.policy_id
 Ref: live.measurement_event.event_id < ops.pipeline_latency_event.event_id
 
-Ref: mart.peak_feature_15min.(bucket_ts, meter_urn, measurement, policy_version, feature_version) < mart.peak_input_15min.(bucket_ts, meter_urn, measurement, policy_version, feature_version)
+Ref: mart.peak_feature_15min.(bucket_ts, meter_urn, measurement, policy_version, feature_version) < mart.peak_feature_15min.(bucket_ts, meter_urn, measurement, policy_version, feature_version)
 Ref: mart.pmax_forecast_15min.(logical_meter, base_ts, target_ts) < qa.pmax_forecast_evaluation.(logical_meter, base_ts, target_ts)
 
 Ref: ops.pipeline_metric.run_id < ops.pipeline_latency_event.run_id

@@ -20,7 +20,7 @@ qa.pmax_forecast_evaluation
 qa.model_serving_evidence_packet
 ```
 
-`mart.peak_input_15min` may exist as a legacy/helper projection, but P-Max runtime panels and model-serving checks must ground on `mart.peak_feature_15min`.
+`mart.peak_feature_15min` may exist as a legacy/helper projection, but P-Max runtime panels and model-serving checks must ground on `mart.peak_feature_15min`.
 
 `qa.live_measurement_issue`, `live.measurement_policy`, `live.bucket_queue`, `ops.worker_heartbeat`, `ops.kafka_consumer_lag`, `ops.fastapi_ingest_metric`, `live.promotion_check`는 target contract 또는 future migration 대상이다. Active Grafana dashboard는 이 table들을 직접 조회하지 않는다.
 

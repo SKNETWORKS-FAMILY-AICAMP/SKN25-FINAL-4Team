@@ -96,8 +96,8 @@ docker/Dockerfile.dev
 docker/local.env.example
 # Runtime/model artifacts: keep outside git; mount read-only in service
 artifacts/*
-!artifacts/README.md
-!artifacts/**/README.md
+!artifacts/readme.md
+!artifacts/**/readme.md
 artifacts/runtime_evidence/
 artifacts/**/*.csv
 artifacts/**/*.json
@@ -142,3 +142,6 @@ docker/kafka_cluster.env
 *.rej
 *.swp
 *~
+# Local verification/test workspaces excluded from service E2E push
+tests/
+evaluation/

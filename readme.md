@@ -66,17 +66,17 @@ FastAPI는 낮은 latency가 필요한 service path를 담당한다. LangGraph�
 
 ```text
 SKN25-FINAL-4Team/
-├── README.md
+├── readme.md
 ├── pyproject.toml
 ├── requirements.txt
-├── docker-compose.yml
+├── docker_compose.yml
 ├── docker/
 │   ├── backend_containerfile
 │   ├── model_serving_containerfile
-│   ├── compose.edge_stream.yml
-│   ├── compose.local.kafka-broker.yml
-│   ├── compose.model_serving.yml
-│   └── compose.aws.db.yml
+│   ├── compose_edge_stream.yml
+│   ├── compose_local_kafka_broker.yml
+│   ├── compose_model_serving.yml
+│   └── compose_aws_db.yml
 ├── docs/
 │   ├── specs/              # project specifications
 │   ├── qa/                 # QA contract and test gates
@@ -194,7 +194,7 @@ uv run --with rdflib --with pyshacl   python scripts/ontology/query_ontology.py
 | `docs/qa/qa_contract.md` | data QA, evidence level, report/chat route, live/replay latency 기준 |
 | `docs/reference/source_inventory.md` | Honda Nature/Dryad source tier와 Vector DB 제외 기준 |
 | `docs/reference/measurement_glossary.md` | 전기/열/기상 measurement와 전력 개념 참조 |
-| `docs/specs/diagrams/README.md` | pipeline diagram index와 render 기준 |
+| `docs/specs/diagrams/readme.md` | pipeline diagram index와 render 기준 |
 
 ## 9. 보안 및 운영 경계
 

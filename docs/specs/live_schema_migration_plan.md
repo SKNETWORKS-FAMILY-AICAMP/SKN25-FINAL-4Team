@@ -44,7 +44,7 @@ scripts/migrations/live_schema_draft.sql
 6. qa.live_measurement_issue
 7. live.promotion_check / live.promotion_run
 8. ops.worker_heartbeat / ops.pipeline_latency_event / ops.kafka_consumer_lag / ops.fastapi_ingest_metric
-9. mart.peak_feature_15min / mart.peak_input_15min
+9. mart.peak_feature_15min / mart.peak_feature_15min
 10. live.handle_measurement_event_insert() trigger function
 11. measurement_event_insert_live_trigger enable
 12. kafka_to_postgres_consumer and worker rollout
@@ -92,7 +92,7 @@ long transaction
 (job_kind='peak_feature', resolution='15min')
 ```
 
-`peak_feature / 1h`는 현재 contract에 없다. 1h peak feature는 우선 `mart.peak_input_15min`의 rolling 1h feature로 관리한다.
+`peak_feature / 1h`는 현재 contract에 없다. 1h peak feature는 우선 `mart.peak_feature_15min`의 rolling 1h feature로 관리한다.
 
 ## 6. Rollback boundary
 
@@ -127,7 +127,7 @@ Peak feature branch는 별도다.
 ```text
 live.measurement_1min
 -> mart.peak_feature_15min
--> mart.peak_input_15min
+-> mart.peak_feature_15min
 ```
 
 Peak feature row는 canonical candidate가 아니다.

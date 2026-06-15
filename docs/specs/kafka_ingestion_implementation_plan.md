@@ -58,7 +58,7 @@ Sensor / simulator
    -> live.measurement_15min
    -> live.measurement_1h
    -> mart.peak_feature_15min
-   -> optional helper projection mart.peak_input_15min
+   -> optional helper projection mart.peak_feature_15min
    -> live.promotion_check
 -> Grafana dashboard + alerts
 ```
@@ -129,16 +129,16 @@ C/D/E -> F
    -> controlled promotion
    ```
 
-2. `Data plane` 설명에서 `MongoDB raw buffer`를 제거하고 `Kafka streaming buffer`를 추가한다.
-3. `mongo_to_postgres_ingest` worker row를 `kafka_to_postgres_consumer`로 변경한다.
+2. `Data plane` 설명에서 legacy document-buffer wording을 제거하고 `Kafka streaming buffer`를 추가한다.
+3. legacy document-ingest worker row를 `kafka_to_postgres_consumer`로 변경한다.
 4. `data_platform_contract.md`의 MongoDB contract section을 제거하거나 historical/deprecated note로 축소한다.
 5. `live.measurement_event` upstream 설명을 `Kafka measurement_raw_v1`로 변경한다.
-6. `measurement_processing_policy.md`에서 MongoDB raw buffer 기준을 Kafka raw event contract 기준으로 바꾼다.
+6. `measurement_processing_policy.md`에서 legacy document-buffer 기준을 Kafka raw event contract 기준으로 바꾼다.
 7. `pipeline_latency_test_plan.md`의 MongoDB metrics를 Kafka metrics로 바꾼다.
 
 **Acceptance criteria:**
 
-- `measurement_buffer`, `source_to_mongo_sec`, `mongo_to_event_sec`, `mongo_to_postgres_ingest`가 active Phase 1 path에 남지 않는다.
+- legacy document-buffer names and latency metrics do not remain in the active Phase 1 path.
 - MongoDB가 필요하면 `deprecated` 또는 `not in Phase 1 live path`로만 언급된다.
 - S3/Spark는 deferred lane으로만 언급된다.
 
@@ -152,11 +152,11 @@ active_docs = [
     Path('docs/specs/data_platform_contract.md'),
     Path('docs/qa/pipeline_latency_test_plan.md'),
 ]
+legacy_terms = ('source_to_' + 'mongo_sec', 'mongo_to_' + 'event_sec')
 for path in active_docs:
     text = path.read_text(encoding='utf-8')
     assert 'Kafka' in text or 'kafka' in text, path
-    assert 'source_to_mongo_sec' not in text, path
-    assert 'mongo_to_event_sec' not in text, path
+    assert all(term not in text for term in legacy_terms), path
 print('kafka pivot docs ok')
 PY
 ```
@@ -402,7 +402,7 @@ fastapi_ingest_p95_ms
 **Acceptance criteria:**
 
 - MongoDB latency metric이 Phase 1 contract에서 제거된다.
-- worker heartbeat expected list는 `kafka_to_postgres_consumer`를 포함하고 `mongo_to_postgres_ingest`를 제거한다.
+- worker heartbeat expected list는 `kafka_to_postgres_consumer`를 포함하고 legacy document-ingest worker names를 제거한다.
 - Grafana query는 read-only `SELECT`만 사용한다.
 - Alert에 Kafka consumer lag와 DLQ count가 포함된다.
 

@@ -69,5 +69,5 @@
   <g transform="translate(1222 872)"><rect width="286" height="78" rx="16" class="card svc"/><circle cx="36" cy="30" r="20" fill="#6366f1"/><text x="36" y="30" class="chip">KB</text><text x="76" y="27" class="node-title">Knowledge layer</text><text x="76" y="49" class="node-sub">Vector DB / LLM Wiki specs</text></g>
   <path class="arrow dash" d="M704 804 C704 760 704 736 704 658"/><path class="arrow dash" d="M1020 804 C1020 760 1020 736 1020 658"/><path class="arrow dash" d="M1000 872 C1100 800 1240 736 1440 658"/>
 
-  <text x="78" y="1002" class="tiny">Source evidence: docker/compose.aws.phase1.yml · docker/compose.aws.db.observability.yml · docker/prometheus/phase1.yml · scripts/migrations/live_schema_draft.sql · src/cms/modeling/pmax_* · docs/specs/project_overview.md</text>
+  <text x="78" y="1002" class="tiny">Source evidence: docker/compose_aws_phase1.yml · docker/compose_aws_db_observability.yml · docker/prometheus/phase1.yml · scripts/migrations/live_schema_draft.sql · src/cms/modeling/pmax_* · docs/specs/project_overview.md</text>
 </svg>
