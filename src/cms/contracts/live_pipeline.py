@@ -12,6 +12,7 @@ import math
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Literal
 
 LIVE_MEASUREMENT_EVENT = "live.measurement_event"
@@ -20,6 +21,7 @@ LIVE_MEASUREMENT_1MIN = "live.measurement_1min"
 LIVE_MEASUREMENT_15MIN = "live.measurement_15min"
 LIVE_MEASUREMENT_1H = "live.measurement_1h"
 LIVE_BUCKET_QUEUE = "live.bucket_queue"
+LIVE_PROMOTION_CHECK = "live.promotion_check"
 QA_LIVE_MEASUREMENT_ISSUE = "qa.live_measurement_issue"
 MART_PEAK_FEATURE_15MIN = "mart.peak_feature_15min"
 MART_PEAK_INPUT_15MIN = "mart.peak_input_15min"
@@ -27,13 +29,45 @@ CANONICAL_MEASUREMENT_1MIN = "canonical.measurement_1min"
 CANONICAL_MEASUREMENT_15MIN = "canonical.measurement_15min"
 CANONICAL_MEASUREMENT_1H = "canonical.measurement_1h"
 
+SOURCE_MODE_REFERENCE_BACKFILL = "reference_backfill"
+SOURCE_MODE_HYBRID_WARM_START = "hybrid_warm_start"
+SOURCE_MODE_LIVE_OBSERVED = "live_observed"
+SOURCE_LAYER_REFERENCE_CORRECTED_RESAMPLED = "reference.corrected_resampled"
+SOURCE_LAYER_KAFKA_RAW = "kafka.measurement_raw_v1"
+SOURCE_AUTHORITY_PC1_ARCHIVE = "pc1_archive"
+
+OBSERVED_SOURCE_LAYERS = (
+    SOURCE_LAYER_KAFKA_RAW,
+    LIVE_MEASUREMENT_EVENT,
+    LIVE_MEASUREMENT_1MIN,
+    LIVE_MEASUREMENT_15MIN,
+    LIVE_MEASUREMENT_1H,
+    MART_PEAK_FEATURE_15MIN,
+    MART_PEAK_INPUT_15MIN,
+    CANONICAL_MEASUREMENT_1MIN,
+    CANONICAL_MEASUREMENT_15MIN,
+    CANONICAL_MEASUREMENT_1H,
+)
+REFERENCE_SOURCE_LAYERS = (SOURCE_LAYER_REFERENCE_CORRECTED_RESAMPLED, "corrected_resampled")
+
 CANONICAL_TABLES = (
     CANONICAL_MEASUREMENT_1MIN,
     CANONICAL_MEASUREMENT_15MIN,
     CANONICAL_MEASUREMENT_1H,
 )
 MART_PEAK_TABLES = (MART_PEAK_FEATURE_15MIN, MART_PEAK_INPUT_15MIN)
+LIVE_INJECTOR_SOURCE_AUTHORITIES = (SOURCE_AUTHORITY_PC1_ARCHIVE,)
+LIVE_INJECTOR_FORBIDDEN_SOURCE_ROOT_MARKERS = (
+    "pc2",
+    "pc3",
+    "reference",
+    "corrected_resampled",
+    "canonical",
+    "mart",
+    "backfill",
+)
 
+SourceMode = Literal["reference_backfill", "hybrid_warm_start", "live_observed"]
 TriggerOperationKind = Literal["policy_lookup", "measurement_1min_upsert", "bucket_queue_enqueue", "issue_log"]
 JobKind = Literal["mean_rollup", "peak_feature"]
 Resolution = Literal["1min", "15min", "1h"]
@@ -87,7 +121,7 @@ class LiveMeasurementEvent:
     measurement: str
     source_ts: datetime
     value: float | None
-    source_system: str = "local_scratch"
+    source_system: str = SOURCE_LAYER_KAFKA_RAW
     source_event_id: str | None = None
     payload: dict[str, Any] = field(default_factory=dict)
 
@@ -103,8 +137,8 @@ class LiveMeasurementPolicy:
     meter_urn: str
     measurement: str
     policy_version: int
-    expected_points_15min: int = 15
-    expected_points_1h: int = 60
+    expected_points_15min: int | None = None
+    expected_points_1h: int | None = None
     enabled: bool = True
     native_cadence_seconds: int | None = 60
     heterogeneous_native_cadence: bool = False
@@ -240,6 +274,10 @@ class Coverage:
     expected_points: int
     coverage_ratio: float
 
+    @property
+    def missing_points(self) -> int:
+        return max(self.expected_points - self.observed_points, 0)
+
 
 @dataclass(frozen=True)
 class PromotionDecision:
@@ -247,10 +285,106 @@ class PromotionDecision:
     block_reasons: tuple[PromotionBlockReason, ...] = ()
 
 
+@dataclass(frozen=True)
+class GzipCleanupPlan:
+    """Side-effect-free cleanup gate for local gzip archive candidates.
+
+    The plan never deletes files. It only states which candidate paths would be
+    eligible for a later approved cleanup executor. Dry-run mode and missing
+    approval must both produce an empty executable target set.
+    """
+
+    candidate_paths: tuple[str, ...]
+    executable_delete_targets: tuple[str, ...]
+    dry_run: bool
+    approval_id: str | None = None
+    source_authority: str = SOURCE_AUTHORITY_PC1_ARCHIVE
+    block_reasons: tuple[str, ...] = ()
+
+
 def is_observed_value(value: float | None) -> bool:
     """Return True for observed values; NULL/NaN are missing and 0 is observed."""
 
     return value is not None and not (isinstance(value, float) and math.isnan(value))
+
+
+def classify_source_mode(source_layer: str) -> SourceMode:
+    """Classify a row source into reference/backfill or live/canonical observed mode."""
+
+    normalized = source_layer.strip().lower()
+    if not normalized:
+        raise ValueError("source_layer is required")
+    if any(marker in normalized for marker in REFERENCE_SOURCE_LAYERS):
+        return SOURCE_MODE_REFERENCE_BACKFILL
+    observed_layers = {layer.lower() for layer in OBSERVED_SOURCE_LAYERS}
+    if normalized in observed_layers or normalized.startswith("live.") or normalized.startswith("canonical."):
+        return SOURCE_MODE_LIVE_OBSERVED
+    raise ValueError(f"unknown source_layer: {source_layer}")
+
+
+def is_live_observed_source(source_layer: str, source_mode: str | None = None) -> bool:
+    """Return True only for live/canonical observed rows, never reference/backfill rows."""
+
+    try:
+        inferred = classify_source_mode(source_layer)
+    except ValueError:
+        return False
+    if source_mode is not None and source_mode != inferred:
+        return False
+    return inferred == SOURCE_MODE_LIVE_OBSERVED
+
+
+def require_live_observed_source(source_layer: str, source_mode: str | None = None) -> None:
+    """Raise when a live-serving/canonical candidate row comes from reference data."""
+
+    if not is_live_observed_source(source_layer, source_mode):
+        observed_mode = source_mode if source_mode is not None else classify_source_mode(source_layer)
+        raise ValueError(f"live serving requires live_observed source_layer, got {source_layer}/{observed_mode}")
+
+
+def validate_live_injector_source_authority(source_root: str | Path, source_authority: str = SOURCE_AUTHORITY_PC1_ARCHIVE) -> None:
+    """Require the live injector to use the PC1 gzip archive authority only.
+
+    The local live pipeline may run on PC1~3 hosts, but its source-of-truth gzip
+    root remains the PC1 archive lane. Reference/backfill/canonical/mart paths
+    are explicitly rejected as injector roots so comparison data cannot masquerade
+    as live-observed input.
+    """
+
+    if source_authority != SOURCE_AUTHORITY_PC1_ARCHIVE:
+        raise ValueError(f"live injector source authority must be {SOURCE_AUTHORITY_PC1_ARCHIVE}")
+    normalized_parts = tuple(part.lower() for part in Path(source_root).expanduser().parts)
+    for part in normalized_parts:
+        if any(marker == part or marker in part for marker in LIVE_INJECTOR_FORBIDDEN_SOURCE_ROOT_MARKERS):
+            raise ValueError(f"live injector source root is outside the PC1 archive authority: {source_root}")
+
+
+def plan_gzip_cleanup(
+    candidate_paths: Iterable[str | Path],
+    *,
+    dry_run: bool = True,
+    approval_id: str | None = None,
+    source_authority: str = SOURCE_AUTHORITY_PC1_ARCHIVE,
+) -> GzipCleanupPlan:
+    """Build a non-destructive gzip cleanup plan behind dry-run and approval gates."""
+
+    candidates = tuple(Path(path).as_posix() for path in candidate_paths)
+    block_reasons: list[str] = []
+    if source_authority != SOURCE_AUTHORITY_PC1_ARCHIVE:
+        block_reasons.append("pc1_source_authority_required")
+    if dry_run:
+        block_reasons.append("dry_run_only")
+    if not approval_id:
+        block_reasons.append("approval_required")
+    executable_targets = candidates if not block_reasons else ()
+    return GzipCleanupPlan(
+        candidate_paths=candidates,
+        executable_delete_targets=executable_targets,
+        dry_run=dry_run,
+        approval_id=approval_id,
+        source_authority=source_authority,
+        block_reasons=tuple(block_reasons),
+    )
 
 
 def count_observed_points(values: Iterable[float | None]) -> int:
@@ -465,6 +599,7 @@ __all__ = [
     "EVENT_LEDGER_MUTABILITY",
     "ExpectedPointsPolicy",
     "FORBIDDEN_TRIGGER_TARGETS",
+    "GzipCleanupPlan",
     "IssueRecord",
     "JOB_KIND_MEAN_ROLLUP",
     "JOB_KIND_PEAK_FEATURE",
@@ -474,6 +609,7 @@ __all__ = [
     "LIVE_MEASUREMENT_15MIN",
     "LIVE_MEASUREMENT_EVENT",
     "LIVE_MEASUREMENT_POLICY",
+    "LIVE_PROMOTION_CHECK",
     "LIVE_ROLLUP_VALUE_SEMANTIC",
     "LiveMeasurementEvent",
     "LiveMeasurementPolicy",
@@ -489,6 +625,12 @@ __all__ = [
     "RESOLUTION_1H",
     "RESOLUTION_1MIN",
     "PromotionDecision",
+    "SOURCE_AUTHORITY_PC1_ARCHIVE",
+    "SOURCE_LAYER_KAFKA_RAW",
+    "SOURCE_LAYER_REFERENCE_CORRECTED_RESAMPLED",
+    "SOURCE_MODE_HYBRID_WARM_START",
+    "SOURCE_MODE_LIVE_OBSERVED",
+    "SOURCE_MODE_REFERENCE_BACKFILL",
     "TriggerDecisionResult",
     "TriggerOperation",
     "assert_trigger_contract",
@@ -501,7 +643,9 @@ __all__ = [
     "guard_peak_feature_promotion",
     "is_observed_value",
     "live_mean_rollup_output_contract",
+    "plan_gzip_cleanup",
     "resolve_policy_lookup",
     "trigger_policy_block_reasons",
+    "validate_live_injector_source_authority",
     "validate_queue_key",
 ]

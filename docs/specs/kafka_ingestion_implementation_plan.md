@@ -8,9 +8,9 @@
 
 **Tech Stack:** FastAPI skeleton, Kafka-compatible local broker, PostgreSQL live schema, Grafana provisioning, pytest/ruff, import-safe Python contracts.
 
-**상태:** implementation 준비 계획  
-**갱신일:** 2026-06-04  
-**범위:** 설계 문서와 local/import-safe skeleton 구현 준비. Production DB write, canonical write, Kafka/Grafana container start, AWS 변경, secrets 조회/등록은 포함하지 않는다.
+**상태:** historical implementation plan / active runtime은 `runtime_architecture.md`와 `aws_runtime_topology.md` 기준
+**갱신일:** 2026-06-04
+**범위:** 과거 설계 문서와 local/import-safe implementation 준비 기록. Historical note: 현재 active runtime은 PC1~PC3 Kafka edge cluster, PC1 separated ingestion/backend APIs, PC1 3 Kafka-to-PostgreSQL consumers, PC3 model-serving workers, AWS DB plane 기준이다. Production DB write, canonical write, Kafka/Grafana container start, AWS 변경, secrets 조회/등록은 포함하지 않는다.
 
 ---
 
@@ -58,7 +58,7 @@ Sensor / simulator
    -> live.measurement_15min
    -> live.measurement_1h
    -> mart.peak_feature_15min
-   -> mart.peak_input_15min
+   -> optional helper projection mart.peak_input_15min
    -> live.promotion_check
 -> Grafana dashboard + alerts
 ```

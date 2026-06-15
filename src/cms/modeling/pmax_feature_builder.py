@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any
 
+from cms.contracts.live_pipeline import SOURCE_MODE_LIVE_OBSERVED
 from cms.contracts.pmax_forecast_15min import (
     PMAX_FORECAST_FEATURE_COLUMNS,
     PMAX_FORECAST_LOGICAL_METER_SOURCES,
@@ -21,6 +22,7 @@ from cms.contracts.pmax_forecast_15min import (
     PMAX_FORECAST_WINDOW_POINTS,
     PmaxFeatureReadinessResult,
     PmaxFeatureReadinessRow,
+    pmax_allowed_source_meters,
     select_latest_pmax_feature_rows,
     validate_pmax_feature_readiness,
 )
@@ -86,6 +88,7 @@ def build_pmax_feature_vectors(
     logical_meters: Sequence[str] = tuple(PMAX_FORECAST_LOGICAL_METER_SOURCES),
     history_windows: int = _DEFAULT_HISTORY_WINDOWS,
     strict_readiness: bool = True,
+    source_mode: str = SOURCE_MODE_LIVE_OBSERVED,
 ) -> PmaxFeatureBuildResult:
     """Build P-Max adapter feature vectors from in-memory feature rows.
 
@@ -98,14 +101,14 @@ def build_pmax_feature_vectors(
         raise PmaxFeatureBuildError(f"history_windows must be >= {_DEFAULT_HISTORY_WINDOWS} to populate P-Max lag features")
 
     materialized_rows = tuple(rows)
-    readiness_result = validate_pmax_feature_readiness(materialized_rows, base_ts=base_ts, logical_meters=logical_meters)
+    readiness_result = validate_pmax_feature_readiness(materialized_rows, base_ts=base_ts, logical_meters=logical_meters, source_mode=source_mode)
     errors: list[str] = []
     if strict_readiness and not readiness_result.ok:
         errors.extend(issue.issue for issue in readiness_result.issues)
 
     input_end_ts = base_ts - _INTERVAL
     expected_windows = tuple(input_end_ts - _INTERVAL * offset for offset in reversed(range(history_windows)))
-    selected_rows = select_latest_pmax_feature_rows(materialized_rows)
+    selected_rows = select_latest_pmax_feature_rows(materialized_rows, source_mode=source_mode)
     features: list[PmaxFeatureVector] = []
 
     for logical_meter in logical_meters:
@@ -138,8 +141,14 @@ def _build_logical_history(
     if allowed_sources is None:
         raise PmaxFeatureBuildError(f"unsupported logical meter: {logical_meter}")
 
-    source_meter = _choose_single_source(rows, allowed_sources=allowed_sources, expected_windows=expected_windows)
-    by_key = {(row.window_ts, row.measurement): row for row in rows if row.meter_urn == source_meter and row.measurement in PMAX_FORECAST_REQUIRED_MEASUREMENTS}
+    source_meter = _choose_single_source(rows, logical_meter=logical_meter, expected_windows=expected_windows)
+    by_key = {
+        (row.window_ts, row.measurement): row
+        for row in rows
+        if row.meter_urn == source_meter
+        and row.meter_urn in pmax_allowed_source_meters(logical_meter, at_ts=row.window_ts)
+        and row.measurement in PMAX_FORECAST_REQUIRED_MEASUREMENTS
+    }
 
     history: list[_WindowAggregates] = []
     for window_ts in expected_windows:
@@ -163,11 +172,17 @@ def _build_logical_history(
     return tuple(history)
 
 
-def _choose_single_source(rows: Sequence[PmaxFeatureReadinessRow], *, allowed_sources: Sequence[str], expected_windows: Sequence[datetime]) -> str:
+def _choose_single_source(rows: Sequence[PmaxFeatureReadinessRow], *, logical_meter: str, expected_windows: Sequence[datetime]) -> str:
+    allowed_sources = PMAX_FORECAST_LOGICAL_METER_SOURCES[logical_meter]
     expected_set = set(expected_windows)
     coverage: dict[str, int] = {source: 0 for source in allowed_sources}
     for row in rows:
-        if row.meter_urn in coverage and row.window_ts in expected_set and row.measurement in PMAX_FORECAST_REQUIRED_MEASUREMENTS:
+        if (
+            row.meter_urn in coverage
+            and row.meter_urn in pmax_allowed_source_meters(logical_meter, at_ts=row.window_ts)
+            and row.window_ts in expected_set
+            and row.measurement in PMAX_FORECAST_REQUIRED_MEASUREMENTS
+        ):
             coverage[row.meter_urn] += 1
     best_source, best_count = max(coverage.items(), key=lambda item: (item[1], item[0]))
     if best_count == 0:

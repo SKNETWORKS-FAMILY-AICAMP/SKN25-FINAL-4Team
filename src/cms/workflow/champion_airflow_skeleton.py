@@ -8,14 +8,23 @@ build an Airflow DAG, and that DAG is still paused and unscheduled by default.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from importlib import import_module
 from typing import Any
 
 from cms.contracts.core import CANONICAL_SOURCE_TABLES
+from cms.workflow.airflow_runtime_policy import (
+    AIRFLOW_DEFAULT_RETRIES,
+    AIRFLOW_MAX_ACTIVE_RUNS,
+    AIRFLOW_RETRY_DELAY_SECONDS,
+    AIRFLOW_TASK_TRIGGER_RULE,
+)
 
 DAG_ID = "cms_champion_1h_model_pipeline"
 AIRFLOW_DAG_ENABLED = False
+AIRFLOW_RUNTIME_DEPLOYED = True
+AIRFLOW_DEPLOYMENT_STATUS = "registered as manual paused no-write DAG only"
+AIRFLOW_INTEGRATION_LANES = ("champion_1h", "live_measurement_1h", "approval_routing")
 TASK_IDS = (
     "load_run_config",
     "gate_manual_nonprod_run",
@@ -50,6 +59,10 @@ class DisabledChampionAirflowDag:
     canonical_source_tables: tuple[str, ...] = CANONICAL_SOURCE_TABLES
     canonical_writes_allowed: bool = False
     deployment_status: str = "disabled import-safe skeleton only"
+    max_active_runs: int = AIRFLOW_MAX_ACTIVE_RUNS
+    retries: int = AIRFLOW_DEFAULT_RETRIES
+    retry_delay_seconds: int = AIRFLOW_RETRY_DELAY_SECONDS
+    trigger_rule: str = AIRFLOW_TASK_TRIGGER_RULE
 
 
 def describe_dag() -> DisabledChampionAirflowDag:
@@ -193,20 +206,23 @@ def make_airflow_dag(*, enabled: bool = AIRFLOW_DAG_ENABLED) -> object:
         start_date=datetime(2026, 1, 1, tzinfo=UTC),
         catchup=False,
         is_paused_upon_creation=True,
-        tags=["cms", "champion-1h", "skeleton", "disabled-by-default"],
+        max_active_runs=AIRFLOW_MAX_ACTIVE_RUNS,
+        default_args={"owner": "cms", "retries": AIRFLOW_DEFAULT_RETRIES, "retry_delay": timedelta(seconds=AIRFLOW_RETRY_DELAY_SECONDS)},
+        tags=["cms", "champion-1h", "runtime-contract", "disabled-by-default"],
     )
     with dag:
         previous: Any | None = None
         for task_id in TASK_IDS:
             task_callable = getattr(champion_tasks, task_id, None)
             if task_callable is None:
-                task = empty_operator_class(task_id=task_id)
+                task = empty_operator_class(task_id=task_id, trigger_rule=AIRFLOW_TASK_TRIGGER_RULE)
             else:
                 task = python_operator_class(
                     task_id=task_id,
                     python_callable=champion_tasks.airflow_task_entrypoint,
                     op_kwargs={"task_id": task_id},
                     do_xcom_push=False,
+                    trigger_rule=AIRFLOW_TASK_TRIGGER_RULE,
                 )
             if previous is not None:
                 previous >> task

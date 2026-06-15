@@ -1,0 +1,36 @@
+FROM python:3.12-slim
+
+LABEL org.opencontainers.image.title="cms-backend-runtime" \
+      org.opencontainers.image.description="CMS backend, ingestion, stream consumer, LangGraph, and evaluation runtime image" \
+      org.opencontainers.image.source="SKN25-FINAL-4Team" \
+      cms.runtime.roles="backend,ingestion,consumer,langgraph,evaluation,knowledge"
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONPATH=/workspace:/workspace/src
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        bash \
+        build-essential \
+        curl \
+        fonts-nanum \
+        git \
+        libgomp1 \
+        libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+COPY requirements.txt /tmp/requirements.txt
+RUN python -m pip install --upgrade pip \
+    && python -m pip install -r /tmp/requirements.txt
+
+COPY src /workspace/src
+COPY scripts /workspace/scripts
+COPY evaluation /workspace/evaluation
+COPY knowledge /workspace/knowledge
+
+CMD ["bash"]

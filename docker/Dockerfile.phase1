@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1 \
-    PYTHONPATH=/workspace/src
+    PYTHONPATH=/workspace:/workspace/src
 
 WORKDIR /workspace
 
@@ -13,7 +13,8 @@ RUN python -m pip install --upgrade pip \
     && python -m pip install -r /tmp/requirements.phase1.txt
 
 COPY src /workspace/src
-COPY scripts/live/run_consumer_service.py /workspace/scripts/live/run_consumer_service.py
-COPY scripts/live/run_live_stream_injector.py /workspace/scripts/live/run_live_stream_injector.py
+COPY scripts /workspace/scripts
+COPY evaluation /workspace/evaluation
+COPY knowledge /workspace/knowledge
 
 CMD ["python", "-m", "uvicorn", "cms.service.api:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,30 +1,116 @@
-%%{init: {"theme": "base", "flowchart": {"htmlLabels": false, "curve": "basis", "nodeSpacing": 60, "rankSpacing": 75}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "secondaryColor": "#f1f5f9", "secondaryBorderColor": "#94a3b8", "secondaryTextColor": "#0f172a", "tertiaryColor": "#ffffff", "tertiaryBorderColor": "#cbd5e1", "tertiaryTextColor": "#0f172a", "clusterBkg": "#ffffff", "clusterBorder": "#94a3b8", "edgeLabelBackground": "#ffffff", "lineColor": "#475569", "fontFamily": "Arial, sans-serif", "fontSize": "15px"}} }%%
+%%{init: {"theme": "base", "layout": "elk", "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 40, "rankSpacing": 58}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#ffffff", "primaryBorderColor": "#475569", "primaryTextColor": "#0f172a", "secondaryColor": "#f8fafc", "secondaryBorderColor": "#94a3b8", "secondaryTextColor": "#0f172a", "tertiaryColor": "#ffffff", "tertiaryBorderColor": "#cbd5e1", "tertiaryTextColor": "#0f172a", "clusterBkg": "#ffffff", "clusterBorder": "#94a3b8", "edgeLabelBackground": "#ffffff", "lineColor": "#475569", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
 flowchart LR
-    SRC["archive_live_validated_input"]
-    subgraph PG["aws_postgresql_cms_database"]
-      STG["staging_load_candidates"]
-      REF["reference_corrected_15m_1h"]
-      CAN["canonical_observed_1m_15m_1h"]
-      QA["qa_evidence_meter_tags"]
-      OPS["ops_jobs_approval_requests"]
-      VEC["vector_pgvector_target"]
+    subgraph EDGE["PC1-PC3 edge runtime"]
+      subgraph PC1["PC1 service host"]
+        ING_API["CMS Ingestion API
+private /ingest/measurements"]
+        BE_API["CMS Backend API
+read status jobs chat"]
+        FRONT["Frontend
+operator UI"]
+        CONS["3x kafka_to_postgres_consumer
+partition drain"]
+        BUCKET["live_bucket_queue_worker
+rollup / mart jobs"]
+        AIR["Airflow standalone
+reports / orchestration"]
+      end
+      subgraph KCLUSTER["Kafka KRaft cluster"]
+        K1["PC1 broker"]
+        K2["PC2 broker"]
+        K3["PC3 broker"]
+        TOPIC["measurement_raw_v1
+3 partitions / RF=3 / min ISR=2"]
+        DLQ["measurement_dead_letter_v1"]
+        LAG["postgres-live-ingest
+consumer lag / backlog"]
+      end
+      subgraph PC2["PC2 observability host"]
+        PROM["Prometheus
+edge scrape"]
+        GRAF_EDGE["Grafana
+edge dashboards"]
+        EXP["Kafka / node exporters"]
+      end
+      subgraph PC3["PC3 model-serving host"]
+        CANW["canonical_promotion_worker
+approval gated"]
+        ANOF["anomaly_feature_worker
+1h feature materialization"]
+        SERVE["hybrid_model_serving_scheduler
+P-Max + anomaly warnings"]
+      end
     end
-    subgraph MG["aws_mongodb_recent_lane"]
-      RAW["raw_event_recent_replay"]
-      WM["watermark_resume_state"]
+
+    subgraph AWS["AWS DB plane"]
+      PG["cms-postgres
+Timescale/PostgreSQL"]
+      AWS_GRAF["cms-grafana
+DB dashboards"]
+      PGEXP["postgres / node exporters"]
+      subgraph SCHEMAS["PostgreSQL schemas"]
+        LIVE["live.measurement_event
+live 1min / 15min / 1h / bucket_queue"]
+        MART["mart.peak_feature_15min
+mart.pmax_forecast_15min
+mart.anomaly_warning_1h"]
+        OPSQA["ops.* inference logs
+qa.* evidence packets"]
+        CANON["canonical.measurement_*
+controlled promotion only"]
+      end
     end
-    ONT["cms_ontology_metadata"]
-    GF["graphify_out_specs_context"]
-    APP["fastapi_sqllm_read_only"]
-    SRC --> STG --> QA
-    SRC --> REF
-    RAW --> WM --> STG
-    QA --> OPS --> CAN
-    CAN --> APP
-    REF --> APP
-    QA --> APP
-    OPS --> APP
-    CAN --> VEC
-    REF --> VEC
-    ONT --> APP
-    GF --> APP
+
+    SOURCE["2023 replay source
+host injector stopped"] --> ING_API
+    ING_API --> TOPIC
+    TOPIC --> CONS
+    TOPIC -. invalid / poison .-> DLQ
+    LAG --> CONS
+    CONS --> PG
+    PG --> LIVE
+    LIVE --> BUCKET
+    BUCKET --> MART
+    LIVE --> ANOF
+    MART --> SERVE
+    SERVE --> MART
+    SERVE --> OPSQA
+    OPSQA --> BE_API
+    LIVE --> BE_API
+    MART --> BE_API
+    CANW --> CANON
+    PG --> AWS_GRAF
+    EXP --> PROM
+    PGEXP --> PROM
+    PROM --> GRAF_EDGE
+    FRONT --> BE_API
+    AIR --> BE_API
+    AIR --> PG
+
+
+    classDef source fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef api fill:#ffffff,stroke:#7c3aed,color:#0f172a,stroke-width:1px;
+    classDef kafka fill:#ecfdf5,stroke:#059669,color:#0f172a,stroke-width:1px;
+    classDef worker fill:#fff7ed,stroke:#ea580c,color:#0f172a,stroke-width:1px;
+    classDef db fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef qa fill:#fff1f2,stroke:#e11d48,color:#0f172a,stroke-width:1px;
+    classDef mart fill:#fdf4ff,stroke:#a21caf,color:#0f172a,stroke-width:1px;
+    classDef obs fill:#f8fafc,stroke:#475569,color:#0f172a,stroke-width:1px;
+    classDef approval fill:#fefce8,stroke:#ca8a04,color:#0f172a,stroke-width:1px;
+    classDef hub fill:#ffffff,stroke:#334155,color:#0f172a,stroke-width:2px;
+
+    class SOURCE source;
+    class ING_API,BE_API,FRONT api;
+    class K1,K2,K3,TOPIC,DLQ,LAG kafka;
+    class CONS,BUCKET,AIR,CANW,ANOF,SERVE worker;
+    class PG,LIVE,CANON db;
+    class MART mart;
+    class OPSQA qa;
+    class PROM,GRAF_EDGE,EXP,AWS_GRAF,PGEXP obs;
+    style EDGE fill:#f8fafc,stroke:#475569,stroke-width:4px
+    style PC1 fill:#f5f3ff,stroke:#7c3aed,stroke-width:3px
+    style KCLUSTER fill:#ecfdf5,stroke:#059669,stroke-width:3px
+    style PC2 fill:#f8fafc,stroke:#475569,stroke-width:3px
+    style PC3 fill:#fff7ed,stroke:#ea580c,stroke-width:3px
+    style AWS fill:#eef2ff,stroke:#1d4ed8,stroke-width:4px
+    style SCHEMAS fill:#ffffff,stroke:#94a3b8,stroke-width:1px

@@ -1,0 +1,51 @@
+name: cms
+
+# Active AWS DB/observability stack observed on cms-db.
+# Secrets live in the server-local .env file and must not be committed.
+
+services:
+  postgres:
+    image: timescale/timescaledb:latest-pg16
+    container_name: cms-postgres
+    restart: unless-stopped
+    env_file:
+      - path: ${CMS_AWS_DB_ENV_FILE:-.env}
+        required: false
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    networks:
+      - cms-net
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    container_name: cms-grafana
+    restart: unless-stopped
+    env_file:
+      - path: ${CMS_AWS_DB_ENV_FILE:-.env}
+        required: false
+    environment:
+      GF_SECURITY_ADMIN_USER: "${GRAFANA_ADMIN_USER:-admin}"
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in server-local .env}"
+      GRAFANA_POSTGRES_HOST: "${GRAFANA_POSTGRES_HOST:-postgres}"
+      GRAFANA_POSTGRES_PORT: "${GRAFANA_POSTGRES_PORT:-5432}"
+      GRAFANA_POSTGRES_DB: "${GRAFANA_POSTGRES_DB:-cms}"
+      GRAFANA_POSTGRES_USER: "${GRAFANA_POSTGRES_USER:-cms}"
+      GRAFANA_POSTGRES_PASSWORD: "${GRAFANA_POSTGRES_PASSWORD:?Set GRAFANA_POSTGRES_PASSWORD in server-local .env}"
+      GRAFANA_POSTGRES_SSLMODE: "${GRAFANA_POSTGRES_SSLMODE:-disable}"
+      GRAFANA_PROMETHEUS_URL: "${GRAFANA_PROMETHEUS_URL:-http://prometheus:9090}"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+    networks:
+      - cms-net
+
+networks:
+  cms-net:
+    driver: bridge
+
+volumes:
+  grafana_data:

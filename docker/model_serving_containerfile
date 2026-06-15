@@ -1,0 +1,31 @@
+FROM python:3.12-slim
+
+LABEL org.opencontainers.image.title="cms-model-serving-runtime" \
+      org.opencontainers.image.description="CMS no-write P-Max and anomaly artifact validation/model-serving runtime" \
+      org.opencontainers.image.source="SKN25-FINAL-4Team" \
+      cms.runtime.roles="model-serving,pmax,anomaly,artifact-smoke"
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONPATH=/workspace/src
+
+WORKDIR /workspace
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends fonts-nanum libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY docker/requirements.model_serving.txt /tmp/requirements.model_serving.txt
+ARG INSTALL_TORCH=1
+RUN python -m pip install --upgrade pip \
+    && python -m pip install -r /tmp/requirements.model_serving.txt \
+    && if [ "$INSTALL_TORCH" = "1" ]; then \
+        python -m pip install --index-url https://download.pytorch.org/whl/cpu torch; \
+    fi
+
+COPY src /workspace/src
+COPY scripts /workspace/scripts
+
+ENTRYPOINT ["python", "scripts/serving/run_model_serving.py"]

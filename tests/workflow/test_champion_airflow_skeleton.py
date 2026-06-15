@@ -6,8 +6,10 @@ import subprocess
 import sys
 import types
 from dataclasses import is_dataclass
+from typing import Any
 
 from cms.contracts.core import CANONICAL_SOURCE_TABLES
+from cms.workflow.airflow_runtime_policy import AIRFLOW_DEFAULT_RETRIES, AIRFLOW_MAX_ACTIVE_RUNS, AIRFLOW_TASK_TRIGGER_RULE
 from cms.workflow import champion_airflow_skeleton as champion
 
 EXPECTED_TASK_IDS = (
@@ -116,7 +118,7 @@ def test_make_airflow_dag_enabled_lazy_imports_and_builds_paused_dag(monkeypatch
 
     class FakeDAG:
         def __init__(self, **kwargs: object) -> None:
-            self.kwargs = kwargs
+            self.kwargs: dict[str, Any] = dict(kwargs)
             self.task_ids: list[str] = []
             self.dependencies: list[tuple[str, str]] = []
 
@@ -128,8 +130,9 @@ def test_make_airflow_dag_enabled_lazy_imports_and_builds_paused_dag(monkeypatch
             active_dags.pop()
 
     class FakeBaseOperator:
-        def __init__(self, *, task_id: str) -> None:
+        def __init__(self, *, task_id: str, trigger_rule: str = "all_success") -> None:
             self.task_id = task_id
+            self.trigger_rule = trigger_rule
             created_tasks.append(self)
             active_dags[-1].task_ids.append(task_id)
 
@@ -141,11 +144,19 @@ def test_make_airflow_dag_enabled_lazy_imports_and_builds_paused_dag(monkeypatch
         pass
 
     class FakePythonOperator(FakeBaseOperator):
-        def __init__(self, *, task_id: str, python_callable: object, op_kwargs: dict[str, object] | None = None, do_xcom_push: bool = True) -> None:
+        def __init__(
+            self,
+            *,
+            task_id: str,
+            python_callable: object,
+            op_kwargs: dict[str, object] | None = None,
+            do_xcom_push: bool = True,
+            trigger_rule: str = "all_success",
+        ) -> None:
             self.python_callable = python_callable
             self.op_kwargs = op_kwargs or {}
             self.do_xcom_push = do_xcom_push
-            super().__init__(task_id=task_id)
+            super().__init__(task_id=task_id, trigger_rule=trigger_rule)
             created_python_tasks.append(self)
 
     airflow_module = types.ModuleType("airflow")
@@ -168,8 +179,11 @@ def test_make_airflow_dag_enabled_lazy_imports_and_builds_paused_dag(monkeypatch
     assert dag.kwargs["schedule"] is None
     assert dag.kwargs["catchup"] is False
     assert dag.kwargs["is_paused_upon_creation"] is True
+    assert dag.kwargs["max_active_runs"] == AIRFLOW_MAX_ACTIVE_RUNS
+    assert dag.kwargs["default_args"]["retries"] == AIRFLOW_DEFAULT_RETRIES
     assert dag.task_ids == list(EXPECTED_TASK_IDS)
     assert [task.task_id for task in created_tasks] == list(EXPECTED_TASK_IDS)
+    assert [task.trigger_rule for task in created_tasks] == [AIRFLOW_TASK_TRIGGER_RULE] * len(EXPECTED_TASK_IDS)
     assert [task.task_id for task in created_python_tasks] == list(expected_python_task_ids)
     assert [task.python_callable for task in created_python_tasks] == [champion_tasks.airflow_task_entrypoint] * len(expected_python_task_ids)
     assert [task.op_kwargs for task in created_python_tasks] == [{"task_id": task_id} for task_id in expected_python_task_ids]

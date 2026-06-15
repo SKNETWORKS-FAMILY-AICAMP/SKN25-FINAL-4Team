@@ -56,7 +56,7 @@ sequenceDiagram
         MEAN->>LIVE: write measurement_15min and measurement_1h mean rows
     and peak feature branch for prediction
         LIVE->>PEAK: claim peak_feature 15min jobs
-        PEAK->>MART: write peak_feature_15min and peak_input_15min rolling 1h features
+        PEAK->>MART: write peak_feature_15min, optional helper projection only
     end
 
     ARCH-->>REF: load corrected_resampled comparison only when needed

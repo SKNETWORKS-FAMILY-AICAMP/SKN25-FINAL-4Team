@@ -79,7 +79,7 @@ short soak 안정권: 100-200 events/sec
 금지: 첫 장시간 run에서 400 events/sec 초과
 ```
 
-단일 consumer 기준으로 consumer lag가 계속 증가하면 처리량을 낮춘다.
+PC1 3개 consumer 기준으로 aggregate/per-partition lag가 계속 증가하면 producer를 중지하고 drain을 우선한다.
 
 ## 성공 조건
 
@@ -106,7 +106,7 @@ Kafka disk free >= 20%
 PostgreSQL active connections < 70% of max_connections
 PostgreSQL deadlocks = 0
 PostgreSQL exporter pg_up = 1
-node exporter up = 1 for cms-stream and cms-db
+node exporter up = 1 for pc1, pc2, pc3, and aws-cms-db
 consumer retry율 < 0.1%
 ```
 
@@ -171,7 +171,7 @@ public Kafka/Grafana/Prometheus exposure 감지
 
 ```text
 목표: bounded producer 종료 후 consumer lag 감소 확인
-성공 기준: run 종료 후 5분 내 lag 감소 또는 0 근접
+성공 기준: run 종료 후 lag 감소/draining evidence 확인. `0`은 실제 관측된 경우에만 보고
 다음 단계: T3 1시간
 ```
 
@@ -218,7 +218,7 @@ node_filesystem_avail_bytes
 PostgreSQL:
 
 ```text
-pg_up{job="postgres-exporter"}
+max(pg_up)
 pg_stat_activity_count{datname="cms"}
 pg_stat_database_xact_commit{datname="cms"}
 pg_stat_database_xact_rollback{datname="cms"}

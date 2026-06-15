@@ -128,18 +128,21 @@ def test_promotion_stub_requires_approval_and_blocks_peak_rows():
         target_table=CANONICAL_MEASUREMENT_15MIN,
         approval_id=None,
         promotion_id="promo-1",
+        promotion_check_id="check-1",
     )
     peak_leakage = prepare_promotion(
         source_table="mart.peak_feature_15min",
         target_table=CANONICAL_MEASUREMENT_15MIN,
         approval_id="approval-1",
         promotion_id="promo-1",
+        promotion_check_id="check-1",
     )
     ready = prepare_promotion(
         source_table="live.measurement_15min",
         target_table=CANONICAL_MEASUREMENT_15MIN,
         approval_id="approval-1",
         promotion_id="promo-1",
+        promotion_check_id="check-1",
     )
 
     assert missing_approval.ready is False

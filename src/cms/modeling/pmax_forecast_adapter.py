@@ -25,6 +25,7 @@ from cms.contracts.pmax_forecast_15min import (
 from cms.modeling.pmax_feature_builder import PmaxFeatureVector, build_model_matrix
 
 ModelInputFormat = Literal["matrix", "dicts", "pandas"]
+NegativePredictionPolicy = Literal["raise", "clip_zero"]
 
 
 class SupportsPredict(Protocol):
@@ -65,6 +66,7 @@ class PmaxForecastAdapter:
     input_format: ModelInputFormat = "matrix"
     created_at_factory: Callable[[datetime], datetime] | None = None
     strict_validation: bool = True
+    negative_prediction_policy: NegativePredictionPolicy = "raise"
 
     def predict(self, features: Iterable[PmaxFeatureVector]) -> PmaxForecastAdapterResult:
         materialized_features = tuple(features)
@@ -85,6 +87,7 @@ class PmaxForecastAdapter:
         for feature, horizon_values in zip(materialized_features, prediction_rows, strict=True):
             created_at = self._created_at(feature.base_ts)
             for horizon_minutes, predicted_value in zip(PMAX_FORECAST_HORIZON_MINUTES, horizon_values, strict=True):
+                prediction = _apply_negative_prediction_policy(float(predicted_value), self.negative_prediction_policy)
                 row = PmaxForecastRow(
                     logical_meter=feature.logical_meter,
                     source_meter_urn=feature.source_meter_urn,
@@ -92,7 +95,7 @@ class PmaxForecastAdapter:
                     input_end_ts=feature.input_end_ts,
                     target_ts=feature.base_ts + timedelta(minutes=horizon_minutes),
                     horizon_minutes=horizon_minutes,
-                    predicted_p_max=float(predicted_value),
+                    predicted_p_max=prediction,
                     created_at=created_at,
                 )
                 row_issues = validate_pmax_forecast_row(row)
@@ -127,6 +130,16 @@ class PmaxForecastAdapter:
                 raise PmaxForecastPredictionError("pandas is required for input_format='pandas'") from exc
             return pd.DataFrame([dict(zip(flattened_columns, row, strict=True)) for row in matrix], columns=list(flattened_columns))
         raise PmaxForecastPredictionError(f"unsupported input_format: {self.input_format}")
+
+
+def _apply_negative_prediction_policy(value: float, policy: NegativePredictionPolicy) -> float:
+    if value >= 0:
+        return value
+    if policy == "clip_zero":
+        return 0.0
+    if policy == "raise":
+        return value
+    raise PmaxForecastPredictionError(f"unsupported negative_prediction_policy: {policy}")
 
 
 def _flattened_feature_columns(columns: Sequence[str]) -> tuple[str, ...]:
@@ -194,7 +207,10 @@ def _mapping_horizon_value(prediction: Mapping[Any, Any], horizon: int) -> Any:
 
 
 def _finite_prediction(value: Any) -> float:
-    numeric = float(value)
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError) as exc:
+        raise PmaxForecastPredictionError("prediction values must be numeric") from exc
     if math.isnan(numeric) or math.isinf(numeric):
         raise PmaxForecastPredictionError("prediction values must be finite")
     return numeric
@@ -206,6 +222,7 @@ def _is_sequence(value: Any) -> bool:
 
 __all__ = [
     "ModelInputFormat",
+    "NegativePredictionPolicy",
     "PmaxForecastAdapter",
     "PmaxForecastAdapterResult",
     "PmaxForecastPredictionError",

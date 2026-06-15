@@ -7,14 +7,23 @@ installed, callers must explicitly opt in by calling ``make_airflow_dag(enabled=
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from importlib import import_module
 from typing import Any
 
 from cms.contracts.core import CANONICAL_SOURCE_TABLES
+from cms.workflow.airflow_runtime_policy import (
+    AIRFLOW_DEFAULT_RETRIES,
+    AIRFLOW_MAX_ACTIVE_RUNS,
+    AIRFLOW_RETRY_DELAY_SECONDS,
+    AIRFLOW_TASK_TRIGGER_RULE,
+)
 
 DAG_ID = "cms_live_replay"
 AIRFLOW_DAG_ENABLED = False
+AIRFLOW_RUNTIME_DEPLOYED = True
+AIRFLOW_DEPLOYMENT_STATUS = "registered as manual paused no-write DAG only"
+AIRFLOW_INTEGRATION_LANES = ("live_replay", "canonical_read_gate", "approval_routing")
 TASK_IDS = (
     "validate_canonical_window",
     "describe_recent_cache_read",
@@ -34,6 +43,10 @@ class DisabledAirflowDag:
     writes_allowed: bool = False
     mongo_role: str = "recent live/replay cache only"
     mart_generation_deferred: bool = True
+    max_active_runs: int = AIRFLOW_MAX_ACTIVE_RUNS
+    retries: int = AIRFLOW_DEFAULT_RETRIES
+    retry_delay_seconds: int = AIRFLOW_RETRY_DELAY_SECONDS
+    trigger_rule: str = AIRFLOW_TASK_TRIGGER_RULE
 
 
 def describe_dag() -> DisabledAirflowDag:
@@ -81,12 +94,14 @@ def make_airflow_dag(*, enabled: bool = AIRFLOW_DAG_ENABLED) -> object:
         start_date=datetime(2026, 1, 1, tzinfo=UTC),
         catchup=False,
         is_paused_upon_creation=True,
-        tags=["cms", "skeleton", "disabled-by-default"],
+        max_active_runs=AIRFLOW_MAX_ACTIVE_RUNS,
+        default_args={"owner": "cms", "retries": AIRFLOW_DEFAULT_RETRIES, "retry_delay": timedelta(seconds=AIRFLOW_RETRY_DELAY_SECONDS)},
+        tags=["cms", "runtime-contract", "disabled-by-default"],
     )
     with dag:
         previous: Any | None = None
         for task_id in TASK_IDS:
-            task = empty_operator_class(task_id=task_id)
+            task = empty_operator_class(task_id=task_id, trigger_rule=AIRFLOW_TASK_TRIGGER_RULE)
             if previous is not None:
                 previous >> task
             previous = task

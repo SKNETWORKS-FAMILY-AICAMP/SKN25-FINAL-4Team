@@ -63,7 +63,7 @@ sequenceDiagram
         BQ->>PEAK: claim peak_feature 15min job
         PEAK->>L1: read child observed rows
         PEAK->>PF: upsert peak_value peak_ts max feature
-        PF->>PI: build 15min model input and rolling 1h peak features
+        PF-->>PI: optional helper projection when maintained
     end
 
     QAW->>L1: read 1min candidate rows
@@ -81,7 +81,7 @@ sequenceDiagram
         ISSUE-->>SVC: expose block reason only
     end
 
-    PI-->>SVC: peak prediction feature path
+    PF-->>SVC: direct P-Max runtime input path
 
     Note over TRG,BQ: trigger enqueues work only. Mean and peak calculations stay in workers
     Note over MEAN,PEAK: live 15min and 1h store mean observed rollup. Peak values stay in mart

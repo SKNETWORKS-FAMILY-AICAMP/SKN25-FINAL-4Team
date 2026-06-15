@@ -1,0 +1,41 @@
+name: cms-kafka-cluster
+
+# Run this file on each of the three edge computers.
+# Each host runs exactly one Kafka KRaft broker/controller node.
+# Expose 9092/9093 only on the trusted LAN/VPN segment used by the three hosts.
+
+services:
+  cms-kafka:
+    image: apache/kafka:3.7.1
+    container_name: cms-kafka
+    restart: unless-stopped
+    env_file:
+      - path: ./kafka_cluster_broker.env
+        required: false
+    environment:
+      CLUSTER_ID: "${KAFKA_CLUSTER_ID:?Set one shared Kafka cluster id for all three edge brokers}"
+      KAFKA_NODE_ID: "${KAFKA_NODE_ID:?Set this host broker id: 1, 2, or 3}"
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "${KAFKA_CONTROLLER_QUORUM_VOTERS:?Set 1@host1:9093,2@host2:9093,3@host3:9093}"
+      KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://${KAFKA_ADVERTISED_HOST:?Set this host LAN/VPN address}:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_LOG_RETENTION_HOURS: "${KAFKA_LOG_RETENTION_HOURS:-24}"
+      KAFKA_LOG_RETENTION_BYTES: "${KAFKA_LOG_RETENTION_BYTES:-1073741824}"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR:-3}"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "${KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR:-3}"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "${KAFKA_TRANSACTION_STATE_LOG_MIN_ISR:-2}"
+      KAFKA_DEFAULT_REPLICATION_FACTOR: "${KAFKA_DEFAULT_REPLICATION_FACTOR:-3}"
+      KAFKA_MIN_INSYNC_REPLICAS: "${KAFKA_MIN_INSYNC_REPLICAS:-2}"
+    ports:
+      - "${KAFKA_BIND:-0.0.0.0}:9092:9092"
+      - "${KAFKA_CONTROLLER_BIND:-0.0.0.0}:9093:9093"
+    volumes:
+      - cms_kafka_data:/var/lib/kafka/data
+
+volumes:
+  cms_kafka_data:
+    name: "cms_kafka_${KAFKA_NODE_ID:-node}_data"

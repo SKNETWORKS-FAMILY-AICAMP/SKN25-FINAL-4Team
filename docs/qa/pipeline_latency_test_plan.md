@@ -1,7 +1,7 @@
 # Pipeline Latency and Scratch DB Test Plan
 
-**갱신일:** 2026-06-04  
-**상태:** 실행 전 계획  
+**갱신일:** 2026-06-15
+**상태:** 실행 전 계획
 **범위:** live pipeline의 scratch DB integration, branch별 correctness, stage별 latency 측정 기준을 정의한다. 이 문서는 DB write 실행 승인이 아니다.
 
 ## 1. 목적
@@ -19,7 +19,8 @@ source event
 -> common trigger + live.measurement_policy
 -> live.measurement_1min + live.bucket_queue
 -> mean_rollup_worker -> live.measurement_15min / live.measurement_1h
--> peak_feature_worker -> mart.peak_feature_15min / mart.peak_input_15min
+-> peak_feature_worker -> mart.peak_feature_15min
+-> optional helper projection -> mart.peak_input_15min
 -> qa_eligibility_worker -> live.promotion_check
 -> approval-gated promotion readiness
 ```
@@ -104,7 +105,7 @@ Scratch test는 `live.measurement_event`, `live.bucket_queue`, `canonical.measur
 | `one_min_to_15min_sec` | queue claim 또는 1min ready | 15min mean rollup write 확인 |
 | `one_min_to_1h_sec` | queue claim 또는 1min ready | 1h mean rollup write 확인 |
 | `one_min_to_peak_feature_sec` | queue claim 또는 1min ready | peak_feature_15min write 확인 |
-| `peak_feature_to_peak_input_sec` | peak_feature_15min ready | peak_input_15min write 확인 |
+| `peak_feature_to_optional_projection_sec` | peak_feature_15min ready | peak_input_15min write 확인 |
 | `qa_eligibility_sec` | candidate row ready | promotion_check write 확인 |
 | `promotion_ready_sec` | promotion_check pass | approval-required promotion-ready marker |
 | `end_to_end_sec` | source event 생성/수신 | promotion-ready marker 또는 QA block evidence |

@@ -31,10 +31,12 @@ from cms.contracts.agent import (
 from cms.contracts.core import (
     CANONICAL_MEASUREMENT_15MIN,
     AgentRequest,
+    AgentRoute,
     ApprovalRequest,
     ChatRoute,
     MeasurementWindow,
     ReportRequest,
+    RequestType,
     RouteDecision,
 )
 from cms.contracts.job import ApiJob, JobType
@@ -53,6 +55,8 @@ class GraphState:
     request: AgentRequest
     route: ChatRoute | None = None
     route_reason: str = ""
+    request_type: RequestType = "query"
+    agent_route: AgentRoute = "rag"
     qa_summary: QaSummary | None = None
     evidence_packet: EvidencePacket | None = None
     report_draft: ReportRequest | None = None
@@ -160,7 +164,11 @@ def build_job(request: AgentRequest) -> ApiJob:
         job_type=job_type,
         status="queued",
         requested_by=request.user_id,
-        request_payload={"text": request.text},
+        request_payload={
+            "text": request.text,
+            "request_type": context.get("request_type"),
+            "agent_route": context.get("agent_route"),
+        },
         side_effects_executed=False,
     )
 
@@ -186,6 +194,8 @@ def build_response(state: GraphState) -> AgentResponse:
     return AgentResponse(
         route=route,
         message=message,
+        request_type=state.request_type,
+        agent_route=state.agent_route,
         qa_status=qa_status,
         evidence_packet=state.evidence_packet,
         report_shell=report_shell,
@@ -198,6 +208,11 @@ def build_response(state: GraphState) -> AgentResponse:
 
 
 def _message_for(route: ChatRoute, state: GraphState) -> tuple[str, str | None]:
+    if state.request_type == "off_topic":
+        return (
+            "저는 에너지·설비 관리 관련 질문만 도와드릴 수 있습니다.",
+            "에너지 데이터, 설비 상태, 이상탐지, 예측 또는 보고서 질문으로 다시 요청하세요",
+        )
     if route == "approval_required":
         return "human approval required before any side effect", "route to approver"
     if route == "needs_job":
@@ -219,7 +234,13 @@ def classify_node(state: GraphState) -> GraphState:
     if state.route is not None:
         return state
     decision = classify_route(state.request)
-    return replace(state, route=decision.route, route_reason=decision.reason)
+    return replace(
+        state,
+        route=decision.route,
+        route_reason=decision.reason,
+        request_type=decision.request_type,
+        agent_route=decision.agent_route,
+    )
 
 
 def qa_gate_node(state: GraphState) -> GraphState:
@@ -237,7 +258,10 @@ def report_draft_node(state: GraphState) -> GraphState:
 
 
 def job_node(state: GraphState) -> GraphState:
-    return replace(state, job=build_job(state.request))
+    context = dict(state.request.context or {})
+    context.setdefault("request_type", state.request_type)
+    context.setdefault("agent_route", state.agent_route)
+    return replace(state, job=build_job(replace(state.request, context=context)))
 
 
 def approval_node(state: GraphState) -> GraphState:
@@ -291,7 +315,10 @@ def make_langgraph(*, enabled: bool = False) -> object:
     if not enabled:
         return describe_graph()
 
-    graph_module = import_module("langgraph.graph")
+    try:
+        graph_module = import_module("langgraph.graph")
+    except (ImportError, ModuleNotFoundError):
+        return describe_graph()
     state_graph_class = graph_module.StateGraph
     end_node = graph_module.END
 

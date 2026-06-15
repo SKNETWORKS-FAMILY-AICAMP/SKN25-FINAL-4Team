@@ -80,7 +80,7 @@ def test_aws_db_observability_compose_adds_private_node_and_postgres_exporters()
     assert "prometheuscommunity/postgres-exporter:v0.15.0" in text
     assert "${POSTGRES_EXPORTER_BIND:-127.0.0.1}:${POSTGRES_EXPORTER_PORT:-9187}:9187" in text
     assert "DATA_SOURCE_NAME" in text
-    assert "${POSTGRES_PASSWORD:-}" in text
+    assert "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in server-local .env}" in text
     assert "depends_on" not in text
     assert "0.0.0.0:9100" not in text
     assert "0.0.0.0:9187" not in text
@@ -99,8 +99,9 @@ def test_aws_phase1_compose_uses_lean_phase1_image_not_full_ml_image() -> None:
     assert "dockerfile: docker/Dockerfile\n" not in text
     requirements_text = requirements.read_text(encoding="utf-8")
     dockerfile_text = dockerfile.read_text(encoding="utf-8")
-    assert "COPY scripts/live/run_consumer_service.py" in dockerfile_text
-    assert "COPY scripts/live/run_live_stream_injector.py" in dockerfile_text
+    assert "COPY scripts" in dockerfile_text
+    assert "COPY evaluation" in dockerfile_text
+    assert "COPY knowledge" in dockerfile_text
     for heavy_dependency in ("torch", "transformers", "mlflow", "jupyterlab", "xgboost"):
         assert heavy_dependency not in requirements_text
     for phase1_dependency in ("fastapi", "uvicorn", "psycopg", "pydantic", "confluent-kafka"):
@@ -134,6 +135,35 @@ def test_aws_phase1_consumer_entrypoint_default_is_dry_run_safe() -> None:
     assert report["external_clients_started"] is False
     assert report["postgres_write_attempted"] is False
     assert "secret-value-that-must-not-print" not in completed.stdout
+
+
+def test_aws_phase1_consumer_env_gate_alone_stays_dry_run() -> None:
+    completed = subprocess.run(
+        [sys.executable, str(CONSUMER_SCRIPT)],
+        check=True,
+        cwd=ROOT,
+        env={"PYTHONPATH": str(ROOT / "src"), "CMS_ENABLE_RUNTIME_CONSUMER": "1", "POSTGRES_PASSWORD": "secret-value-that-must-not-print"},
+        capture_output=True,
+        text=True,
+    )
+    report = json.loads(completed.stdout)
+
+    assert report["mode"] == "dry_run"
+    assert report["external_clients_started"] is False
+    assert report["postgres_write_attempted"] is False
+
+
+def test_aws_phase1_consumer_runtime_requires_flag_and_env_gate() -> None:
+    completed = subprocess.run(
+        [sys.executable, str(CONSUMER_SCRIPT), "--runtime", "--max-messages", "0"],
+        cwd=ROOT,
+        env={"PYTHONPATH": str(ROOT / "src"), "POSTGRES_PASSWORD": "secret-value-that-must-not-print"},
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode != 0
+    assert "runtime consumer requires CMS_ENABLE_RUNTIME_CONSUMER=1" in completed.stderr
 
 
 def test_aws_phase1_consumer_entrypoint_dry_run_is_redacted_and_side_effect_free() -> None:
@@ -203,6 +233,8 @@ def test_aws_phase1_consumer_entrypoint_runtime_mode_uses_lazy_adapters(monkeypa
     monkeypatch.setitem(sys.modules, "confluent_kafka", confluent)
     monkeypatch.setitem(sys.modules, "psycopg", psycopg)
     monkeypatch.setenv("KAFKA_BOOTSTRAP_SERVERS", "cms-kafka:9092")
+    monkeypatch.setenv("KAFKA_TOPIC_IDENTITY", "local_pc123.measurement_raw_v1")
+    monkeypatch.setenv("POSTGRES_HOST", "172.31.47.236")
     monkeypatch.setenv("POSTGRES_PASSWORD", "secret-value-that-must-not-print")
 
     from scripts.live import run_consumer_service
@@ -214,6 +246,7 @@ def test_aws_phase1_consumer_entrypoint_runtime_mode_uses_lazy_adapters(monkeypa
     assert report["stats"] == {"polled": 0, "processed": 0, "committed": 0, "inserted": 0, "duplicate": 0, "dlq": 0, "retry": 0}
     assert subscribed == [["measurement_raw_v1"]]
     assert closed == [True]
+    assert report["secrets_reported"] is False
     assert "secret-value-that-must-not-print" not in json.dumps(report)
 
 
@@ -222,11 +255,16 @@ def test_aws_phase1_env_example_documents_required_non_secret_shape() -> None:
 
     assert "KAFKA_BOOTSTRAP_SERVERS=cms-kafka:9092" in text
     assert "MEASUREMENT_RAW_TOPIC=measurement_raw_v1" in text
+    assert "KAFKA_TOPIC_IDENTITY=local_pc123.measurement_raw_v1" in text
     assert "MEASUREMENT_DLQ_TOPIC=measurement_dead_letter_v1" in text
     assert "KAFKA_CONSUMER_GROUP=postgres-live-ingest" in text
     assert "CMS_ENABLE_RUNTIME_KAFKA_PRODUCER=1" in text
+    assert "PC1_LIVE_SOURCE_ROOT=/home/ubuntu/cms-stream-deploy/data/live_source/harmonized" in text
+    assert "CMS_LIVE_INJECTOR_FAST_MERGE_MAX_FILES=512" in text
+    assert "CMS_LIVE_INJECTOR_RUN_ID=live_20230101_all_meters" in text
     assert "CMS_API_BIND=127.0.0.1" in text
-    assert "POSTGRES_HOST=172.31.47.236" in text
+    assert "POSTGRES_HOST=" in text
+    assert "POSTGRES_HOST=172.31.47.236" not in text
     assert "POSTGRES_DB=cms" in text
     assert "POSTGRES_USER=cms" in text
     assert "POSTGRES_PASSWORD=" in text

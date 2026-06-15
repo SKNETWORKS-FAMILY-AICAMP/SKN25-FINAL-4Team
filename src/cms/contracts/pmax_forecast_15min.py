@@ -10,17 +10,27 @@ from __future__ import annotations
 import math
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
-from datetime import datetime, timedelta
+from dataclasses import dataclass, field
+from datetime import UTC, datetime, timedelta
 from typing import Literal
 
+from cms.contracts.live_pipeline import (
+    SOURCE_MODE_HYBRID_WARM_START,
+    SOURCE_MODE_LIVE_OBSERVED,
+    SOURCE_MODE_REFERENCE_BACKFILL,
+    classify_source_mode,
+    is_live_observed_source,
+)
+
 PMAX_FORECAST_INPUT_TABLE = "mart.peak_feature_15min"
+PMAX_HOLDOUT_FILTER_VIEW = "mart.active_peak_feature_15min"
 PMAX_FORECAST_TABLE = "mart.pmax_forecast_15min"
 PMAX_FORECAST_INFERENCE_LOG_TABLE = "ops.pmax_forecast_inference_log"
 PMAX_FORECAST_EVALUATION_TABLE = "qa.pmax_forecast_evaluation"
 
 PMAX_FORECAST_MODEL_GRAIN = "15min"
 PMAX_FORECAST_WINDOW_POINTS = 96
+PMAX_FORECAST_REQUIRED_HISTORY_WINDOWS = 288
 PMAX_FORECAST_QUERY_HISTORY_DAYS = 14
 PMAX_FORECAST_TARGET_MEASUREMENT = "P_max"
 PMAX_FORECAST_HORIZON_MINUTES = (15, 30, 45, 60)
@@ -65,6 +75,7 @@ WITH ranked_peak_features AS (
       ORDER BY created_at DESC NULLS LAST, run_id DESC NULLS LAST
     ) AS rn
   FROM mart.peak_feature_15min AS pf
+  WHERE pf.source_mode = 'live_observed'
 )
 SELECT *
 FROM ranked_peak_features
@@ -76,6 +87,16 @@ PMAX_FORECAST_LOGICAL_METER_SOURCES: Mapping[str, tuple[str, ...]] = {
     "H2.Z35x": ("H2.Z35", "H2.Z351"),
     "H2.Z36x": ("H2.Z36", "H2.Z361"),
 }
+PMAX_FORECAST_2023_HOLDOUT_START_UTC = datetime(2022, 12, 31, 15, 0, tzinfo=UTC)
+PMAX_FORECAST_2023_HOLDOUT_END_UTC = datetime(2023, 12, 31, 15, 0, tzinfo=UTC)
+PMAX_FORECAST_2023_LIVE_SOURCE_METERS = ("V.Z81", "V.Z82", "H2.Z351", "H2.Z361")
+PMAX_FORECAST_2023_LOGICAL_METER_SOURCES: Mapping[str, tuple[str, ...]] = {
+    "V.Z81": ("V.Z81",),
+    "V.Z82": ("V.Z82",),
+    "H2.Z35x": ("H2.Z351",),
+    "H2.Z36x": ("H2.Z361",),
+}
+PMAX_FORECAST_CURRENT_DB_LOGICAL_METER_SOURCES: Mapping[str, tuple[str, ...]] = PMAX_FORECAST_2023_LOGICAL_METER_SOURCES
 
 PmaxForecastRunStatus = Literal["success", "degraded", "failed"]
 
@@ -136,6 +157,9 @@ class PmaxFeatureReadinessRow:
     source_file: str
     run_id: str
     created_at: datetime | None
+    source_layer: str | None = None
+    source_mode: str | None = None
+    provenance: Mapping[str, object] | None = None
 
 
 @dataclass(frozen=True)
@@ -160,6 +184,8 @@ class PmaxFeatureReadinessResult:
     input_end_ts: datetime
     selected_row_count: int
     issues: tuple[PmaxFeatureReadinessIssue, ...] = ()
+    source_mode: str = SOURCE_MODE_LIVE_OBSERVED
+    source_composition: Mapping[str, int] = field(default_factory=dict)
 
     @property
     def ok(self) -> bool:
@@ -237,12 +263,12 @@ def validate_pmax_forecast_row(row: PmaxForecastRow) -> tuple[PmaxForecastValida
                 observed=row.logical_meter,
             )
         )
-    elif row.source_meter_urn not in PMAX_FORECAST_LOGICAL_METER_SOURCES[row.logical_meter]:
+    elif row.source_meter_urn not in pmax_allowed_source_meters(row.logical_meter, at_ts=row.input_end_ts):
         issues.append(
             PmaxForecastValidationIssue(
                 issue="source_meter_not_allowed_for_logical_meter",
                 field="source_meter_urn",
-                expected="|".join(PMAX_FORECAST_LOGICAL_METER_SOURCES[row.logical_meter]),
+                expected="|".join(pmax_allowed_source_meters(row.logical_meter, at_ts=row.input_end_ts)),
                 observed=row.source_meter_urn,
             )
         )
@@ -298,7 +324,48 @@ def actual_window_ts_for_forecast(row: PmaxForecastRow) -> datetime:
     return row.target_ts - timedelta(minutes=15)
 
 
-def select_latest_pmax_feature_rows(rows: Iterable[PmaxFeatureReadinessRow]) -> tuple[PmaxFeatureReadinessRow, ...]:
+def is_pmax_2023_live_holdout_window(ts: datetime) -> bool:
+    """Return whether ``ts`` belongs to the R2 2023 KST live holdout window.
+
+    The database migration defines the window as half-open
+    ``[2023-01-01 00:00:00+09, 2024-01-01 00:00:00+09)``. Internally the pure
+    Python contract compares in UTC so callers may pass any aware timezone.
+    Naive timestamps retain legacy import-safe behaviour and are interpreted by
+    calendar year only instead of raising during validation.
+    """
+
+    if ts.tzinfo is None or ts.utcoffset() is None:
+        return ts.year == 2023
+    utc_ts = ts.astimezone(UTC)
+    return PMAX_FORECAST_2023_HOLDOUT_START_UTC <= utc_ts < PMAX_FORECAST_2023_HOLDOUT_END_UTC
+
+
+def pmax_allowed_source_meters(logical_meter: str, *, at_ts: datetime | None = None) -> tuple[str, ...]:
+    """Return source meters allowed for a logical P-Max meter at a timestamp.
+
+    Replacement predecessors ``H2.Z35``/``H2.Z36`` remain represented in the
+    broad model contract for non-R2 compatibility, but they must not be used for
+    the R2 2023 live-observed holdout. During that window the corrected meter
+    basis is exactly ``V.Z81,V.Z82,H2.Z351,H2.Z361``.
+    """
+
+    source_map = PMAX_FORECAST_2023_LOGICAL_METER_SOURCES if at_ts is not None and is_pmax_2023_live_holdout_window(at_ts) else PMAX_FORECAST_LOGICAL_METER_SOURCES
+    return source_map[logical_meter]
+
+
+def pmax_live_observed_source_meters(logical_meter: str) -> tuple[str, ...]:
+    """Return the current DB source meter(s) for live-observed P-Max serving.
+
+    The model/artifact contract keeps legacy replacement aliases
+    ``H2.Z35``/``H2.Z36`` for non-R2 compatibility. Runtime DB reads for
+    live-observed serving use the current meter basis instead:
+    ``V.Z81,V.Z82,H2.Z351,H2.Z361``.
+    """
+
+    return PMAX_FORECAST_CURRENT_DB_LOGICAL_METER_SOURCES[logical_meter]
+
+
+def select_latest_pmax_feature_rows(rows: Iterable[PmaxFeatureReadinessRow], *, source_mode: str = SOURCE_MODE_LIVE_OBSERVED) -> tuple[PmaxFeatureReadinessRow, ...]:
     """Select latest duplicate physical feature keys for P-Max readiness.
 
     Mirrors the deployed-table SQL contract: ``row_number()`` partitioned by
@@ -306,11 +373,12 @@ def select_latest_pmax_feature_rows(rows: Iterable[PmaxFeatureReadinessRow]) -> 
     run_id desc``. This function is pure and accepts already-fetched rows only.
     """
 
+    _require_pmax_serving_source_mode(source_mode)
     latest_by_key: dict[tuple[datetime, str, str], PmaxFeatureReadinessRow] = {}
     for row in rows:
         key = (row.window_ts, row.meter_urn, row.measurement)
         existing = latest_by_key.get(key)
-        if existing is None or _feature_sort_key(row) > _feature_sort_key(existing):
+        if existing is None or _feature_sort_key(row, source_mode=source_mode) > _feature_sort_key(existing, source_mode=source_mode):
             latest_by_key[key] = row
     return tuple(sorted(latest_by_key.values(), key=lambda row: (row.window_ts, row.meter_urn, row.measurement)))
 
@@ -323,6 +391,7 @@ def validate_pmax_feature_readiness(
     required_measurements: Sequence[str] = PMAX_FORECAST_REQUIRED_MEASUREMENTS,
     window_points: int = PMAX_FORECAST_WINDOW_POINTS,
     min_coverage_ratio: float = PMAX_FORECAST_MIN_FEATURE_COVERAGE_RATIO,
+    source_mode: str = SOURCE_MODE_LIVE_OBSERVED,
 ) -> PmaxFeatureReadinessResult:
     """Validate P-Max model-serving feature readiness from in-memory rows.
 
@@ -333,12 +402,13 @@ def validate_pmax_feature_readiness(
     ending at ``base_ts - 15 minutes``, and blocks mixed replacement sources.
     """
 
+    _require_pmax_serving_source_mode(source_mode)
     original_rows = tuple(rows)
-    selected_rows = select_latest_pmax_feature_rows(original_rows)
+    selected_rows = select_latest_pmax_feature_rows(original_rows, source_mode=source_mode)
     input_end_ts = base_ts - timedelta(minutes=15)
     expected_windows = tuple(input_end_ts - timedelta(minutes=15 * offset) for offset in reversed(range(window_points)))
     expected_window_set = set(expected_windows)
-    issues: list[PmaxFeatureReadinessIssue] = list(_duplicate_latest_ambiguous_issues(original_rows))
+    issues: list[PmaxFeatureReadinessIssue] = list(_duplicate_latest_ambiguous_issues(original_rows, source_mode=source_mode))
 
     if not _is_15min_aligned(base_ts):
         issues.append(PmaxFeatureReadinessIssue("base_ts_not_15min_aligned", field="base_ts", expected="15min boundary", observed=base_ts.isoformat()))
@@ -349,14 +419,34 @@ def validate_pmax_feature_readiness(
 
     rows_by_logical_measurement: dict[tuple[str, str], list[PmaxFeatureReadinessRow]] = defaultdict(list)
     for row in selected_rows:
-        issues.extend(_validate_feature_row_fields(row, min_coverage_ratio=min_coverage_ratio))
-        for logical_meter, allowed_sources in PMAX_FORECAST_LOGICAL_METER_SOURCES.items():
+        issues.extend(_validate_feature_row_fields(row, min_coverage_ratio=min_coverage_ratio, source_mode=source_mode))
+        for logical_meter, broad_allowed_sources in PMAX_FORECAST_LOGICAL_METER_SOURCES.items():
+            allowed_sources = pmax_allowed_source_meters(logical_meter, at_ts=row.window_ts)
+            if (
+                logical_meter in logical_meters
+                and row.meter_urn in broad_allowed_sources
+                and row.measurement in required_measurements
+                and row.window_ts in expected_window_set
+                and row.meter_urn not in allowed_sources
+            ):
+                issues.append(
+                    PmaxFeatureReadinessIssue(
+                        "source_meter_not_allowed_for_2023_holdout",
+                        logical_meter=logical_meter,
+                        meter_urn=row.meter_urn,
+                        measurement=row.measurement,
+                        window_ts=row.window_ts,
+                        field="meter_urn",
+                        expected="|".join(allowed_sources),
+                        observed=row.meter_urn,
+                    )
+                )
             if logical_meter in logical_meters and row.meter_urn in allowed_sources and row.measurement in required_measurements and row.window_ts in expected_window_set:
                 rows_by_logical_measurement[(logical_meter, row.measurement)].append(row)
 
     for logical_meter in logical_meters:
-        allowed_sources = PMAX_FORECAST_LOGICAL_METER_SOURCES.get(logical_meter)
-        if allowed_sources is None:
+        broad_allowed_sources = PMAX_FORECAST_LOGICAL_METER_SOURCES.get(logical_meter)
+        if broad_allowed_sources is None:
             issues.append(
                 PmaxFeatureReadinessIssue(
                     "unsupported_logical_meter",
@@ -371,7 +461,9 @@ def validate_pmax_feature_readiness(
         logical_rows = [
             row
             for row in selected_rows
-            if row.meter_urn in allowed_sources and row.measurement in required_measurements and row.window_ts in expected_window_set
+            if row.meter_urn in pmax_allowed_source_meters(logical_meter, at_ts=row.window_ts)
+            and row.measurement in required_measurements
+            and row.window_ts in expected_window_set
         ]
         observed_sources = tuple(sorted({row.meter_urn for row in logical_rows}))
         if len(observed_sources) > 1:
@@ -380,7 +472,7 @@ def validate_pmax_feature_readiness(
                     "mixed_source_meters_for_logical_meter",
                     logical_meter=logical_meter,
                     field="meter_urn",
-                    expected="single source from " + "|".join(allowed_sources),
+                    expected="single source from " + "|".join(broad_allowed_sources),
                     observed="|".join(observed_sources),
                 )
             )
@@ -405,10 +497,12 @@ def validate_pmax_feature_readiness(
         input_end_ts=input_end_ts,
         selected_row_count=len(selected_rows),
         issues=tuple(issues),
+        source_mode=source_mode,
+        source_composition=_source_composition(selected_rows),
     )
 
 
-def _duplicate_latest_ambiguous_issues(rows: Iterable[PmaxFeatureReadinessRow]) -> tuple[PmaxFeatureReadinessIssue, ...]:
+def _duplicate_latest_ambiguous_issues(rows: Iterable[PmaxFeatureReadinessRow], *, source_mode: str = SOURCE_MODE_LIVE_OBSERVED) -> tuple[PmaxFeatureReadinessIssue, ...]:
     grouped: dict[tuple[datetime, str, str], list[PmaxFeatureReadinessRow]] = defaultdict(list)
     for row in rows:
         grouped[(row.window_ts, row.meter_urn, row.measurement)].append(row)
@@ -417,8 +511,8 @@ def _duplicate_latest_ambiguous_issues(rows: Iterable[PmaxFeatureReadinessRow]) 
     for (window_ts, meter_urn, measurement), candidates in grouped.items():
         if len(candidates) <= 1:
             continue
-        max_key = max(_feature_sort_key(candidate) for candidate in candidates)
-        winners = [candidate for candidate in candidates if _feature_sort_key(candidate) == max_key]
+        max_key = max(_feature_sort_key(candidate, source_mode=source_mode) for candidate in candidates)
+        winners = [candidate for candidate in candidates if _feature_sort_key(candidate, source_mode=source_mode) == max_key]
         if len(winners) > 1:
             issues.append(
                 PmaxFeatureReadinessIssue(
@@ -434,15 +528,45 @@ def _duplicate_latest_ambiguous_issues(rows: Iterable[PmaxFeatureReadinessRow]) 
     return tuple(issues)
 
 
+def _require_pmax_serving_source_mode(source_mode: str) -> None:
+    allowed = (SOURCE_MODE_LIVE_OBSERVED, SOURCE_MODE_REFERENCE_BACKFILL, SOURCE_MODE_HYBRID_WARM_START)
+    if source_mode not in allowed:
+        raise ValueError("P-Max serving source_mode must be one of: " + ",".join(allowed))
+
+
+def _source_composition(rows: Iterable[PmaxFeatureReadinessRow]) -> Mapping[str, int]:
+    counts: dict[str, int] = {}
+    for row in rows:
+        key = row.source_mode or "null_source_mode"
+        counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
 def _is_15min_aligned(ts: datetime) -> bool:
     return ts.minute % 15 == 0 and ts.second == 0 and ts.microsecond == 0
 
 
-def _feature_sort_key(row: PmaxFeatureReadinessRow) -> tuple[datetime, str]:
-    return (row.created_at or datetime.min.replace(tzinfo=row.window_ts.tzinfo), row.run_id)
+def _feature_sort_key(row: PmaxFeatureReadinessRow, *, source_mode: str = SOURCE_MODE_LIVE_OBSERVED) -> tuple[int, datetime, str]:
+    return (_source_mode_priority(row, source_mode=source_mode), row.created_at or datetime.min.replace(tzinfo=row.window_ts.tzinfo), row.run_id)
 
 
-def _validate_feature_row_fields(row: PmaxFeatureReadinessRow, *, min_coverage_ratio: float) -> tuple[PmaxFeatureReadinessIssue, ...]:
+def _source_mode_priority(row: PmaxFeatureReadinessRow, *, source_mode: str) -> int:
+    if source_mode == SOURCE_MODE_HYBRID_WARM_START:
+        if row.source_mode == SOURCE_MODE_LIVE_OBSERVED:
+            return 2
+        if row.source_mode == SOURCE_MODE_REFERENCE_BACKFILL:
+            return 1
+        return 0
+    if source_mode == SOURCE_MODE_REFERENCE_BACKFILL:
+        if row.source_mode == SOURCE_MODE_REFERENCE_BACKFILL:
+            return 2
+        if row.source_mode is None:
+            return 1
+        return 0
+    return 0
+
+
+def _validate_feature_row_fields(row: PmaxFeatureReadinessRow, *, min_coverage_ratio: float, source_mode: str) -> tuple[PmaxFeatureReadinessIssue, ...]:
     issues: list[PmaxFeatureReadinessIssue] = []
     if not _is_15min_aligned(row.window_ts):
         issues.append(_feature_issue("window_ts_not_15min_aligned", row, field="window_ts", expected="15min boundary", observed=row.window_ts.isoformat()))
@@ -464,9 +588,47 @@ def _validate_feature_row_fields(row: PmaxFeatureReadinessRow, *, min_coverage_r
         issues.append(_feature_issue("observed_points_out_of_range", row, field="observed_points", expected="0..expected_points", observed=row.observed_points))
     if row.coverage_ratio < min_coverage_ratio:
         issues.append(_feature_issue("coverage_ratio_below_threshold", row, field="coverage_ratio", expected=min_coverage_ratio, observed=float(row.coverage_ratio)))
+    issues.extend(_validate_feature_row_source_boundary(row, serving_source_mode=source_mode))
     for field_name in _required_numeric_fields(row.measurement):
         if _is_missing_numeric(getattr(row, field_name)):
             issues.append(_feature_issue("missing_required_aggregate", row, field=field_name, expected="finite numeric", observed="missing"))
+    return tuple(issues)
+
+
+def _validate_feature_row_source_boundary(row: PmaxFeatureReadinessRow, *, serving_source_mode: str) -> tuple[PmaxFeatureReadinessIssue, ...]:
+    issues: list[PmaxFeatureReadinessIssue] = []
+    inferred_mode: str | None = None
+    if row.source_layer:
+        try:
+            inferred_mode = classify_source_mode(row.source_layer)
+        except ValueError as exc:
+            if serving_source_mode == SOURCE_MODE_LIVE_OBSERVED or row.source_mode == SOURCE_MODE_LIVE_OBSERVED:
+                issues.append(_feature_issue("source_layer_required", row, field="source_layer", expected=SOURCE_MODE_LIVE_OBSERVED, observed=str(exc)))
+    elif serving_source_mode == SOURCE_MODE_LIVE_OBSERVED or row.source_mode == SOURCE_MODE_LIVE_OBSERVED:
+        issues.append(_feature_issue("source_layer_required", row, field="source_layer", expected=SOURCE_MODE_LIVE_OBSERVED, observed=row.source_layer))
+
+    if row.source_mode and row.source_mode not in {SOURCE_MODE_LIVE_OBSERVED, SOURCE_MODE_REFERENCE_BACKFILL}:
+        issues.append(_feature_issue("unsupported_source_mode", row, field="source_mode", expected=f"{SOURCE_MODE_LIVE_OBSERVED}|{SOURCE_MODE_REFERENCE_BACKFILL}", observed=row.source_mode))
+    if serving_source_mode == SOURCE_MODE_LIVE_OBSERVED and not row.source_mode:
+        issues.append(_feature_issue("source_mode_required", row, field="source_mode", expected=SOURCE_MODE_LIVE_OBSERVED, observed=row.source_mode))
+    if inferred_mode is not None and row.source_mode is not None and row.source_mode != inferred_mode:
+        issues.append(_feature_issue("source_mode_mismatch", row, field="source_mode", expected=inferred_mode, observed=row.source_mode))
+
+    if serving_source_mode == SOURCE_MODE_LIVE_OBSERVED:
+        if inferred_mode == SOURCE_MODE_REFERENCE_BACKFILL or (row.source_layer and row.source_mode and not is_live_observed_source(row.source_layer, row.source_mode)):
+            issues.append(_feature_issue("reference_source_for_live_serving", row, field="source_layer", expected=SOURCE_MODE_LIVE_OBSERVED, observed=row.source_layer))
+        if "corrected_resampled" in row.source_file.lower():
+            issues.append(_feature_issue("reference_source_file_for_live_serving", row, field="source_file", expected="live/canonical observed lineage", observed=row.source_file))
+        if not row.provenance:
+            issues.append(_feature_issue("provenance_required", row, field="provenance", expected="non-empty source provenance", observed="missing"))
+    elif serving_source_mode == SOURCE_MODE_REFERENCE_BACKFILL:
+        if row.source_mode == SOURCE_MODE_LIVE_OBSERVED or inferred_mode == SOURCE_MODE_LIVE_OBSERVED:
+            issues.append(_feature_issue("live_source_for_reference_backfill", row, field="source_mode", expected=SOURCE_MODE_REFERENCE_BACKFILL, observed=row.source_mode or inferred_mode))
+    elif row.source_mode == SOURCE_MODE_LIVE_OBSERVED:
+        if "corrected_resampled" in row.source_file.lower():
+            issues.append(_feature_issue("reference_source_file_labeled_live_observed", row, field="source_file", expected="live observed lineage", observed=row.source_file))
+        if not row.provenance:
+            issues.append(_feature_issue("provenance_required", row, field="provenance", expected="non-empty source provenance", observed="missing"))
     return tuple(issues)
 
 
@@ -507,7 +669,12 @@ __all__ = [
     "PMAX_FORECAST_EVALUATION_TABLE",
     "PMAX_FEATURE_LATEST_SELECTION_SQL",
     "PMAX_FORECAST_ARTIFACT_ADAPTER_STUB",
+    "PMAX_FORECAST_2023_HOLDOUT_END_UTC",
+    "PMAX_FORECAST_2023_HOLDOUT_START_UTC",
+    "PMAX_FORECAST_2023_LIVE_SOURCE_METERS",
+    "PMAX_FORECAST_2023_LOGICAL_METER_SOURCES",
     "PMAX_FORECAST_CANDIDATE_VERSIONS",
+    "PMAX_FORECAST_CURRENT_DB_LOGICAL_METER_SOURCES",
     "PMAX_FORECAST_FEATURE_COLUMNS",
     "PMAX_FORECAST_TABLE",
     "PMAX_FORECAST_HORIZON_MINUTES",
@@ -521,6 +688,7 @@ __all__ = [
     "PMAX_FORECAST_PRODUCTION_RELEASE_SHA256",
     "PMAX_FORECAST_QUERY_HISTORY_DAYS",
     "PMAX_FORECAST_REQUIRED_AGGREGATES",
+    "PMAX_FORECAST_REQUIRED_HISTORY_WINDOWS",
     "PMAX_FORECAST_REQUIRED_MEASUREMENTS",
     "PMAX_FORECAST_RUN_LOG_CONTRACT",
     "PMAX_FORECAST_TARGET_MEASUREMENT",
@@ -534,6 +702,9 @@ __all__ = [
     "PmaxForecastRunStatus",
     "PmaxForecastValidationIssue",
     "actual_window_ts_for_forecast",
+    "is_pmax_2023_live_holdout_window",
+    "pmax_allowed_source_meters",
+    "pmax_live_observed_source_meters",
     "select_latest_pmax_feature_rows",
     "validate_pmax_feature_readiness",
     "validate_pmax_forecast_row",

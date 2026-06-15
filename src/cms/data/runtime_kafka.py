@@ -8,12 +8,17 @@ from __future__ import annotations
 
 import json
 import os
+from collections.abc import Mapping
 from dataclasses import dataclass
 from importlib import import_module
 from typing import Any, Protocol
 
 from cms.contracts.ingestion import KAFKA_CONSUMER_GROUP, MEASUREMENT_RAW_TOPIC
 from cms.data.kafka_adapter import KafkaProducerUnavailable
+
+EDGE_RUNTIME_PROFILE_ENV = "CMS_RUNTIME_PROFILE"
+EDGE_RUNTIME_PROFILE = "edge"
+AWS_STREAM_HOST_MARKERS = frozenset({"cms-stream", "db-stream", "43.202.114.249", "172.31.26.245"})
 
 
 class RuntimeKafkaMessageConsumerLike(Protocol):
@@ -26,8 +31,9 @@ class RuntimeKafkaMessageConsumerLike(Protocol):
 
 def make_kafka_producer_config(env: dict[str, str] | None = None) -> dict[str, object]:
     values = env or os.environ
+    bootstrap_servers = resolve_kafka_bootstrap_servers(values)
     return {
-        "bootstrap.servers": values.get("KAFKA_BOOTSTRAP_SERVERS", "cms-kafka:9092"),
+        "bootstrap.servers": bootstrap_servers,
         "client.id": values.get("KAFKA_CLIENT_ID", "cms-api-ingest"),
         "acks": values.get("KAFKA_ACKS", "all"),
     }
@@ -35,13 +41,41 @@ def make_kafka_producer_config(env: dict[str, str] | None = None) -> dict[str, o
 
 def make_kafka_consumer_config(env: dict[str, str] | None = None) -> dict[str, object]:
     values = env or os.environ
+    bootstrap_servers = resolve_kafka_bootstrap_servers(values)
     return {
-        "bootstrap.servers": values.get("KAFKA_BOOTSTRAP_SERVERS", "cms-kafka:9092"),
+        "bootstrap.servers": bootstrap_servers,
         "group.id": values.get("KAFKA_CONSUMER_GROUP", KAFKA_CONSUMER_GROUP),
         "enable.auto.commit": False,
         "auto.offset.reset": values.get("KAFKA_AUTO_OFFSET_RESET", "earliest"),
         "client.id": values.get("KAFKA_CONSUMER_CLIENT_ID", "kafka_to_postgres_consumer"),
     }
+
+
+def resolve_kafka_bootstrap_servers(env: Mapping[str, str] | None = None) -> str:
+    values = env or os.environ
+    bootstrap_servers = values.get("KAFKA_BOOTSTRAP_SERVERS", "")
+    if is_edge_runtime(values):
+        validate_kafka_cluster_bootstrap_servers(bootstrap_servers)
+        return bootstrap_servers
+    return bootstrap_servers or "cms-kafka:9092"
+
+
+def is_edge_runtime(env: Mapping[str, str] | None = None) -> bool:
+    values = env or os.environ
+    return values.get(EDGE_RUNTIME_PROFILE_ENV) == EDGE_RUNTIME_PROFILE
+
+
+def validate_kafka_cluster_bootstrap_servers(bootstrap_servers: str | None) -> None:
+    if not bootstrap_servers:
+        raise RuntimeError("KAFKA_BOOTSTRAP_SERVERS must be set explicitly for edge runtime")
+    brokers = [broker.strip() for broker in bootstrap_servers.split(",") if broker.strip()]
+    if len(brokers) < 3:
+        raise RuntimeError("edge runtime requires all three PC1~3 Kafka brokers in KAFKA_BOOTSTRAP_SERVERS")
+    hosts = [broker.rsplit(":", maxsplit=1)[0].strip("[]") for broker in brokers]
+    if len(set(hosts)) != len(hosts):
+        raise RuntimeError("edge runtime requires distinct PC1~3 Kafka broker hosts in KAFKA_BOOTSTRAP_SERVERS")
+    if any(marker in broker for broker in brokers for marker in AWS_STREAM_HOST_MARKERS):
+        raise RuntimeError("edge runtime must not depend on AWS cms-stream hosts in KAFKA_BOOTSTRAP_SERVERS")
 
 
 @dataclass
@@ -130,6 +164,9 @@ __all__ = [
     "RuntimeKafkaMessageConsumerLike",
     "create_confluent_kafka_consumer",
     "create_confluent_kafka_producer",
+    "is_edge_runtime",
     "make_kafka_consumer_config",
     "make_kafka_producer_config",
+    "resolve_kafka_bootstrap_servers",
+    "validate_kafka_cluster_bootstrap_servers",
 ]

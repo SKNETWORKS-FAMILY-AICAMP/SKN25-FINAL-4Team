@@ -12,12 +12,24 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 from typing import Any
 
+from cms.contracts.live_pipeline import SOURCE_AUTHORITY_PC1_ARCHIVE, validate_live_injector_source_authority
+
 MEASUREMENT_RAW_TOPIC = "measurement_raw_v1"
 MEASUREMENT_DLQ_TOPIC = "measurement_dead_letter_v1"
 KAFKA_CONSUMER_GROUP = "postgres-live-ingest"
 KAFKA_MESSAGE_KEY_FIELDS = ("meter_urn", "measurement")
 MEASUREMENT_RAW_SCHEMA_VERSION = "measurement_raw_v1"
 MAX_RAW_EVENT_BYTES = 64_000
+
+# PostgreSQL ingestion boundary: Kafka measurement_raw_v1 is the raw/staging
+# buffer; the consumer writes validated events directly to the live ledger.
+MEASUREMENT_LANDING_TABLE = "landing.measurement_raw_event"
+MEASUREMENT_LIVE_TABLE = "live.measurement_event"
+MEASUREMENT_INGESTION_TABLE_PATH = (
+    MEASUREMENT_LANDING_TABLE,
+    MEASUREMENT_LIVE_TABLE,
+)
+MEASUREMENT_EVENT_WRITE_TARGET_TABLE = MEASUREMENT_LIVE_TABLE
 
 
 @dataclass(frozen=True)
@@ -43,6 +55,8 @@ class MeasurementRawEvent:
     raw_payload_hash: str
     raw_payload_size_bytes: int = 0
     payload_errors: tuple[str, ...] = ()
+    source_authority: str = SOURCE_AUTHORITY_PC1_ARCHIVE
+    source_path: str | None = None
 
 
 def _is_nonempty_text(value: object) -> bool:
@@ -91,6 +105,8 @@ def measurement_raw_event_from_mapping(payload: dict[str, Any]) -> MeasurementRa
         raw_payload_hash=payload_hash,
         raw_payload_size_bytes=size,
         payload_errors=tuple(payload_errors),
+        source_authority=str(payload.get("source_authority") or SOURCE_AUTHORITY_PC1_ARCHIVE),
+        source_path=str(payload["source_path"]) if payload.get("source_path") is not None else None,
     )
 
 
@@ -126,6 +142,13 @@ def validate_raw_event(event: MeasurementRawEvent) -> tuple[str, ...]:
                 errors.append(f"{field_name}_invalid_iso_datetime")
     if event.value_text is None and event.value_numeric is None:
         errors.append("value_required")
+    if event.source_authority != SOURCE_AUTHORITY_PC1_ARCHIVE:
+        errors.append("source_authority_pc1_archive_required")
+    if event.source_path:
+        try:
+            validate_live_injector_source_authority(event.source_path, event.source_authority)
+        except ValueError:
+            errors.append("source_path_outside_pc1_archive_authority")
     if event.raw_payload_size_bytes > MAX_RAW_EVENT_BYTES:
         errors.append("raw_payload_oversized")
     if event.raw_payload_hash and len(event.raw_payload_hash) < 16:
@@ -148,9 +171,14 @@ __all__ = [
     "KAFKA_MESSAGE_KEY_FIELDS",
     "MAX_RAW_EVENT_BYTES",
     "MEASUREMENT_DLQ_TOPIC",
+    "MEASUREMENT_EVENT_WRITE_TARGET_TABLE",
+    "MEASUREMENT_INGESTION_TABLE_PATH",
+    "MEASUREMENT_LANDING_TABLE",
+    "MEASUREMENT_LIVE_TABLE",
     "MEASUREMENT_RAW_SCHEMA_VERSION",
     "MEASUREMENT_RAW_TOPIC",
     "MeasurementRawEvent",
+    "SOURCE_AUTHORITY_PC1_ARCHIVE",
     "idempotency_key",
     "kafka_message_key",
     "measurement_raw_event_from_mapping",

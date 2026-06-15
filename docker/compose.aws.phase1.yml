@@ -83,6 +83,7 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVERS: "${KAFKA_BOOTSTRAP_SERVERS:-cms-kafka:9092}"
       MEASUREMENT_RAW_TOPIC: "${MEASUREMENT_RAW_TOPIC:-measurement_raw_v1}"
+      KAFKA_TOPIC_IDENTITY: "${KAFKA_TOPIC_IDENTITY:-local_pc123.measurement_raw_v1}"
       MEASUREMENT_DLQ_TOPIC: "${MEASUREMENT_DLQ_TOPIC:-measurement_dead_letter_v1}"
       KAFKA_CONSUMER_GROUP: "${KAFKA_CONSUMER_GROUP:-postgres-live-ingest}"
       POSTGRES_HOST: "${POSTGRES_HOST:-172.31.47.236}"

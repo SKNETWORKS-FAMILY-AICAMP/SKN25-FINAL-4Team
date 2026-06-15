@@ -29,6 +29,7 @@ def process_kafka_message(
     writer: PostgresEventWriterLike,
     dlq_producer: KafkaProducerLike,
     consumed_at: str | None = None,
+    kafka_topic_identity: str | None = None,
 ) -> StreamConsumerProcessResult:
     """Process one Kafka-like message with injected adapters.
 
@@ -39,7 +40,7 @@ def process_kafka_message(
     """
 
     envelope = parse_kafka_envelope(message)
-    first_decision = decide_consumer_action(envelope, consumed_at=consumed_at)
+    first_decision = decide_consumer_action(envelope, consumed_at=consumed_at, kafka_topic_identity=kafka_topic_identity)
 
     if first_decision.action == "send_to_dlq":
         dlq_ack: dict[str, object] | None = None
@@ -55,7 +56,12 @@ def process_kafka_message(
             except Exception:  # noqa: BLE001 - runner maps DLQ adapter failure to no-commit decision.
                 dlq_succeeded = False
                 dlq_ack = None
-        final_decision = decide_consumer_action(envelope, dlq_publish_succeeded=dlq_succeeded, consumed_at=consumed_at)
+        final_decision = decide_consumer_action(
+            envelope,
+            dlq_publish_succeeded=dlq_succeeded,
+            consumed_at=consumed_at,
+            kafka_topic_identity=kafka_topic_identity,
+        )
         return StreamConsumerProcessResult(decision=final_decision, dlq_ack=dlq_ack)
 
     if first_decision.postgres_payload is None:
@@ -80,6 +86,7 @@ def process_kafka_message(
         db_transaction_succeeded=write_result.succeeded,
         duplicate_event=write_result.duplicate_event,
         consumed_at=consumed_at,
+        kafka_topic_identity=kafka_topic_identity,
     )
     return StreamConsumerProcessResult(decision=final_decision, write_result=write_result)
 

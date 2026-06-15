@@ -5,7 +5,7 @@ import pytest
 fastapi = pytest.importorskip("fastapi")
 testclient = pytest.importorskip("fastapi.testclient")
 
-from cms.service import api
+from cms.service import api  # noqa: E402
 
 
 def test_create_app_registers_real_fastapi_routes() -> None:
@@ -34,11 +34,18 @@ def test_fastapi_routes_return_dry_run_payloads() -> None:
     health = client.get("/health")
     assert health.status_code == 200
     assert health.json()["writes_allowed"] is False
+    assert health.json()["service"] == "CMS Live/Replay API"
+    assert health.json()["role"] == "combined"
 
     index = client.get("/")
     assert index.status_code == 200
     assert index.json()["docs"] == "/docs"
     assert {route["path"] for route in index.json()["routes"]} >= {"/health", "/query/plan"}
+
+    model_summary = client.get("/model/results/summary?run_id=missing")
+    assert model_summary.status_code == 200
+    assert model_summary.json()["route"] == "/model/results/summary"
+    assert model_summary.json()["writes_allowed"] is False
 
     plan = client.post("/live-replay/plan", json={"table": "canonical.measurement_15min", "limit": 2})
     assert plan.status_code == 200
@@ -59,6 +66,16 @@ def test_fastapi_routes_return_dry_run_payloads() -> None:
     )
     assert email.status_code == 200
     assert email.json()["send_attempted"] is False
+
+
+def test_role_specific_health_labels_are_not_skeleton() -> None:
+    ingestion = testclient.TestClient(api.create_ingestion_app()).get("/health")
+    backend = testclient.TestClient(api.create_backend_app()).get("/health")
+
+    assert ingestion.json()["service"] == "CMS Ingestion API"
+    assert ingestion.json()["role"] == "ingestion"
+    assert backend.json()["service"] == "CMS Backend API"
+    assert backend.json()["role"] == "backend"
 
 
 def test_fastapi_routes_map_contract_errors_to_http_statuses() -> None:

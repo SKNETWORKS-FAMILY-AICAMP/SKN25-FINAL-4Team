@@ -25,7 +25,8 @@ Branch A: observed / canonical
 
 Branch B: peak_feature / model-serving
 -> peak_feature_worker
--> mart.peak_feature_15min / mart.peak_input_15min
+-> mart.peak_feature_15min
+-> optional helper projection mart.peak_input_15min
 -> Airflow model job + P-Max adapter/release loader
 -> mart.pmax_forecast_15min
    + ops.pmax_forecast_inference_log
@@ -112,7 +113,7 @@ Target schema의 배포 상태는 환경별 read-only inventory로 확인한 뒤
 | `live.promotion_run` | promotion_id, target tables, counts, approval/audit summary | no |
 | `qa.live_measurement_issue` | policy miss, stale state, coverage block, lineage block 등 issue record | no |
 | `mart.peak_feature_15min` | peak prediction feature. `peak_value`, `peak_ts`, `max` 등 | no |
-| `mart.peak_input_15min` | model input view/table. 15min feature와 rolling 1h peak features | no |
+| `mart.peak_input_15min` | legacy/helper projection view/table only. Direct P-Max runtime input is `mart.peak_feature_15min`. | no |
 | `mart.pmax_forecast_15min` | P-Max adapter/release loader가 적재하는 15min forecast output | no |
 | `ops.pmax_forecast_inference_log` | P-Max model job, input window, model/release version, run lineage log | no |
 | `qa.pmax_forecast_evaluation` | P-Max forecast 품질/evaluation evidence | no |
@@ -232,54 +233,62 @@ Idempotency key는 다음 조합을 사용한다.
 (meter_urn, measurement, resolution, bucket_ts, job_kind, policy_version)
 ```
 
-`mean_rollup` job은 `resolution = 15min`과 `resolution = 1h`를 생성한다. `peak_feature` job은 기본적으로 `resolution = 15min`만 생성하고, 1h peak 정보는 `mart.peak_input_15min`의 rolling 1h feature로 관리한다. 별도 `mart.peak_feature_1h`는 reviewed model-input requirement가 생긴 뒤 추가한다.
+`mean_rollup` job은 `resolution = 15min`과 `resolution = 1h`를 생성한다. `peak_feature` job은 기본적으로 `resolution = 15min`만 생성한다. 1h peak projection이 필요하면 legacy/helper view인 `mart.peak_input_15min`에 둘 수 있지만, direct P-Max runtime input은 `mart.peak_feature_15min`이다. 별도 `mart.peak_feature_1h`는 reviewed model-input requirement가 생긴 뒤 추가한다.
 
-### 6.6 Peak feature and P-Max model-serving boundary
+### 6.6 Model-serving branch boundary
 
-Peak prediction branch는 canonical fact가 아니라 model feature/model-serving branch다.
+Model-serving branch는 canonical fact가 아니라 model input, forecast/warning output, runtime log, evaluation evidence layer다. Current adapter contract는 front/backend와 LangGraph를 거치지 않고 다음 DB boundary까지만 연결한다.
 
 ```text
+P-Max lane:
 mart.peak_feature_15min
-mart.peak_input_15min
-mart.pmax_forecast_15min
-ops.pmax_forecast_inference_log
-qa.pmax_forecast_evaluation
+-> P-Max feature query / 288-window readiness
+-> P-Max v29 adapter
+-> mart.pmax_forecast_15min
+   + ops.pmax_forecast_inference_log
+   + qa.pmax_forecast_evaluation
+
+Anomaly lane:
+live.measurement_1h or canonical-approved observed 1h source
+-> mart.anomaly_feature_1h
+-> anomaly v84 adapter
+-> mart.anomaly_warning_1h
+   + ops.anomaly_warning_inference_log
+   + qa.anomaly_warning_evaluation
+
+Combined evidence:
+P-Max packet + anomaly packet + cross-lane consistency
+-> qa.model_serving_evidence_packet
 ```
 
-`mart.peak_feature_15min` minimum fields는 다음과 같다.
+Peak feature row와 anomaly/model-serving row는 `canonical.measurement_*`로 promotion하지 않는다.
+
+`mart.peak_feature_15min`은 current P-Max adapter의 직접 input table이다. AWS deployed schema 기준 minimum fields는 다음과 같다.
 
 ```text
-bucket_ts
+window_ts
 meter_urn
 measurement
-peak_value
-peak_ts
+mean_value
 max_value
 min_value
-mean_value
+p95_value
+p99_value
 std_value
+last_value
+peak_ts
+peak_value
+observed_points
+expected_points
 coverage_ratio
-valid_peak_window
-source_bucket_refs
-policy_id
-policy_version
-feature_version
-updated_at
+source_file
+run_id
+created_at
 ```
 
-`mart.peak_input_15min`은 model input view/table이며, 최근 4개 15min bucket에서 rolling 1h peak features를 계산할 수 있다.
+`mart.peak_input_15min`은 optional view/table이다. 운영에서 이 view를 유지하면 `mart.peak_feature_15min`의 latest/deduplicated projection과 rolling 1h feature를 담을 수 있지만, 현재 P-Max adapter는 schema drift를 줄이기 위해 `mart.peak_feature_15min`을 직접 읽는다.
 
-```text
-rolling_1h_peak_value
-rolling_1h_peak_ts
-rolling_1h_mean_value
-rolling_1h_valid_bucket_count
-rolling_1h_coverage_ratio
-```
-
-Peak feature row는 `canonical.measurement_*`로 promotion하지 않는다.
-
-P-Max inference input은 `mart.peak_input_15min`에서 15min 기준 288개 window를 확보한 뒤 96x22 input tensor로 구성한다. Window가 부족하거나 release policy가 없으면 forecast write 대신 skip/block evidence를 남긴다. P-Max는 streaming test target이 아니며, Airflow model job dry-run 또는 artifact replay로 검증한다.
+P-Max inference input은 `mart.peak_feature_15min`에서 15min 기준 288개 window를 확보한 뒤, 마지막 96개 step과 22개 feature로 `96x22` input을 구성한다. Window가 부족하거나 release policy가 없으면 forecast write 대신 skip/block evidence를 남긴다. P-Max는 streaming test target이 아니며, Airflow model job dry-run 또는 artifact replay로 검증한다.
 
 `mart.pmax_forecast_15min` minimum fields는 다음과 같다.
 
@@ -289,12 +298,16 @@ run_id
 model_name
 model_version
 release_version
+logical_meter
+source_meter_urn
+base_ts
 input_window_start_ts
 input_window_end_ts
 input_window_count      # expected 288
 input_shape             # expected 96x22
 target_ts
-forecast_horizon_step
+forecast_horizon_minutes
+actual_window_ts        # target_ts - 15 minutes
 forecast_value
 forecast_unit
 confidence_summary
@@ -310,23 +323,25 @@ job_id
 model_name
 model_version
 release_version
+base_ts
 input_window_count
 input_shape
 artifact_ref
 status
+prediction_count
+blocked_reason
+details
 started_at
 finished_at
-error_summary
 ```
 
-`qa.pmax_forecast_evaluation`은 forecast 품질/evaluation evidence를 남긴다.
+`qa.pmax_forecast_evaluation`은 actual window가 준비된 뒤 forecast 품질/evaluation evidence를 남긴다.
 
 ```text
 evaluation_id
 run_id
 forecast_id
-evaluation_window_start_ts
-evaluation_window_end_ts
+actual_window_ts
 metric_name
 metric_value
 baseline_ref
@@ -334,6 +349,52 @@ quality_status
 evidence_ref
 created_at
 ```
+
+`mart.anomaly_feature_1h`은 anomaly v84 adapter의 model input table/view boundary다. Upstream은 `live.measurement_1h` 또는 승인된 observed 1h source이며, model-specific derived feature는 canonical이 아니라 mart input으로 둔다.
+
+```text
+bucket_ts
+meter_urn
+feature_set              # electric or heat
+p_value
+u1_value
+pf_value
+qv_value
+tdiff_value
+derived_features
+input_quality
+source_refs
+created_at
+```
+
+`mart.anomaly_warning_1h` minimum fields는 다음과 같다.
+
+```text
+warning_id
+run_id
+model_name
+model_version
+release_version
+meter_urn
+model_urn
+forecast_origin_ts
+target_ts
+lead_step                # 1, 2, 3
+horizon_hours            # expected 3
+predicted_p
+threshold_lower
+threshold_upper
+warning_flag
+warning_type             # high, low, none
+status                   # success, insufficient_data, no_artifact, error
+physical_flag
+input_quality
+warning_reason_code
+source_input_refs
+created_at
+```
+
+`ops.anomaly_warning_inference_log`와 `qa.anomaly_warning_evaluation`은 anomaly run lineage와 post-hoc 품질 evidence를 분리 보관한다. Combined serving run evidence는 `qa.model_serving_evidence_packet`에 기록한다.
 
 ## 7. Canonical measurement tables
 
@@ -423,7 +484,7 @@ Feature는 canonical 또는 승인된 candidate/reference policy에서 생성한
 | `candidate` | service truth가 아닌 review/experiment feature |
 | `mart.model_input_*` | champion model input policy 승인 후 생성 |
 | `mart.peak_feature_15min` | peak prediction feature. canonical fact가 아니며 `peak_value`, `peak_ts`, rolling feature를 보존 |
-| `mart.peak_input_15min` | peak model input view/table. 1h peak는 우선 rolling feature로 표현. P-Max 입력은 288개 15min window로 96x22 tensor 구성 가능 시에만 사용 |
+| `mart.peak_input_15min` | legacy/helper projection view/table. Direct P-Max runtime input이 아니며, 필요한 경우 rolling 1h projection만 보조적으로 표현 |
 | `mart.pmax_forecast_15min` | P-Max forecast output. canonical fact가 아니며 release loader 적재 대상 |
 | `ops.pmax_forecast_inference_log` | P-Max Airflow model job과 release loader lineage/status log |
 | `qa.pmax_forecast_evaluation` | P-Max forecast evaluation evidence. Streaming test target이 아님 |

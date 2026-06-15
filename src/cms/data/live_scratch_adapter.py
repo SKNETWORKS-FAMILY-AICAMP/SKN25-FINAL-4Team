@@ -245,7 +245,11 @@ def _build_peak_feature_if_possible(events: Sequence[LiveMeasurementEvent], poli
         meter_urn=first.meter_urn,
         measurement=first.measurement,
         observations=tuple((event.source_ts, event.value, event.event_id) for event in events),
-        expected_points=policy.expected_points_15min,
+        expected_policy=ExpectedPointsPolicy(
+            native_cadence_seconds=policy.native_cadence_seconds or 60,
+            expected_points_15min=policy.expected_points_15min,
+            expected_points_1h=policy.expected_points_1h,
+        ),
         min_coverage_ratio=0.0,
     )
 
@@ -375,6 +379,7 @@ def _common_row(
         "expected_points": expected_points,
         "observed_points": observed_points,
         "gap_points": max(expected_points - observed_points, 0),
+        "missing_points": max(expected_points - observed_points, 0),
         "coverage_ratio": ratio,
         "source_native_interval_seconds": source_native_interval_seconds,
         "cadence_policy_id": f"native_{source_native_interval_seconds}s" if source_native_interval_seconds else None,

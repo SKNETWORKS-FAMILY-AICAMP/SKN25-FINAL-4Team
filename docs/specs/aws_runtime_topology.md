@@ -1,164 +1,78 @@
-# AWS Phase 1 Runtime Topology
+# AWS Runtime Topology
 
-갱신일: 2026-06-04
-상태: Phase 1 AWS two-tier topology contract
-범위: FastAPI -> Kafka -> PostgreSQL -> Grafana 실행 경계
+갱신일: 2026-06-15
+상태: active AWS DB/observability topology plus PC1~PC3 edge-runtime handoff
+범위: AWS에서 실제 사용 중인 PostgreSQL/Grafana service files와 PC1~PC3 edge services의 연결 경계를 기록한다.
 
-## 1. 목적
+## 1. 현재 결론
 
-SKN25/CMS Phase 1은 AWS 내부에서 다음 ingestion path가 실제로 동작하는지 검증한다.
-
-```text
-FastAPI /ingest/measurements
--> Kafka measurement_raw_v1
--> kafka_to_postgres_consumer
--> PostgreSQL live.measurement_event
--> Grafana SELECT-only evidence
-```
-
-이 문서는 production HA 구성이 아니라 Phase 1 smoke/demo 구성을 정의한다. Kubernetes, MSK, multi-broker Kafka, S3/Spark execution은 Phase 1 실행 범위가 아니다.
-
-## 2. 현재 AWS 노드
-
-| Node | Public IP | Private IP | Instance | AZ | 역할 |
-|---|---:|---:|---|---|---|
-| `cms-db` | `13.209.98.228` | `172.31.47.236` | `t3.large` | `ap-northeast-2c` | PostgreSQL `cms`, Grafana target, legacy/debug MongoDB |
-| `cms-stream` | `43.202.114.249` | `172.31.26.245` | `t3.large` | `ap-northeast-2b` | FastAPI, Kafka single broker, consumer, replay/smoke runner |
-
-확인된 `cms-stream` 상태:
+SKN25/CMS active runtime은 과거 AWS two-tier `cms-stream` 중심 구성이 아니라, PC1~PC3 edge cluster와 AWS DB plane을 함께 사용한다.
 
 ```text
-vCPU: 2
-RAM: 7.6 GiB
-Disk: 100 GiB gp3 root volume
-Docker: not installed yet
-Open listener: SSH only
+PC1 FastAPI ingestion
+-> PC1~PC3 Kafka measurement_raw_v1
+-> PC1 Kafka-to-PostgreSQL consumers
+-> AWS PostgreSQL live/mart/ops/qa tables
+-> PC3 model-serving workers/scheduler
+-> Grafana/Prometheus observability
 ```
 
-확인된 `cms-db` 상태:
+AWS는 현재 PostgreSQL/Grafana/exporter plane으로 동작한다. Kafka/API/model-serving execution은 PC1~PC3 edge hosts에서 수행된다.
+
+## 2. AWS active services
+
+2026-06-15 secret-safe SSH inventory 기준:
+
+| Container | Image | Role | Bind/volume evidence |
+|---|---|---|---|
+| `cms-postgres` | `timescale/timescaledb:latest-pg16` | PostgreSQL/TimescaleDB | `127.0.0.1:5432`, data mount `./postgres:/var/lib/postgresql/data` |
+| `cms-grafana` | `grafana/grafana:11.5.2` | Grafana UI/provisioning | `127.0.0.1:3000`, provisioning mount `./grafana/provisioning:/etc/grafana/provisioning` |
+| `cms-postgres-exporter` | `prometheuscommunity/postgres-exporter:v0.15.0` | PostgreSQL metrics | private bind `:9187` |
+| `cms-db-node-exporter` | `prom/node-exporter:v1.8.2` | host metrics | private bind `:9100` |
+
+Compose project:
 
 ```text
-vCPU: 2
-RAM: 7.6 GiB
-Disk: 200 GiB root volume, 약 58 GiB free
-PostgreSQL DB size: 약 77 GiB
-Containers: cms-postgres, cms-mongo
+name: cms
+config files:
+  /home/ubuntu/cms-deploy/compose.yml
+  /home/ubuntu/cms-deploy/compose.observability.yml
 ```
 
-## 3. 권장 서비스 배치
-
-### `cms-db`
+Sanitized DEV templates:
 
 ```text
-cms-postgres
-cms-grafana
-cms-mongo legacy/debug only, not Phase 1 live path
+docker/compose.aws.db.yml
+docker/compose.aws.db.observability.yml
 ```
 
-`cms-db`는 source of record 성격의 PostgreSQL을 보호한다. Kafka, FastAPI, replay producer는 올리지 않는다.
+Concrete `.env` values remain server-local and must not be committed.
 
-### `cms-stream`
+## 3. PC1~PC3 edge runtime relationship
 
-```text
-cms-api
-cms-kafka
-cms-kafka-to-postgres-consumer
-replay/smoke runner
+| Host | Runtime role | Compose/template path |
+|---|---|---|
+| PC1 | ingestion API, backend API, frontend, Airflow, Kafka broker, 3x DB-writing consumers, live bucket worker | `docker/compose.edge_stream.yml` plus service-specific server env |
+| PC2 | Kafka broker, Prometheus, Grafana, exporters | `docker/compose.local.kafka-broker.yml` and observability provisioning |
+| PC3 | Kafka broker, canonical/anomaly/model-serving workers | `docker/compose.model_serving.yml`, `docker/model_serving_containerfile` |
+
+PC3 model-serving Compose commands should be run with an explicit env file for interpolation:
+
+```bash
+docker compose --env-file docker/model_serving.env -f docker/compose.model_serving.yml --profile operational-scheduler config --quiet
+docker compose --env-file docker/model_serving.env -f docker/compose.model_serving.yml --profile operational-scheduler up -d --build cms-canonical-promotion-worker cms-anomaly-feature-worker cms-hybrid-model-serving-scheduler
 ```
 
-`cms-stream`은 stream/app tier다. Kafka는 single broker KRaft mode로 시작한다. Phase 1에서는 HA broker cluster가 아니라 ingestion path 검증이 목표다.
+`env_file:` inside a service is not enough for `${POSTGRES_DB:? ...}` interpolation at Compose parse time.
 
-## 4. Kafka contract
+## 4. Security and push boundary
 
-| 항목 | 값 |
-|---|---|
-| Raw topic | `measurement_raw_v1` |
-| DLQ topic | `measurement_dead_letter_v1` |
-| Consumer group | `postgres-live-ingest` |
-| Producer key | `meter_urn|measurement` |
-| Payload version | `measurement_raw_v1`, canonical schema version 아님 |
+- `.env`, DB password, Grafana admin password, SSH key, token, server-local runtime secrets are not committed.
+- `docker/*.env.example` may be committed as non-secret templates.
+- `artifacts/`, `reports/`, local runtime snapshots, generated graph outputs, and model binaries are push-excluded.
+- Kafka ports stay on trusted LAN/router-managed paths; do not expose Kafka publicly by default.
+- Production/canonical writes, DDL, destructive cleanup, and privilege changes remain approval-gated.
 
-Kafka ordering은 global order가 아니라 같은 topic partition 안의 order다. Producer는 같은 `meter_urn|measurement` key를 사용해 series 단위 순서를 유지한다.
+## 5. Retired historical wording
 
-## 5. Security Group 요구사항
-
-현재 확인 결과 `cms-stream -> cms-db` private network 접근은 막혀 있다. Phase 1 smoke 전에 아래 inbound rule이 필요하다.
-
-### `cms-db` inbound 추가 필요
-
-| Port | Source | Purpose |
-|---:|---|---|
-| `5432/tcp` | `172.31.26.245` 또는 `cms-stream` SG | consumer -> PostgreSQL |
-
-선택 사항:
-
-| Port | Source | Purpose |
-|---:|---|---|
-| `3000/tcp` | Viowlet current IP | Grafana browser access |
-
-### `cms-stream` inbound
-
-| Port | Source | Purpose |
-|---:|---|---|
-| `22/tcp` | Viowlet current IP | SSH |
-| `8000/tcp` | Viowlet current IP only, 필요 시 | FastAPI smoke |
-
-Kafka ports are not public.
-
-```text
-9092/tcp public open 금지
-9093/tcp public open 금지
-```
-
-## 6. Runtime boundary
-
-허용:
-
-```text
-local/import-safe tests
-AWS container install/bootstrap after approval
-Kafka topic creation after approval
-FastAPI -> Kafka smoke after approval
-Kafka -> PostgreSQL controlled smoke after approval
-Grafana SELECT-only query smoke after approval
-```
-
-금지 또는 별도 승인 필요:
-
-```text
-production/canonical write
-DDL 적용
-permission 변경
-destructive cleanup
-S3/Spark execution
-Kafka public exposure
-.env/secrets disclosure
-full replay/load without run scope
-```
-
-## 7. Capacity 판단
-
-`t3.large` 2대 구성은 Phase 1 smoke/demo에 적합하다. 단, `cms-stream`은 다음 제한을 둔다.
-
-```text
-Kafka single broker
-짧은 retention
-small batch replay부터 시작
-consumer 1개
-long full replay 전 CPU/RAM/disk 관측
-```
-
-장시간 full replay나 high-throughput load가 필요하면 `cms-stream`만 `t3.xlarge`로 scale-up한다.
-
-## 8. 다음 실행 전 checklist
-
-1. `cms-stream`에 Docker/Compose 설치 여부 확인 및 설치 승인.
-2. `cms-db` Security Group에 `5432 from cms-stream private IP` 추가.
-3. `cms-stream` deploy root 생성.
-4. non-secret env template 복사 후 secret 값은 서버에서 직접 입력.
-5. Kafka topic 생성.
-6. FastAPI health 확인.
-7. one-event smoke.
-8. duplicate smoke.
-9. poison/DLQ smoke.
-10. Grafana SELECT-only evidence 확인.
+Older documentation that describes `cms-stream` as the active AWS FastAPI/Kafka/consumer node is historical. It may remain only if labelled as prior Phase 1 AWS-only plan. Current service push should use PC1~PC3 edge runtime plus AWS DB plane wording.

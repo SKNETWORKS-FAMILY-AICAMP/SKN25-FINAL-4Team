@@ -1,8 +1,10 @@
 # AWS Phase 1 Smoke Plan
 
-갱신일: 2026-06-04
-상태: 실행 전 smoke contract
-범위: `cms-stream` -> Kafka -> `cms-db` PostgreSQL -> Grafana evidence
+갱신일: 2026-06-15
+상태: historical AWS-only Phase 1 smoke contract / current runtime은 PC1~PC3 edge cluster + AWS DB plane 기준
+범위: 과거 `cms-stream` -> Kafka -> `cms-db` PostgreSQL -> Grafana evidence 계획. 현재 실행 기준은 `docs/specs/runtime_architecture.md`, `docs/specs/aws_runtime_topology.md`, `docs/release/runtime_service_snapshot_20260615.md`를 따른다.
+
+> Historical note: 이 문서는 AWS-only two-tier smoke 설계 기록이다. 현재 active service path는 PC1 ingestion/backend APIs, PC1~PC3 Kafka cluster, PC1 Kafka-to-PostgreSQL consumers, PC3 model-serving workers, AWS PostgreSQL/Grafana DB plane이다.
 
 ## 1. Evidence level
 

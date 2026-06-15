@@ -1,0 +1,240 @@
+name: cms-model-serving
+
+services:
+  cms-model-serving:
+    build:
+      context: ..
+      dockerfile: docker/model_serving_containerfile
+    image: cms:model-serving
+    container_name: cms-model-serving
+    profiles: ["model-serving"]
+    restart: "no"
+    labels:
+      cms.runtime.roles: "model-serving,pmax,anomaly"
+      cms.runtime.entrypoint: "scripts/serving/run_model_serving.py"
+    env_file:
+      - path: ./model_serving.env
+        required: false
+    environment:
+      ALLOW_MODEL_SERVING_WRITE: "${ALLOW_MODEL_SERVING_WRITE:-0}"
+      ALLOW_CANONICAL_WRITE: "0"
+      ALLOW_PRODUCTION_DDL: "0"
+      CMS_ANOMALY_SOURCE_TABLE: "${CMS_ANOMALY_SOURCE_TABLE:-mart.anomaly_feature_1h}"
+      CMS_ANOMALY_SOURCE_TS_COLUMN: "${CMS_ANOMALY_SOURCE_TS_COLUMN:-bucket_ts}"
+      POSTGRES_HOST: "${POSTGRES_HOST:?Set POSTGRES_HOST in model_serving.env}"
+      POSTGRES_PORT: "${POSTGRES_PORT:-5432}"
+      POSTGRES_DB: "${POSTGRES_DB:?Set POSTGRES_DB in model_serving.env}"
+      POSTGRES_USER: "${POSTGRES_USER:?Set POSTGRES_USER in model_serving.env}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in model_serving.env}"
+      POSTGRES_SSLMODE: "${POSTGRES_SSLMODE:-disable}"
+    command:
+      - --base-ts
+      - "${MODEL_SERVING_BASE_TS:?Set MODEL_SERVING_BASE_TS}"
+      - --pmax-artifact-root
+      - "${PMAX_ARTIFACT_ROOT:-/artifacts/pmax}"
+      - --anomaly-predictions-path
+      - "${ANOMALY_PREDICTIONS_PATH:-}"
+      - --allow-missing-anomaly
+      - --json
+    volumes:
+      - ${MODEL_SERVING_ARTIFACT_ROOT:-../artifacts}:/artifacts:ro
+    networks:
+      - cms_edge_stream
+
+  cms-model-artifact-smoke:
+    build:
+      context: ..
+      dockerfile: docker/model_serving_containerfile
+    image: cms:model-serving
+    container_name: cms-model-artifact-smoke
+    profiles: ["smoke"]
+    restart: "no"
+    labels:
+      cms.runtime.roles: "artifact-smoke,pmax,anomaly"
+      cms.runtime.entrypoint: "scripts/serving/validate_artifacts.py"
+    entrypoint: ["python"]
+    command:
+      - scripts/serving/validate_artifacts.py
+      - --pmax-root
+      - "${PMAX_ARTIFACT_ROOT:-/artifacts/pmax}"
+      - --anomaly-root
+      - "${ANOMALY_ARTIFACT_ROOT:-/artifacts/anomaly}"
+      - --json
+    volumes:
+      - ${MODEL_SERVING_ARTIFACT_ROOT:-../artifacts}:/artifacts:ro
+    networks:
+      - cms_edge_stream
+
+  cms-canonical-promotion-worker:
+    build:
+      context: ..
+      dockerfile: docker/model_serving_containerfile
+    image: cms:model-serving
+    container_name: cms-canonical-promotion-worker
+    profiles: ["operational-scheduler"]
+    restart: unless-stopped
+    labels:
+      cms.runtime.roles: "canonical-promotion,service-worker"
+      cms.runtime.entrypoint: "scripts/serving/run_operational_scheduler.py --lane canonical"
+      cms.runtime.not_hermes_cron: "true"
+    env_file:
+      - path: ./canonical_promotion.env
+        required: true
+    entrypoint: ["python"]
+    command:
+      - scripts/serving/run_operational_scheduler.py
+      - --lane
+      - canonical
+      - --loop
+      - --interval-seconds
+      - "${CMS_OPERATIONAL_SCHEDULER_INTERVAL_SECONDS:-300}"
+      - --json
+    networks:
+      - cms_edge_stream
+
+  cms-anomaly-feature-worker:
+    build:
+      context: ..
+      dockerfile: docker/model_serving_containerfile
+    image: cms:model-serving
+    container_name: cms-anomaly-feature-worker
+    profiles: ["operational-scheduler"]
+    restart: unless-stopped
+    labels:
+      cms.runtime.roles: "anomaly-feature,service-worker"
+      cms.runtime.entrypoint: "scripts/serving/run_operational_scheduler.py --lane anomaly-feature"
+      cms.runtime.not_hermes_cron: "true"
+    env_file:
+      - path: ./anomaly_feature.env
+        required: true
+    entrypoint: ["python"]
+    command:
+      - scripts/serving/run_operational_scheduler.py
+      - --lane
+      - anomaly-feature
+      - --loop
+      - --interval-seconds
+      - "${CMS_OPERATIONAL_SCHEDULER_INTERVAL_SECONDS:-300}"
+      - --json
+    networks:
+      - cms_edge_stream
+
+  cms-hybrid-model-serving-scheduler:
+    build:
+      context: ..
+      dockerfile: docker/model_serving_containerfile
+    image: cms:model-serving
+    container_name: cms-hybrid-model-serving-scheduler
+    profiles: ["operational-scheduler"]
+    restart: unless-stopped
+    labels:
+      cms.runtime.roles: "hybrid-model-serving,service-scheduler"
+      cms.runtime.entrypoint: "scripts/serving/run_operational_scheduler.py --lane hybrid-model-serving"
+      cms.runtime.not_hermes_cron: "true"
+    env_file:
+      - path: ./model_serving.env
+        required: true
+    entrypoint: ["python"]
+    command:
+      - scripts/serving/run_operational_scheduler.py
+      - --lane
+      - hybrid-model-serving
+      - --loop
+      - --interval-seconds
+      - "${CMS_MODEL_SERVING_INTERVAL_SECONDS:-900}"
+      - --model-serving-interval-seconds
+      - "${CMS_MODEL_SERVING_INTERVAL_SECONDS:-900}"
+      - --pmax-artifact-root
+      - "${PMAX_ARTIFACT_ROOT:-/artifacts/pmax}"
+      - --anomaly-artifact-root
+      - "${ANOMALY_ARTIFACT_ROOT:-/artifacts/anomaly}"
+      - --json
+    volumes:
+      - ${MODEL_SERVING_ARTIFACT_ROOT:-../artifacts}:/artifacts:ro
+    networks:
+      - cms_edge_stream
+
+  cms-airflow-standalone:
+    image: apache/airflow:2.10.5-python3.12
+    container_name: cms-airflow-standalone
+    profiles: ["airflow"]
+    restart: "no"
+    labels:
+      cms.runtime.roles: "airflow-standalone,airflow-scheduler,airflow-webserver,scheduled-reports"
+      cms.runtime.dags: "daily_report,weekly_report,monthly_report,cms_live_replay,cms_champion_1h_model_pipeline,model_serving_pipeline"
+      cms.runtime.scheduled_dags: "daily_report,weekly_report,monthly_report"
+      cms.runtime.manual_dags: "cms_live_replay,cms_champion_1h_model_pipeline,model_serving_pipeline"
+    environment:
+      PYTHONPATH: "/workspace/src"
+      AIRFLOW__CORE__DAGS_FOLDER: "/opt/airflow/dags"
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "false"
+      _AIRFLOW_WWW_USER_USERNAME: "${AIRFLOW_WWW_USER_USERNAME:-cms}"
+      _AIRFLOW_WWW_USER_PASSWORD: "${AIRFLOW_WWW_USER_PASSWORD:-cms-local-only}"
+      ALLOW_MODEL_SERVING_WRITE: "0"
+      ALLOW_CANONICAL_WRITE: "0"
+      ALLOW_PRODUCTION_DDL: "0"
+    volumes:
+      - ..:/workspace:ro
+      - ../dags:/opt/airflow/dags:ro
+    working_dir: /workspace
+    command: ["bash", "-lc", "python -c 'from cms.workflow.airflow_runtime_policy import describe_all_runtime_decisions; print(describe_all_runtime_decisions())' && airflow standalone"]
+    ports:
+      - "${AIRFLOW_WEBSERVER_BIND:-127.0.0.1}:${AIRFLOW_WEBSERVER_PORT:-8080}:8080"
+    networks:
+      - cms_edge_stream
+
+  cms-airflow-scheduler:
+    image: apache/airflow:2.10.5-python3.12
+    container_name: cms-airflow-scheduler
+    profiles: ["airflow-split"]
+    restart: "no"
+    labels:
+      cms.runtime.roles: "airflow-scheduler,pmax,anomaly"
+      cms.runtime.dags: "daily_report,weekly_report,monthly_report,cms_live_replay,cms_champion_1h_model_pipeline,model_serving_pipeline"
+    environment:
+      PYTHONPATH: "/workspace/src"
+      AIRFLOW__CORE__DAGS_FOLDER: "/opt/airflow/dags"
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      ALLOW_MODEL_SERVING_WRITE: "0"
+      ALLOW_CANONICAL_WRITE: "0"
+      ALLOW_PRODUCTION_DDL: "0"
+    volumes:
+      - ..:/workspace:ro
+      - ../dags:/opt/airflow/dags:ro
+    working_dir: /workspace
+    command: ["bash", "-lc", "python -c 'from cms.workflow.airflow_runtime_policy import describe_all_runtime_decisions; print(describe_all_runtime_decisions())' && airflow scheduler"]
+    networks:
+      - cms_edge_stream
+
+  cms-airflow-webserver:
+    image: apache/airflow:2.10.5-python3.12
+    container_name: cms-airflow-webserver
+    profiles: ["airflow-split"]
+    restart: "no"
+    labels:
+      cms.runtime.roles: "airflow-webserver"
+    environment:
+      PYTHONPATH: "/workspace/src"
+      AIRFLOW__CORE__DAGS_FOLDER: "/opt/airflow/dags"
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      ALLOW_MODEL_SERVING_WRITE: "0"
+      ALLOW_CANONICAL_WRITE: "0"
+      ALLOW_PRODUCTION_DDL: "0"
+    volumes:
+      - ..:/workspace:ro
+      - ../dags:/opt/airflow/dags:ro
+    working_dir: /workspace
+    command: ["bash", "-lc", "python -c 'from cms.workflow.airflow_runtime_policy import describe_all_runtime_decisions; print(describe_all_runtime_decisions())' && airflow webserver"]
+    ports:
+      - "${AIRFLOW_WEBSERVER_BIND:-127.0.0.1}:${AIRFLOW_WEBSERVER_PORT:-8080}:8080"
+    networks:
+      - cms_edge_stream
+
+networks:
+  cms_edge_stream:
+    external: true
+    name: cms_edge_stream

@@ -1,21 +1,101 @@
-%%{init: {"theme": "base", "flowchart": {"htmlLabels": false, "curve": "basis", "nodeSpacing": 60, "rankSpacing": 75}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "secondaryColor": "#f1f5f9", "secondaryBorderColor": "#94a3b8", "secondaryTextColor": "#0f172a", "tertiaryColor": "#ffffff", "tertiaryBorderColor": "#cbd5e1", "tertiaryTextColor": "#0f172a", "clusterBkg": "#ffffff", "clusterBorder": "#94a3b8", "edgeLabelBackground": "#ffffff", "lineColor": "#475569", "fontFamily": "Arial, sans-serif", "fontSize": "15px"}} }%%
+%%{init: {"theme": "base", "layout": "elk", "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 40, "rankSpacing": 58}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#ffffff", "primaryBorderColor": "#475569", "primaryTextColor": "#0f172a", "secondaryColor": "#f8fafc", "secondaryBorderColor": "#94a3b8", "secondaryTextColor": "#0f172a", "tertiaryColor": "#ffffff", "tertiaryBorderColor": "#cbd5e1", "tertiaryTextColor": "#0f172a", "clusterBkg": "#ffffff", "clusterBorder": "#94a3b8", "edgeLabelBackground": "#ffffff", "lineColor": "#475569", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
 flowchart LR
-    TR["schedule_or_manual_trigger"]
-    subgraph AF["airflow_dag_family"]
-      INV["source_inventory_manifest"]
-      LOAD["batch_load_or_replay"]
-      QA["qa_gate_counts_divergence"]
-      REQ["approval_packet_promotion"]
-      REP["report_build_artifact"]
+    subgraph TRIG["Workflow triggers"]
+      SCHED["schedule"]
+      MANUAL["manual ops job"]
+      APIJOB["FastAPI ops job
+read/write gate"]
     end
-    subgraph STORE["data_artifact_stores"]
-      PG["postgresql_staging_qa_ops_canonical"]
-      ART["artifact_store_report_packet"]
+
+    subgraph PC1["PC1 Airflow / scheduler lane"]
+      AF["cms-airflow-standalone"]
+      REPORT["report DAGs
+daily / weekly / monthly"]
+      REPLAY["replay planning
+2023 virtual time"]
+      BUCKET["bucket queue maintenance
+mean rollup / peak feature"]
+      STATUS["ops job status
+artifact ref"]
     end
-    LG["optional_langgraph_review"]
-    API["fastapi_job_status"]
-    TR --> INV --> LOAD --> PG --> QA
-    QA --> REQ --> PG
-    QA --> REP --> LG --> ART
-    REP --> ART --> API
-    API --> TR
+
+    subgraph PC3["PC3 operational scheduler lane"]
+      MODEL_SCHED["hybrid model-serving scheduler
+15min P-Max / hourly anomaly"]
+      ANOMAT["anomaly feature worker"]
+      CANON["canonical promotion worker
+approval gated"]
+    end
+
+    subgraph AWS["AWS PostgreSQL evidence"]
+      LIVE["live.*
+measurement and queues"]
+      MART["mart.*
+features forecasts warnings"]
+      OPS["ops.*
+inference / job logs"]
+      QA["qa.*
+evidence packets"]
+      CAN["canonical.*
+approved only"]
+    end
+
+    subgraph SERV["Service surface"]
+      API["CMS Backend API
+read status / artifacts"]
+      FRONT["Frontend / Grafana
+operator evidence"]
+    end
+
+    SCHED --> AF
+    MANUAL --> AF
+    APIJOB --> AF
+    AF --> REPORT
+    AF --> REPLAY
+    AF --> BUCKET
+    BUCKET --> LIVE
+    BUCKET --> MART
+    LIVE --> REPORT
+    MART --> REPORT
+    QA --> REPORT
+    REPORT --> STATUS
+    STATUS --> API
+
+    SCHED --> MODEL_SCHED
+    MODEL_SCHED --> MART
+    MODEL_SCHED --> OPS
+    MODEL_SCHED --> QA
+    SCHED --> ANOMAT
+    ANOMAT --> MART
+    MANUAL --> CANON
+    APIJOB --> CANON
+    CANON --> CAN
+    CANON --> OPS
+    API --> FRONT
+    OPS --> API
+    QA --> API
+    MART --> API
+
+
+    classDef source fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef api fill:#ffffff,stroke:#7c3aed,color:#0f172a,stroke-width:1px;
+    classDef kafka fill:#ecfdf5,stroke:#059669,color:#0f172a,stroke-width:1px;
+    classDef worker fill:#fff7ed,stroke:#ea580c,color:#0f172a,stroke-width:1px;
+    classDef db fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef qa fill:#fff1f2,stroke:#e11d48,color:#0f172a,stroke-width:1px;
+    classDef mart fill:#fdf4ff,stroke:#a21caf,color:#0f172a,stroke-width:1px;
+    classDef obs fill:#f8fafc,stroke:#475569,color:#0f172a,stroke-width:1px;
+    classDef approval fill:#fefce8,stroke:#ca8a04,color:#0f172a,stroke-width:1px;
+    classDef hub fill:#ffffff,stroke:#334155,color:#0f172a,stroke-width:2px;
+
+    class SCHED,MANUAL,APIJOB source;
+    class AF,REPORT,REPLAY,BUCKET,MODEL_SCHED,ANOMAT,CANON worker;
+    class LIVE,CAN db;
+    class MART mart;
+    class OPS,QA qa;
+    class API,FRONT api;
+    style TRIG fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+    style PC1 fill:#f5f3ff,stroke:#7c3aed,stroke-width:3px
+    style PC3 fill:#fff7ed,stroke:#ea580c,stroke-width:3px
+    style AWS fill:#eef2ff,stroke:#1d4ed8,stroke-width:4px
+    style SERV fill:#f8fafc,stroke:#475569,stroke-width:3px

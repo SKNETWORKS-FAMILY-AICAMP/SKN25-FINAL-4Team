@@ -1,8 +1,8 @@
 # SKN25-FINAL-4Team
 
-## CMS 데이터 인사이트 및 live/replay skeleton 프로젝트
+## CMS 데이터 인사이트 및 live/replay runtime 프로젝트
 
-본 저장소는 Honda R&D Europe Offenbach 시설의 공개 계측 데이터를 CMS 관점에서 정리하고, live/replay 데이터 처리, QA evidence, controlled promotion, report workflow의 skeleton을 검증하는 팀 프로젝트다. Active runtime namespace와 문서 표기는 `CMS` / `cms`를 기준으로 한다.
+본 저장소는 Honda R&D Europe Offenbach 시설의 공개 계측 데이터를 CMS 관점에서 정리하고, live/replay 데이터 처리, QA evidence, controlled promotion, report workflow의 service/runtime contract를 검증하는 팀 프로젝트다. Active runtime namespace와 문서 표기는 `CMS` / `cms`를 기준으로 한다.
 
 ## 1. 프로젝트 목표
 
@@ -71,7 +71,12 @@ SKN25-FINAL-4Team/
 ├── requirements.txt
 ├── docker-compose.yml
 ├── docker/
-│   └── Dockerfile
+│   ├── backend_containerfile
+│   ├── model_serving_containerfile
+│   ├── compose.edge_stream.yml
+│   ├── compose.local.kafka-broker.yml
+│   ├── compose.model_serving.yml
+│   └── compose.aws.db.yml
 ├── docs/
 │   ├── specs/              # project specifications
 │   ├── qa/                 # QA contract and test gates
@@ -88,22 +93,22 @@ SKN25-FINAL-4Team/
 │       ├── contracts/      # data/agent/timestamp contract models
 │       ├── data/           # Data plane: live/replay, timestamp QA, scratch DB
 │       ├── service/        # Service plane: FastAPI/query planner
-│       ├── workflow/       # Workflow plane: Airflow / LangGraph skeletons
+│       ├── workflow/       # Workflow plane: Airflow / LangGraph adapters
 │       └── ontology/       # ontology helper module
 └── tests/                  # unit and integration tests
 ```
 
-Project-root `graphify-out/`는 `docs/specs` 범위의 Graphify context graph 산출물이다.
+Graphify 산출물은 active service source가 아니다. `docs/specs/knowledge_db_contract.md`와 wiki-side graph copy를 기준으로 하며, project-root generated graph output은 push 대상에서 제외한다.
 
 ## 5. Git 추적 기준
 
 | 경로 | 기준 |
 |---|---|
 | `docs/specs/`, `docs/qa/`, `docs/reference/`, `docs/ontology/` | 공유 기준 문서, QA contract, reference, ontology artifact. `docs/specs/diagrams/*.svg` render는 diagram source의 shareable artifact로 함께 추적한다. |
-| `scripts/ontology/`, `scripts/live/`, `scripts/migrations/`, `scripts/scratch/`, `scripts/verify/` | ontology, dry-run, migration draft, smoke, scratch guard, contract verification code |
+| `scripts/ontology/`, `scripts/live/`, `scripts/stream/`, `scripts/serving/`, `scripts/migrations/`, `scripts/scratch/`, `scripts/verify/` | ontology, dry-run, migration draft, smoke, scratch guard, contract verification code |
 | `src/cms/` | CMS Python package |
 | `tests/` | unit and integration tests |
-| `.env`, `.venv`, `data/`, `outputs/`, `notebooks/`, `docs/plans/`, `**/_archive/` | local-only, generated, planning archive, external archive, or ignored runtime artifact |
+| `.env`, `.venv`, `data/`, `outputs/`, `artifacts/`, `reports/`, `notebooks/`, `docs/plans/`, `**/_archive/` | local-only, generated, planning archive, external archive, or ignored runtime artifact |
 
 ## 6. 실행 환경
 
@@ -130,7 +135,7 @@ Runtime package namespace는 `cms`다. Service/container/image name을 변경할
 
 ## 7. 검증 명령
 
-### Skeleton contract smoke
+### Contract guard smoke
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src   python scripts/verify/verify_skeleton_contracts.py
@@ -139,7 +144,7 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src   python scripts/verify/verify_skeleton
 성공 기준:
 
 ```text
-cms skeleton contracts ok
+cms skeleton contracts ok  # legacy guard output string
 ```
 
 ### Python syntax check
@@ -179,7 +184,7 @@ uv run --with rdflib --with pyshacl   python scripts/ontology/query_ontology.py
 | 경로 | 내용 |
 |---|---|
 | `docs/specs/project_overview.md` | CMS architecture 개요 |
-| `docs/specs/data_platform_contract.md` | source, staging, candidate, QA evidence, canonical, MongoDB, PostgreSQL, feature/mart 경계 |
+| `docs/specs/data_platform_contract.md` | source, Kafka/PostgreSQL live ingestion, candidate, QA evidence, canonical, feature/mart 경계 |
 | `docs/specs/runtime_architecture.md` | Data/Service/Workflow plane, FastAPI, Airflow, LangGraph 책임 경계 |
 | `docs/specs/measurement_processing_policy.md` | measurement cadence, NULL/state-hold, expected/coverage, canonical eligibility 정책 |
 | `docs/specs/ontology_schema.md` | ontology class/property/artifact coverage와 역량질문 |

@@ -17,6 +17,7 @@ from scripts.live.run_live_stream_injector import (
     build_payload,
     compute_replay_delay,
     discover_harmonized_files,
+    file_order_rows,
     merged_rows,
     parse_meter_measurement,
     select_source_files,
@@ -116,6 +117,26 @@ class LiveStreamInjectorTests(unittest.TestCase):
 
             self.assertEqual({path.parent.name for path in selected}, {"meter_a", "meter_b", "meter_c"})
             self.assertEqual(len(selected), 3)
+
+    def test_file_order_rows_streams_each_file_without_global_merge(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            a = root / "meter_a" / "meter_a.P_harmonized.csv.gz"
+            b = root / "meter_b" / "meter_b.P_harmonized.csv.gz"
+            write_gzip_csv(
+                a,
+                header="meter_a.P",
+                rows=(
+                    ("2022-12-31T23:59:00+00:00", "0.0"),
+                    ("2023-01-01T00:02:00+00:00", "1.0"),
+                ),
+            )
+            write_gzip_csv(b, header="meter_b.P", rows=(("2023-01-01T00:01:00+00:00", "2.0"),))
+
+            rows = list(file_order_rows([a, b], start_ts=datetime(2023, 1, 1, tzinfo=UTC)))
+
+            self.assertEqual([row.meter_urn for row in rows], ["meter_a", "meter_b"])
+            self.assertEqual([row.event_ts for row in rows], ["2023-01-01T00:02:00+00:00", "2023-01-01T00:01:00+00:00"])
 
     def test_event_time_replay_delay_preserves_source_gaps(self) -> None:
         times = [
@@ -243,6 +264,80 @@ class LiveStreamInjectorTests(unittest.TestCase):
             self.assertEqual(payload["first_event_ts"], "2024-01-01T01:00:00+00:00")
             self.assertEqual(payload["last_event_ts"], "2024-01-01T01:20:00+00:00")
 
+    def test_end_ts_is_exclusive_for_daily_window(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_gzip_csv(
+                root / "meter_a" / "meter_a.P_harmonized.csv.gz",
+                header="meter_a.P",
+                rows=(
+                    ("2024-01-01T23:59:00+00:00", "1.0"),
+                    ("2024-01-02T00:00:00+00:00", "2.0"),
+                ),
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/live/run_live_stream_injector.py",
+                    "--source-root",
+                    str(root),
+                    "--selection-mode",
+                    "all-meters",
+                    "--max-events",
+                    "10",
+                    "--start-ts",
+                    "2024-01-01T00:00:00+00:00",
+                    "--end-ts",
+                    "2024-01-02T00:00:00+00:00",
+                ],
+                cwd=REPO_ROOT,
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+
+            payload = json.loads(completed.stdout)
+            self.assertEqual(payload["emitted_count"], 1)
+            self.assertEqual(payload["end_ts"], "2024-01-02T00:00:00+00:00")
+            self.assertEqual(payload["last_event_ts"], "2024-01-01T23:59:00+00:00")
+
+    def test_all_meters_mode_selects_all_files_and_reports_audit_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_gzip_csv(root / "meter_a" / "meter_a.P_harmonized.csv.gz", header="meter_a.P", rows=(("2024-01-01T00:00:00+00:00", "1.0"),))
+            write_gzip_csv(root / "meter_b" / "meter_b.U1_harmonized.csv.gz", header="meter_b.U1", rows=(("2024-01-01T00:00:00+00:00", "2.0"),))
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/live/run_live_stream_injector.py",
+                    "--source-root",
+                    str(root),
+                    "--selection-mode",
+                    "all-meters",
+                    "--max-files",
+                    "1",
+                    "--max-events",
+                    "10",
+                    "--required-meters",
+                    "2",
+                    "--run-id",
+                    "live_20230101_all_meters",
+                ],
+                cwd=REPO_ROOT,
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+
+            payload = json.loads(completed.stdout)
+            self.assertEqual(payload["selected_file_count"], 2)
+            self.assertEqual(payload["selected_meter_count"], 2)
+            self.assertEqual(payload["selected_measurement_count"], 2)
+            self.assertEqual(payload["selected_measurements"], ["P", "U1"])
+            self.assertEqual(payload["run_id"], "live_20230101_all_meters")
+            self.assertTrue(payload["source_root_authorized"])
+            self.assertIn(payload["merge_strategy"], {"fast", "bounded"})
+
     def test_payload_uses_ingestion_contract_fields_and_no_db_write(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "H1.K11" / "H1.K11.P_harmonized.csv.gz"
@@ -256,6 +351,8 @@ class LiveStreamInjectorTests(unittest.TestCase):
             self.assertEqual(payload["meter_urn"], "H1.K11")
             self.assertEqual(payload["measurement"], "P")
             self.assertEqual(payload["value_numeric"], 25300.0)
+            self.assertEqual(payload["source_authority"], "pc1_archive")
+            self.assertEqual(payload["source_path"], path.as_posix())
             self.assertGreaterEqual(len(payload["raw_payload_hash"]), 16)
             self.assertIn("H1.K11.P_harmonized.csv.gz:2", payload["source_event_id"])
 

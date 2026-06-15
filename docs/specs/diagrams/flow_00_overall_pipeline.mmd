@@ -6,7 +6,7 @@ flowchart LR
       REF_SRC["corrected_resampled reference\ncomparison only"]
     end
 
-    subgraph APP["Application and workflow skeleton"]
+    subgraph APP["Application and workflow runtime"]
       API["FastAPI\nread / status / job / chat"]
       AIRFLOW["Airflow / scheduler\nbackground batch / report job"]
       MODELJOB["Airflow model job\nP-Max batch inference\nnot streaming test target"]
@@ -24,7 +24,7 @@ flowchart LR
       INGEST["kafka_to_postgres_consumer\nidempotent event insert"]
       TRIGGER["common postgres trigger\npolicy lookup / 1min / queue"]
       MEAN["mean_rollup_worker\n15min / 1h mean observed"]
-      PEAK["peak_feature_worker\n15min peak + rolling 1h features"]
+      PEAK["peak_feature_worker\n15min peak features"]
       PMAX_LOAD["P-Max adapter / release loader\n288 windows -> 96x22 input"]
       QAGATE["qa_eligibility_worker\nQA / anomaly evidence"]
       PROMOTE["promotion_worker\napproval / controlled promotion"]
@@ -69,7 +69,7 @@ flowchart LR
 
       subgraph MART["mart schema"]
         PEAK_FEATURE["mart.peak_feature_15min"]
-        PEAK_INPUT["mart.peak_input_15min\nrolling_1h_peak_features"]
+        PEAK_INPUT["mart.peak_input_15min\noptional helper projection"]
         PMAX_FORECAST["mart.pmax_forecast_15min\nreleased P-Max forecasts"]
       end
     end
@@ -107,8 +107,8 @@ flowchart LR
     BQUEUE --> PEAK
     L1 --> PEAK
     PEAK --> PEAK_FEATURE
-    PEAK_FEATURE --> PEAK_INPUT
-    PEAK_INPUT --> MODELJOB
+    PEAK_FEATURE --> MODELJOB
+    PEAK_FEATURE -. optional projection .-> PEAK_INPUT
     MODELJOB --> PMAX_LOAD
     PMAX_LOAD --> PMAX_FORECAST
     PMAX_LOAD --> PMAX_LOG
@@ -139,7 +139,7 @@ flowchart LR
 
     C_READY --> API
     QA_PACKET --> API
-    PEAK_INPUT --> API
+    PEAK_FEATURE --> API
     PMAX_FORECAST --> API
     API --> GROUND
     VDB --> GROUND

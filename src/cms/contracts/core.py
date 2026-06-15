@@ -19,8 +19,10 @@ CANONICAL_SOURCE_TABLES = (CANONICAL_MEASUREMENT_1MIN, CANONICAL_MEASUREMENT_15M
 SourceTable = Literal["canonical.measurement_1min", "canonical.measurement_15min", "canonical.measurement_1h"]
 ReplayMode = Literal["live", "replay"]
 
-# Legacy 3-route label kept for backward compatibility; superseded by ChatRoute below.
-AgentRoute = Literal["query", "report", "approval"]
+# Two-stage router metadata adopted from the uy/workspace orchestrator concept.
+# These labels are metadata only: public chat routing still uses ``ChatRoute`` below.
+RequestType = Literal["query", "action_request", "approval_required", "off_topic"]
+AgentRoute = Literal["anomaly", "cms", "forecast", "report", "rag"]
 # Policy chat route decision table (docs/qa/qa_report_chat_policy.md §7). FastAPI router
 # classifies into these five routes; the LangGraph review layer only handles the async branches.
 ChatRoute = Literal["quick_answer", "evidence_answer", "needs_job", "approval_required", "report_shell"]
@@ -131,11 +133,20 @@ class AgentRequest:
 
 @dataclass(frozen=True)
 class RouteDecision:
-    """LangGraph route decision without requiring LangGraph at import time."""
+    """Chat route decision plus uy-style two-stage router metadata.
+
+    ``route`` remains the public FastAPI/chat workflow contract. ``request_type`` and
+    ``agent_route`` are metadata used by the agent/workflow layer to preserve the
+    request-type → domain-route split without exposing new public ChatRoute values.
+    """
 
     route: ChatRoute
     reason: str
     needs_approval: bool = False
+    request_type: RequestType = "query"
+    agent_route: AgentRoute = "rag"
+    request_type_method: str = "rule"
+    agent_route_method: str = "rule"
 
 
 @dataclass(frozen=True)

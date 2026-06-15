@@ -1,0 +1,15 @@
+meter_urn,issue_type,issue_detail,since,until,severity,active,evidence
+H2.Z62,sign_flip,2023-05부터 P 부호 반전 (val 양수→test 음수),2023-05-01,,high,true,val 음수비율 0% → test 61% / val 평균 +14 → test -2276
+H2.Z63,level_change,2023-05부터 설비 운영 레벨 급락 (고출력→저부하),2023-05-01,,high,true,val 평균 17630kW → test 7775kW / 2023-05부터 ~1100kW 고정
+V.ZE84,level_change,test 2023 전반 val 대비 발전량/분산 급증 (2023-05~06 peak -18445W) / 2023-10 이후 점진적 완화,2023-01-01,,high,true,val 평균 -134 val std 250 → test 평균 -9171 test std 15022 / 2023-05~06 peak -18445W / 2023-10 이후 완화
+H4.Z50,data_cutoff,2023-06-23 이후 DB 데이터 없음 (예측 불가),2023-06-23,,high,true,test 데이터 4166개 (전체 8760개 중 절반) / 2023-06 이후 센서 단절 추정
+H4.Z51,data_cutoff,2023-06-23 이후 DB 데이터 없음 (예측 불가),2023-06-23,,high,true,test 데이터 4166개 (전체 8760개 중 절반) / 2023-06 이후 센서 단절 추정
+H1.K12,dormant,test 기간 전체 미가동 (P≈0 100%),2023-01-01,,medium,true,P≈0 (kW 기준) / test 100% P=0 / 냉방 열량계 비가동
+H1.Z19,dormant,2022년부터 미가동 진행 (val 84% P=0 / test 100% P=0),2022-01-01,,medium,true,train 평균 3619W (정상) → val 1182W P=0 84% → test 0W P=0 100%
+H1.Z23,dormant,test 기간 대부분 미가동 (P≈0 91%),2023-01-01,,medium,true,val≈0 비율 11% → test 91%
+H3.Z44,variance_spike,2023-03~05 한시적 부하 급등 후 정상 복귀 (peak 15926W),2023-03-01,2023-07-01,medium,true,val 평균 2368W → 2023-04 12441W / 2023-05 15926W (peak) / 2023-06 이후 val 수준 복귀
+H3.ZE44,variance_spike,2023-03~05 한시적 부하 급등 후 정상 복귀 (peak 15700W),2023-03-01,2023-07-01,medium,true,val 평균 2458W → 2023-04 12455W / 2023-05 15700W (peak) / 2023-06 이후 val 수준 복귀
+H3.Z45,mid_change,2023-06부터 P 레벨 급등,2023-06-01,,medium,true,2023-06 월간 점프 +8242 / H3 빌딩 동일 시점 변화
+H1.Z16,mid_change,2023-09부터 P 레벨 급등,2023-09-01,,medium,true,2023-09 월간 점프 +3926 / 지속 상승 패턴
+H1.K16,variance_spike,특정 월 간헐적 극단값 발생,2023-01-01,,low,true,2023-09 최대값 274460 / 2023-12 최대값 221233 / 평소 범위 3000-6000
+H2.ZE66,level_change,2023-06부터 운영 레벨 급등 (신규 계량기 부하 증가),2023-06-01,,medium,true,2023-05 중앙값 3380W → 2023-06 5943W → 2023-09 7178W → 2023-10 8774W

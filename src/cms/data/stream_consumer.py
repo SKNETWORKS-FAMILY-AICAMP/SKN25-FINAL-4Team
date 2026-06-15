@@ -13,6 +13,7 @@ from typing import Any, Literal
 
 from cms.contracts.ingestion import (
     KAFKA_CONSUMER_GROUP,
+    MEASUREMENT_EVENT_WRITE_TARGET_TABLE,
     MEASUREMENT_DLQ_TOPIC,
     MEASUREMENT_RAW_TOPIC,
     MeasurementRawEvent,
@@ -79,13 +80,15 @@ def build_postgres_insert_payload(
     *,
     consumed_at: str | None = None,
     consumer_group: str = KAFKA_CONSUMER_GROUP,
+    kafka_topic_identity: str | None = None,
 ) -> dict[str, Any]:
     """Build the idempotent live.measurement_event insert shape."""
 
     consumed = consumed_at or datetime.now(UTC).isoformat()
     business_key = "|".join(idempotency_key(event))
+    db_kafka_topic = kafka_topic_identity or envelope.topic
     return {
-        "target_table": "live.measurement_event",
+        "target_table": MEASUREMENT_EVENT_WRITE_TARGET_TABLE,
         "event_id": business_key,
         "source_event_id": event.source_event_id,
         "meter_urn": event.meter_urn,
@@ -95,12 +98,12 @@ def build_postgres_insert_payload(
         "value_numeric": event.value_numeric,
         "unit": event.unit,
         "source_layer": "kafka.measurement_raw_v1",
-        "source_ref": f"{envelope.topic}:{envelope.partition}:{envelope.offset}",
+        "source_ref": f"{db_kafka_topic}:{envelope.partition}:{envelope.offset}",
         "ingested_at": consumed,
         "received_at": event.received_at,
         "raw_payload_hash": event.raw_payload_hash,
         "policy_lookup_status": "pending",
-        "kafka_topic": envelope.topic,
+        "kafka_topic": db_kafka_topic,
         "kafka_partition": envelope.partition,
         "kafka_offset": envelope.offset,
         "kafka_key": envelope.key or kafka_message_key(event),
@@ -142,6 +145,7 @@ def decide_consumer_action(
     duplicate_event: bool = False,
     unexpected_error: str | None = None,
     consumed_at: str | None = None,
+    kafka_topic_identity: str | None = None,
 ) -> ConsumerDecision:
     """Return the consumer decision for one Kafka envelope."""
 
@@ -161,7 +165,12 @@ def decide_consumer_action(
             idempotency_key=idempotency_key(event),
         )
 
-    postgres_payload = build_postgres_insert_payload(event, envelope, consumed_at=consumed_at)
+    postgres_payload = build_postgres_insert_payload(
+        event,
+        envelope,
+        consumed_at=consumed_at,
+        kafka_topic_identity=kafka_topic_identity,
+    )
     if duplicate_event:
         return ConsumerDecision(
             action="idempotent_noop",

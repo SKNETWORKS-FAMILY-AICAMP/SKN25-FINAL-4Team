@@ -47,7 +47,7 @@ QA의 목적은 observed fact, corrected/reference value, candidate evidence, ca
 | `QA-LIN-001` | Lineage | 모든 row는 source run ID, source event ID 또는 empty lineage, interval policy, evidence level을 가진다. | lineage missing block |
 | `QA-REF-001` | Reference isolation | corrected/reference data는 unlabelled service truth로 사용하지 않는다. | leakage block |
 | `QA-API-001` | Side-effect boundary | dry-run/API route는 `writes_allowed = false`와 side-effect-free evidence를 노출한다. | route block |
-| `QA-PEAK-001` | Peak/canonical separation | peak feature row는 `mart.peak_feature_15min` 또는 `mart.peak_input_15min`에만 존재하고 canonical promotion 대상이 아니다. | leakage block |
+| `QA-PEAK-001` | Peak/canonical separation | peak/P-Max feature row는 `mart.peak_feature_15min`을 direct runtime input으로 사용한다. `mart.peak_input_15min`이 있더라도 legacy/helper projection이며 canonical promotion 대상이 아니다. | leakage block |
 
 ## 5. Coverage와 target grid
 

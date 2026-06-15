@@ -1,21 +1,54 @@
-%%{init: {"theme": "base", "sequence": {"showSequenceNumbers": true, "wrap": false, "mirrorActors": true, "rightAngles": true, "messageAlign": "center", "actorMargin": 95, "width": 180, "height": 54, "boxMargin": 14, "boxTextMargin": 8, "noteMargin": 12, "messageMargin": 48}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "actorBkg": "#f8fafc", "actorBorder": "#64748b", "actorTextColor": "#0f172a", "actorLineColor": "#64748b", "signalColor": "#334155", "signalTextColor": "#0f172a", "noteBkgColor": "#fff7ed", "noteTextColor": "#0f172a", "noteBorderColor": "#ea580c", "loopTextColor": "#0f172a", "activationBkgColor": "#e0f2fe", "activationBorderColor": "#0284c7", "fontFamily": "Arial, sans-serif", "fontSize": "15px"}} }%%
+%%{init: {"theme": "base", "sequence": {"showSequenceNumbers": true, "wrap": false, "mirrorActors": true, "rightAngles": true, "messageAlign": "center", "actorMargin": 82, "width": 170, "height": 54, "boxMargin": 12, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 44}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "actorBkg": "#f8fafc", "actorBorder": "#64748b", "actorTextColor": "#0f172a", "actorLineColor": "#64748b", "signalColor": "#334155", "signalTextColor": "#0f172a", "noteBkgColor": "#fff7ed", "noteTextColor": "#0f172a", "noteBorderColor": "#ea580c", "loopTextColor": "#0f172a", "activationBkgColor": "#e0f2fe", "activationBorderColor": "#0284c7", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
 sequenceDiagram
     autonumber
-    participant T as Trigger<br/>schedule manual
-    participant AF as Airflow<br/>DAG
-    participant DB as DB<br/>PostgreSQL Mongo
-    participant QA as QA<br/>gate
-    participant LG as LangGraph<br/>optional review
-    participant ART as Artifact<br/>store
-    participant API as FastAPI<br/>status
-    T->>AF: start report replay batch job
-    AF->>DB: read source manifest and inputs
-    AF->>DB: write staging or scratch outputs
-    AF->>QA: submit counts windows provenance
-    QA-->>AF: pass fail caveats
-    opt review required
-      AF->>LG: send evidence packet and draft
-      LG-->>AF: return review note
+
+    box rgb(239, 246, 255) Workflow triggers
+      participant T as schedule_or_manual
+      participant APIJOB as FastAPI_ops_job
     end
-    AF->>ART: store report packet
-    ART-->>API: expose download status
+
+    box rgb(245, 243, 255) PC1 Airflow
+      participant AF as cms_airflow_standalone
+      participant REP as report_DAGs
+      participant REPLAY as replay_planner
+      participant STATUS as artifact_status
+    end
+
+    box rgb(255, 247, 237) PC3 operational schedulers
+      participant MS as hybrid_model_serving_scheduler
+      participant AFW as anomaly_feature_worker
+      participant CPW as canonical_promotion_worker
+    end
+
+    box rgb(238, 242, 255) AWS PostgreSQL
+      participant LIVE as live_schema
+      participant MART as mart_schema
+      participant OPSQA as ops_qa_schema
+      participant CAN as canonical_schema
+    end
+
+    box rgb(245, 243, 255) Service read surface
+      participant API as CMS_Backend_API
+      participant UI as Frontend_Grafana
+    end
+
+    T->>AF: start scheduled report or replay workflow
+    APIJOB->>AF: register manual run with side-effect guard
+    AF->>LIVE: read live status, queues, rollups
+    AF->>MART: read forecast and warning outputs
+    AF->>OPSQA: read QA and inference evidence
+    AF->>REP: build report packet
+    REP->>STATUS: publish artifact reference
+    STATUS-->>API: expose job status and download
+
+    T->>MS: 15min or hourly model-serving tick
+    MS->>MART: write P-Max forecast and anomaly warning outputs
+    MS->>OPSQA: write inference logs and evidence packets
+    T->>AFW: materialize anomaly features
+    AFW->>MART: upsert anomaly_feature_1h
+    APIJOB->>CPW: approval-gated promotion only
+    CPW->>CAN: controlled canonical write
+    API-->>UI: read-only status and artifacts
+
+    Note over AF,CPW: Airflow/scheduler owns background work. FastAPI returns status and does not run blocking inference.
+    Note over CPW,CAN: Canonical writes remain approval-gated.

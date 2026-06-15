@@ -40,6 +40,26 @@ def test_consumer_loop_commits_after_successful_insert() -> None:
     assert consumer.closed is True
 
 
+def test_consumer_loop_passes_runtime_topic_identity_to_postgres_payload() -> None:
+    message = _message()
+    consumer = FakeConsumer([message])
+    writer = InMemoryPostgresEventWriter()
+
+    stats = run_consumer_loop(
+        consumer=consumer,
+        writer=writer,
+        dlq_producer=InMemoryKafkaProducer(),
+        max_messages=1,
+        kafka_topic_identity="local_pc123.measurement_raw_v1",
+    )
+
+    assert stats.inserted == 1
+    assert writer.rows is not None
+    row = next(iter(writer.rows.values()))
+    assert row["kafka_topic"] == "local_pc123.measurement_raw_v1"
+    assert row["source_ref"] == "local_pc123.measurement_raw_v1:0:5"
+
+
 def test_consumer_loop_does_not_commit_db_failure() -> None:
     message = _message()
     consumer = FakeConsumer([message])
@@ -92,4 +112,20 @@ def test_consumer_loop_stops_after_idle_poll_without_committing() -> None:
     assert stats.polled == 0
     assert stats.processed == 0
     assert stats.committed == 0
+    assert consumer.closed is True
+
+
+def test_consumer_loop_closes_runtime_writer_when_supported() -> None:
+    class ClosableWriter(InMemoryPostgresEventWriter):
+        closed = False
+
+        def close(self) -> None:
+            self.closed = True
+
+    consumer = FakeConsumer([])
+    writer = ClosableWriter()
+
+    run_consumer_loop(consumer=consumer, writer=writer, dlq_producer=InMemoryKafkaProducer(), max_messages=1)
+
+    assert writer.closed is True
     assert consumer.closed is True

@@ -21,6 +21,7 @@ from cms.contracts.ingestion import KAFKA_CONSUMER_GROUP, MEASUREMENT_DLQ_TOPIC,
 class ConsumerServiceConfig:
     kafka_bootstrap_servers: str
     measurement_raw_topic: str
+    kafka_topic_identity: str | None
     measurement_dlq_topic: str
     kafka_consumer_group: str
     postgres_host: str
@@ -42,6 +43,7 @@ def load_config_from_env() -> ConsumerServiceConfig:
     return ConsumerServiceConfig(
         kafka_bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS", "cms-kafka:9092"),
         measurement_raw_topic=os.getenv("MEASUREMENT_RAW_TOPIC", MEASUREMENT_RAW_TOPIC),
+        kafka_topic_identity=os.getenv("KAFKA_TOPIC_IDENTITY") or None,
         measurement_dlq_topic=os.getenv("MEASUREMENT_DLQ_TOPIC", MEASUREMENT_DLQ_TOPIC),
         kafka_consumer_group=os.getenv("KAFKA_CONSUMER_GROUP", KAFKA_CONSUMER_GROUP),
         postgres_host=os.getenv("POSTGRES_HOST", "172.31.47.236"),
@@ -79,6 +81,7 @@ def run_runtime_report(*, max_messages: int | None = None, poll_timeout: float =
     consumer = create_confluent_kafka_consumer()
     writer = create_psycopg_event_writer()
     dlq_producer = create_confluent_kafka_producer()
+    config = load_config_from_env()
     stats = run_consumer_loop(
         consumer=consumer,
         writer=writer,
@@ -86,6 +89,7 @@ def run_runtime_report(*, max_messages: int | None = None, poll_timeout: float =
         max_messages=max_messages,
         poll_timeout=poll_timeout,
         max_idle_polls=max_idle_polls,
+        kafka_topic_identity=config.kafka_topic_identity,
     )
     return {
         "service": "kafka_to_postgres_consumer",
@@ -113,8 +117,10 @@ def main() -> int:
     args = parse_args()
     config = load_config_from_env()
 
-    runtime_enabled = args.runtime or os.getenv("CMS_ENABLE_RUNTIME_CONSUMER") == "1"
-    if runtime_enabled and not args.dry_run:
+    runtime_flag = os.getenv("CMS_ENABLE_RUNTIME_CONSUMER") == "1"
+    if args.runtime and not args.dry_run:
+        if not runtime_flag:
+            raise SystemExit("runtime consumer requires CMS_ENABLE_RUNTIME_CONSUMER=1")
         print(json.dumps(run_runtime_report(max_messages=args.max_messages, poll_timeout=args.poll_timeout, max_idle_polls=args.max_idle_polls), ensure_ascii=False, sort_keys=True), flush=True)
         return 0
 

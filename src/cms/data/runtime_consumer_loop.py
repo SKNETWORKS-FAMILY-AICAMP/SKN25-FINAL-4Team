@@ -35,6 +35,7 @@ def run_consumer_loop(
     max_messages: int | None = None,
     poll_timeout: float = 1.0,
     max_idle_polls: int = 1,
+    kafka_topic_identity: str | None = None,
 ) -> ConsumerLoopStats:
     """Poll messages and commit offsets only after runner-approved success."""
 
@@ -51,7 +52,12 @@ def run_consumer_loop(
             idle_polls = 0
             raw_message, envelope = polled
             stats = stats.bump(polled=1)
-            result = process_kafka_message(envelope, writer=writer, dlq_producer=dlq_producer)
+            result = process_kafka_message(
+                envelope,
+                writer=writer,
+                dlq_producer=dlq_producer,
+                kafka_topic_identity=kafka_topic_identity,
+            )
             increments = {"processed": 1}
             if result.decision.action == "insert_event":
                 increments["inserted"] = 1
@@ -66,6 +72,9 @@ def run_consumer_loop(
                 increments["committed"] = 1
             stats = stats.bump(**increments)
     finally:
+        close_writer = getattr(writer, "close", None)
+        if callable(close_writer):
+            close_writer()
         consumer.close()
     return stats
 

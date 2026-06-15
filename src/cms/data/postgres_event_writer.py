@@ -9,7 +9,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Protocol
 
-LIVE_MEASUREMENT_EVENT_TABLE = "live.measurement_event"
+from cms.contracts.ingestion import (
+    MEASUREMENT_EVENT_WRITE_TARGET_TABLE,
+    MEASUREMENT_INGESTION_TABLE_PATH,
+    MEASUREMENT_LIVE_TABLE,
+)
+
+LIVE_MEASUREMENT_EVENT_TABLE = MEASUREMENT_LIVE_TABLE
 
 _INSERT_COLUMNS = (
     "event_id",
@@ -60,27 +66,32 @@ class PostgresEventWriterLike(Protocol):
 
 def _require_live_measurement_event(payload: dict[str, object]) -> None:
     target = payload.get("target_table")
-    if target != LIVE_MEASUREMENT_EVENT_TABLE:
-        raise ValueError(f"target_table must be {LIVE_MEASUREMENT_EVENT_TABLE}")
+    if target != MEASUREMENT_EVENT_WRITE_TARGET_TABLE:
+        raise ValueError(
+            f"target_table must be {MEASUREMENT_EVENT_WRITE_TARGET_TABLE}; "
+            "consumer writes must land in the live.measurement_event ledger"
+        )
 
 
 def make_measurement_event_insert_command(payload: dict[str, object]) -> PostgresInsertCommand:
     """Build the idempotent live.measurement_event insert command.
 
     ``event_id`` is the business idempotency key. Kafka topic/partition/offset
-    remains transport metadata and is not used as the business identity.
+    remains transport metadata and is not used as the business identity. The
+    Kafka measurement_raw_v1 is the staging buffer; this command writes the
+    validated event ledger row directly to ``live.measurement_event``.
     """
 
     _require_live_measurement_event(payload)
     values = ", ".join(f"%({column})s" for column in _INSERT_COLUMNS)
     columns = ", ".join(_INSERT_COLUMNS)
     sql = (
-        f"INSERT INTO {LIVE_MEASUREMENT_EVENT_TABLE} ({columns}) "
+        f"INSERT INTO {MEASUREMENT_EVENT_WRITE_TARGET_TABLE} ({columns}) "
         f"VALUES ({values}) "
         "ON CONFLICT (event_id) DO NOTHING"
     )
     params = {column: payload.get(column) for column in _INSERT_COLUMNS}
-    return PostgresInsertCommand(target_table=LIVE_MEASUREMENT_EVENT_TABLE, sql=sql, params=params)
+    return PostgresInsertCommand(target_table=MEASUREMENT_EVENT_WRITE_TARGET_TABLE, sql=sql, params=params)
 
 
 @dataclass
@@ -111,6 +122,8 @@ class InMemoryPostgresEventWriter:
 __all__ = [
     "InMemoryPostgresEventWriter",
     "LIVE_MEASUREMENT_EVENT_TABLE",
+    "MEASUREMENT_EVENT_WRITE_TARGET_TABLE",
+    "MEASUREMENT_INGESTION_TABLE_PATH",
     "PostgresEventWriterLike",
     "PostgresInsertCommand",
     "PostgresWriteResult",

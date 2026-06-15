@@ -30,7 +30,10 @@ def _feature_row(**overrides: object) -> PmaxFeatureReadinessRow:
         "observed_points": 15,
         "expected_points": 15,
         "coverage_ratio": 1.0,
-        "source_file": f"V.Z81/V.Z81.{measurement}_corrected_resampled_1min.csv.gz",
+        "source_file": f"V.Z81/V.Z81.{measurement}_harmonized.csv.gz",
+        "source_layer": "mart.peak_feature_15min",
+        "source_mode": "live_observed",
+        "provenance": {"source": "unit-test-live-observed"},
         "run_id": "run_a",
         "created_at": BASE_TS,
     }

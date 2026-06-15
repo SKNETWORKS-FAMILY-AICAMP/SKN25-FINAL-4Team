@@ -133,3 +133,16 @@ def test_pmax_forecast_adapter_blocks_invalid_negative_prediction_in_strict_mode
 
     with pytest.raises(PmaxForecastPredictionError, match="predicted_p_max_must_be_nonnegative"):
         adapter.predict((_feature(),))
+
+
+def test_pmax_forecast_adapter_can_clip_negative_predictions_for_operational_serving() -> None:
+    adapter = PmaxForecastAdapter(
+        model=FakePmaxModel([[-1.0, 2.0, 3.0, 4.0]]),
+        created_at_factory=lambda base_ts: base_ts,
+        negative_prediction_policy="clip_zero",
+    )
+
+    result = adapter.predict((_feature(),))
+
+    assert result.ok is True
+    assert [row.predicted_p_max for row in result.rows] == [0.0, 2.0, 3.0, 4.0]

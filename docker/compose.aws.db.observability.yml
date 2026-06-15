@@ -21,7 +21,7 @@ services:
     container_name: cms-postgres-exporter
     restart: unless-stopped
     environment:
-      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-cms}:${POSTGRES_PASSWORD:-}@postgres:5432/${POSTGRES_DB:-cms}?sslmode=${POSTGRES_SSLMODE:-disable}"
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-cms}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in server-local .env}@${POSTGRES_EXPORTER_DB_HOST:-postgres}:5432/${POSTGRES_DB:-cms}?sslmode=${POSTGRES_SSLMODE:-disable}"
       PG_EXPORTER_AUTO_DISCOVER_DATABASES: "false"
     ports:
       - "${POSTGRES_EXPORTER_BIND:-127.0.0.1}:${POSTGRES_EXPORTER_PORT:-9187}:9187"

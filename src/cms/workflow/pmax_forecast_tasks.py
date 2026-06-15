@@ -23,7 +23,7 @@ from cms.contracts.pmax_forecast_15min import (
     validate_pmax_feature_readiness,
     validate_pmax_forecast_row,
 )
-from cms.modeling.pmax_artifact_loader import PmaxArtifactDescriptor, PmaxArtifactLoader
+from cms.modeling.pmax_artifact_loader import PmaxArtifactDescriptor, PmaxArtifactLoader, PmaxArtifactLoaderError, PmaxReleaseArtifactLoader
 from cms.modeling.pmax_feature_builder import PmaxFeatureBuildResult, PmaxFeatureVector, build_pmax_feature_vectors
 from cms.modeling.pmax_forecast_adapter import PmaxForecastAdapter, PmaxForecastPredictionError
 
@@ -96,23 +96,42 @@ def load_run_config(payload: Mapping[str, Any] | None = None, **overrides: Any) 
 def airflow_task_entrypoint(task_id: str, **context: Any) -> PmaxForecastTaskResult:
     """Safe Airflow ``PythonOperator`` entrypoint for import-only DAG wiring.
 
-    Only ``load_run_config`` can run from Airflow context alone; all other tasks
-    require explicit in-memory rows/model objects and therefore return blocked
-    rather than touching external systems.
+    Config and artifact gates can run from ``dag_run.conf``. Feature readiness,
+    feature building, and adapter execution require materialized rows/model
+    objects from the runtime task layer and therefore return precise blocked
+    results rather than touching external systems.
     """
 
     if not task_id:
         return _blocked_airflow_result("unknown", "task_id is required")
-    if task_id != "load_run_config":
-        return _blocked_airflow_result(task_id, "P-Max Airflow task entrypoint has no import-safe in-memory inputs for this task")
+    if task_id not in TASK_IDS:
+        return _blocked_airflow_result(task_id, "unknown P-Max task_id")
     payload = _dag_run_conf(context)
     if payload is None:
         return _blocked_airflow_result(task_id, "dag_run.conf with base_ts is required")
     try:
-        config = load_run_config(payload)
+        if task_id == "load_run_config":
+            config = load_run_config(payload)
+            return PmaxForecastTaskResult(task_id=task_id, ok=True, data={"config": config})
+        if task_id == "gate_manual_nonprod_run":
+            return gate_manual_nonprod_run(load_run_config(payload))
+        if task_id == "gate_pmax_model_artifact":
+            artifact_payload = payload.get("artifact", payload.get("artifact_boundary", payload))
+            if not isinstance(artifact_payload, Mapping):
+                return _blocked_airflow_result(task_id, "artifact must be a mapping when provided")
+            return gate_pmax_model_artifact(artifact_payload)
     except (TypeError, ValueError) as exc:
         return _blocked_airflow_result(task_id, str(exc))
-    return PmaxForecastTaskResult(task_id=task_id, ok=True, data={"config": config})
+
+    blocked_reasons = {
+        "check_pmax_feature_readiness": "materialized P-Max feature readiness rows are required",
+        "build_pmax_features": "materialized P-Max feature readiness rows are required",
+        "run_pmax_forecast_adapter": "P-Max feature vectors and model adapter are required",
+        "validate_pmax_forecast_output": "P-Max forecast rows are required",
+        "record_pmax_pipeline_metrics": "P-Max forecast rows are required",
+        "publish_pmax_evidence_packet": "P-Max metrics and evidence inputs are required",
+    }
+    return _blocked_airflow_result(task_id, blocked_reasons[task_id])
 
 
 def gate_manual_nonprod_run(config: PmaxForecastRunConfig | Mapping[str, Any]) -> PmaxForecastTaskResult:
@@ -217,7 +236,7 @@ def run_pmax_forecast_adapter(
     features: Iterable[PmaxFeatureVector],
     config: PmaxForecastRunConfig | Mapping[str, Any],
     model: Any | None = None,
-    artifact_loader: PmaxArtifactLoader | None = None,
+    artifact_loader: PmaxArtifactLoader | PmaxReleaseArtifactLoader | None = None,
     adapter: PmaxForecastAdapter | None = None,
 ) -> PmaxForecastTaskResult:
     """Run P-Max inference with an explicit fake model/adapter or lazy loader."""
@@ -230,7 +249,7 @@ def run_pmax_forecast_adapter(
         adapter = PmaxForecastAdapter(model=model_or_loader)
     try:
         result = adapter.predict(tuple(features))
-    except PmaxForecastPredictionError as exc:
+    except (PmaxForecastPredictionError, PmaxArtifactLoaderError) as exc:
         return PmaxForecastTaskResult(task_id="run_pmax_forecast_adapter", ok=False, errors=(str(exc),), blocked=True)
     return PmaxForecastTaskResult(
         task_id="run_pmax_forecast_adapter",

@@ -4,9 +4,12 @@ services:
   cms:
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/backend_containerfile
     image: cms:3.12
     container_name: cms
+    labels:
+      cms.runtime.roles: "backend,ingestion,consumer,langgraph,evaluation,knowledge"
+      cms.runtime.factories: "cms.service.api:create_app,cms.service.api:create_backend_app,cms.service.api:create_ingestion_app"
     env_file:
       - path: .env
         required: false
@@ -17,6 +20,24 @@ services:
       - cms_pip_cache:/root/.cache/pip
     working_dir: /workspace
     command: sleep infinity
+
+  cms-frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+    image: cms-frontend:latest
+    container_name: cms-frontend
+    profiles:
+      - frontend
+    labels:
+      cms.runtime.roles: "frontend"
+      cms.runtime.backend_api: "cms-backend-api:8000"
+    ports:
+      - "${CMS_FRONTEND_BIND:-127.0.0.1}:${CMS_FRONTEND_PORT:-5173}:80"
+    networks:
+      - cms_edge_stream
 
   grafana:
     image: grafana/grafana:11.5.2
@@ -32,14 +53,24 @@ services:
       GRAFANA_POSTGRES_USER: ${GRAFANA_POSTGRES_USER:-cms}
       GRAFANA_POSTGRES_SSLMODE: ${GRAFANA_POSTGRES_SSLMODE:-disable}
       GRAFANA_POSTGRES_PASSWORD: ${GRAFANA_POSTGRES_PASSWORD:-}
-      GRAFANA_PROMETHEUS_URL: ${GRAFANA_PROMETHEUS_URL:-http://prometheus:9090}
+      GRAFANA_PROMETHEUS_URL: ${GRAFANA_PROMETHEUS_URL:-http://cms-prometheus:9090}
       GRAFANA_DISCORD_WEBHOOK_URL: ${GRAFANA_DISCORD_WEBHOOK_URL:-}
     ports:
       - "${GRAFANA_PORT:-3000}:3000"
     volumes:
-      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      # Only provision active dashboards and datasources by default. Alerting YAML
+      # may reference target-only observability tables and requires a separate
+      # runtime apply gate after the target DDL exists.
+      - ./docker/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./docker/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
       - cms_grafana_data:/var/lib/grafana
+    networks:
+      - cms_edge_stream
     restart: unless-stopped
+
+networks:
+  cms_edge_stream:
+    name: cms_edge_stream
 
 volumes:
   cms_pip_cache:

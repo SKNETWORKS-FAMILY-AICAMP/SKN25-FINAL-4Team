@@ -1,0 +1,200 @@
+"""
+시스템 설정 API.
+
+GET  /settings          — 현재 설정 조회
+POST /settings          — 설정 업데이트 (in-memory + LLM 클라이언트 재로드)
+POST /settings/test-llm — LLM 연결 테스트 (저장 전 테스트 가능)
+"""
+from cms.service.errors import safe_err
+import os
+import time
+from typing import Optional
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+
+router = APIRouter(prefix="/settings", tags=["settings"])
+
+_config: dict = {
+    "llm": {
+        "provider":   os.getenv("LLM_PROVIDER", "openai"),
+        "model":      os.getenv("LLM_MODEL", "gpt-4o"),
+        "ollama_url": os.getenv("OLLAMA_URL", "http://localhost:11434/v1"),
+    },
+    "profile": {
+        "company_name": os.getenv("COMPANY_NAME", "Honda R&D Europe GmbH"),
+    },
+    "report_schedule": {
+        "enabled": os.getenv("DAILY_REPORT_ENABLED", "true").lower() != "false",
+        "hour":    int(os.getenv("DAILY_REPORT_HOUR", "6")),
+        "minute":  int(os.getenv("DAILY_REPORT_MINUTE", "0")),
+    },
+    "alert": {
+        "min_level": os.getenv("ALERT_MIN_LEVEL", "HIGH"),  # HIGH | CRITICAL
+    },
+    "billing": {
+        "unit_price": float(os.getenv("BILLING_UNIT_PRICE", "0.20")),
+        "target_eur": float(os.getenv("BILLING_TARGET_EUR", "50000")),
+    },
+}
+
+
+def get_alert_min_level() -> str:
+    """simulator 등 외부 모듈에서 임계값 읽기용."""
+    return _config["alert"]["min_level"]
+
+
+# 프로바이더 → 환경변수 매핑 (API 키)
+_KEY_ENV = {
+    "openai":    "OPENAI_API_KEY",
+    "anthropic": "ANTHROPIC_API_KEY",
+    "gemini":    "GEMINI_API_KEY",
+}
+
+
+def _api_key_status() -> dict:
+    """각 프로바이더 키 설정 여부만 반환 (키 값 자체는 절대 노출하지 않음)."""
+    return {p: bool(os.getenv(env, "").strip()) for p, env in _KEY_ENV.items()}
+
+
+@router.get("")
+def get_settings():
+    return {**_config, "llm": {**_config["llm"], "api_key_set": _api_key_status()}}
+
+
+class TestLlmRequest(BaseModel):
+    provider:   Optional[str] = None
+    model:      Optional[str] = None
+    ollama_url: Optional[str] = None
+
+
+@router.post("/test-llm")
+def test_llm(body: TestLlmRequest = TestLlmRequest()):
+    """LLM 연결 테스트. body 미제공 시 현재 저장된 설정 사용."""
+    provider   = body.provider   or _config["llm"]["provider"]
+    model      = body.model      or _config["llm"]["model"]
+    ollama_url = body.ollama_url or _config["llm"]["ollama_url"]
+
+    try:
+        if provider == "anthropic":
+            from anthropic import Anthropic
+            client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+            t0 = time.time()
+            resp = client.messages.create(
+                model=model, max_tokens=8,
+                messages=[{"role": "user", "content": "ping"}],
+            )
+            return {"ok": True, "latency_ms": round((time.time() - t0) * 1000),
+                    "response": resp.content[0].text[:50]}
+
+        from openai import OpenAI
+        if provider == "openai":
+            client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        elif provider == "gemini":
+            client = OpenAI(
+                api_key=os.getenv("GEMINI_API_KEY"),
+                base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+            )
+        elif provider == "ollama":
+            import httpx
+            base = ollama_url.rstrip("/").removesuffix("/v1")
+            t0 = time.time()
+            r = httpx.post(
+                f"{base}/api/chat",
+                json={"model": model, "stream": False, "think": False,
+                      "messages": [{"role": "user", "content": "ping"}],
+                      "options": {"num_predict": 8}},
+                timeout=30,
+            )
+            r.raise_for_status()
+            return {"ok": True, "latency_ms": round((time.time() - t0) * 1000),
+                    "response": r.json()["message"]["content"][:50]}
+        else:
+            return {"ok": False, "error": f"알 수 없는 프로바이더: {provider}"}
+
+        t0 = time.time()
+        resp = client.chat.completions.create(
+            model=model, max_tokens=8,
+            messages=[{"role": "user", "content": "ping"}],
+        )
+        return {"ok": True, "latency_ms": round((time.time() - t0) * 1000),
+                "response": (resp.choices[0].message.content or "")[:50]}
+
+    except Exception as e:
+        return {"ok": False, "error": safe_err(e)}
+
+
+@router.post("")
+def update_settings(body: dict):
+    # ── LLM ─────────────────────────────────────
+    if "llm" in body:
+        llm = body["llm"]
+        for key, env_key in [("provider", "LLM_PROVIDER"), ("model", "LLM_MODEL"), ("ollama_url", "OLLAMA_URL")]:
+            if key in llm:
+                _config["llm"][key] = llm[key]
+                os.environ[env_key] = llm[key]
+        # API 키 — 비어있지 않은 값만 환경변수에 주입 (저장값은 _config에 남기지 않음)
+        for provider, val in (llm.get("api_keys") or {}).items():
+            if provider in _KEY_ENV and val and val.strip():
+                os.environ[_KEY_ENV[provider]] = val.strip()
+        try:
+            from cms.workflow.router.llm_client import reload as llm_reload
+            llm_reload()
+        except Exception:
+            pass
+
+    # ── 기업 프로필 ──────────────────────────────
+    if "profile" in body:
+        _config["profile"].update(body["profile"])
+
+    # ── 보고서 스케줄 ────────────────────────────
+    if "report_schedule" in body:
+        sched = body["report_schedule"]
+        for k in ("enabled", "hour", "minute"):
+            if k in sched:
+                _config["report_schedule"][k] = sched[k]
+        _apply_schedule()
+
+    # ── 알림 임계값 ──────────────────────────────
+    if "alert" in body and "min_level" in body["alert"]:
+        _config["alert"]["min_level"] = body["alert"]["min_level"]
+
+    # ── 요금 설정 ────────────────────────────────
+    if "billing" in body:
+        b = body["billing"]
+        if "unit_price" in b:
+            _config["billing"]["unit_price"] = float(b["unit_price"])
+        if "target_eur" in b:
+            _config["billing"]["target_eur"] = float(b["target_eur"])
+
+    return {"ok": True, "config": _config}
+
+
+def _apply_schedule():
+    """변경된 스케줄을 APScheduler에 실시간 반영."""
+    try:
+        from cms.service.scheduler import scheduler, start_scheduler, stop_scheduler
+        from apscheduler.triggers.cron import CronTrigger
+
+        enabled = _config["report_schedule"]["enabled"]
+        hour    = _config["report_schedule"]["hour"]
+        minute  = _config["report_schedule"]["minute"]
+
+        if not enabled:
+            stop_scheduler()
+            return
+
+        if not scheduler.running:
+            os.environ["DAILY_REPORT_HOUR"]   = str(hour)
+            os.environ["DAILY_REPORT_MINUTE"] = str(minute)
+            start_scheduler()
+        else:
+            try:
+                scheduler.reschedule_job(
+                    "ml_retraining_job",
+                    trigger=CronTrigger(hour=hour, minute=minute),
+                )
+            except Exception:
+                pass
+    except Exception as e:
+        print(f"[Settings] schedule apply error: {e}")

@@ -20,8 +20,10 @@ from cms.contracts.pmax_forecast_15min import (
     PMAX_FORECAST_CANDIDATE_VERSIONS,
     PMAX_FORECAST_FEATURE_COLUMNS,
     PMAX_FORECAST_HORIZON_MINUTES,
+    PMAX_FORECAST_INPUT_TABLE,
     PMAX_FORECAST_LOGICAL_METER_SOURCES,
     PMAX_FORECAST_MODEL_VERSION,
+    PMAX_FORECAST_PRODUCTION_RELEASE,
     PMAX_FORECAST_PRODUCTION_RELEASE_SHA256,
     PmaxForecastArtifactBoundary,
 )
@@ -51,6 +53,7 @@ class PmaxArtifactDescriptor:
     """
 
     adapter_name: str = PMAX_FORECAST_ARTIFACT_ADAPTER_STUB
+    release_name: str | None = PMAX_FORECAST_PRODUCTION_RELEASE
     model_version: str = PMAX_FORECAST_MODEL_VERSION
     artifact_uri: str | None = None
     artifact_path: Path | None = None
@@ -74,6 +77,7 @@ class PmaxArtifactDescriptor:
     def as_dict(self) -> dict[str, str | bool | None]:
         return {
             "adapter_name": self.adapter_name,
+            "release_name": self.release_name,
             "model_version": self.model_version,
             "artifact_uri": self.artifact_uri,
             "artifact_path": self.artifact_path.as_posix() if self.artifact_path is not None else None,
@@ -175,13 +179,29 @@ class PmaxReleaseArtifactLoader:
             return self._loaded_model
         if not self.release_root.is_dir():
             raise PmaxArtifactUnavailableError(f"release_root does not exist or is not a directory: {self.release_root}")
-        base = self.release_root / "artifacts" / "import_pmax_v29_60min" / "input_24h" / "predict_60min"
+        base = self._release_base()
         meters = {logical_meter: self._load_meter(base, logical_meter) for logical_meter in PMAX_FORECAST_LOGICAL_METER_SOURCES}
         self._loaded_model = PmaxReleaseEnsembleModel(meters)
         return self._loaded_model
 
+    def _release_base(self) -> Path:
+        candidates = (
+            self.release_root / "import_pmax_v29_60min" / "input_24h" / "predict_60min",
+            self.release_root / "artifacts" / "import_pmax_v29_60min" / "input_24h" / "predict_60min",
+            self.release_root
+            / PMAX_FORECAST_PRODUCTION_RELEASE
+            / "artifacts"
+            / "import_pmax_v29_60min"
+            / "input_24h"
+            / "predict_60min",
+        )
+        for candidate in candidates:
+            if candidate.is_dir():
+                return candidate
+        return candidates[0]
+
     def _load_meter(self, base: Path, logical_meter: str) -> PmaxMeterEnsemble:
-        meter_root = base / logical_meter
+        meter_root = _resolve_meter_root(base, logical_meter)
         manifest_path = meter_root / PMAX_FORECAST_MODEL_VERSION / "manifest.json"
         weights_path = meter_root / PMAX_FORECAST_MODEL_VERSION / "ensemble_weights.csv"
         model_root = meter_root / "_candidate_models"
@@ -191,8 +211,25 @@ class PmaxReleaseArtifactLoader:
         _validate_manifest(manifest, logical_meter=logical_meter)
         weights = _read_weights(weights_path)
         loader = self._model_loader or _joblib_load
-        models = {version: loader(model_root / f"{version}.joblib") for version in PMAX_FORECAST_CANDIDATE_VERSIONS}
+        model_paths = {version: model_root / f"{version}.joblib" for version in PMAX_FORECAST_CANDIDATE_VERSIONS}
+        missing_paths = tuple(path for path in model_paths.values() if not path.is_file())
+        if missing_paths:
+            missing = ",".join(path.name for path in missing_paths)
+            raise PmaxArtifactUnavailableError(f"missing P-Max candidate model files for {logical_meter}: {missing}")
+        models = {version: loader(model_paths[version]) for version in PMAX_FORECAST_CANDIDATE_VERSIONS}
         return PmaxMeterEnsemble(logical_meter=logical_meter, manifest=manifest, weights=weights, models=models)
+
+
+def _resolve_meter_root(base: Path, logical_meter: str) -> Path:
+    candidates = (base / logical_meter, base / _artifact_meter_dir(logical_meter))
+    for candidate in candidates:
+        if candidate.is_dir():
+            return candidate
+    return candidates[0]
+
+
+def _artifact_meter_dir(logical_meter: str) -> str:
+    return logical_meter.lower().replace(".", "_")
 
 
 def descriptor_from_boundary(boundary: PmaxForecastArtifactBoundary, *, artifact_path: str | Path | None = None) -> PmaxArtifactDescriptor:
@@ -210,9 +247,11 @@ def descriptor_from_boundary(boundary: PmaxForecastArtifactBoundary, *, artifact
 
 def _validate_manifest(manifest: Mapping[str, Any], *, logical_meter: str) -> None:
     expected = {
+        "table": PMAX_FORECAST_INPUT_TABLE,
         "logical_meter": logical_meter,
         "output_range": "60min",
         "horizon_steps": len(PMAX_FORECAST_HORIZON_MINUTES),
+        "step_minutes": 15,
         "input_hours": 24,
         "method": PMAX_FORECAST_MODEL_VERSION,
     }
@@ -228,10 +267,16 @@ def _validate_manifest(manifest: Mapping[str, Any], *, logical_meter: str) -> No
 def _read_weights(path: Path) -> Mapping[str, float]:
     with path.open(newline="", encoding="utf-8") as handle:
         rows = tuple(csv.DictReader(handle))
-    versions = tuple(row["candidate_version"] for row in rows)
+    try:
+        versions = tuple(row["candidate_version"] for row in rows)
+    except KeyError as exc:
+        raise PmaxArtifactIntegrityError(f"ensemble weights missing required column: {exc}") from exc
     if versions != PMAX_FORECAST_CANDIDATE_VERSIONS:
         raise PmaxArtifactIntegrityError(f"ensemble weight versions mismatch: {versions}")
-    weights = {row["candidate_version"]: float(row["weight"]) for row in rows}
+    try:
+        weights = {row["candidate_version"]: float(row["weight"]) for row in rows}
+    except (KeyError, ValueError) as exc:
+        raise PmaxArtifactIntegrityError(f"invalid ensemble weights file: {path}") from exc
     if any(weight < 0 for weight in weights.values()) or abs(sum(weights.values()) - 1.0) > 1e-9:
         raise PmaxArtifactIntegrityError(f"invalid ensemble weights: {weights}")
     return weights
@@ -241,11 +286,29 @@ def _predict_meter_ensemble(ensemble: PmaxMeterEnsemble, row: Sequence[float]) -
     totals = [0.0 for _ in PMAX_FORECAST_HORIZON_MINUTES]
     for version in PMAX_FORECAST_CANDIDATE_VERSIONS:
         model = ensemble.models[version]
-        prediction = _coerce_four_horizons(model.predict([list(row)]))
+        prediction = _predict_candidate_model(model, row)
         weight = ensemble.weights[version]
         for index, value in enumerate(prediction):
             totals[index] += weight * value
     return tuple(totals)
+
+
+def _predict_candidate_model(model: Any, row: Sequence[float]) -> tuple[float, ...]:
+    predict = getattr(model, "predict", None)
+    if callable(predict):
+        return _coerce_four_horizons(predict([list(row)]))
+    if isinstance(model, Sequence) and not isinstance(model, str | bytes | bytearray):
+        horizon_models = tuple(model)
+        if len(horizon_models) != len(PMAX_FORECAST_HORIZON_MINUTES):
+            raise PmaxArtifactLoaderError("candidate model list must contain four horizon predictors")
+        values: list[float] = []
+        for horizon_model in horizon_models:
+            horizon_predict = getattr(horizon_model, "predict", None)
+            if not callable(horizon_predict):
+                raise PmaxArtifactLoaderError("candidate model list items must provide predict()")
+            values.append(_coerce_single_horizon(horizon_predict([list(row)])))
+        return tuple(values)
+    raise PmaxArtifactLoaderError("candidate model must provide predict() or be a four-model horizon list")
 
 
 def _coerce_four_horizons(value: Any) -> tuple[float, ...]:
@@ -257,8 +320,29 @@ def _coerce_four_horizons(value: Any) -> tuple[float, ...]:
             if isinstance(nested, Sequence) and not isinstance(nested, str | bytes | bytearray):
                 values = tuple(nested)
         if len(values) == len(PMAX_FORECAST_HORIZON_MINUTES):
-            return tuple(float(item) for item in values)
+            try:
+                return tuple(float(item) for item in values)
+            except (TypeError, ValueError) as exc:
+                raise PmaxArtifactLoaderError("candidate model prediction values must be numeric") from exc
     raise PmaxArtifactLoaderError("candidate model must return four horizon predictions")
+
+
+def _coerce_single_horizon(value: Any) -> float:
+    normalized = value.tolist() if hasattr(value, "tolist") else value
+    if isinstance(normalized, Sequence) and not isinstance(normalized, str | bytes | bytearray):
+        values = tuple(normalized)
+        if len(values) != 1:
+            raise PmaxArtifactLoaderError("horizon model must return one prediction value")
+        normalized = values[0].tolist() if hasattr(values[0], "tolist") else values[0]
+        if isinstance(normalized, Sequence) and not isinstance(normalized, str | bytes | bytearray):
+            nested = tuple(normalized)
+            if len(nested) != 1:
+                raise PmaxArtifactLoaderError("horizon model must return one prediction value")
+            normalized = nested[0]
+    try:
+        return float(normalized)
+    except (TypeError, ValueError) as exc:
+        raise PmaxArtifactLoaderError("horizon model prediction value must be numeric") from exc
 
 
 def sha256_file(path: Path) -> str:
@@ -275,6 +359,7 @@ def _ensure_descriptor(value: PmaxArtifactDescriptor | Mapping[str, Any]) -> Pma
     artifact_path = value.get("artifact_path")
     return PmaxArtifactDescriptor(
         adapter_name=str(value.get("adapter_name", PMAX_FORECAST_ARTIFACT_ADAPTER_STUB)),
+        release_name=value.get("release_name", PMAX_FORECAST_PRODUCTION_RELEASE),
         model_version=str(value.get("model_version", PMAX_FORECAST_MODEL_VERSION)),
         artifact_uri=value.get("artifact_uri"),
         artifact_path=Path(artifact_path) if artifact_path not in (None, "") else None,

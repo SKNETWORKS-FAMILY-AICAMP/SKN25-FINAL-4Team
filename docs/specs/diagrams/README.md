@@ -1,51 +1,62 @@
 # Pipeline Diagrams
 
-**갱신일:** 2026-06-08
-**상태:** 통합 diagram index
-**범위:** 이 문서는 pipeline diagram의 목록, 각 diagram의 역할, Mermaid source/render 관리 기준을 정의한다.
+**갱신일:** 2026-06-15
+**상태:** 현재 PC1~PC3 edge runtime + AWS DB plane 기준 diagram index
+**범위:** CMS service/runtime, data platform, workflow, review, app surface, DB ERD diagram의 source/render 관리 기준을 정의한다.
 
 ## 1. 관리 원칙
 
-- 각 diagram은 서로 다른 관점을 표현하므로 개별 `.mmd`와 `.svg` 파일을 유지한다.
-- `.mmd`는 canonical Mermaid source다.
+- Mermaid flow/sequence diagram은 `.mmd`를 canonical source로 관리한다.
 - `.svg`는 팀 공유와 Markdown preview를 위한 render 결과다.
-- `stack_architecture_overview.svg`처럼 icon-based SVG를 직접 관리하는 경우에는 Mermaid source 없이 SVG 자체를 canonical source/render로 본다.
-- Mermaid source는 `.mmd`로 관리하고 설명은 이 문서에 모아 관리한다.
-- Diagram 설명은 이 `README.md`에 모아 관리한다.
-- `flow_01` / `sequence_01`은 live DB 처리와 canonical promotion의 상세 기준 diagram으로 유지한다.
+- DB ERD는 dbdiagram.io용 `.dbml`을 canonical source로 관리한다.
+- `stack_architecture_overview.svg`처럼 icon-based SVG를 직접 관리하는 경우에는 SVG 자체를 canonical source/render로 본다.
+- Diagram 의미를 바꾸면 `.mmd`와 대응 `.svg`를 같은 change set에서 함께 갱신한다.
+- Render readability gate는 `foreignObject == 0`, `nodeLabel == 0`, `text_tags > 0`이다.
 
-## 2. Diagram 목록
+## 2. 현재 runtime 기준
 
-| 구분 | Mermaid source | Render | 설명 |
+2026-06-15 기준 diagram은 다음 runtime fact를 반영한다.
+
+- PC1: `CMS Ingestion API`, `CMS Backend API`, frontend, Airflow, Kafka broker, 3x Kafka-to-PostgreSQL consumers, live bucket worker.
+- PC2: Kafka broker, Prometheus, Grafana, Kafka/node exporters.
+- PC3: Kafka broker, canonical/anomaly/model-serving workers. `cms:model-serving` image는 torch 포함 rebuild 완료.
+- AWS: PostgreSQL/TimescaleDB, Grafana, postgres/node exporters.
+- Kafka lag는 API latency가 아니라 consumer offset backlog다.
+- 2023 timestamp는 historical replay/virtual-clock event time이다.
+- P-Max direct runtime input은 `mart.peak_feature_15min`이다. `mart.peak_input_15min`은 legacy/helper projection으로만 표기한다.
+- Graphify/LLM Wiki는 docs/specs context grounding 영역이며 active data pipeline node가 아니다.
+
+## 3. Diagram 목록
+
+| 구분 | Source | Render | 설명 |
 |---|---|---|---|
-| 전체 flow | `flow_00_overall_pipeline.mmd` | `flow_00_overall_pipeline.svg` | source/archive, Kafka live ingestion buffer, PostgreSQL live/canonical, peak feature/model-serving branch, service/workflow plane의 전체 연결을 표현한다. |
-| 기술스택 구조도 | - | `stack_architecture_overview.svg` | FastAPI, Kafka, PostgreSQL, Airflow, Python adapter, P-Max v29, Grafana, Vector DB/LangGraph를 icon-based SVG로 배치한 팀 공유용 stack overview다. |
-| 전체 flow visual variant | `flow_00_reference_architecture.svg` | `flow_00_reference_architecture.png` | `flow_00_overall_pipeline`의 내용을 참조해 팀 공유용 reference architecture 스타일로 재배치한 시각화다. 원본 flow 00은 변경하지 않는다. |
-| 전체 flow dark variant | `flow_00_dark_control_tower.svg` | `flow_00_dark_control_tower.png` | `flow_00_overall_pipeline`을 dark control-tower 스타일로 재배치한 발표/공유용 시각화다. |
-| 전체 flow reference-photo variant | `flow_00_reference_photo_style.svg` | `flow_00_reference_photo_style.png` | 첨부 레퍼런스의 white background, red header/boundary, icon grid, orange arrow 스타일을 기준으로 재배치한 시각화다. |
-| DB live/canonical flow | `flow_01_database_pipeline.mmd` | `flow_01_database_pipeline.svg` | 1개월 live event가 FastAPI, Kafka, PostgreSQL live processing, 목적별 rollup, QA eligibility, canonical promotion으로 이어지는 상세 data plane을 표현한다. |
-| DB data platform flow | `flow_02_data_platform_pipeline.mmd` | `flow_02_data_platform_pipeline.svg` | deprecated/historical data-platform view다. MongoDB raw buffer 표기는 legacy/debug-only 경계이며 별도 승인 없이는 Phase 1 live ingestion path가 아니다. |
-| Airflow flow | `flow_03_airflow_pipeline.mmd` | `flow_03_airflow_pipeline.svg` | scheduler, batch, replay, report worker의 workflow 책임을 표현한다. |
-| LangGraph flow | `flow_04_langgraph_pipeline.mmd` | `flow_04_langgraph_pipeline.svg` | LangGraph가 일반 chat path가 아니라 review/QA/approval workflow 뒤에 위치한다는 경계를 표현한다. |
-| App flow | `flow_05_app_pipeline.mmd` | `flow_05_app_pipeline.svg` | FastAPI, dashboard, Text-to-SQL, artifact download 등 service plane을 표현한다. |
-| 전체 sequence | `sequence_00_overall_pipeline.mmd` | `sequence_00_overall_pipeline.svg` | request, job registration, processing, evidence, approval까지의 전체 순서를 표현한다. |
-| DB live/canonical sequence | `sequence_01_database_pipeline.mmd` | `sequence_01_database_pipeline.svg` | live event ingest, trigger, 1min alignment, 목적별 rollup, QA eligibility, canonical promotion의 순서를 표현한다. |
-| DB data platform sequence | `sequence_02_data_platform_pipeline.mmd` | `sequence_02_data_platform_pipeline.svg` | deprecated/historical data-platform sequence다. MongoDB ingest 표기는 legacy/debug-only 경계이며 별도 승인 없이는 Phase 1 live ingestion path가 아니다. |
-| Airflow sequence | `sequence_03_airflow_pipeline.mmd` | `sequence_03_airflow_pipeline.svg` | scheduled report, replay, batch worker 실행 순서를 표현한다. |
-| LangGraph sequence | `sequence_04_langgraph_pipeline.mmd` | `sequence_04_langgraph_pipeline.svg` | QA/review/approval recommendation workflow의 순서를 표현한다. |
-| App sequence | `sequence_05_app_pipeline.mmd` | `sequence_05_app_pipeline.svg` | FastAPI quick response, read-only query, artifact/status response의 순서를 표현한다. |
+| 전체 flow | `flow_00_overall_pipeline.mmd` | `flow_00_overall_pipeline.svg` | source/archive, Kafka live ingestion buffer, PostgreSQL live/canonical, peak/model-serving branch, service/workflow/knowledge plane의 전체 연결을 표현한다. |
+| live pipeline ERD | `erd_00_live_pipeline_contract.dbml` | dbdiagram.io | current deployed/read-back tables와 target/future contract tables를 구분한 DBML ERD 코드다. |
+| 기술스택 구조도 | - | `stack_architecture_overview.svg` | FastAPI, Kafka, PostgreSQL, Airflow, Python adapter, P-Max, Grafana, Prometheus, Vector DB/LangGraph를 icon-based SVG로 배치한다. |
+| DB live/canonical flow | `flow_01_database_pipeline.mmd` | `flow_01_database_pipeline.svg` | FastAPI, Kafka, PostgreSQL live processing, rollup, QA eligibility, canonical promotion을 상세 표현한다. |
+| Runtime topology/data platform flow | `flow_02_data_platform_pipeline.mmd` | `flow_02_data_platform_pipeline.svg` | PC1~PC3 edge runtime과 AWS DB plane의 현재 서비스 배치 및 연결을 표현한다. |
+| Airflow/workflow flow | `flow_03_airflow_pipeline.mmd` | `flow_03_airflow_pipeline.svg` | PC1 Airflow와 PC3 operational scheduler, report/model/canonical workflow 책임을 표현한다. |
+| LangGraph review flow | `flow_04_langgraph_pipeline.mmd` | `flow_04_langgraph_pipeline.svg` | LangGraph가 일반 chat path가 아니라 async review/QA/approval recommendation에만 위치한다는 경계를 표현한다. |
+| App/service flow | `flow_05_app_pipeline.mmd` | `flow_05_app_pipeline.svg` | PC1 FastAPI services, frontend/Grafana, read-only SQL, managed ingestion boundary, optional async review를 표현한다. |
+| 전체 sequence | `sequence_00_overall_pipeline.mmd` | `sequence_00_overall_pipeline.svg` | ingest, processing, evidence, approval, response까지의 전체 순서를 표현한다. |
+| DB live/canonical sequence | `sequence_01_database_pipeline.mmd` | `sequence_01_database_pipeline.svg` | live event ingest, trigger, rollup, QA, canonical promotion 순서를 표현한다. |
+| Runtime topology/data platform sequence | `sequence_02_data_platform_pipeline.mmd` | `sequence_02_data_platform_pipeline.svg` | PC1 ingestion/consumers, Kafka cluster, AWS DB, PC3 model-serving/promotion, read surface의 순서를 표현한다. |
+| Airflow/workflow sequence | `sequence_03_airflow_pipeline.mmd` | `sequence_03_airflow_pipeline.svg` | scheduled/manual job, Airflow report/replay, PC3 scheduler, AWS evidence, service status 순서를 표현한다. |
+| LangGraph review sequence | `sequence_04_langgraph_pipeline.mmd` | `sequence_04_langgraph_pipeline.svg` | review request, context retrieval, evidence boundary check, recommendation, artifact/status 순서를 표현한다. |
+| App/service sequence | `sequence_05_app_pipeline.mmd` | `sequence_05_app_pipeline.svg` | ingestion API, backend API, read-only query, model evidence, background job/review status 순서를 표현한다. |
 
-## 3. Plane 기준
+## 4. Plane 기준
 
 | Plane | 포함 | 제외 |
 |---|---|---|
-| Data plane | source archive, Kafka live ingestion buffer, PostgreSQL live/canonical, QA evidence, mart/ops model-serving artifacts | 외부 알림 또는 운영 전달 경로 |
-| Service plane | FastAPI, dashboard, Text-to-SQL, read-only query, job registration, artifact download | bulk ETL, canonical promotion 직접 실행, blocking model inference |
-| Workflow plane | Airflow, scheduler, batch/report worker, P-Max model job, P-Max adapter/release loader, optional LangGraph review workflow | synchronous chat path |
+| Data plane | Kafka raw topic, PostgreSQL live/mart/ops/qa/canonical, model-serving output | Discord/Hermes/agent-internal delivery path |
+| Service plane | FastAPI ingestion/backend, frontend, Grafana, read-only SQL, artifact/status | blocking model inference, uncontrolled DB mutation |
+| Workflow plane | Airflow, scheduler, report worker, PC3 model-serving, canonical promotion worker, optional LangGraph review | synchronous chat path |
+| Observability plane | Prometheus, Grafana, exporters, Kafka lag/backlog | source-of-truth data correction |
 
-## 4. Render 기준
+## 5. Render / DBML 기준
 
-Render 설정은 `mermaid_render_config.json`을 사용한다.
+Mermaid render 설정은 `mermaid_render_config.json`을 사용한다.
 
 ```bash
 mmdc -c docs/specs/diagrams/mermaid_render_config.json \
@@ -53,17 +64,27 @@ mmdc -c docs/specs/diagrams/mermaid_render_config.json \
   -o docs/specs/diagrams/flow_00_overall_pipeline.svg
 ```
 
-전체 재렌더가 필요하면 `.mmd`별로 동일 설정을 적용한다. SVG readability 검증 기준은 다음과 같다.
+전체 재렌더:
+
+```bash
+for f in docs/specs/diagrams/*.mmd; do
+  mmdc -c docs/specs/diagrams/mermaid_render_config.json -i "$f" -o "${f%.mmd}.svg"
+done
+```
+
+검증:
 
 ```text
 foreignObject == 0
 nodeLabel == 0
 text_tags > 0
+git diff --check
 ```
 
-## 5. 수정 규칙
+## 6. 수정 규칙
 
-1. Diagram 의미를 바꿀 때는 `.mmd`를 먼저 수정한다.
+1. Mermaid diagram 의미를 바꿀 때는 `.mmd`를 먼저 수정한다.
 2. `.mmd` 수정 후 대응 `.svg`를 재생성한다.
-3. 새 diagram을 추가하면 이 `README.md`의 목록에 source/render/설명을 추가한다.
-4. Mermaid 설명 문서는 이 `README.md` 하나로 유지한다.
+3. DB ERD 의미를 바꿀 때는 `.dbml`을 수정하고 dbdiagram.io에서 렌더링을 확인한다.
+4. 새 diagram을 추가하면 이 문서의 목록에 source/render/설명을 추가한다.
+5. Diagram 설명 문서는 이 `README.md` 하나로 유지한다.

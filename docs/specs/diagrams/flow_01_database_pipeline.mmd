@@ -43,7 +43,7 @@ flowchart LR
 
       subgraph MART_SCHEMA["mart schema"]
         PEAK_FEATURE["peak_feature_15min\npeak_value / peak_ts / max"]
-        PEAK_INPUT["peak_input_15min\nmodel input + rolling_1h_peak_features"]
+        PEAK_INPUT["peak_input_15min\noptional helper projection"]
       end
     end
 
@@ -74,7 +74,7 @@ flowchart LR
     LIVE_Q --> PEAK_WORKER
     LIVE_1 --> PEAK_WORKER
     PEAK_WORKER --> PEAK_FEATURE
-    PEAK_FEATURE --> PEAK_INPUT
+    PEAK_FEATURE -. optional projection .-> PEAK_INPUT
 
     LIVE_1 --> QA_WORKER
     LIVE_15 --> QA_WORKER
@@ -94,7 +94,7 @@ flowchart LR
 
     LIVE_15 --> ANOMALY
     LIVE_1H --> ANOMALY
-    PEAK_INPUT --> PEAK_MODEL
+    PEAK_FEATURE --> PEAK_MODEL
     C_READY --> API
     QA_PACKET --> API
 

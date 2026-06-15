@@ -5,9 +5,6 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 uv.lock
-tests/*
-!tests/**/
-!tests/**/*.py
 
 # Jupyter local cache
 .ipynb_checkpoints/
@@ -57,9 +54,7 @@ outputs/tables/*
 docs/specs/diagrams/*.png
 docs/specs/diagrams/*.svg
 !docs/specs/diagrams/*.svg
-reports/*
-!reports/mermaid_20260601/
-!reports/mermaid_20260601/**
+reports/
 *.log
 *.zip
 *.joblib
@@ -75,16 +70,19 @@ reports/*
 _archive/
 **/_archive/
 
-# Project-root Graphify context graph is kept for future MCP/agent pipeline calls.
-# Keep only stable small artifacts in Git; Graphify may generate additional local files.
-graphify-out/*
-!graphify-out/
-!graphify-out/graph.json
-!graphify-out/graph_tree.html
-!graphify-out/manifest.json
+# Legacy generated Graphify output path. Active graph context lives under knowledge/graphify/.
+graphify-out/
 
 # Frontend/package-manager caches that may appear inside report drafts
 node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Local git worktrees created for branch reconnaissance; never promote.
+.worktrees/
+
+# Legacy temporary eval output path. Active router evaluation assets live under evaluation/.
+evals/
 
 # OS/editor
 .DS_Store
@@ -96,3 +94,51 @@ node_modules/
 compose.dev.yml
 docker/Dockerfile.dev
 docker/local.env.example
+# Runtime/model artifacts: keep outside git; mount read-only in service
+artifacts/*
+!artifacts/README.md
+!artifacts/**/README.md
+artifacts/runtime_evidence/
+artifacts/**/*.csv
+artifacts/**/*.json
+artifacts/**/*.png
+artifacts/**/*.txt
+artifacts/**/*.cbm
+
+# Generated release/evidence manifests
+docs/release/release_manifest.json
+
+# Generated graph context copies
+knowledge/graphify/
+
+# Frontend generated/cache outputs
+frontend/.vite/
+frontend/coverage/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# Python/test generated outputs
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+junit*.xml
+.pyright_cache/
+.mypy_cache/
+
+# Local runtime env files; examples stay allowed
+!docker/*.env.example
+docker/model_serving.env
+docker/canonical_promotion.env
+docker/anomaly_feature.env
+docker/stream.env
+docker/kafka_cluster.env
+
+# Editor/merge/backup artifacts
+*.bak
+*.orig
+*.rej
+*.swp
+*~

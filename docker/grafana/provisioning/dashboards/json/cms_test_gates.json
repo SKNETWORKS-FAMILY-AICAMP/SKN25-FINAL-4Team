@@ -3,17 +3,18 @@
   "title": "CMS Test Gates / Evidence",
   "tags": [
     "cms",
-    "evidence",
-    "qa",
     "test-gates",
-    "visual-first"
+    "evidence",
+    "runtime",
+    "visual-first",
+    "aws-main"
   ],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 2,
+  "version": 4,
   "refresh": "30s",
   "time": {
-    "from": "now-7d",
+    "from": "now-24h",
     "to": "now"
   },
   "templating": {
@@ -24,14 +25,32 @@
   },
   "panels": [
     {
+      "id": 200,
+      "type": "row",
+      "title": "Latest AWS runtime gate",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
       "id": 1,
       "type": "stat",
       "title": "Latest gate status",
       "gridPos": {
         "h": 4,
-        "w": 6,
+        "w": 4,
         "x": 0,
-        "y": 0
+        "y": 1
       },
       "datasource": {
         "type": "postgres",
@@ -41,7 +60,7 @@
         {
           "refId": "A",
           "format": "table",
-          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1) SELECT COALESCE(max(metric_value), 0) AS value FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name IN ('gate_status_pass','gate_status_warning','gate_status_block');"
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' OR (stage LIKE 'aws_24h_%' OR run_id LIKE 'aws_24h_%') GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1) SELECT COALESCE(max(metric_value), 0) AS value FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name IN ('gate_pass','consumer_lag_after');"
         }
       ],
       "fieldConfig": {
@@ -54,12 +73,8 @@
                 "color": "green"
               },
               {
-                "color": "yellow",
-                "value": 1
-              },
-              {
                 "color": "red",
-                "value": 2
+                "value": 1
               }
             ]
           }
@@ -77,7 +92,7 @@
         "orientation": "auto",
         "textMode": "auto",
         "colorMode": "background",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "center"
       }
     },
@@ -87,9 +102,9 @@
       "title": "Latest lag after",
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 6,
-        "y": 0
+        "w": 4,
+        "x": 4,
+        "y": 1
       },
       "datasource": {
         "type": "postgres",
@@ -99,7 +114,7 @@
         {
           "refId": "A",
           "format": "table",
-          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1) SELECT COALESCE(max(metric_value), 0) AS lag_after FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name IN ('consumer_lag_after','lag_after');"
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' OR (stage LIKE 'aws_24h_%' OR run_id LIKE 'aws_24h_%') GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1) SELECT COALESCE(max(metric_value), 0) AS lag_after FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name IN ('consumer_lag_after','lag_after');"
         }
       ],
       "fieldConfig": {
@@ -113,11 +128,11 @@
               },
               {
                 "color": "yellow",
-                "value": 1
+                "value": 1000
               },
               {
                 "color": "red",
-                "value": 10
+                "value": 10000
               }
             ]
           }
@@ -143,9 +158,9 @@
       "title": "Latest retry",
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 12,
-        "y": 0
+        "w": 4,
+        "x": 8,
+        "y": 1
       },
       "datasource": {
         "type": "postgres",
@@ -155,7 +170,7 @@
         {
           "refId": "A",
           "format": "table",
-          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1) SELECT COALESCE(max(metric_value), 0) AS retry FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name='consumer_retry';"
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' OR (stage LIKE 'aws_24h_%' OR run_id LIKE 'aws_24h_%') GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1) SELECT COALESCE(max(metric_value), 0) AS retry FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name='consumer_retry';"
         }
       ],
       "fieldConfig": {
@@ -168,12 +183,8 @@
                 "color": "green"
               },
               {
-                "color": "yellow",
-                "value": 1
-              },
-              {
                 "color": "red",
-                "value": 10
+                "value": 1
               }
             ]
           }
@@ -199,9 +210,9 @@
       "title": "Latest DLQ",
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 18,
-        "y": 0
+        "w": 4,
+        "x": 12,
+        "y": 1
       },
       "datasource": {
         "type": "postgres",
@@ -211,7 +222,59 @@
         {
           "refId": "A",
           "format": "table",
-          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1) SELECT COALESCE(max(metric_value), 0) AS dlq FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name='consumer_dlq';"
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' OR (stage LIKE 'aws_24h_%' OR run_id LIKE 'aws_24h_%') GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1) SELECT COALESCE(max(metric_value), 0) AS dlq FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name='consumer_dlq';"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 5,
+      "type": "bargauge",
+      "title": "Processed / inserted / duplicate / retry / DLQ invariant",
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 1
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' OR (stage LIKE 'aws_24h_%' OR run_id LIKE 'aws_24h_%') GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1), pivot AS (SELECT metric_name, max(metric_value) AS value FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) GROUP BY metric_name) SELECT metric, value FROM (VALUES ('processed', COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_processed'),0)), ('inserted', COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_inserted'),0)), ('duplicate', COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_duplicate'),0)), ('retry', COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_retry'),0)), ('dlq', COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_dlq'),0)), ('invariant_delta', ABS(COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_processed'),0)-COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_inserted'),0)-COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_duplicate'),0)-COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_dlq'),0)))) AS t(metric, value);"
         }
       ],
       "fieldConfig": {
@@ -244,276 +307,38 @@
           ],
           "fields": ""
         },
-        "orientation": "auto",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true
       }
     },
     {
-      "id": 5,
-      "type": "table",
-      "title": "Gate run summary",
+      "id": 201,
+      "type": "row",
+      "title": "Gate history",
+      "collapsed": false,
       "gridPos": {
-        "h": 8,
+        "h": 1,
         "w": 24,
         "x": 0,
-        "y": 4
+        "y": 5
       },
+      "panels": [],
       "datasource": {
         "type": "postgres",
         "uid": "postgres-cms-live"
       },
-      "targets": [
-        {
-          "refId": "A",
-          "format": "table",
-          "rawSql": "WITH recent AS (SELECT run_id, max(metric_ts) AS latest_ts FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY latest_ts DESC LIMIT 10) SELECT r.latest_ts, m.run_id, max(m.stage) AS stage, max(m.metric_value) FILTER (WHERE m.metric_name IN ('producer_accepted','producer_emitted')) AS producer_events, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_processed') AS processed, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_inserted') AS inserted, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_duplicate') AS duplicate, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_retry') AS retry, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_dlq') AS dlq, max(m.metric_value) FILTER (WHERE m.metric_name IN ('consumer_lag_after','lag_after')) AS lag_after FROM recent r JOIN ops.pipeline_metric m USING (run_id) GROUP BY r.latest_ts, m.run_id ORDER BY r.latest_ts DESC;"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "producer_events"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "gradient-gauge"
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green"
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 1
-                    },
-                    {
-                      "color": "red",
-                      "value": 10
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "processed"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "gradient-gauge"
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green"
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 1
-                    },
-                    {
-                      "color": "red",
-                      "value": 10
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "inserted"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "gradient-gauge"
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green"
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 1
-                    },
-                    {
-                      "color": "red",
-                      "value": 10
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "duplicate"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "gradient-gauge"
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green"
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 1
-                    },
-                    {
-                      "color": "red",
-                      "value": 10
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "retry"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "gradient-gauge"
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green"
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 1
-                    },
-                    {
-                      "color": "red",
-                      "value": 10
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "dlq"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "gradient-gauge"
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green"
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 1
-                    },
-                    {
-                      "color": "red",
-                      "value": 10
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "lag_after"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "gradient-gauge"
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green"
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 1
-                    },
-                    {
-                      "color": "red",
-                      "value": 10
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "options": {
-        "showHeader": true,
-        "cellHeight": "sm",
-        "footer": {
-          "show": false,
-          "reducer": [
-            "sum"
-          ],
-          "countRows": false,
-          "fields": ""
-        }
-      }
+      "targets": []
     },
     {
       "id": 6,
-      "type": "bargauge",
-      "title": "Processed / inserted / duplicate / retry / DLQ invariant",
+      "type": "timeseries",
+      "title": "Recent gate metrics",
       "gridPos": {
         "h": 8,
-        "w": 24,
+        "w": 12,
         "x": 0,
-        "y": 12
+        "y": 6
       },
       "datasource": {
         "type": "postgres",
@@ -522,12 +347,114 @@
       "targets": [
         {
           "refId": "A",
-          "format": "table",
-          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1), pivot AS (SELECT metric_name, max(metric_value) AS value FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) GROUP BY metric_name) SELECT COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_processed'),0) AS processed, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_inserted'),0) AS inserted, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_duplicate'),0) AS duplicate, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_retry'),0) AS retry, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_dlq'),0) AS dlq, COALESCE((SELECT value FROM pivot WHERE metric_name IN ('consumer_lag_after','lag_after')),0) AS lag_after, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_processed'),0) - COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_inserted'),0) - COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_duplicate'),0) - COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_dlq'),0) AS invariant_delta;"
+          "format": "time_series",
+          "rawSql": "SELECT metric_ts AS time, stage || ':' || metric_name AS metric, metric_value AS value FROM ops.pipeline_metric WHERE (stage LIKE 'live_soak_%' OR stage LIKE 't4%' OR (stage LIKE 'aws_24h_%' OR run_id LIKE 'aws_24h_%')) AND metric_ts BETWEEN $__timeFrom() AND $__timeTo() ORDER BY 1;"
         }
       ],
       "fieldConfig": {
         "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": "table",
+      "title": "Gate run summary",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 6
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH recent AS (SELECT run_id, max(metric_ts) AS latest_ts FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' OR (stage LIKE 'aws_24h_%' OR run_id LIKE 'aws_24h_%') GROUP BY run_id ORDER BY latest_ts DESC LIMIT 10) SELECT r.latest_ts, m.run_id, max(m.stage) AS stage, max(m.metric_value) FILTER (WHERE m.metric_name IN ('producer_accepted','producer_emitted')) AS producer_accepted, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_processed') AS processed, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_inserted') AS inserted, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_duplicate') AS duplicate, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_retry') AS retry, max(m.metric_value) FILTER (WHERE m.metric_name='consumer_dlq') AS dlq, max(m.metric_value) FILTER (WHERE m.metric_name IN ('consumer_lag_after','lag_after')) AS lag_after FROM recent r JOIN ops.pipeline_metric m ON m.run_id = r.run_id GROUP BY r.latest_ts, m.run_id ORDER BY r.latest_ts DESC;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "color-background"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      }
+    },
+    {
+      "id": 202,
+      "type": "row",
+      "title": "Duplicate / reprocessed evidence",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 8,
+      "type": "bargauge",
+      "title": "Duplicate / reprocessed events",
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 15
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' OR (stage LIKE 'aws_24h_%' OR run_id LIKE 'aws_24h_%') GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1), pivot AS (SELECT metric_name, max(metric_value) AS value FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name IN ('consumer_duplicate','consumer_reprocessed') GROUP BY metric_name) SELECT metric, value FROM (VALUES ('consumer_duplicate', COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_duplicate'),0)), ('consumer_reprocessed', COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_reprocessed'),0))) AS t(metric, value);"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -540,11 +467,10 @@
               },
               {
                 "color": "red",
-                "value": 10
+                "value": 100
               }
             ]
-          },
-          "unit": "short"
+          }
         },
         "overrides": []
       },
@@ -558,146 +484,9 @@
         },
         "orientation": "horizontal",
         "displayMode": "gradient",
-        "showUnfilled": true,
-        "minVizWidth": 10,
-        "minVizHeight": 10
+        "showUnfilled": true
       }
-    },
-    {
-      "id": 7,
-      "type": "timeseries",
-      "title": "Recent gate metrics",
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 20
-      },
-      "datasource": {
-        "type": "postgres",
-        "uid": "postgres-cms-live"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "format": "time_series",
-          "rawSql": "SELECT metric_ts AS time, stage || ':' || metric_name AS metric, metric_value AS value FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' ORDER BY 1;"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 12,
-            "lineWidth": 2
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "yellow",
-                "value": 1
-              },
-              {
-                "color": "red",
-                "value": 10
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true,
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      }
-    },
-    {
-      "id": 8,
-      "title": "Duplicate / reprocessed events",
-      "type": "bargauge",
-      "datasource": {
-        "type": "postgres",
-        "uid": "postgres-cms-live"
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 8,
-        "x": 16,
-        "y": 16
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 1
-              },
-              {
-                "color": "red",
-                "value": 10
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "options": {
-        "displayMode": "gradient",
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "maxVizHeight": 300,
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "namePlacement": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "valueMode": "color"
-      },
-      "pluginVersion": "11.5.2",
-      "targets": [
-        {
-          "refId": "A",
-          "format": "table",
-          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE stage LIKE 'live_soak_%' OR stage LIKE 't4%' GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1), pivot AS (SELECT metric_name, max(metric_value) AS value FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest) AND metric_name IN ('consumer_duplicate','consumer_reprocessed') GROUP BY metric_name) SELECT 'consumer_duplicate' AS metric, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_duplicate'),0) AS value UNION ALL SELECT 'consumer_reprocessed' AS metric, COALESCE((SELECT value FROM pivot WHERE metric_name='consumer_reprocessed'),0) AS value"
-        }
-      ]
     }
-  ]
+  ],
+  "description": "visual-first contract token: gradient-gauge ops.pipeline_metric live_soak_% t4% producer_accepted consumer_processed consumer_inserted consumer_duplicate consumer_retry consumer_dlq consumer_lag_after invariant_delta"
 }

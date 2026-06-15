@@ -15,6 +15,28 @@ def test_runtime_postgres_module_does_not_import_psycopg_at_module_import_time()
     assert "psycopg" not in sys.modules
 
 
+def test_runtime_postgres_loader_accepts_db_env_fallback() -> None:
+    from cms.data.runtime_postgres import load_postgres_config_from_env
+
+    config = load_postgres_config_from_env(
+        {
+            "DB_HOST": "db.example.internal",
+            "DB_PORT": "5433",
+            "DB_NAME": "cms_live",
+            "DB_USER": "worker",
+            "DB_PASSWORD": "secret",
+            "DB_SSLMODE": "require",
+        }
+    )
+
+    assert config.host == "db.example.internal"
+    assert config.port == 5433
+    assert config.dbname == "cms_live"
+    assert config.user == "worker"
+    assert config.password == "secret"
+    assert config.sslmode == "require"
+
+
 def test_runtime_postgres_writer_executes_idempotent_insert_and_commits(monkeypatch: pytest.MonkeyPatch) -> None:
     executed: list[tuple[str, dict[str, object]]] = []
     committed: list[bool] = []
@@ -152,20 +174,17 @@ def test_runtime_postgres_writer_maps_business_unique_violation_to_duplicate(mon
 
 
 def test_runtime_postgres_writer_redacts_errors(monkeypatch: pytest.MonkeyPatch) -> None:
-    class FakeConnection:
-        def __enter__(self) -> FakeConnection:
-            raise RuntimeError("password=super-secret connection failed")
-
-        def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
-            pass
-
     module = ModuleType("psycopg")
-    module.connect = lambda **kwargs: FakeConnection()  # type: ignore[attr-defined]
+
+    def connect(**kwargs: object) -> object:
+        raise RuntimeError("password=super-secret connection failed")
+
+    module.connect = connect  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "psycopg", module)
 
     from cms.data.runtime_postgres import create_psycopg_event_writer
 
-    writer = create_psycopg_event_writer({"POSTGRES_PASSWORD": "super-secret"})
+    writer = create_psycopg_event_writer({"POSTGRES_HOST": "172.31.47.236", "POSTGRES_PASSWORD": "super-secret"})
     result = writer.insert_measurement_event({"target_table": "live.measurement_event", "event_id": "event-1"})
 
     assert result.succeeded is False
@@ -173,3 +192,54 @@ def test_runtime_postgres_writer_redacts_errors(monkeypatch: pytest.MonkeyPatch)
     assert result.error is not None
     assert "super-secret" not in result.error
     assert "[REDACTED]" in result.error
+
+
+def test_runtime_postgres_writer_reuses_connection(monkeypatch: pytest.MonkeyPatch) -> None:
+    connections: list[object] = []
+
+    class FakeCursor:
+        rowcount = 1
+
+        def execute(self, sql: str, params: dict[str, object]) -> None:
+            pass
+
+        def __enter__(self) -> FakeCursor:
+            return self
+
+        def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
+            pass
+
+    class FakeConnection:
+        closed = False
+
+        def cursor(self) -> FakeCursor:
+            return FakeCursor()
+
+        def commit(self) -> None:
+            pass
+
+        def rollback(self) -> None:
+            pass
+
+        def close(self) -> None:
+            self.closed = True
+
+    def connect(**kwargs: object) -> FakeConnection:
+        conn = FakeConnection()
+        connections.append(conn)
+        return conn
+
+    module = ModuleType("psycopg")
+    module.connect = connect  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "psycopg", module)
+
+    from cms.data.runtime_postgres import create_psycopg_event_writer
+
+    writer = create_psycopg_event_writer({"POSTGRES_HOST": "172.31.47.236"})
+    for idx in range(2):
+        result = writer.insert_measurement_event({"target_table": "live.measurement_event", "event_id": f"event-{idx}"})
+        assert result.succeeded is True
+
+    assert len(connections) == 1
+    writer.close()
+    assert getattr(connections[0], "closed") is True

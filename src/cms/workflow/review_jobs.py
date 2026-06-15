@@ -19,9 +19,9 @@ from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 
 from cms.contracts.agent import AgentResponse, classify_route
-from cms.contracts.core import AgentRequest, ChatRoute, to_plain_dict
+from cms.contracts.core import AgentRequest, AgentRoute, ChatRoute, RequestType, to_plain_dict
 from cms.contracts.job import ApiJob, JobType
-from cms.workflow.langgraph_skeleton import GraphState, run_review
+from cms.workflow.langgraph_review import GraphState, run_review
 
 # quick_answer is the only route handled inline; every other route is an async review task.
 INLINE_ROUTES: tuple[ChatRoute, ...] = ("quick_answer",)
@@ -50,6 +50,8 @@ class ReviewRecord:
     request: AgentRequest
     route: ChatRoute
     reason: str
+    request_type: RequestType = "query"
+    agent_route: AgentRoute = "rag"
     state: GraphState | None = None
     response: AgentResponse | None = None
     awaiting_approval: bool = False
@@ -83,6 +85,8 @@ class ReviewJobStore:
                 "mode": "inline",
                 "route": decision.route,
                 "reason": decision.reason,
+                "request_type": decision.request_type,
+                "agent_route": decision.agent_route,
                 "response": to_plain_dict(state.response) if state.response else None,
                 "writes_allowed": False,
                 "side_effects_executed": False,
@@ -95,19 +99,48 @@ class ReviewJobStore:
             job_type=_job_type_for(decision.route, context),
             status="queued",
             requested_by=request.user_id,
-            request_payload={"text": request.text, "route": decision.route},
+            request_payload={
+                "text": request.text,
+                "route": decision.route,
+                "request_type": decision.request_type,
+                "agent_route": decision.agent_route,
+            },
         )
-        self._records[job_id] = ReviewRecord(job=job, request=request, route=decision.route, reason=decision.reason)
-        return {
+        self._records[job_id] = ReviewRecord(
+            job=job,
+            request=request,
+            route=decision.route,
+            reason=decision.reason,
+            request_type=decision.request_type,
+            agent_route=decision.agent_route,
+        )
+        result = {
             "mode": "job",
             "route": decision.route,
             "reason": decision.reason,
+            "request_type": decision.request_type,
+            "agent_route": decision.agent_route,
             "job_id": job_id,
             "status": job.status,
             "status_url": job.status_url,
             "writes_allowed": False,
             "side_effects_executed": False,
         }
+        if decision.route == "approval_required":
+            result["approval_ticket"] = {
+                "job_id": job_id,
+                "status": "awaiting_review",
+                "status_url": job.status_url,
+                "side_effects_executed": False,
+            }
+        else:
+            result["job_ticket"] = {
+                "job_id": job_id,
+                "status": job.status,
+                "status_url": job.status_url,
+                "side_effects_executed": False,
+            }
+        return result
 
     def process(self, job_id: str) -> dict:
         """Worker stub: run the deterministic review and store the result (no real side effects)."""
@@ -116,6 +149,8 @@ class ReviewJobStore:
         record.job = replace(record.job, status="running")
         context = dict(record.request.context or {})
         context.setdefault("job_id", job_id)
+        context.setdefault("request_type", record.request_type)
+        context.setdefault("agent_route", record.agent_route)
         request = replace(record.request, context=context)
         state = run_review(GraphState(request=request))
         record.state = state
@@ -165,6 +200,8 @@ class ReviewJobStore:
             "job_id": job_id,
             "route": record.route,
             "reason": record.reason,
+            "request_type": record.request_type,
+            "agent_route": record.agent_route,
             "status": record.job.status,
             "status_url": record.job.status_url,
             "awaiting_approval": record.awaiting_approval,

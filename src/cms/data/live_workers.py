@@ -17,11 +17,14 @@ from typing import Any, Literal, cast
 from cms.contracts.live_pipeline import (
     CANONICAL_TABLES,
     LIVE_MEASUREMENT_1H,
+    LIVE_MEASUREMENT_1MIN,
     LIVE_MEASUREMENT_15MIN,
     LIVE_ROLLUP_VALUE_SEMANTIC,
     MART_PEAK_FEATURE_15MIN,
     MART_PEAK_INPUT_15MIN,
     RESOLUTION_15MIN,
+    SOURCE_LAYER_KAFKA_RAW,
+    SOURCE_MODE_LIVE_OBSERVED,
     Coverage,
     ExpectedPointsPolicy,
     LiveMeasurementEvent,
@@ -34,6 +37,7 @@ from cms.contracts.live_pipeline import (
     guard_peak_feature_promotion,
     is_observed_value,
     live_mean_rollup_output_contract,
+    require_live_observed_source,
 )
 
 StageName = Literal[
@@ -42,7 +46,7 @@ StageName = Literal[
     "1min_to_15min",
     "1min_to_1h",
     "1min_to_peak_feature",
-    "peak_feature_to_peak_input",
+    "peak_feature_to_training_frame",
     "qa_eligibility",
     "promotion_ready",
     "end_to_end",
@@ -58,7 +62,7 @@ class BufferedEventRecord:
     measurement: str
     source_ts: datetime
     value: float | None
-    source_system: str = "kafka.measurement_raw_v1"
+    source_system: str = SOURCE_LAYER_KAFKA_RAW
     source_event_id: str | None = None
     payload: Mapping[str, Any] = field(default_factory=dict)
 
@@ -77,6 +81,9 @@ class MeanRollupRecord:
     observed_points: int
     gap_points: int
     coverage_ratio: float
+    native_cadence_seconds: int
+    source_layer: str = LIVE_MEASUREMENT_1MIN
+    source_mode: str = SOURCE_MODE_LIVE_OBSERVED
     aggregation_policy: str = LIVE_ROLLUP_VALUE_SEMANTIC
     source_event_ids: tuple[str, ...] = ()
     quality_code: str = "observed_mean"
@@ -87,6 +94,19 @@ class MeanRollupRecord:
             raise ValueError(f"mean rollup must target live rollup table, got {self.table}")
         if self.aggregation_policy != LIVE_ROLLUP_VALUE_SEMANTIC:
             raise ValueError("mean rollup value must be mean_observed_only")
+        require_live_observed_source(self.source_layer, self.source_mode)
+        if self.expected_points <= 0:
+            raise ValueError("expected_points must be positive")
+        if self.observed_points < 0 or self.observed_points > self.expected_points:
+            raise ValueError("observed_points must be within expected_points")
+        if self.gap_points != max(self.expected_points - self.observed_points, 0):
+            raise ValueError("gap_points must equal missing native points")
+        if self.native_cadence_seconds <= 0:
+            raise ValueError("native_cadence_seconds must be positive")
+
+    @property
+    def missing_points(self) -> int:
+        return self.gap_points
 
 
 @dataclass(frozen=True)
@@ -103,19 +123,38 @@ class PeakFeatureRecord:
     min_value: float | None
     mean_value: float | None
     std_value: float | None
+    expected_points: int
+    observed_points: int
+    missing_points: int
     coverage_ratio: float
     valid_peak_window: bool
     source_event_ids: tuple[str, ...] = ()
+    source_layer: str = LIVE_MEASUREMENT_1MIN
+    source_mode: str = SOURCE_MODE_LIVE_OBSERVED
+    provenance: Mapping[str, Any] = field(default_factory=dict)
     feature_version: str = "draft"
 
     def __post_init__(self) -> None:
         if self.table != MART_PEAK_FEATURE_15MIN:
             raise ValueError("peak feature records must stay in mart.peak_feature_15min")
+        require_live_observed_source(self.source_layer, self.source_mode)
+        if self.expected_points <= 0:
+            raise ValueError("peak feature expected_points must be positive")
+        if self.observed_points < 0 or self.observed_points > self.expected_points:
+            raise ValueError("peak feature observed_points must be within expected_points")
+        if self.missing_points != max(self.expected_points - self.observed_points, 0):
+            raise ValueError("peak feature missing_points must equal expected_points - observed_points")
+        if not self.provenance:
+            raise ValueError("peak feature provenance is required")
+        provenance_source_layer = self.provenance.get("source_layer")
+        provenance_source_mode = self.provenance.get("source_mode", self.provenance.get("mode"))
+        if provenance_source_layer != self.source_layer or provenance_source_mode != self.source_mode:
+            raise ValueError("peak feature provenance must carry matching source_layer and source_mode")
 
 
 @dataclass(frozen=True)
 class PeakInputRecord:
-    """Mart-only 15min model input with rolling 1h peak fields."""
+    """Deprecated mart compatibility/training-frame view of rolling peak fields."""
 
     table: str
     bucket_ts: datetime
@@ -126,13 +165,16 @@ class PeakInputRecord:
     rolling_1h_mean_value: float | None
     rolling_1h_valid_bucket_count: int
     rolling_1h_coverage_ratio: float
+    source_layer: str = MART_PEAK_FEATURE_15MIN
+    source_mode: str = SOURCE_MODE_LIVE_OBSERVED
     feature_version: str = "draft"
 
     def __post_init__(self) -> None:
         if self.table != MART_PEAK_INPUT_15MIN:
-            raise ValueError("peak input records must stay in mart.peak_input_15min")
+            raise ValueError("deprecated peak input records must stay in mart.peak_input_15min")
         if self.rolling_1h_valid_bucket_count < 0:
             raise ValueError("rolling valid bucket count must be non-negative")
+        require_live_observed_source(self.source_layer, self.source_mode)
 
 
 @dataclass(frozen=True)
@@ -244,7 +286,7 @@ def build_mean_rollup(
     coverage = compute_coverage(observed_points, expected_points)
     observed_values = _observed_floats(values)
     mean_value = sum(observed_values) / len(observed_values) if observed_values else None
-    gap_points = max(expected_points - observed_points, 0)
+    gap_points = coverage.missing_points
     quality_code = "observed_mean" if observed_values else "null_observation"
     return MeanRollupRecord(
         table=contract.table,
@@ -257,6 +299,7 @@ def build_mean_rollup(
         observed_points=observed_points,
         gap_points=gap_points,
         coverage_ratio=coverage.coverage_ratio,
+        native_cadence_seconds=expected_policy.native_cadence_seconds,
         source_event_ids=tuple(source_event_ids),
         quality_code=quality_code,
     )
@@ -268,14 +311,32 @@ def build_peak_feature(
     meter_urn: str,
     measurement: str,
     observations: Sequence[tuple[datetime, float | None, str]],
-    expected_points: int,
+    expected_points: int | None = None,
+    expected_policy: ExpectedPointsPolicy | None = None,
     min_coverage_ratio: float = 0.0,
     feature_version: str = "draft",
 ) -> PeakFeatureRecord:
-    """Build a mart-only 15min peak feature from observed values."""
+    """Build a mart-only 15min peak feature from observed live values.
 
+    ``expected_policy`` is preferred so live peak-feature coverage follows the
+    same native-cadence rules as mean rollups. ``expected_points`` remains only
+    for legacy scratch tests and must be supplied explicitly if no policy exists.
+    """
+
+    if expected_policy is not None:
+        expected_point_count = derive_expected_points(expected_policy, RESOLUTION_15MIN)
+    elif expected_points is not None:
+        expected_point_count = expected_points
+    else:
+        raise ValueError("expected_policy or expected_points is required")
     observed = [(ts, float(value), event_id) for ts, value, event_id in observations if value is not None and is_observed_value(value)]
-    coverage = compute_coverage(len(observed), expected_points)
+    coverage = compute_coverage(len(observed), expected_point_count)
+    provenance = {
+        "source_layer": LIVE_MEASUREMENT_1MIN,
+        "source_mode": SOURCE_MODE_LIVE_OBSERVED,
+        "source_event_ids": tuple(event_id for _, _, event_id in observed),
+        "expected_points_policy": "native_cadence" if expected_policy is not None else "explicit_legacy",
+    }
     if not observed:
         return PeakFeatureRecord(
             table=MART_PEAK_FEATURE_15MIN,
@@ -288,8 +349,12 @@ def build_peak_feature(
             min_value=None,
             mean_value=None,
             std_value=None,
+            expected_points=expected_point_count,
+            observed_points=0,
+            missing_points=coverage.missing_points,
             coverage_ratio=coverage.coverage_ratio,
             valid_peak_window=False,
+            provenance=provenance,
             feature_version=feature_version,
         )
 
@@ -308,15 +373,19 @@ def build_peak_feature(
         min_value=min(values),
         mean_value=mean_value,
         std_value=math.sqrt(variance),
+        expected_points=expected_point_count,
+        observed_points=len(observed),
+        missing_points=coverage.missing_points,
         coverage_ratio=coverage.coverage_ratio,
         valid_peak_window=coverage.coverage_ratio >= min_coverage_ratio,
         source_event_ids=tuple(event_id for _, _, event_id in observed),
+        provenance=provenance,
         feature_version=feature_version,
     )
 
 
 def build_peak_input(features: Sequence[PeakFeatureRecord], *, feature_version: str = "draft") -> PeakInputRecord:
-    """Build a mart-only rolling 1h peak input from up to four 15min features."""
+    """Build the deprecated rolling 1h training-frame view from peak features."""
 
     if not features:
         raise ValueError("at least one peak feature is required")
@@ -371,16 +440,29 @@ def prepare_promotion(
     target_table: str,
     approval_id: str | None,
     promotion_id: str | None,
+    qa_eligibility_passed: bool = True,
+    promotion_check_id: str | None = None,
+    source_layer: str | None = None,
+    source_mode: str = SOURCE_MODE_LIVE_OBSERVED,
 ) -> PromotionReadyResult:
-    """Return a promotion-ready marker only when approval and target guards pass."""
+    """Return a promotion-ready marker only when QA, approval, and target guards pass."""
 
     block_reasons: list[str] = []
     if not approval_id:
         block_reasons.append("approval_required")
     if not promotion_id:
         block_reasons.append("promotion_id_required")
+    if not qa_eligibility_passed:
+        block_reasons.append("qa_eligibility_required")
+    if promotion_check_id is None:
+        block_reasons.append("promotion_check_required")
     if target_table not in CANONICAL_TABLES:
         block_reasons.append("canonical_target_required")
+    if source_layer is not None:
+        try:
+            require_live_observed_source(source_layer, source_mode)
+        except ValueError:
+            block_reasons.append("reference_source_blocked")
     peak_guard: PromotionDecision = guard_peak_feature_promotion(source_table, target_table)
     block_reasons.extend(peak_guard.block_reasons)
     return PromotionReadyResult(

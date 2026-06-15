@@ -216,8 +216,9 @@ def test_make_langgraph_enabled_builds_state_graph() -> None:
     assert hasattr(graph, "add_node")
 
 
-def test_make_langgraph_enabled_without_dep_raises() -> None:
+def test_make_langgraph_enabled_without_dep_returns_descriptor() -> None:
     if find_spec("langgraph") is not None:
         pytest.skip("langgraph is installed; cannot assert the missing-dependency path")
-    with pytest.raises(ModuleNotFoundError):
-        lg.make_langgraph(enabled=True)
+    descriptor = lg.make_langgraph(enabled=True)
+    assert descriptor == lg.describe_graph()
+    assert getattr(descriptor, "side_effects_executed") is False
