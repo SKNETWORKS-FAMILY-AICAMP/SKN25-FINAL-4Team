@@ -16,6 +16,22 @@ TYPE_LABELS = {
     "weather": "weather",
 }
 
+# 목록 API 응답 필드: 프론트 표시용 핵심 속성만 반환하고 내부 검수 필드는 상세 API에 남깁니다.
+METER_LIST_FIELDS = (
+    "meter_type",
+    "energy_type",
+    "thermal_mode",
+    "group_name",
+    "description",
+)
+
+
+def _meter_list_item(meter_urn: str, metadata: dict) -> dict:
+    return {
+        "meter_urn": meter_urn,
+        **{field: metadata.get(field) for field in METER_LIST_FIELDS},
+    }
+
 
 @router.get("")
 def get_meters() -> list[dict]:
@@ -25,7 +41,7 @@ def get_meters() -> list[dict]:
         metadata = get_metadata(meter_urn)
         if metadata is None:
             continue
-        meters.append({"meter_urn": meter_urn, **metadata})
+        meters.append(_meter_list_item(meter_urn, metadata))
     return meters
 
 

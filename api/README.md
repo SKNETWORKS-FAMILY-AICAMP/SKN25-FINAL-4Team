@@ -94,6 +94,12 @@ FastAPI 앱 생성 파일입니다.
 
 `config.meter_metadata`의 계량기 정의를 읽어 반환합니다.
 
+`GET /meters`는 목록 확인용 endpoint라 응답을 짧게 유지합니다.
+반환 필드는 `meter_urn`, `meter_type`, `energy_type`, `thermal_mode`, `group_name`, `description`입니다.
+
+`GET /meters/{meter_urn}`는 상세 확인용 endpoint라 `meter_metadata.json`의 전체 metadata를 반환합니다.
+`note`, `location_prefix`, `anomaly_target`, `installation_note`, `redundant_pair`처럼 길거나 검수 성격이 강한 필드는 상세 조회에서만 확인합니다.
+
 ### `routers/model_auth.py`
 
 모델 운영 API용 인증/입력 검증 공통 함수입니다.
