@@ -189,11 +189,12 @@ SKN25-FINAL-4Team/
 
 | 구분 | 경로 | 설명 |
 |------|------|------|
-| BM 스토리 | `presentation/BM_스토리_뼈대_v47.md` | 최종 발표용 BM 문서 (최신) |
+| BM 스토리 | `presentation/BM_스토리_뼈대_v48.md` | 최종 발표용 BM 문서 (최신) |
 | AI Hub 검증 | `reports/AIHub_검증_내부보고서_v4.md` | 외부 검증 결과 |
 | 예상 질문 | `presentation/최종발표_예상질문_답변리스트_v5.md` | 발표 Q&A (최신) |
-| 발표 구성안 | `presentation/TTF-FMS_발표구성안_v7.docx` | 15분 발표 슬라이드 구성 |
-| 발표 풀버전 | `presentation/TTF-FMS_발표구성안_풀버전_v3.docx` | 전체 내용 포함 풀버전 |
+| 발표 구성안 | `presentation/TTF-FMS_발표구성안_v8.docx` | 15분 발표 슬라이드 구성 |
+| 발표 풀버전 | `presentation/TTF-FMS_발표구성안_풀버전_v4.docx` | 전체 내용 포함 풀버전 |
+| 최종 발표 PPT | `presentation/TTF-FMS_최종발표_v2.pptx` | 최종 제출용 PPT (20슬라이드) |
 | 숫자 체크리스트 | `presentation/TTF-FMS_숫자_일관성_체크리스트.md` | PDF 제출 전 수치 검수용 |
 | Q&A 30초 카드 | `presentation/TTF-FMS_QA_30초_구두답변.md` | 발표 당일 암기용 |
 
