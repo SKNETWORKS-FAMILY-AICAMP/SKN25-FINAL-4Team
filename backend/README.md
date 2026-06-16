@@ -134,4 +134,6 @@ python -m pytest tests/
 | Gemma4 12B | 품질 경로 (진단·보고서) | **8.6/10** | 8.1 |
 | EXAONE 3.5 7.8B | 속도 경로 (의도 분류) | 10.0 (담당 4문항) | — |
 
-평가 코드: `dev/eval/harness.py` · 결과: `dev/eval/results/` · 문서: `dev/docs/sllm/`
+현재 라우터 v2 sensitivity 평가는 `dev/eval/router_two_stage_metrics_260615.py`와
+`dev/eval/data/router_two_stage_eval_300_v2_260615.json` 기준으로 실행합니다.
+모델별 실행 결과는 `reports/experiments/router_two_stage_classification/`에 생성됩니다.
