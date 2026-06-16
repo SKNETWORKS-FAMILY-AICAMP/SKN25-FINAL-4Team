@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EMS Agent — sLLM 통합 가이드</title>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text2: #475569;
+    --text3: #94a3b8;
+    --brand: #0d9488;
+    --brand-soft: #f0fdfa;
+    --accent: #2563eb;
+    --success: #16a34a;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --sidebar-w: 260px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Pretendard', 'Noto Sans KR', 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    display: flex;
+  }
+
+  /* ── 사이드바 ── */
+  nav {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 24px 0 40px;
+    z-index: 100;
+  }
+  nav .logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  nav .logo .badge {
+    display: inline-block;
+    background: var(--brand);
+    color: #fff;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px;
+    letter-spacing: .05em; margin-bottom: 6px;
+  }
+  nav .logo h2 { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; }
+  nav .logo p  { font-size: 11px; color: var(--text3); margin-top: 4px; }
+  nav ul { list-style: none; padding: 0 8px; }
+  nav ul li a {
+    display: block; padding: 7px 12px;
+    font-size: 13px; color: var(--text2);
+    text-decoration: none; border-radius: 6px;
+    transition: background .15s, color .15s;
+  }
+  nav ul li a:hover { background: var(--brand-soft); color: var(--brand); }
+  nav ul .sec-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--text3);
+    padding: 14px 12px 4px;
+  }
+
+  /* ── 본문 ── */
+  main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 40px 48px 80px;
+    max-width: 1200px;
+  }
+  h1 { font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+  .subtitle { color: var(--text2); font-size: 14px; margin-bottom: 36px; }
+  h2 {
+    font-size: 20px; font-weight: 700; color: var(--text);
+    margin: 52px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--brand);
+  }
+  h3 { font-size: 16px; font-weight: 700; margin: 28px 0 12px; color: var(--text); }
+  h4 { font-size: 14px; font-weight: 600; margin: 20px 0 8px; color: var(--text2); }
+  p  { margin-bottom: 12px; font-size: 14px; color: var(--text2); }
+  ul, ol { margin: 8px 0 14px 20px; font-size: 14px; color: var(--text2); }
+  li { margin-bottom: 5px; }
+
+  /* ── 테이블 ── */
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 13px; margin: 12px 0 20px;
+    border-radius: 8px; overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  th {
+    background: #f1f5f9; color: var(--text2);
+    font-weight: 600; padding: 9px 14px;
+    text-align: left; border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 8px 14px; border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8fafc; }
+  td strong { color: var(--text); }
+  td code, th code {
+    background: #f1f5f9; padding: 1px 5px;
+    border-radius: 4px; font-size: 12px; font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── 코드 ── */
+  pre {
+    background: #1e293b; color: #e2e8f0;
+    padding: 16px 20px; border-radius: 10px;
+    overflow-x: auto; font-size: 12.5px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    margin: 12px 0 20px; line-height: 1.65;
+  }
+  code {
+    background: #f1f5f9; padding: 1px 5px;
+    border-radius: 4px; font-size: 12.5px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--brand);
+  }
+  pre code { background: transparent; padding: 0; color: inherit; }
+
+  /* ── 카드 ── */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px 24px; margin: 16px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  }
+  .card-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .card-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .card-mini {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .card-mini .label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text3); margin-bottom: 4px; }
+  .card-mini .value { font-size: 22px; font-weight: 800; color: var(--brand); }
+  .card-mini .desc  { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+  /* ── 배지 ── */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-brand  { background: var(--brand-soft); color: var(--brand); }
+  .badge-blue   { background: #dbeafe; color: #1d4ed8; }
+  .badge-green  { background: #dcfce7; color: #15803d; }
+  .badge-orange { background: #fef3c7; color: #b45309; }
+  .badge-red    { background: #fee2e2; color: #b91c1c; }
+  .badge-gray   { background: #f1f5f9; color: #475569; }
+  .badge-purple { background: #f3e8ff; color: #7e22ce; }
+
+  /* ── 강조 박스 ── */
+  .callout { padding: 14px 18px; border-radius: 8px; margin: 14px 0; font-size: 13px; line-height: 1.6; }
+  .callout-info    { background: #eff6ff; border-left: 3px solid #3b82f6; color: #1e3a5f; }
+  .callout-success { background: #f0fdf4; border-left: 3px solid #22c55e; color: #14532d; }
+  .callout-warning { background: #fffbeb; border-left: 3px solid #f59e0b; color: #78350f; }
+  .callout-brand   { background: var(--brand-soft); border-left: 3px solid var(--brand); color: #0f4c45; }
+
+  /* ── 플로우 다이어그램 ── */
+  .flow {
+    background: #0f172a; border-radius: 10px;
+    padding: 20px 24px; margin: 16px 0;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 12px; line-height: 1.8; color: #e2e8f0;
+    overflow-x: auto;
+  }
+  .flow .c-green  { color: #86efac; }
+  .flow .c-blue   { color: #93c5fd; }
+  .flow .c-yellow { color: #fde68a; }
+  .flow .c-orange { color: #fdba74; }
+  .flow .c-pink   { color: #f9a8d4; }
+  .flow .c-gray   { color: #94a3b8; }
+  .flow .c-brand  { color: #5eead4; }
+
+  /* ── 기법 카드 ── */
+  .technique-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 22px; margin-bottom: 14px;
+  }
+  .technique-card .tc-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  }
+  .technique-card .tc-num {
+    background: var(--accent); color: #fff;
+    width: 26px; height: 26px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .technique-card .tc-title { font-size: 15px; font-weight: 700; }
+  .technique-card p { margin-bottom: 8px; }
+
+  /* ── 에이전트 카드 ── */
+  .agent-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; margin-bottom: 16px; overflow: hidden;
+  }
+  .agent-card .ac-header {
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .agent-card .ac-header.brand { background: var(--brand-soft); }
+  .agent-card .ac-header.blue  { background: #eff6ff; }
+  .agent-card .ac-header.green { background: #f0fdf4; }
+  .agent-card .ac-header.amber { background: #fffbeb; }
+  .agent-card .ac-header.purple{ background: #f5f3ff; }
+  .agent-card .ac-header.gray  { background: #f8fafc; }
+  .agent-card .ac-icon { font-size: 20px; }
+  .agent-card .ac-title { font-size: 15px; font-weight: 700; }
+  .agent-card .ac-sub   { font-size: 12px; color: var(--text3); }
+  .agent-card .ac-body  { padding: 16px 20px; }
+  .agent-card .ac-body table { margin: 8px 0; }
+  .agent-card .ac-body p { font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+
+  /* ── 섹션 앵커 ── */
+  [id] { scroll-margin-top: 24px; }
+
+  /* ── 반응형 ── */
+  @media (max-width: 960px) {
+    nav { display: none; }
+    main { margin-left: 0; padding: 24px 20px 60px; }
+    .card-grid, .card-grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ 사이드바 ══════════════════ -->
+<nav>
+  <div class="logo">
+    <div class="badge">SKN 25기 4팀</div>
+    <h2>EMS Agent<br>sLLM 통합 가이드</h2>
+    <p>최종 업데이트: 2026-06-12</p>
+  </div>
+  <ul>
+    <li class="sec-label">개요</li>
+    <li><a href="#overview">sLLM 역할 원칙</a></li>
+    <li><a href="#models">모델 구성</a></li>
+    <li class="sec-label">구조</li>
+    <li><a href="#code">코드 구조</a></li>
+    <li><a href="#flow">요청 흐름</a></li>
+    <li class="sec-label">성능 기법</li>
+    <li><a href="#techniques">10가지 기법</a></li>
+    <li class="sec-label">에이전트</li>
+    <li><a href="#agents">에이전트별 상세</a></li>
+    <li class="sec-label">운영</li>
+    <li><a href="#history">변경 이력</a></li>
+    <li><a href="#infra">인프라</a></li>
+    <li><a href="#bottleneck">성능 병목</a></li>
+    <li><a href="#switch">모델 교체</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════ 본문 ══════════════════ -->
+<main>
+
+  <h1>EMS Agent — sLLM 통합 가이드</h1>
+  <p class="subtitle">sLLM이 어떤 역할을 하는지, 왜 그렇게 설계했는지, 어떤 기술로 품질을 높였는지 정리한 문서</p>
+
+  <!-- 지표 카드 -->
+  <div class="card-grid">
+    <div class="card-mini">
+      <div class="label">LLM 호출 위치</div>
+      <div class="value">10곳</div>
+      <div class="desc">agents/ 5곳 + api/routers/ 5곳</div>
+    </div>
+    <div class="card-mini">
+      <div class="label">사용 모델</div>
+      <div class="value">2개</div>
+      <div class="desc">Gemma4 12B (품질) + EXAONE 7.8B (속도)</div>
+    </div>
+    <div class="card-mini">
+      <div class="label">채팅 1회 LLM 호출</div>
+      <div class="value">최대 2번</div>
+      <div class="desc">의도분류(1) + 에이전트(1). CMS·off_topic은 0번</div>
+    </div>
+    <div class="card-mini">
+      <div class="label">단일 진입점</div>
+      <div class="value">llm_client.py</div>
+      <div class="desc">10곳 전부 이 파일의 chat() 함수를 경유</div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <h2 id="overview">1. 전체 그림 — sLLM이 하는 일과 하지 않는 일</h2>
+
+  <div class="callout callout-brand">
+    <strong>핵심 원칙: sLLM은 계산하지 않는다. 설명한다.</strong><br>
+    백엔드가 DB·ML로 이미 만들어낸 결과물을 운영자가 이해할 수 있는 한국어로 변환하는 것이 유일한 역할이다.
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="color:var(--danger); margin-top:0">sLLM이 하지 않는 것</h4>
+      <table>
+        <thead><tr><th>작업</th><th>실제 담당</th></tr></thead>
+        <tbody>
+          <tr><td>이상 탐지</td><td>LSTM + IsolationForest + 통계 모델</td></tr>
+          <tr><td>전력 예측</td><td>v84 앙상블 (LSTM×6 + CatBoost + LightGBM)</td></tr>
+          <tr><td>KPI 계산</td><td>DB 집계 쿼리</td></tr>
+          <tr><td>전기 서명 계산</td><td>전압·전류·역률 실측값 DB 직접 계산</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--success); margin-top:0">sLLM이 하는 것</h4>
+      <table>
+        <thead><tr><th>질문</th><th>sLLM 역할</th></tr></thead>
+        <tbody>
+          <tr><td>"이상 원인이 뭐야?"</td><td>탐지 결과 + 센서값 → 원인·조치 설명</td></tr>
+          <tr><td>"보고서 써줘"</td><td>KPI 수치 → 서술 문장 생성</td></tr>
+          <tr><td>"예측 해석해줘"</td><td>ML 수치 → 운영 조언</td></tr>
+          <tr><td>채팅 일반 질문</td><td>RAG 문서 + 실측값 → 답변</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>왜 이렇게 나눴나?</strong><br>
+    12B짜리 소형 모델로도 충분한 품질을 내려면 LLM이 "어려운 것"을 안 하면 된다.
+    LLM에게 "원시 센서 수천 행을 보고 이상을 찾아라"고 시키면 틀린다.
+    반면 "이 데이터를 보고 설명해라"는 잘 한다.
+    백엔드가 어려운 계산을 미리 끝내고 LLM에게는 글쓰기만 맡기는 구조다.
+  </div>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <h2 id="models">2. 모델 구성 — 무엇을 쓰는가</h2>
+
+  <h3>RunPod에 올라간 두 모델</h3>
+  <div class="card-grid">
+    <div class="card" style="border-top: 3px solid var(--brand);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+        <div>
+          <div class="badge badge-brand" style="margin-bottom:6px;">품질 경로</div>
+          <div style="font-size:18px; font-weight:800;">Gemma4 12B</div>
+          <div style="font-size:12px; color:var(--text3);">Google 개발 / Q4 양자화 ~8GB VRAM</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:32px; font-weight:800; color:var(--brand);">9.2</div>
+          <div style="font-size:11px; color:var(--text3);">/10점</div>
+        </div>
+      </div>
+      <table>
+        <tr><td>thinking 모드</td><td><span class="badge badge-green">켜짐</span> 답 전 내부 추론 수행</td></tr>
+        <tr><td>속도</td><td>~20초 (thinking ON 기준)</td></tr>
+        <tr><td>용도</td><td>진단·보고서·이상분석·예측 해석</td></tr>
+        <tr><td>환경변수</td><td><code>LLM_MODEL=gemma4:12b</code></td></tr>
+      </table>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--accent);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+        <div>
+          <div class="badge badge-blue" style="margin-bottom:6px;">속도 경로</div>
+          <div style="font-size:18px; font-weight:800;">EXAONE 3.5 7.8B</div>
+          <div style="font-size:12px; color:var(--text3);">LG AI Research 개발 / 한국어 특화</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:32px; font-weight:800; color:var(--accent);">8.9</div>
+          <div style="font-size:11px; color:var(--text3);">/10점</div>
+        </div>
+      </div>
+      <table>
+        <tr><td>thinking 모드</td><td><span class="badge badge-gray">꺼짐</span> 단답용</td></tr>
+        <tr><td>속도</td><td>~6초</td></tr>
+        <tr><td>용도</td><td>의도 분류 전용 (max_tokens=10)</td></tr>
+        <tr><td>환경변수</td><td><code>LLM_MODEL_FAST=exaone3.5:7.8b</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>왜 두 모델인가?</strong><br>
+    의도 분류는 "anomaly", "rag" 같은 단어 하나만 뱉으면 된다. 이걸 위해 20초짜리 Gemma4를 쓰는 건 낭비다.
+    EXAONE 7.8B는 6초에 이 작업을 <strong>100% 정확도</strong>로 처리한다.
+    반면 진단·보고서·복잡한 분석은 Gemma4 thinking 모드로 품질을 확보한다.
+  </div>
+
+  <h3>모델 선정 과정 (6개 후보 비교)</h3>
+  <table>
+    <thead>
+      <tr><th>모델</th><th>종합 점수</th><th>속도</th><th>결정</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Gemma4 12B</strong></td>
+        <td><strong style="color:var(--brand);">9.2 / 10</strong></td>
+        <td>~20s</td>
+        <td><span class="badge badge-green">✅ 품질 경로 채택</span></td>
+      </tr>
+      <tr>
+        <td>GPT-4o</td>
+        <td>9.1 / 10</td>
+        <td>3.4s</td>
+        <td><span class="badge badge-red">❌ 클라우드 — 보안상 외부 전송 불가</span></td>
+      </tr>
+      <tr>
+        <td><strong>EXAONE 3.5 7.8B</strong></td>
+        <td><strong style="color:var(--accent);">8.9 / 10</strong></td>
+        <td>6.0s</td>
+        <td><span class="badge badge-green">✅ 속도 경로 채택</span></td>
+      </tr>
+      <tr>
+        <td>GPT-4o-mini</td>
+        <td>8.9 / 10</td>
+        <td>4.7s</td>
+        <td><span class="badge badge-red">❌ 클라우드</span></td>
+      </tr>
+      <tr>
+        <td>Gemma3 12B</td>
+        <td>8.7 / 10</td>
+        <td>7.7s</td>
+        <td><span class="badge badge-gray">비채택</span></td>
+      </tr>
+      <tr>
+        <td>Qwen2.5 7B</td>
+        <td>2.4 / 10</td>
+        <td>4.8s</td>
+        <td><span class="badge badge-red">❌ 한국어 중 중국어로 전환됨</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <p>평가 기준: 33개 시나리오 × 5개 축(한국어 품질·형식 준수·근거성·논리성·실용성) × GPT-4o LLM-as-Judge 자동 채점</p>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <h2 id="code">3. 코드 구조 — 어디서 어떻게 쓰이나</h2>
+
+  <h3>단일 진입점 원칙</h3>
+  <p>모든 LLM 호출은 반드시 한 곳을 거친다. 10곳 전부 아래 함수를 호출한다.</p>
+  <pre><code># backend/src/agents/llm_client.py
+
+def chat(messages, max_tokens=1024, fast=False, thinking=None):
+    model = LLM_MODEL_FAST if fast else LLM_MODEL
+    # fast=True  → EXAONE (의도분류용, temperature=0.1)
+    # fast=False → Gemma4 (분석·보고서용, temperature=0.3)
+
+    if thinking is None:
+        thinking = not fast   # 기본값: quality→ON, fast→OFF
+
+    payload = {
+        "model":      model,
+        "think":      thinking,
+        "keep_alive": -1,       # 모델 영구 적재
+        "options": {"num_ctx": 8192, ...}
+    }</code></pre>
+
+  <div class="callout callout-success">
+    이 덕분에 <code>.env</code>의 모델명 두 줄만 바꾸면 전체 시스템 모델이 교체된다. 코드 수정 불필요.
+  </div>
+
+  <h3>호출 위치 전체 목록 (10곳)</h3>
+  <table>
+    <thead>
+      <tr><th>위치</th><th>용도</th><th>모델</th><th>파라미터</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="4" style="background:#f8fafc; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:.05em;">채팅 파이프라인 (agents/)</td>
+      </tr>
+      <tr>
+        <td><code>orchestrator.py:157</code></td>
+        <td>의도 분류 폴백</td>
+        <td><span class="badge badge-blue">EXAONE</span></td>
+        <td><code>fast=True, max_tokens=10</code></td>
+      </tr>
+      <tr>
+        <td><code>rag_agent.py:178</code></td>
+        <td>채팅 답변 (개념 설명·센서값)</td>
+        <td><span class="badge badge-brand">Gemma4</span></td>
+        <td><code>thinking=False, max_tokens=1024</code></td>
+      </tr>
+      <tr>
+        <td><code>anomaly_agent.py:441</code></td>
+        <td>이상 원인 분석·조치 설명</td>
+        <td><span class="badge badge-brand">Gemma4</span></td>
+        <td><code>thinking=True, max_tokens=1024</code></td>
+      </tr>
+      <tr>
+        <td><code>reporting_agent.py:260</code></td>
+        <td>보고서 전문 서술 + PDF</td>
+        <td><span class="badge badge-brand">Gemma4</span></td>
+        <td><code>thinking=True, max_tokens=1500</code></td>
+      </tr>
+      <tr>
+        <td><code>forecast_agent.py:207</code></td>
+        <td>예측 수치 해석·운영 조언</td>
+        <td><span class="badge badge-brand">Gemma4</span></td>
+        <td><code>thinking=True, max_tokens=1200</code></td>
+      </tr>
+      <tr>
+        <td colspan="4" style="background:#f8fafc; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:.05em;">API 직접 호출 (api/routers/) — 채팅 없이 버튼/로드 시 실행</td>
+      </tr>
+      <tr>
+        <td><code>cms.py:386</code></td>
+        <td>설비 AI 진단 버튼</td>
+        <td><span class="badge badge-brand">Gemma4</span></td>
+        <td><code>max_tokens=600</code></td>
+      </tr>
+      <tr>
+        <td><code>report.py:209</code></td>
+        <td>월간 KPI 트렌드 내러티브</td>
+        <td><span class="badge badge-brand">Gemma4</span></td>
+        <td><code>max_tokens=350</code></td>
+      </tr>
+      <tr>
+        <td><code>report.py:618</code></td>
+        <td>일일 운영 보고서 요약+조치</td>
+        <td><span class="badge badge-brand">Gemma4</span></td>
+        <td><code>max_tokens=500</code></td>
+      </tr>
+      <tr>
+        <td><code>report.py:945</code></td>
+        <td>데이터 품질 요약</td>
+        <td><span class="badge badge-brand">Gemma4</span></td>
+        <td><code>max_tokens=250</code></td>
+      </tr>
+      <tr>
+        <td><code>report.py:1036</code></td>
+        <td>에너지 원단위 분석</td>
+        <td><span class="badge badge-brand">Gemma4</span></td>
+        <td><code>max_tokens=250</code></td>
+      </tr>
+      <tr>
+        <td><code>report.py:1184</code></td>
+        <td>비용 현황 분석</td>
+        <td><span class="badge badge-brand">Gemma4</span></td>
+        <td><code>max_tokens=300</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <h2 id="flow">4. 요청 흐름 — 순서대로</h2>
+
+  <h3>경로 A: 채팅 질문 (가장 일반적인 경로)</h3>
+
+  <div class="flow">
+<span class="c-gray">① 프론트엔드</span>
+   사용자가 채팅창에 질문 입력 → <span class="c-blue">POST /chat/stream</span>
+
+<span class="c-gray">② chat.py — _invoke_graph()</span>
+   히스토리 최근 10턴을 lc_messages로 변환
+   LangGraph 그래프 실행 시작
+
+<span class="c-gray">③ orchestrator — classify_intent()</span>
+   ┌─ <span class="c-green">1단계: 키워드 룰 (LLM 없음, 즉시)</span>
+   │    "이상탐지" → anomaly
+   │    "보고서"   → report
+   │    "주식"     → off_topic (즉시 거절, LLM 없음)
+   │    매칭 성공 → ④ 바로 이동
+   │
+   └─ <span class="c-yellow">2단계: 룰 실패 시 EXAONE 호출 ← LLM #1</span>
+        fast=True, max_tokens=10
+        "anomaly / rag / report / forecast / cms / off_topic" 반환
+
+<span class="c-gray">④ 의도별 에이전트 분기</span>
+   ├── anomaly  → DB 이상 조회 + 센서값 → <span class="c-orange">Gemma4 호출 ← LLM #2</span>
+   ├── rag      → pgvector 검색 + 실측값 → <span class="c-orange">Gemma4 호출 ← LLM #2</span>
+   ├── report   → KPI 집계              → <span class="c-orange">Gemma4 호출 ← LLM #2</span>
+   ├── forecast → v84 앙상블 추론        → <span class="c-orange">Gemma4 호출 ← LLM #2</span>
+   ├── cms      → DB 조회 + 포맷팅       → <span class="c-green">LLM 없음</span>
+   └── off_topic→ 거절 문자열            → <span class="c-green">LLM 없음</span>
+
+<span class="c-gray">⑤ critic_node()</span>
+   문자열 치환만 수행 (한전→독일 공공 전력망 등)
+   <span class="c-green">LLM 없음</span>
+
+<span class="c-gray">⑥ 응답 반환</span>
+   단어 단위 SSE 스트리밍으로 프론트에 전송
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="margin-top:0;">채팅 1회 LLM 호출 횟수</h4>
+      <table>
+        <tr><td>키워드 룰 성공</td><td><strong style="color:var(--brand);">1번</strong> (에이전트 1회)</td></tr>
+        <tr><td>키워드 룰 실패</td><td><strong style="color:var(--warning);">2번</strong> (의도분류 + 에이전트)</td></tr>
+        <tr><td>CMS 질문</td><td><strong style="color:var(--success);">0번</strong> (DB만 조회)</td></tr>
+        <tr><td>off_topic 질문</td><td><strong style="color:var(--success);">0번</strong> (즉시 거절)</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0;">경로 B: UI 버튼·페이지 로드</h4>
+      <table>
+        <tr><td>설비 진단 버튼</td><td>전기 서명 계산 → Gemma4 (few-shot 2개)</td></tr>
+        <tr><td>보고서 AI 분석</td><td>KPI 집계 → Gemma4 (5종 엔드포인트)</td></tr>
+        <tr><td colspan="2" style="color:var(--text3); font-size:12px;">※ <code>skip_ai=True</code> 기본값 — 버튼 클릭 시에만 LLM 호출</td></tr>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <h2 id="techniques">5. 성능 향상 기법 — 어떻게 품질을 올렸나</h2>
+  <p>12B 소형 모델로 품질을 높이기 위해 쓴 기법 10가지.</p>
+
+  <div class="technique-card">
+    <div class="tc-header">
+      <div class="tc-num">1</div>
+      <div class="tc-title">데이터 선주입 <span class="badge badge-brand" style="font-size:11px;">가장 중요</span></div>
+    </div>
+    <p>LLM에게 질문만 던지는 게 아니라, 백엔드가 먼저 필요한 데이터를 모두 모아서 프롬프트에 담아 보낸다. LLM이 추론·환각으로 수치를 만들어내지 않고 제공된 데이터만 인용한다.</p>
+    <pre><code># anomaly_agent.py — LLM 호출 전 데이터 준비
+anomalies = _fetch_anomalies(...)           # DB 이상 결과 조회
+anomalies = _enrich_with_sensors(...)       # 이상 시각 센서값 추가
+type_counts = _count_anomalies_by_type()    # 유형별 건수 집계
+
+# 완성된 데이터를 프롬프트에 담아 LLM 호출
+answer = llm_chat(f"이상 결과:\n{anomaly_block}\n센서값:\n{sensor_block}\n...")</code></pre>
+  </div>
+
+  <div class="technique-card">
+    <div class="tc-header">
+      <div class="tc-num">2</div>
+      <div class="tc-title">Few-shot 프롬프팅</div>
+    </div>
+    <p>이상적인 입출력 예시를 프롬프트에 함께 넣어 출력 형식과 품질을 고정한다.</p>
+    <table>
+      <thead><tr><th>위치</th><th>few-shot 개수</th><th>목적</th></tr></thead>
+      <tbody>
+        <tr><td>cms.py 설비 진단</td><td>2개</td><td>계절 오진단 방지 + 발전 설비 역률 오진단 방지</td></tr>
+        <tr><td>anomaly_agent.py</td><td>1개</td><td>분석 출력 형식(핵심요약/유형분석/즉시조치) 고정</td></tr>
+        <tr><td>report.py 일일 보고서</td><td>2개</td><td>SUMMARY/ACTIONS 형식 강제</td></tr>
+        <tr><td>report.py 월간 트렌드</td><td>1개</td><td>수치 인용 방식 예시 제공</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="technique-card">
+    <div class="tc-header">
+      <div class="tc-num">3</div>
+      <div class="tc-title">RAG (Retrieval-Augmented Generation)</div>
+    </div>
+    <p>RAG Agent가 질문에 답하기 전에 pgvector로 관련 문서를 검색해 컨텍스트에 포함시킨다. 계량기 URN이 질문에 있으면 DB에서 최신값·평균·범위를 직접 조회해 주입한다.</p>
+    <pre><code># rag_agent.py
+state.doc_context = search_documents(question)         # pgvector top-5 검색
+state.meter_facts = lookup_meter_measurements(question) # 계량기 실측값 DB 조회
+
+# 검색 결과 + 실측값을 프롬프트에 포함
+prompt = build_prompt(state)
+answer = llm_chat(prompt, thinking=False)</code></pre>
+  </div>
+
+  <div class="technique-card">
+    <div class="tc-header">
+      <div class="tc-num">4</div>
+      <div class="tc-title">도메인 지식 주입</div>
+    </div>
+    <p>모델 사전학습 데이터에 없는 공장 특화 지식을 <code>knowledge/domain_knowledge.py</code>에 정리해 모든 프롬프트에 삽입한다.</p>
+    <table>
+      <thead><tr><th>지식 항목</th><th>내용</th><th>없으면 발생하는 문제</th></tr></thead>
+      <tbody>
+        <tr><td>계절 정상 COP</td><td>여름 외기온 30°C+ 시 COP 1.7~2.0 정상</td><td>여름 COP 1.85를 이상으로 오진단</td></tr>
+        <tr><td>CHP 겨울 효율</td><td>열 수요 증가 시 전기 효율 ±3~5%p 감소 = 정상</td><td>겨울 CHP 효율 저하를 고장으로 오진단</td></tr>
+        <tr><td>발전 설비 역률</td><td>PV·CHP 역률 음수/저값 = 역송 정상</td><td>역률 -0.95를 고장으로 오진단</td></tr>
+        <tr><td>게이트웨이 장애 구간</td><td>특정 기간 데이터가 인공 보정값임</td><td>보정 데이터를 실제 이상으로 오판</td></tr>
+        <tr><td>Regime 이벤트</td><td>PV 증설·COVID·CHP 변경 등 시설 변화 이력</td><td>구조적 변화를 이상으로 오해</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="technique-card">
+    <div class="tc-header">
+      <div class="tc-num">5</div>
+      <div class="tc-title">thinking 모드 제어</div>
+    </div>
+    <p>Gemma4 12B는 답하기 전에 내부 추론 과정(thinking)을 수행한다. 작업 성격에 따라 켜고 끈다.</p>
+    <pre><code># thinking=True: 복잡한 분석 (기본값, 속도 느리지만 품질↑)
+llm_chat(prompt, thinking=True)    # 진단·보고서·이상분석
+
+# thinking=False: 단순 설명 (속도↑)
+llm_chat(prompt, thinking=False)   # RAG 일반 답변
+
+# fast=True: EXAONE으로 전환 + thinking 자동 OFF
+llm_chat(prompt, fast=True)        # 의도 분류 (max_tokens=10)</code></pre>
+  </div>
+
+  <div class="technique-card">
+    <div class="tc-header">
+      <div class="tc-num">6</div>
+      <div class="tc-title">출력 형식 강제</div>
+    </div>
+    <p>프롬프트에 정확한 출력 형식을 지정해 파싱 안정성을 높인다. 형식 강제가 없으면 LLM이 매번 다른 구조로 답해 백엔드 파싱이 깨진다.</p>
+    <pre><code># report.py — 일일 보고서 형식 강제
+"다음 두 섹션을 정확히 아래 형식으로 출력하세요. 다른 텍스트 없이.
+
+---SUMMARY---
+(3~4문장)
+
+---ACTIONS---
+(체크리스트)"
+
+# 백엔드에서 구분자로 split 후 각각 프론트에 전달
+parts   = raw.split("---ACTIONS---", 1)
+summary = parts[0].replace("---SUMMARY---", "").strip()
+actions = parts[1].strip()</code></pre>
+  </div>
+
+  <div class="technique-card">
+    <div class="tc-header">
+      <div class="tc-num">7</div>
+      <div class="tc-title">환각 방지 명시 지시</div>
+    </div>
+    <p>LLM이 없는 수치를 만들어내는 것을 명시적으로 금지한다.</p>
+    <pre><code># reporting_agent.py
+"위 KPI 데이터에 없는 수치를 만들어내지 마세요. 수치가 없으면 '데이터 없음'으로 표기하세요."
+"하나의 완성된 보고서만 작성하세요. 대안, 다른 버전, 예시 비교를 절대 제시하지 마세요."
+
+# cms.py
+"제공되지 않은 수치를 추론으로 생성하지 마세요."
+
+# anomaly_agent.py
+"이상 발생 시각과 센서 수치는 반드시 위 데이터에서 직접 인용하세요."</code></pre>
+  </div>
+
+  <div class="technique-card">
+    <div class="tc-header">
+      <div class="tc-num">8</div>
+      <div class="tc-title">모델 영구 적재 (keep_alive)</div>
+    </div>
+    <p>Ollama는 기본적으로 일정 시간 후 모델을 메모리에서 내린다. 재요청 시 다시 로딩하면 1~2분 지연이 생긴다. <code>keep_alive: -1</code>로 영구 적재해 재로딩 대기를 제거했다.</p>
+    <pre><code>payload = {
+    "keep_alive": -1,  # 모델을 메모리에서 내리지 않음
+    ...
+}</code></pre>
+  </div>
+
+  <div class="technique-card">
+    <div class="tc-header">
+      <div class="tc-num">9</div>
+      <div class="tc-title">진단 결과 캐싱</div>
+    </div>
+    <p>같은 설비를 같은 날 다시 진단 요청하면 LLM 재호출 없이 캐시된 결과를 반환한다.</p>
+    <pre><code># cms.py
+cache_key = f"{eq_id}|{window_days}|{anchor.date().isoformat()}"
+if cache_key in _diag_cache:
+    return _diag_cache[cache_key]   # LLM 호출 없이 바로 반환</code></pre>
+  </div>
+
+  <div class="technique-card">
+    <div class="tc-header">
+      <div class="tc-num">10</div>
+      <div class="tc-title">LLM 실패 시 폴백</div>
+    </div>
+    <p>LLM 호출이 실패해도 서비스가 중단되지 않도록 룰 기반 폴백이 준비되어 있다.</p>
+    <pre><code># cms.py
+try:
+    diagnosis = llm_chat(...)         # LLM 진단 시도
+    llm_used = True
+except Exception:
+    diagnosis = _fallback_diagnosis(eq, total, by_type)  # 룰 기반 폴백
+    # 이상 건수와 유형 기반 템플릿 진단문 생성</code></pre>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <h2 id="agents">6. 에이전트별 상세</h2>
+
+  <!-- 의도 분류 -->
+  <div class="agent-card">
+    <div class="ac-header blue">
+      <div class="ac-icon">🧭</div>
+      <div>
+        <div class="ac-title">의도 분류 — Orchestrator</div>
+        <div class="ac-sub">orchestrator.py:157 · EXAONE 7.8B · fast=True · max_tokens=10</div>
+      </div>
+    </div>
+    <div class="ac-body">
+      <p>사용자 질문을 6개 의도로 분류해 적절한 에이전트로 라우팅한다. 대부분은 키워드 룰이 처리하고, LLM은 룰이 실패한 경우에만 호출한다.</p>
+      <table>
+        <tr><th>단계</th><th>처리</th><th>LLM</th></tr>
+        <tr><td>1단계</td><td>키워드 정규식 매칭 (anomaly/report/cms/forecast/off_topic)</td><td>없음</td></tr>
+        <tr><td>2단계 (폴백)</td><td>EXAONE에게 의도 분류 요청 (단 10토큰)</td><td>EXAONE</td></tr>
+      </table>
+      <p>의도: <code>anomaly</code> / <code>rag</code> / <code>report</code> / <code>forecast</code> / <code>cms</code> / <code>off_topic</code></p>
+    </div>
+  </div>
+
+  <!-- RAG -->
+  <div class="agent-card">
+    <div class="ac-header brand">
+      <div class="ac-icon">💬</div>
+      <div>
+        <div class="ac-title">채팅 답변 — RAG Agent</div>
+        <div class="ac-sub">rag_agent.py:178 · Gemma4 12B · thinking=False · max_tokens=1024</div>
+      </div>
+    </div>
+    <div class="ac-body">
+      <p>개념 설명, 계량기 실측값 조회, 일반 에너지 질문에 답한다.</p>
+      <table>
+        <tr><th>사전 처리</th><th>내용</th></tr>
+        <tr><td>pgvector 문서 검색</td><td>top-5 관련 청크를 컨텍스트에 포함</td></tr>
+        <tr><td>계량기 실측값 조회</td><td>질문에 URN(V.Z84 등)이 있으면 DB에서 최신값·평균·범위 직접 주입</td></tr>
+        <tr><td>도메인 지식</td><td>DOMAIN_KNOWLEDGE_PROMPT 항상 포함</td></tr>
+      </table>
+      <p>thinking=False: 단순 설명 용도이므로 thinking 비활성화 → 응답 빠름</p>
+    </div>
+  </div>
+
+  <!-- 이상 분석 -->
+  <div class="agent-card">
+    <div class="ac-header" style="background:#fff7ed;">
+      <div class="ac-icon">🚨</div>
+      <div>
+        <div class="ac-title">이상 원인 분석 — Anomaly Agent</div>
+        <div class="ac-sub">anomaly_agent.py:441 · Gemma4 12B · thinking=True · max_tokens=1024</div>
+      </div>
+    </div>
+    <div class="ac-body">
+      <p>ML이 탐지한 이상의 원인·조치를 설명한다. <strong>탐지는 ML이, 설명은 sLLM이 담당한다.</strong></p>
+      <table>
+        <tr><th>주입 데이터</th><th>내용</th></tr>
+        <tr><td>anomaly_results DB</td><td>탐지된 이상 목록 (타입·심각도·건수)</td></tr>
+        <tr><td>_enrich_with_sensors</td><td>이상 시각의 계통전력·PV·CHP·COP·기온 실측값</td></tr>
+        <tr><td>게이트웨이 장애 구간</td><td>장애 기간 명시 → 오진단 방지</td></tr>
+        <tr><td>시설 이벤트 이력</td><td>CHP 변경·PV 증설·COVID 등 Regime 변화 정보</td></tr>
+        <tr><td>few-shot 1개</td><td>PowerSpike 분석 예시 → 출력 형식 고정</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- CMS 진단 -->
+  <div class="agent-card">
+    <div class="ac-header green">
+      <div class="ac-icon">🏭</div>
+      <div>
+        <div class="ac-title">설비 AI 진단 — CMS Router</div>
+        <div class="ac-sub">cms.py:386 · Gemma4 12B · max_tokens=600 · 캐싱 적용</div>
+      </div>
+    </div>
+    <div class="ac-body">
+      <p>설비 카드의 AI 진단 버튼 클릭 시 실행된다. 전기 서명 + 이상 이력 기반 고장 원인 진단.</p>
+      <table>
+        <tr><th>주입 데이터</th><th>내용</th></tr>
+        <tr><td>전기 서명</td><td>전압·전류·역률·COP 실측 평균값 계산</td></tr>
+        <tr><td>이상 이력</td><td>최근 30일 유형·심각도·건수</td></tr>
+        <tr><td>few-shot 2개</td><td>①계절 정상(여름 COP) ②설비 유형별(발전 vs 소비)</td></tr>
+        <tr><td>설비 유형 분기</td><td>PV·CHP면 "역률 음수 = 역송 정상" 시스템 프롬프트 추가</td></tr>
+      </table>
+      <p>캐싱: 같은 설비·날짜 진단 결과는 LLM 재호출 없이 반환. LLM 실패 시 <code>_fallback_diagnosis()</code>로 서비스 유지.</p>
+    </div>
+  </div>
+
+  <!-- 보고서 -->
+  <div class="agent-card">
+    <div class="ac-header" style="background:#faf5ff;">
+      <div class="ac-icon">📄</div>
+      <div>
+        <div class="ac-title">보고서 서술 — Reporting Agent</div>
+        <div class="ac-sub">reporting_agent.py:260 · Gemma4 12B · thinking=True · max_tokens=1500</div>
+      </div>
+    </div>
+    <div class="ac-body">
+      <p>월간 KPI 기반 보고서 전문 서술 생성 후 PDF 파일로 저장한다.</p>
+      <table>
+        <tr><th>주입 데이터</th><th>내용</th></tr>
+        <tr><td>KPI 데이터</td><td>monthly_report 테이블 최근 6개월 (없으면 실시간 집계)</td></tr>
+        <tr><td>섹션 형식</td><td>핵심요약 / KPI분석 / 이상탐지현황 / 개선권고 4섹션 강제</td></tr>
+        <tr><td>환각 방지</td><td>"없는 수치 생성 금지" + "하나의 보고서만" 명시</td></tr>
+        <tr><td>대화 히스토리</td><td>최근 6턴 포함 → 맥락 유지</td></tr>
+      </table>
+      <p>결과물: 마크다운 서술 + reportlab PDF 자동 저장</p>
+    </div>
+  </div>
+
+  <!-- 예측 -->
+  <div class="agent-card">
+    <div class="ac-header blue">
+      <div class="ac-icon">📈</div>
+      <div>
+        <div class="ac-title">예측 해석 — Forecast Agent</div>
+        <div class="ac-sub">forecast_agent.py:207 · Gemma4 12B · thinking=True · max_tokens=1200</div>
+      </div>
+    </div>
+    <div class="ac-body">
+      <p>v84 앙상블이 계산한 예측 수치를 운영자 언어로 해석한다. <strong>예측은 ML이, 해석은 sLLM이 담당한다.</strong></p>
+      <table>
+        <tr><th>주입 데이터</th><th>내용</th></tr>
+        <tr><td>ML 예측값</td><td>LSTM×6 median + CatBoost + LightGBM + Ridge + Naive</td></tr>
+        <tr><td>운영 힌트</td><td>피크 예상 시각·절감 가능량 등 결정론적 계산값</td></tr>
+        <tr><td>표준 용어</td><td>KFEMS_STANDARD_TERMS 주입 → 일관된 용어 사용</td></tr>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <h2 id="history">7. 성능에 기여한 변경 이력</h2>
+  <table>
+    <thead>
+      <tr><th>날짜</th><th>변경 내용</th><th>효과</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>2026-06-04</td><td>cms.py 설비 유형별 few-shot 추가</td><td>발전 설비 역률 오진단 방지</td></tr>
+      <tr><td>2026-06-04</td><td>domain_knowledge.py 계절 COP·CHP 효율 추가</td><td>계절 정상성 오진단 방지</td></tr>
+      <tr><td>2026-06-04</td><td>orchestrator.py off_topic 키워드 라우팅 강화</td><td>무관 질문 즉시 차단</td></tr>
+      <tr><td>2026-06-08</td><td>reporting_agent.py "하나의 보고서만" 지시 추가</td><td>형식 점수 <strong>6/10 → 10/10</strong></td></tr>
+      <tr><td>2026-06-08</td><td>report.py 일일 브리핑 HIGH 케이스 few-shot 추가</td><td>daily_summary <strong>8.2 → 9.2</strong></td></tr>
+      <tr><td>2026-06-08</td><td>report.py 월간 트렌드 수치 인용 강제 + few-shot</td><td>수치 인용률 향상</td></tr>
+      <tr><td>2026-06-08</td><td>cms.py 계절 정상성 few-shot 추가</td><td>여름 COP 오진단 방지</td></tr>
+      <tr><td>2026-06-08</td><td>llm_client.py 듀얼 모델 라우팅 도입</td><td>속도·품질 동시 확보</td></tr>
+      <tr><td>2026-06-08</td><td>llm_client.py keep_alive=-1 적용</td><td>모델 재로딩 대기 제거</td></tr>
+    </tbody>
+  </table>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <h2 id="infra">8. 인프라 — RunPod 구성</h2>
+
+  <div class="callout callout-warning">
+    <strong>왜 RunPod인가?</strong>
+    회사 설비 데이터를 OpenAI 등 외부 API로 보낼 수 없다(보안).
+    로컬 CPU로는 12B 모델 추론이 너무 느리다(수 분 단위).
+    RunPod RTX 3090 (24GB VRAM)에서 두 모델 동시 적재 가능.
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="margin-top:0;">RunPod 구성</h4>
+      <pre style="margin:0; font-size:11.5px;"><code>RunPod RTX 3090 (24GB VRAM)
+└── Ollama 서버
+    ├── gemma4:12b       ~8GB VRAM
+    └── exaone3.5:7.8b  ~5GB VRAM
+    합계 ~13GB / 24GB 사용
+
+접속: https://{pod-id}-11434.proxy.runpod.net/v1</code></pre>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0;">Pod 재생성 시 복구 (2개 명령)</h4>
+      <pre style="margin:0; font-size:11.5px;"><code># RunPod 내부
+ollama pull gemma4:12b
+ollama pull exaone3.5:7.8b
+
+# .env — URL만 교체
+OLLAMA_URL=https://{새pod-id}-11434...
+
+docker compose restart backend</code></pre>
+    </div>
+  </div>
+
+  <div class="callout callout-success">
+    <strong>바꿀 것:</strong> URL 1줄<br>
+    <strong>그대로 유지:</strong> 모든 프롬프트, few-shot, 도메인 지식, 듀얼 모델 라우팅, 평가 결과 전부
+  </div>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <h2 id="bottleneck">9. 성능 병목</h2>
+
+  <table>
+    <thead>
+      <tr><th>작업</th><th>소요 시간</th><th>위치</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>LSTM 추론 (이상탐지/예측)</td><td>0.5~2초</td><td>백엔드 CPU</td></tr>
+      <tr><td>DB 쿼리</td><td>0.1~0.5초</td><td>DB 서버</td></tr>
+      <tr><td>sLLM 호출 (thinking=False)</td><td>5~10초</td><td>RunPod GPU</td></tr>
+      <tr style="background:#fff7ed;"><td><strong>sLLM 호출 (thinking=True)</strong></td><td><strong>15~30초</strong></td><td><strong>RunPod GPU ← 병목</strong></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    체감 응답 대기의 80~90%가 sLLM 대기다. CPU 사양을 높여도 체감 속도 개선은 제한적이다.
+    <strong>RunPod GPU 사양과 안정성이 훨씬 중요하다.</strong>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <h2 id="switch">10. 모델 교체 방법</h2>
+  <p>코드 수정 없이 <code>.env</code> 변경만으로 전체 10곳 호출이 전환된다.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="margin-top:0;">현재 (온프레미스 sLLM)</h4>
+      <pre style="margin:0; font-size:12px;"><code>LLM_PROVIDER=ollama
+LLM_MODEL=gemma4:12b
+LLM_MODEL_FAST=exaone3.5:7.8b
+OLLAMA_URL=https://...runpod.net/v1</code></pre>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0;">클라우드로 전환 시</h4>
+      <pre style="margin:0; font-size:12px;"><code>LLM_PROVIDER=openai
+LLM_MODEL=gpt-4o
+OPENAI_API_KEY=sk-...
+
+# 또는
+LLM_PROVIDER=anthropic
+LLM_MODEL=claude-sonnet-4-6
+ANTHROPIC_API_KEY=sk-ant-...</code></pre>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <h2>관련 문서 및 코드</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="margin-top:0;">관련 문서</h4>
+      <ul>
+        <li><a href="plan.md">plan.md</a> — sLLM 전환 전략 및 모델 선정 과정</li>
+        <li><a href="model_selection.html">model_selection.html</a> — 6개 모델 33문항 평가 상세</li>
+        <li><a href="progress.md">progress.md</a> — 프롬프트 엔지니어링 변경 이력</li>
+        <li><a href="runpod_guide.md">runpod_guide.md</a> — RunPod 설치·운영 절차</li>
+        <li><a href="backend_architecture.md">backend_architecture.md</a> — 레이어별 구조</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0;">관련 코드</h4>
+      <table style="margin:0;">
+        <tr><td><code>agents/llm_client.py</code></td><td>단일 진입점, 듀얼 모델 라우팅</td></tr>
+        <tr><td><code>agents/orchestrator.py</code></td><td>의도 분류, LangGraph 그래프</td></tr>
+        <tr><td><code>agents/rag_agent.py</code></td><td>RAG 검색, 실측값 조회</td></tr>
+        <tr><td><code>agents/anomaly_agent.py</code></td><td>이상 원인 분석</td></tr>
+        <tr><td><code>agents/reporting_agent.py</code></td><td>보고서 서술, PDF</td></tr>
+        <tr><td><code>api/routers/cms.py</code></td><td>설비 AI 진단</td></tr>
+        <tr><td><code>api/routers/report.py</code></td><td>보고서 API 5종</td></tr>
+        <tr><td><code>knowledge/domain_knowledge.py</code></td><td>공장 특화 도메인 지식</td></tr>
+      </table>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

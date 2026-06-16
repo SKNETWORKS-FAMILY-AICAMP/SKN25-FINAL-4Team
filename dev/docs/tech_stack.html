@@ -1,1148 +1,899 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EMS Agent — 기술 스택 전체 정리</title>
-  <style>
-    :root {
-      --bg: #f8f9fc;
-      --surface: #ffffff;
-      --surface2: #f1f3f8;
-      --border: #e2e6ef;
-      --accent: #2563eb;
-      --accent2: #7c3aed;
-      --green: #059669;
-      --orange: #d97706;
-      --red: #dc2626;
-      --text: #1e293b;
-      --text-muted: #64748b;
-      --code-bg: #f1f5f9;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EMS Agent — 기술 스택</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text2: #475569;
+    --text3: #94a3b8;
+    --brand: #0d9488;
+    --brand-soft: #f0fdfa;
+    --accent: #2563eb;
+    --success: #16a34a;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --sidebar-w: 260px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Pretendard', 'Noto Sans KR', 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    display: flex;
+  }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* ── 사이드바 ── */
+  nav {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 24px 0 40px;
+    z-index: 100;
+  }
+  nav .logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  nav .logo .badge {
+    display: inline-block;
+    background: var(--brand);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: .05em;
+    margin-bottom: 6px;
+  }
+  nav .logo h2 { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; }
+  nav .logo p { font-size: 11px; color: var(--text3); margin-top: 4px; }
+  nav ul { list-style: none; padding: 0 8px; }
+  nav ul li a {
+    display: block; padding: 7px 12px;
+    font-size: 13px; color: var(--text2);
+    text-decoration: none; border-radius: 6px;
+    transition: background .15s, color .15s;
+  }
+  nav ul li a:hover { background: var(--brand-soft); color: var(--brand); }
+  nav ul .sec-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--text3);
+    padding: 14px 12px 4px;
+  }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', -apple-system, sans-serif;
-      font-size: 15px;
-      line-height: 1.7;
-    }
+  /* ── 본문 ── */
+  main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 40px 48px 80px;
+    max-width: 1400px;
+  }
+  h1 { font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+  .subtitle { color: var(--text2); font-size: 14px; margin-bottom: 36px; }
+  h2 {
+    font-size: 20px; font-weight: 700; color: var(--text);
+    margin: 48px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--brand);
+  }
+  h3 { font-size: 16px; font-weight: 700; margin: 28px 0 12px; color: var(--text); }
+  h4 { font-size: 14px; font-weight: 600; margin: 20px 0 8px; color: var(--text2); }
+  p { margin-bottom: 12px; font-size: 14px; color: var(--text2); }
 
-    /* ── 헤더 ── */
-    header {
-      background: linear-gradient(135deg, #eff4ff 0%, #f8f9fc 100%);
-      border-bottom: 1px solid var(--border);
-      padding: 48px 0 40px;
-      text-align: center;
-    }
-    header .badge {
-      display: inline-block;
-      background: rgba(37,99,235,.1);
-      border: 1px solid rgba(37,99,235,.25);
-      color: var(--accent);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: .08em;
-      padding: 4px 14px;
-      border-radius: 20px;
-      margin-bottom: 16px;
-      text-transform: uppercase;
-    }
-    header h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 10px;
-    }
-    header p {
-      color: var(--text-muted);
-      font-size: 14px;
-    }
+  /* ── 테이블 ── */
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 13px; margin: 12px 0 20px;
+    border-radius: 8px; overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  th {
+    background: #f1f5f9; color: var(--text2);
+    font-weight: 600; padding: 9px 14px;
+    text-align: left; border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 8px 14px; border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8fafc; }
+  td strong { color: var(--text); }
+  td code, th code {
+    background: #f1f5f9; padding: 1px 5px;
+    border-radius: 4px; font-size: 12px; font-family: 'JetBrains Mono', monospace;
+  }
 
-    /* ── 레이아웃 ── */
-    .wrapper {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px 80px;
-    }
+  /* ── 코드 ── */
+  pre {
+    background: #1e293b; color: #e2e8f0;
+    padding: 16px 20px; border-radius: 10px;
+    overflow-x: auto; font-size: 12.5px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    margin: 12px 0 20px;
+    line-height: 1.6;
+  }
+  code {
+    background: #f1f5f9; padding: 1px 5px;
+    border-radius: 4px; font-size: 12.5px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--brand);
+  }
+  pre code { background: transparent; padding: 0; color: inherit; }
 
-    /* ── 목차 ── */
-    nav.toc {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px 32px;
-      margin: 40px 0;
-    }
-    nav.toc h2 {
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
-    nav.toc ol {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 6px 24px;
-      padding-left: 20px;
-    }
-    nav.toc li { font-size: 14px; }
-    nav.toc a {
-      color: var(--accent);
-      text-decoration: none;
-      opacity: .85;
-    }
-    nav.toc a:hover { opacity: 1; text-decoration: underline; }
+  /* ── 카드 ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  }
+  .card-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0;
+  }
+  .card-mini {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .card-mini .label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--text3); margin-bottom: 4px;
+  }
+  .card-mini .value {
+    font-size: 22px; font-weight: 800; color: var(--brand);
+  }
+  .card-mini .desc {
+    font-size: 12px; color: var(--text3); margin-top: 2px;
+  }
 
-    /* ── 아키텍처 다이어그램 ── */
-    .arch-block {
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px 32px;
-      margin: 24px 0;
-      overflow-x: auto;
-    }
-    .arch-block pre {
-      font-family: 'JetBrains Mono', 'Fira Code', 'Menlo', monospace;
-      font-size: 13px;
-      line-height: 1.6;
-      color: #1e3a5f;
-      white-space: pre;
-    }
+  /* ── 배지 ── */
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+  }
+  .badge-brand  { background: var(--brand-soft); color: var(--brand); }
+  .badge-blue   { background: #dbeafe; color: #1d4ed8; }
+  .badge-green  { background: #dcfce7; color: #15803d; }
+  .badge-orange { background: #fef3c7; color: #b45309; }
+  .badge-red    { background: #fee2e2; color: #b91c1c; }
+  .badge-gray   { background: #f1f5f9; color: #475569; }
 
-    /* ── 섹션 ── */
-    section {
-      margin-top: 56px;
-    }
-    section h2 {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: #0f172a;
-      padding-bottom: 12px;
-      border-bottom: 2px solid var(--border);
-      margin-bottom: 28px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    section h2 .num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px; height: 28px;
-      background: var(--accent);
-      color: #fff;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
+  /* ── 강조 박스 ── */
+  .callout {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 14px 0;
+    font-size: 13px;
+  }
+  .callout-info    { background: #eff6ff; border-left: 3px solid #3b82f6; color: #1e3a5f; }
+  .callout-success { background: #f0fdf4; border-left: 3px solid #22c55e; color: #14532d; }
+  .callout-warning { background: #fffbeb; border-left: 3px solid #f59e0b; color: #78350f; }
 
-    /* ── 카드 ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 28px;
-      margin-bottom: 20px;
-    }
-    .card h3 {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: #0f172a;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .card h3 .tag {
-      font-size: 11px;
-      font-weight: 500;
-      padding: 2px 8px;
-      border-radius: 4px;
-      background: rgba(37,99,235,.08);
-      color: var(--accent);
-      border: 1px solid rgba(37,99,235,.2);
-    }
-    .card h3 .tag.green {
-      background: rgba(5,150,105,.08);
-      color: var(--green);
-      border-color: rgba(5,150,105,.2);
-    }
-    .card h3 .tag.orange {
-      background: rgba(217,119,6,.08);
-      color: var(--orange);
-      border-color: rgba(217,119,6,.2);
-    }
-    .card h3 .tag.purple {
-      background: rgba(124,58,237,.08);
-      color: #7c3aed;
-      border-color: rgba(124,58,237,.2);
-    }
+  /* ── Mermaid ── */
+  .mermaid-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 32px 20px;
+    margin: 16px 0;
+    overflow-x: auto;
+  }
+  .mermaid {
+    display: block;
+    width: 100%;
+  }
+  .mermaid svg {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 200px;
+  }
 
-    /* ── 테이블 ── */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      margin: 14px 0;
-    }
-    thead th {
-      background: var(--surface2);
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      padding: 10px 14px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    tbody td {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-    tbody tr:last-child td { border-bottom: none; }
-    tbody tr:hover td { background: #f8faff; }
+  /* ── 섹션 앵커 ── */
+  [id] { scroll-margin-top: 24px; }
 
-    /* 점수 강조 테이블 */
-    table.scores tbody td:nth-child(2) { font-weight: 700; color: var(--green); }
-    table.scores tbody tr:first-child td { background: rgba(5,150,105,.05); }
-    table.scores tbody tr:last-child td:nth-child(2) { color: var(--red); }
-
-    /* ── 코드 ── */
-    code {
-      background: #eef2ff;
-      border: 1px solid #c7d2fe;
-      color: #4338ca;
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
-      font-size: 12.5px;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    pre {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px 20px;
-      overflow-x: auto;
-      margin: 14px 0;
-    }
-    pre code {
-      background: none;
-      border: none;
-      padding: 0;
-      color: #1e3a5f;
-      font-size: 13px;
-    }
-    pre code .cm { color: #94a3b8; }   /* comment */
-    pre code .kw { color: #7c3aed; }   /* keyword */
-    pre code .st { color: #059669; }   /* string */
-
-    /* ── 흐름도 ── */
-    .flow {
-      background: #f0f9ff;
-      border: 1px solid #bae6fd;
-      border-radius: 8px;
-      padding: 20px 24px;
-      margin: 14px 0;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      line-height: 1.7;
-      color: #0c4a6e;
-      overflow-x: auto;
-      white-space: pre;
-    }
-
-    /* ── 불릿 리스트 ── */
-    ul.desc {
-      padding-left: 20px;
-      margin: 10px 0;
-    }
-    ul.desc li {
-      margin-bottom: 6px;
-      font-size: 14px;
-      color: var(--text);
-    }
-    ul.desc li strong { color: #fff; }
-
-    /* ── 인포 박스 ── */
-    .info-box {
-      background: #eff6ff;
-      border-left: 3px solid var(--accent);
-      padding: 12px 16px;
-      border-radius: 0 8px 8px 0;
-      margin: 14px 0;
-      font-size: 14px;
-      color: #1e40af;
-    }
-    .warn-box {
-      background: #fffbeb;
-      border-left: 3px solid var(--orange);
-      padding: 12px 16px;
-      border-radius: 0 8px 8px 0;
-      margin: 14px 0;
-      font-size: 14px;
-      color: #92400e;
-    }
-
-    /* ── 그리드 ── */
-    .grid2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
-    }
-    @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
-
-    /* ── 배지 ── */
-    .chip {
-      display: inline-block;
-      font-size: 12px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      margin: 2px;
-    }
-    .chip.green { border-color: rgba(5,150,105,.3);  background:#f0fdf4; color: var(--green); }
-    .chip.red   { border-color: rgba(220,38,38,.3);  background:#fef2f2; color: var(--red); }
-    .chip.blue  { border-color: rgba(37,99,235,.3);  background:#eff6ff; color: var(--accent); }
-
-    /* ── 섹션 divider ── */
-    hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
-
-    /* ── 스크롤바 ── */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #f1f5f9; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-
-    /* ── 반응형 테이블 ── */
-    .table-wrap { overflow-x: auto; }
-  </style>
+  /* ── 반응형 ── */
+  @media (max-width: 900px) {
+    nav { display: none; }
+    main { margin-left: 0; padding: 24px 20px 60px; }
+    .card-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
 
-<header>
-  <div class="badge">SK Networks AI Family 25기 — 4팀 파이널</div>
-  <h1>EMS Agent 기술 스택 전체 정리</h1>
-  <p>각 기술이 <strong>무엇인지</strong>, <strong>이 프로젝트에서 어떻게 쓰였는지</strong>를 중심으로 정리</p>
-</header>
+<!-- ────────────────── 사이드바 ────────────────── -->
+<nav>
+  <div class="logo">
+    <div class="badge">SKN 25기 4팀</div>
+    <h2>EMS Agent<br>기술 스택</h2>
+    <p>최종 업데이트: 2026-06-12</p>
+  </div>
+  <ul>
+    <li class="sec-label">아키텍처</li>
+    <li><a href="#arch">전체 구조</a></li>
+    <li><a href="#agent-flow">에이전트 플로우</a></li>
+    <li class="sec-label">백엔드</li>
+    <li><a href="#backend">FastAPI + 라우터</a></li>
+    <li><a href="#langgraph">LangGraph 에이전트</a></li>
+    <li><a href="#sllm">sLLM 듀얼 모델</a></li>
+    <li><a href="#rag">RAG 파이프라인</a></li>
+    <li class="sec-label">ML 모델</li>
+    <li><a href="#ml-forecast">v84 예측 앙상블</a></li>
+    <li><a href="#ml-anomaly">이상탐지</a></li>
+    <li class="sec-label">데이터 / 인프라</li>
+    <li><a href="#db">데이터베이스</a></li>
+    <li><a href="#frontend">프론트엔드</a></li>
+    <li><a href="#infra">인프라</a></li>
+    <li class="sec-label">참조</li>
+    <li><a href="#versions">버전 요약표</a></li>
+  </ul>
+</nav>
 
-<div class="wrapper">
+<!-- ────────────────── 본문 ────────────────── -->
+<main>
 
-  <!-- 목차 -->
-  <nav class="toc">
-    <h2>목차</h2>
-    <ol>
-      <li><a href="#s1">전체 구조 한눈에 보기</a></li>
-      <li><a href="#s2">백엔드 — FastAPI + LangGraph</a></li>
-      <li><a href="#s3">AI 에이전트 — LangGraph 멀티에이전트</a></li>
-      <li><a href="#s4">sLLM — EXAONE + Gemma4 듀얼 모델</a></li>
-      <li><a href="#s5">RAG — pgvector + sentence-transformers</a></li>
-      <li><a href="#s6">ML 예측 모델 — v84 앙상블</a></li>
-      <li><a href="#s7">ML 이상탐지 모델</a></li>
-      <li><a href="#s8">데이터베이스 — PostgreSQL + TimescaleDB</a></li>
-      <li><a href="#s9">프론트엔드 — React + Vite</a></li>
-      <li><a href="#s10">인프라 — Docker + RunPod + HF Hub</a></li>
-      <li><a href="#s11">개발 도구</a></li>
-      <li><a href="#s12">버전 요약표</a></li>
-    </ol>
-  </nav>
+  <h1>EMS Agent — 기술 스택</h1>
+  <p class="subtitle">SK Networks AI Family 25기 4팀 파이널 프로젝트 · Honda R&amp;D Europe 에너지 관리 AI 코파일럿</p>
 
-  <!-- ─────────────────────────────────────── -->
-  <!-- 1. 전체 구조 -->
-  <!-- ─────────────────────────────────────── -->
-  <section id="s1">
-    <h2><span class="num">1</span> 전체 구조 한눈에 보기</h2>
-    <div class="arch-block">
-<pre>┌──────────────────────────────────────────────────────────────────┐
-│  사용자 브라우저                                                    │
-│  React 19 (Vite 8) — 12개 패널 대시보드                            │
-└────────────────────────┬─────────────────────────────────────────┘
-                         │ HTTP / SSE (Server-Sent Events)
-┌────────────────────────▼─────────────────────────────────────────┐
-│  FastAPI (Python 3.13)                                            │
-│  ├── LangGraph 멀티에이전트 (5개 에이전트 + Critic)                │
-│  │   └── LLM 호출 → Ollama (RunPod RTX 3090)                     │
-│  │        ├── EXAONE 3.5:7.8B  ← fast 모드 (의도 분류)           │
-│  │        └── Gemma4:12B       ← quality 모드 (진단·보고서)        │
-│  ├── ML 예측 (v84 앙상블 — LSTM×6 + CatBoost + LightGBM + Ridge) │
-│  ├── ML 이상탐지 (residual + IsolationForest / LSTM-AE 투표)      │
-│  ├── APScheduler (월 1회 자동 재학습)                              │
-│  └── RAG (pgvector + sentence-transformers)                       │
-└────────────────────────┬─────────────────────────────────────────┘
-                         │ psycopg2 / SQLAlchemy
-┌────────────────────────▼─────────────────────────────────────────┐
-│  PostgreSQL + TimescaleDB + pgvector                              │
-│  Honda R&D Europe — 81개 계량기, 2018~2024년, ~285만 행           │
-└──────────────────────────────────────────────────────────────────┘</pre>
+  <!-- ─── 주요 지표 카드 ─── -->
+  <div class="card-grid">
+    <div class="card-mini">
+      <div class="label">LangGraph 에이전트</div>
+      <div class="value">6</div>
+      <div class="desc">노드 + Critic (LLM 없음)</div>
     </div>
-  </section>
-
-  <!-- ─────────────────────────────────────── -->
-  <!-- 2. 백엔드 -->
-  <!-- ─────────────────────────────────────── -->
-  <section id="s2">
-    <h2><span class="num">2</span> 백엔드 — FastAPI + LangGraph</h2>
-
-    <div class="card">
-      <h3>FastAPI <span class="tag">Python 비동기 웹 프레임워크</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>Python 비동기 웹 프레임워크. Django보다 빠르고, Flask보다 기능이 많다.</td></tr>
-            <tr><td><strong>특징</strong></td><td>타입 힌트 기반 자동 검증, Swagger UI 자동 생성, async/await 지원</td></tr>
-            <tr><td><strong>사용 버전</strong></td><td><code>&gt;=0.110.0</code></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p style="font-size:14px;margin:10px 0 8px;font-weight:600;color:#0f172a;">이 프로젝트에서의 역할</p>
-      <ul class="desc">
-        <li>전체 REST API 서버 (<code>localhost:8000</code>)</li>
-        <li>SSE(Server-Sent Events)로 채팅 스트리밍 실시간 전송 (<code>/chat/stream</code>)</li>
-        <li><code>/cms</code>, <code>/anomalies</code>, <code>/report</code>, <code>/forecast</code>, <code>/control</code>, <code>/settings</code> 등 13개 라우터</li>
-      </ul>
-      <pre><code>backend/src/api/routers/
-├── chat.py        <span class="cm"># 채팅 + SSE 스트리밍</span>
-├── cms.py         <span class="cm"># 설비 진단 + 작업지시</span>
-├── anomalies.py   <span class="cm"># 이상탐지 실행/조회</span>
-├── report.py      <span class="cm"># 월간/일일 보고서</span>
-├── forecast.py    <span class="cm"># 예측 API</span>
-├── control.py     <span class="cm"># 피크 시프트 권고</span>
-├── simulator.py   <span class="cm"># 가상 시계</span>
-├── settings.py    <span class="cm"># LLM 설정</span>
-└── users.py       <span class="cm"># 사용자 관리</span></code></pre>
+    <div class="card-mini">
+      <div class="label">FastAPI 라우터</div>
+      <div class="value">11</div>
+      <div class="desc">chat / anomaly / cms / auth / notifications 등</div>
     </div>
-
-    <div class="card">
-      <h3>Uvicorn <span class="tag">ASGI 웹 서버</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>ASGI(비동기 서버 게이트웨이) 서버. FastAPI 앱을 실제로 실행하는 웹 서버.</td></tr>
-            <tr><td><strong>사용 버전</strong></td><td><code>&gt;=0.23.0</code></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p style="font-size:14px;color:var(--text-muted);margin-top:10px;">Docker 컨테이너에서 <code>uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --workers 1</code>로 실행.</p>
+    <div class="card-mini">
+      <div class="label">ML 앙상블</div>
+      <div class="value">v84</div>
+      <div class="desc">LSTM×6 median + CatBoost + LightGBM + Ridge</div>
     </div>
-
-    <div class="card">
-      <h3>APScheduler <span class="tag green">크론 스케줄러</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>Python 내장 스케줄러. Airflow처럼 별도 서버 없이 FastAPI 안에서 크론잡 실행.</td></tr>
-            <tr><td><strong>사용 버전</strong></td><td><code>&gt;=3.10.0</code></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <ul class="desc" style="margin-top:12px;">
-        <li>매월 1일 자정 v84 앙상블 자동 재학습 (<code>ml.pipeline.train</code> 서브프로세스 실행)</li>
-        <li>매일 오전 6시 일일 보고서 자동 생성</li>
-        <li>설정 패널에서 스케줄 ON/OFF, 시간 변경 가능</li>
-      </ul>
+    <div class="card-mini">
+      <div class="label">계량기 / 데이터</div>
+      <div class="value">81개</div>
+      <div class="desc">2018~2024 · ~285만 행 · Honda 독일 오펜바흐</div>
     </div>
+  </div>
 
-    <div class="card">
-      <h3>psycopg2 + SQLAlchemy <span class="tag">DB 드라이버 / ORM</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>psycopg2</strong></td><td>PostgreSQL 전용 Python 드라이버. 가장 빠른 DB 연결.</td></tr>
-            <tr><td><strong>SQLAlchemy</strong></td><td>Python ORM. SQL을 Python 코드로 쓸 수 있게 해줌. v2부터 async 지원.</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <ul class="desc" style="margin-top:12px;">
-        <li><code>psycopg2</code>: 직접 SQL 쿼리 (시계열 데이터 조회 — 성능 중요 구간)</li>
-        <li><code>SQLAlchemy</code>: ML 학습 파이프라인의 데이터 로드 (<code>build_engine</code>, <code>fetch_meter_window</code>)</li>
-      </ul>
+  <!-- ══════════════════════════════════════════════════ -->
+  <h2 id="arch">전체 시스템 아키텍처</h2>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph TB
+    Browser["React 19 대시보드&#10;Vite 8 · 12 패널 · 로그인"]
+
+    subgraph API["FastAPI (Python 3.12)  port 8000"]
+        direction TB
+        Router["11개 라우터&#10;chat · cms · anomalies · report&#10;forecast · control · simulator&#10;notifications · auth · settings · users"]
+        Graph["LangGraph&#10;멀티에이전트"]
+        ML["ML 파이프라인&#10;v84 앙상블 예측&#10;이상탐지 2경로"]
+        Sched["APScheduler&#10;월 1회 자동 재학습"]
+        Sim["시뮬레이터 워커&#10;가상 시계 + 자동 알림"]
+    end
+
+    subgraph LLM["LLM 서빙  RunPod RTX 3090"]
+        Ollama["Ollama v0.30.3+&#10;keep_alive = -1"]
+        EXAONE["EXAONE 3.5 7.8B&#10;fast 모드 · ~5GB VRAM"]
+        Gemma["Gemma4 12B&#10;quality 모드 · ~8GB VRAM"]
+        Ollama --> EXAONE
+        Ollama --> Gemma
+    end
+
+    subgraph DB["AWS EC2  PostgreSQL 15 + TimescaleDB + pgvector"]
+        TS["reference.corrected_resampled_1h&#10;~285만 행 · 81 계량기"]
+        VEC["knowledge_docs embedding&#10;pgvector 코사인 검색"]
+        APP["chat_sessions · work_orders&#10;anomaly_results · monthly_report"]
+    end
+
+    subgraph HF["Hugging Face Hub"]
+        ART["mintmarket/ems-agent-artifacts&#10;45계량기 x 1h/3h + P-Max ~700MB"]
+    end
+
+    Browser -- "HTTP / SSE" --> API
+    Graph -- "httpx /api/chat" --> Ollama
+    Router --> Graph
+    Router --> ML
+    Router --> Sched
+    Router --> Sim
+    Sim -- "SSE broadcast" --> Browser
+    API -- "psycopg2" --> DB
+    ML -- "artifacts" --> HF
+
+    style Browser fill:#0d9488,color:#fff,stroke:#0d9488
+    style API fill:#f0fdfa,stroke:#0d9488
+    style LLM fill:#eff6ff,stroke:#3b82f6
+    style DB fill:#faf5ff,stroke:#8b5cf6
+    style HF fill:#fff7ed,stroke:#f59e0b
     </div>
-  </section>
+  </div>
 
-  <!-- ─────────────────────────────────────── -->
-  <!-- 3. AI 에이전트 -->
-  <!-- ─────────────────────────────────────── -->
-  <section id="s3">
-    <h2><span class="num">3</span> AI 에이전트 — LangGraph 멀티에이전트</h2>
+  <!-- ══════════════════════════════════════════════════ -->
+  <h2 id="agent-flow">AI 에이전트 플로우</h2>
 
-    <div class="card">
-      <h3>LangGraph <span class="tag purple">상태 기계 기반 멀티에이전트</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>LLM 기반 멀티에이전트 워크플로우를 상태 기계(State Machine)로 구성하는 프레임워크. LangChain 팀 제작.</td></tr>
-            <tr><td><strong>사용 버전</strong></td><td><code>&gt;=0.1.0</code></td></tr>
-            <tr><td><strong>핵심 개념</strong></td><td><code>StateGraph</code>: 노드(에이전트)와 엣지(라우팅)를 정의. 상태(<code>AgentState</code>)가 노드 사이를 흘러다님.</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p style="font-size:14px;margin:16px 0 8px;font-weight:600;color:#0f172a;">이 프로젝트에서의 구조</p>
-      <div class="flow">사용자 질문
-    │
-    ▼
-[classify 노드]  ← 키워드 룰 우선, 모호하면 LLM(EXAONE fast) 폴백
-    │
-    ├─ anomaly   → [anomaly_agent]   → DB에서 이상탐지 결과 조회 + LLM 분석
-    ├─ report    → [reporting_agent] → KPI 집계 + LLM 보고서 생성
-    ├─ forecast  → [forecast_agent]  → v84 앙상블 추론 + LLM 요약
-    ├─ cms       → [cms_agent]       → 설비 진단 + LLM 원인 분석
-    ├─ rag       → [rag_agent]       → pgvector 검색 + LLM 답변
-    └─ off_topic → [rejection_node]  → LLM 호출 없이 거절 (즉시 반환)
-    │
-    ▼
-[critic 노드]  ← 에너지 도메인 용어 교정 (8개 패턴)
-    │
-    ▼
-최종 답변</div>
-      <p style="font-size:14px;margin:14px 0 8px;font-weight:600;color:#0f172a;">의도 분류 상세</p>
-      <ul class="desc">
-        <li><strong>1차 방어</strong>: 23개 정규식 키워드 룰 (LLM 호출 없음, &lt;1ms)</li>
-        <li><strong>2차 방어</strong>: LLM 폴백 — EXAONE fast 모드, <code>max_tokens=10</code>, ~6s</li>
-        <li><strong>오프토픽 차단</strong>: <code>_KW_OFFTOPIC</code> 패턴(주식·요리·날씨 등) → 즉시 거절</li>
-      </ul>
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart TD
+    Q(["사용자 질문"])
+    CL["classify_intent&#10;1차 키워드 룰 &lt;1ms&#10;2차 EXAONE fast ~6s"]
+
+    Q --> CL
+
+    CL -->|anomaly| AN["anomaly_agent&#10;DB 이상탐지 결과 조회&#10;Gemma4 원인 분석"]
+    CL -->|report| RE["reporting_agent&#10;KPI 집계&#10;Gemma4 보고서 생성"]
+    CL -->|forecast| FC["forecast_agent&#10;v84 앙상블 추론&#10;Gemma4 요약"]
+    CL -->|cms| CM["cms_agent&#10;설비 진단 + 예지보전&#10;Gemma4 + 작업지시 행동"]
+    CL -->|rag| RG["rag_agent&#10;pgvector 검색&#10;Gemma4 답변"]
+    CL -->|off_topic| OT["rejection_node&#10;LLM 없음&#10;템플릿 거절"]
+
+    AN --> CR
+    RE --> CR
+    FC --> CR
+    CM --> CR
+    RG --> CR
+
+    CR["critic_node&#10;용어 교정 문자열 치환만&#10;한전 to 독일 공공 전력망 등 8패턴&#10;LLM 호출 없음"]
+    OT --> END2
+
+    CR --> END1(["최종 답변"])
+    END2(["거절 응답"])
+
+    style Q fill:#0d9488,color:#fff,stroke:#0d9488
+    style CL fill:#f0fdfa,stroke:#0d9488
+    style AN fill:#dbeafe,stroke:#3b82f6
+    style RE fill:#dcfce7,stroke:#16a34a
+    style FC fill:#fef3c7,stroke:#d97706
+    style CM fill:#fce7f3,stroke:#db2777
+    style RG fill:#ede9fe,stroke:#7c3aed
+    style OT fill:#fee2e2,stroke:#dc2626
+    style CR fill:#f1f5f9,stroke:#64748b
+    style END1 fill:#16a34a,color:#fff,stroke:#16a34a
+    style END2 fill:#dc2626,color:#fff,stroke:#dc2626
     </div>
+  </div>
 
-    <div class="card">
-      <h3>LangChain Core <span class="tag">기반 추상화 라이브러리</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>LangGraph가 의존하는 기반 라이브러리. 메시지 포맷, 프롬프트 템플릿 등 공통 추상화.</td></tr>
-            <tr><td><strong>사용 버전</strong></td><td><code>&gt;=0.0.400</code></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p style="font-size:14px;color:var(--text-muted);margin-top:10px;">LangGraph 내부에서 사용. 직접 노출되는 API는 아님.</p>
+  <h3>의도 분류 상세</h3>
+  <table>
+    <tr><th>단계</th><th>방식</th><th>소요시간</th><th>설명</th></tr>
+    <tr><td><span class="badge badge-green">1차</span> 키워드 룰</td><td>정규식 4종 + 오프토픽 패턴</td><td>&lt;1ms</td><td>anomaly / report / forecast / cms · 계량기 URN · 미래 시제 · 설비명+이상건수 특수 처리</td></tr>
+    <tr><td><span class="badge badge-blue">2차</span> LLM 폴백</td><td>EXAONE fast, max_tokens=10</td><td>~6s</td><td>룰로 판단 불가한 모호한 질문만 LLM에 위임</td></tr>
+    <tr><td><span class="badge badge-red">차단</span> off_topic</td><td>즉시 거절 (LLM 없음)</td><td>&lt;1ms</td><td>주식·요리·날씨·정치·SNS·DB 조작 명령 등</td></tr>
+  </table>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <h2 id="backend">백엔드 — FastAPI</h2>
+
+  <div class="card">
+    <h3 style="margin-top:0">11개 라우터 구성</h3>
+    <table>
+      <tr><th>라우터</th><th>주요 기능</th><th>비고</th></tr>
+      <tr><td><code>chat.py</code></td><td>SSE 스트리밍 · 세션 관리 (DB 저장)</td><td>chat_sessions, chat_messages 테이블</td></tr>
+      <tr><td><code>cms.py</code></td><td>설비 진단 · 작업지시 생성/조회</td><td>work_orders 테이블</td></tr>
+      <tr><td><code>anomalies.py</code></td><td>이상탐지 실행/조회</td><td>anomaly_results 테이블</td></tr>
+      <tr><td><code>report.py</code></td><td>월간 KPI · 일일 브리핑 · PDF/DOCX/HWPX</td><td>monthly_report, daily_report 테이블</td></tr>
+      <tr><td><code>forecast.py</code></td><td>v84 앙상블 추론 API</td><td>1h / 3h 예측</td></tr>
+      <tr><td><code>control.py</code></td><td>피크 시프트 권고 · 적응형 학습</td><td>control_recommendations 테이블</td></tr>
+      <tr><td><code>simulator.py</code></td><td>가상 시계 · 배경 워커</td><td>과거 데이터 실시간 재생 + 자동 이상탐지</td></tr>
+      <tr><td><code>notifications.py</code></td><td>SSE 능동형 알림 브로드캐스트</td><td>asyncio.Queue 기반</td></tr>
+      <tr><td><code>auth.py</code></td><td>세션 토큰 로그인/로그아웃</td><td>admin · operator · viewer 역할</td></tr>
+      <tr><td><code>settings.py</code></td><td>LLM 설정 · 스케줄러 ON/OFF</td><td>.env 런타임 수정</td></tr>
+      <tr><td><code>users.py</code></td><td>사용자 관리</td><td>users 테이블</td></tr>
+    </table>
+  </div>
+
+  <h3>APScheduler 자동 재학습</h3>
+  <table>
+    <tr><th>항목</th><th>내용</th></tr>
+    <tr><td>스케줄</td><td>매월 1일 00:00 (CronTrigger)</td></tr>
+    <tr><td>실행</td><td><code>ml.pipeline.train --horizon 1</code> → <code>--horizon 3</code> 순차</td></tr>
+    <tr><td>로그</td><td><code>backend/src/logs/auto_train_YYYYMMDD.log</code></td></tr>
+    <tr><td>제어</td><td>설정 패널에서 ON/OFF · 상태 조회 (<code>/report/daily/scheduler</code>)</td></tr>
+  </table>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <h2 id="langgraph">LangGraph 멀티에이전트</h2>
+
+  <p>상태 기계(StateGraph)로 에이전트 워크플로우를 구성. <code>AgentState</code>가 노드 사이를 흘러다니며 질문·의도·각 에이전트 결과를 누적한다.</p>
+
+  <table>
+    <tr><th>노드</th><th>역할</th><th>LLM</th></tr>
+    <tr><td>classify</td><td>의도 분류 (룰 → EXAONE 폴백)</td><td>EXAONE fast (폴백만)</td></tr>
+    <tr><td>anomaly_agent</td><td>이상탐지 결과 조회 + 원인 분석</td><td>Gemma4 quality</td></tr>
+    <tr><td>reporting_agent</td><td>KPI 집계 + 보고서 생성</td><td>Gemma4 quality</td></tr>
+    <tr><td>forecast_agent</td><td>v84 앙상블 추론 + 요약</td><td>Gemma4 quality</td></tr>
+    <tr><td>cms_agent</td><td>설비 진단 + 예지보전 + 작업지시 생성</td><td>Gemma4 quality</td></tr>
+    <tr><td>rag_agent</td><td>pgvector 검색 + 답변 생성</td><td>Gemma4 (thinking 선택적)</td></tr>
+    <tr><td>rejection_node</td><td>오프토픽 즉시 거절</td><td>없음 (템플릿)</td></tr>
+    <tr><td>critic_node</td><td>용어 교정 (8패턴 문자열 치환)</td><td>없음 (LLM 제거)</td></tr>
+  </table>
+
+  <div class="callout callout-success">
+    <strong>Critic 노드 v8 개선:</strong> 이전 버전은 LLM을 호출해 품질 검토했으나, 현재는 8개 정규식 치환 패턴만 적용. LLM 호출 제거로 응답속도 개선 + 한국 에너지 용어 → Honda 독일 도메인 용어 자동 교정.
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <h2 id="sllm">sLLM — EXAONE + Gemma4 듀얼 모델</h2>
+
+  <div class="card-grid">
+    <div class="card-mini">
+      <div class="label">fast 모드</div>
+      <div class="value" style="font-size:16px">EXAONE 3.5</div>
+      <div class="desc">7.8B · LG AI Research<br>의도 분류 · max_tokens=10 · ~6초</div>
     </div>
-  </section>
-
-  <!-- ─────────────────────────────────────── -->
-  <!-- 4. sLLM -->
-  <!-- ─────────────────────────────────────── -->
-  <section id="s4">
-    <h2><span class="num">4</span> sLLM — EXAONE + Gemma4 듀얼 모델</h2>
-
-    <div class="card">
-      <h3>듀얼 모델 아키텍처</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>구분</th><th>모델</th><th>역할</th><th>응답속도</th></tr></thead>
-          <tbody>
-            <tr>
-              <td><span class="chip blue">fast 모드</span></td>
-              <td><strong>EXAONE 3.5:7.8B</strong><br><small style="color:var(--text-muted)">LG AI Research</small></td>
-              <td>의도 분류 (<code>max_tokens=10</code>)</td>
-              <td>~6초</td>
-            </tr>
-            <tr>
-              <td><span class="chip green">quality 모드</span></td>
-              <td><strong>Gemma4:12B</strong><br><small style="color:var(--text-muted)">Google DeepMind</small></td>
-              <td>진단·보고서·RAG·이상탐지 분석</td>
-              <td>~20초 (thinking 활성화)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <p style="font-size:14px;margin:18px 0 10px;font-weight:600;color:#0f172a;">모델 선정 근거 — GPT-4o-as-Judge 평가 (33문항, 5축 10점 척도)</p>
-      <div class="table-wrap">
-        <table class="scores">
-          <thead><tr><th>모델</th><th>종합</th><th>한국어</th><th>형식</th><th>근거성</th><th>논리성</th><th>실용성</th><th>속도</th><th>자체 호스팅</th></tr></thead>
-          <tbody>
-            <tr>
-              <td><strong>Gemma4 12B</strong></td>
-              <td>9.2</td><td>9.2</td><td>9.3</td><td>8.9</td><td>9.4</td><td>9.2</td>
-              <td>~20s</td><td><span class="chip green">✅ 가능</span></td>
-            </tr>
-            <tr>
-              <td>GPT-4o</td>
-              <td>9.1</td><td>9.1</td><td>9.0</td><td>8.8</td><td>9.4</td><td>9.3</td>
-              <td>3.4s</td><td><span class="chip red">❌ 클라우드</span></td>
-            </tr>
-            <tr>
-              <td>EXAONE 3.5 7.8B</td>
-              <td>8.9</td><td>8.9</td><td>8.6</td><td>8.8</td><td>9.0</td><td>9.0</td>
-              <td>6.0s</td><td><span class="chip green">✅ 가능</span></td>
-            </tr>
-            <tr>
-              <td>Qwen2.5 7B</td>
-              <td>2.4</td><td>3.9</td><td>3.8</td><td>4.5</td><td>0.0</td><td>0.0</td>
-              <td>4.8s</td><td><span class="chip red">탈락</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="warn-box">Qwen2.5 탈락 이유: 복잡한 수치 추론 시 <strong>중국어로 전환</strong> — 논리성·실용성 0점.</div>
+    <div class="card-mini">
+      <div class="label">quality 모드</div>
+      <div class="value" style="font-size:16px">Gemma4</div>
+      <div class="desc">12B · Google DeepMind<br>진단·보고서·분석 · thinking=True · ~20초</div>
     </div>
+  </div>
 
-    <div class="card">
-      <h3>Ollama <span class="tag">LLM 로컬 서빙 서버</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>로컬에서 오픈소스 LLM을 실행하는 서버. OpenAI API와 호환되는 엔드포인트 제공.</td></tr>
-            <tr><td><strong>용도</strong></td><td>EXAONE, Gemma4 모델을 GPU 서버(RunPod)에서 서빙</td></tr>
-            <tr><td><strong>엔드포인트</strong></td><td><code>https://&#123;runpod-id&#125;.proxy.runpod.net/v1</code> (OpenAI 호환)</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <pre><code><span class="cm"># llm_client.py 구조</span>
-<span class="kw">def</span> chat(messages, max_tokens=1024, fast=<span class="kw">False</span>):
-    model = LLM_MODEL_FAST <span class="kw">if</span> fast <span class="kw">else</span> LLM_MODEL
-    <span class="cm"># fast=True  → EXAONE 3.5:7.8B (think=false)</span>
-    <span class="cm"># fast=False → Gemma4:12B (thinking 자동 활성화)</span></code></pre>
-      <p style="font-size:14px;margin:8px 0 6px;color:#fff;font-weight:600;">.env 3줄만 바꾸면 Cloud API ↔ 로컬 전환</p>
-      <pre><code>LLM_PROVIDER=ollama          <span class="cm"># openai | anthropic | gemini | ollama</span>
-LLM_MODEL=gemma4:12b
-LLM_MODEL_FAST=exaone3.5:7.8b</code></pre>
+  <h3>모델 평가 결과 (33문항 · GPT-5.5-as-Judge · 5축 10점 척도 · 2026-06-11 최종)</h3>
+  <table>
+    <tr>
+      <th>모델</th><th>종합</th><th>한국어</th><th>형식</th><th>근거성</th><th>논리성</th><th>실용성</th><th>속도</th><th>자체 호스팅</th>
+    </tr>
+    <tr>
+      <td>GPT-5.5 (참고)</td>
+      <td>8.9</td><td>9.6</td><td>9.3</td><td>8.0</td><td>8.5</td><td>9.1</td><td>~17s</td><td>❌ 클라우드</td>
+    </tr>
+    <tr style="background:#f0fdf4">
+      <td><strong>Gemma4 12B</strong> <span class="badge badge-brand">quality ← 채택</span></td>
+      <td><strong>8.6</strong></td><td>9.4</td><td>9.1</td><td>8.1</td><td>8.0</td><td>8.6</td><td>~8s</td><td>✅</td>
+    </tr>
+    <tr>
+      <td>GPT-4o</td>
+      <td>8.1</td><td>9.2</td><td>8.4</td><td>7.1</td><td>7.6</td><td>8.1</td><td>~3s</td><td>❌ 클라우드</td>
+    </tr>
+    <tr style="background:#f0fdf4">
+      <td><strong>EXAONE 3.5 7.8B</strong> <span class="badge badge-green">fast ← 채택</span></td>
+      <td><strong>8.1</strong></td><td>9.1</td><td>8.6</td><td>7.6</td><td>7.0</td><td>8.1</td><td>~3.7s</td><td>✅</td>
+    </tr>
+    <tr style="opacity:.75">
+      <td>Gemma3 12B</td>
+      <td>8.7</td><td>9.0</td><td>8.2</td><td>8.3</td><td>9.1</td><td>8.8</td><td>7.7s</td><td>✅ (비채택)</td>
+    </tr>
+    <tr style="opacity:.5">
+      <td>Qwen2.5 7B</td>
+      <td>2.4</td><td>3.9</td><td>3.8</td><td>4.5</td><td>—</td><td>—</td><td>4.8s</td><td>✅ (탈락)</td>
+    </tr>
+  </table>
+  <div class="callout callout-info" style="margin-top:8px">
+    <strong>EXAONE 10.0은 의도 분류 역할(4문항) 전용 성능</strong> — 전체 33문항 종합은 8.1.<br>
+    GPT-4o 제외 이유: 회사 설비 데이터를 외부 서버로 전송 불가 (보안).<br>
+    심사위원: 2026-06-11부로 GPT-4o → GPT-5.5로 교체 (근거성 기준 강화). 모델 간 상대 순위는 동일.
+  </div>
+
+  <h3>Ollama 통합 — llm_client.py</h3>
+  <pre>def chat(messages, max_tokens=1024, fast=False, thinking=None) -> str:
+    model = LLM_MODEL_FAST if fast else LLM_MODEL
+
+    # fast=True   → EXAONE, think=False, temperature=0.1
+    # fast=False  → Gemma4, think=True (기본), temperature=0.3
+    # thinking=False 명시 → Gemma4 think OFF (~3s, RAG 단순 설명용)
+
+    # Ollama 전용: httpx로 /api/chat 직접 호출
+    # keep_alive=-1 → 모델 영구 메모리 적재
+    # OLLAMA_NUM_CTX 환경변수로 컨텍스트 길이 조절 (기본 8192)</pre>
+
+  <table>
+    <tr><th>환경변수</th><th>.env.example 기본값</th><th>설명</th></tr>
+    <tr><td><code>LLM_PROVIDER</code></td><td>ollama</td><td>openai / anthropic / gemini / ollama</td></tr>
+    <tr><td><code>LLM_MODEL</code></td><td>gemma4:12b</td><td>quality 모드 모델명</td></tr>
+    <tr><td><code>LLM_MODEL_FAST</code></td><td>exaone3.5:7.8b</td><td>fast 모드 모델명</td></tr>
+    <tr><td><code>OLLAMA_URL</code></td><td>http://localhost:11434/v1</td><td>Ollama 엔드포인트</td></tr>
+    <tr><td><code>OLLAMA_NUM_CTX</code></td><td>8192</td><td>컨텍스트 길이</td></tr>
+  </table>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <h2 id="rag">RAG — pgvector + sentence-transformers</h2>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart LR
+    Q["사용자 질문"] --> EMB["sentence-transformers&#10;로컬 임베딩"]
+    EMB --> PVEC["pgvector&#10;Cosine <= 0.7&#10;Top-K = 5"]
+    PVEC --> DOCS["관련 문서 검색&#10;knowledge_docs"]
+    DOCS --> PROMPT["프롬프트 조합&#10;+ Gemma4 답변"]
+
+    KB["지식 베이스 docs/kb&#10;01 설비 개요&#10;02 이상 유형·조치&#10;03 KPI 공식·단위&#10;04 에너지 최적화&#10;05 계량기 카탈로그"] -->|"임베딩 저장"| PVEC
+
+    style Q fill:#0d9488,color:#fff,stroke:#0d9488
+    style PVEC fill:#faf5ff,stroke:#8b5cf6
+    style KB fill:#f8fafc,stroke:#94a3b8
     </div>
+  </div>
 
-    <div class="card">
-      <h3>OpenAI / Anthropic / Gemini SDK <span class="tag">Cloud API 옵션</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>패키지</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><code>openai &gt;=1.0.0</code></td><td>GPT-4o 등 OpenAI 모델. 개발/테스트 시 기준선</td></tr>
-            <tr><td><code>anthropic &gt;=0.102.0</code></td><td>Claude 시리즈. 옵션 프로바이더</td></tr>
-            <tr><td>Gemini</td><td>OpenAI 호환 엔드포인트 사용 (별도 SDK 불필요)</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="info-box">모두 <code>llm_client.py</code>의 단일 진입점에서 추상화. 프로바이더 전환 시 코드 수정 없음.</div>
+  <table>
+    <tr><th>항목</th><th>내용</th></tr>
+    <tr><td>벡터 DB</td><td>pgvector (PostgreSQL 확장) — 별도 서버 불필요</td></tr>
+    <tr><td>검색</td><td>코사인 유사도 (<code>&lt;=&gt;</code> 연산자), Top-K=5, 임계값 0.7</td></tr>
+    <tr><td>임베딩 모델</td><td>sentence-transformers 로컬 실행 (클라우드 API 없음)</td></tr>
+    <tr><td>지식 베이스</td><td>5개 마크다운 문서 (<code>backend/docs/kb/</code>)</td></tr>
+  </table>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <h2 id="ml-forecast">ML 예측 모델 — v84 앙상블</h2>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart TD
+    IN["입력 최근 250시간 전력&#10;1h 간격"]
+    PRE["전처리&#10;잔차 타겟 P(t)−P(t−1)&#10;시간/계절 피처"]
+
+    IN --> PRE
+
+    PRE --> L1["LSTM v63&#10;hidden=128"]
+    PRE --> L2["LSTM v67&#10;hidden=256"]
+    PRE --> L3["LSTM v71&#10;hidden=64 dropout=0.3"]
+    PRE --> L4["LSTM v63 v2"]
+    PRE --> L5["LSTM v67 v2"]
+    PRE --> L6["LSTM v71 v2"]
+    PRE --> CB["CatBoost"]
+    PRE --> LG1["LightGBM t+1"]
+    PRE --> LG2["LightGBM t+3"]
+    PRE --> RG["Ridge Regression"]
+    PRE --> SN["Seasonal Naive"]
+
+    L1 & L2 & L3 & L4 & L5 & L6 --> MED["LSTM x6 중앙값&#10;median ensemble"]
+    MED & CB & LG1 & LG2 & RG & SN --> ENS["가중 평균 앙상블&#10;+ shrunk bias correction&#10;x gain 1.30"]
+
+    ENS --> OUT1["예측 t+1h (kW)"]
+    ENS --> OUT2["예측 t+3h (kW)"]
+
+    style IN fill:#0d9488,color:#fff,stroke:#0d9488
+    style MED fill:#dbeafe,stroke:#3b82f6
+    style ENS fill:#f0fdf4,stroke:#16a34a
+    style OUT1 fill:#16a34a,color:#fff,stroke:#16a34a
+    style OUT2 fill:#16a34a,color:#fff,stroke:#16a34a
     </div>
+  </div>
 
-    <div class="card">
-      <h3>프롬프트 엔지니어링 <span class="tag">파인튜닝 없이 도메인 적응</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>위치</th><th>기법</th><th>효과</th></tr></thead>
-          <tbody>
-            <tr><td><code>cms.py</code></td><td>Few-shot 3개 (소비설비/발전설비/계절 정상성)</td><td>PV 역률 오진단 방지, HIGH 레이블 오해 방지</td></tr>
-            <tr><td><code>reporting_agent.py</code></td><td>"하나의 보고서만" + 할루시네이션 방지 지시</td><td>형식 점수 6/10 → 10/10</td></tr>
-            <tr><td><code>report.py</code></td><td><code>---SUMMARY---</code>/<code>---ACTIONS---</code> few-shot</td><td>일일 브리핑 점수 8.2 → 9.2</td></tr>
-            <tr><td><code>domain_knowledge.py</code></td><td>계절별 COP, CHP 효율, 역률 정상 범위 주입</td><td>계절 이상 오진단 방지</td></tr>
-            <tr><td><code>orchestrator.py</code></td><td>off_topic 2중 방어 (키워드 룰 + LLM 지시)</td><td>거절 정확도 5.0 → 9.0+</td></tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="callout callout-info">
+    <strong>45개 계량기 개인화:</strong> 계량기마다 별도 모델 학습 및 아티팩트 저장. HF Hub <code>mintmarket/ems-agent-artifacts</code>에 ~589MB 보관. P-Max 피크 예측은 별도 앙상블 (LightGBM×2 + XGBoost + CatBoost, <code>import_pmax_v29_60min</code>).
+  </div>
+
+  <table>
+    <tr><th>라이브러리</th><th>버전</th><th>역할</th></tr>
+    <tr><td>PyTorch</td><td>≥2.0.0 (CPU-only)</td><td>LSTM RecurrentPredictor</td></tr>
+    <tr><td>CatBoost</td><td>≥1.2.0</td><td>비선형 패턴 포착</td></tr>
+    <tr><td>LightGBM</td><td>≥4.0.0</td><td>1h / 3h 전용 모델</td></tr>
+    <tr><td>XGBoost</td><td>≥1.7.0</td><td>P-Max 피크 앙상블</td></tr>
+    <tr><td>scikit-learn</td><td>≥1.3.0</td><td>MinMaxScaler, Ridge, IsolationForest</td></tr>
+    <tr><td>vmdpy</td><td>≥0.1</td><td>VMD 시계열 신호 분해</td></tr>
+  </table>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <h2 id="ml-anomaly">ML 이상탐지 모델</h2>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart TD
+    IN["계량기 실측값"]
+
+    subgraph PRI["주력 경로 v84 artifacts 존재"]
+        RES["LSTM 잔차 비율&#10;ratio = |actual - pred| / threshold"]
+        H["HIGH  ratio ≥ 2.0"]
+        M["MEDIUM  ratio ≥ 1.5"]
+        L["LOW  ratio ≥ 1.0"]
+        RES --> H & M & L
+    end
+
+    subgraph FB["폴백 경로 artifacts 없음"]
+        STAT["통계 기반&#10;Z-score / IQR / STL 잔차"]
+        IF["IsolationForest"]
+        AE["LSTM-AE&#10;재구성 오차"]
+        VOTE["3단 투표&#10;3표=HIGH · 2표=MEDIUM · 1표=LOW"]
+        STAT & IF & AE --> VOTE
+    end
+
+    IN --> PRI
+    IN --> FB
+
+    subgraph TYPE["이상 유형 분류"]
+        T1["CHPOutage — CHP 발전 중단"]
+        T2["PowerSpike — 전력 급증"]
+        T3["COPDrop — 냉난방 성능 급락"]
+        T4["NightConsumption — 야간 비정상 소비"]
+        T5["PVNightNonZero — PV 야간 비영 발전"]
+    end
+
+    PRI --> TYPE
+    FB --> TYPE
+
+    style PRI fill:#f0fdf4,stroke:#16a34a
+    style FB fill:#fffbeb,stroke:#f59e0b
+    style TYPE fill:#f0f9ff,stroke:#0ea5e9
     </div>
-  </section>
+  </div>
 
-  <!-- ─────────────────────────────────────── -->
-  <!-- 5. RAG -->
-  <!-- ─────────────────────────────────────── -->
-  <section id="s5">
-    <h2><span class="num">5</span> RAG — pgvector + sentence-transformers</h2>
+  <div class="callout callout-warning">
+    <strong>시뮬레이터 연동:</strong> 가상 시계가 과거 데이터를 재생하면, <code>simulator.py</code> 배경 워커가 자동 이상탐지를 실행하고 <code>/notifications/stream</code> SSE로 결과를 프론트엔드에 전송한다. 알림 클릭 시 채팅 패널에서 자동 질의가 실행된다.
+  </div>
 
-    <div class="grid2">
-      <div class="card">
-        <h3>pgvector <span class="tag">벡터 검색</span></h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>항목</th><th>내용</th></tr></thead>
-            <tbody>
-              <tr><td><strong>무엇</strong></td><td>PostgreSQL 확장. DB 안에서 직접 벡터 유사도 검색 가능.</td></tr>
-              <tr><td><strong>특징</strong></td><td>별도 Chroma/Pinecone 서버 없이 기존 PostgreSQL에 벡터 인덱스 추가</td></tr>
-              <tr><td><strong>검색 방식</strong></td><td>코사인 유사도 (<code>&lt;=&gt;</code>), Top-K=5, 임계값 0.7</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <pre><code><span class="cm">-- 실제 사용 쿼리 형태</span>
-<span class="kw">SELECT</span> content <span class="kw">FROM</span> knowledge_docs
-<span class="kw">ORDER BY</span> embedding <span class="cm">&lt;=&gt;</span> $1
-<span class="kw">LIMIT</span> 5;</code></pre>
-      </div>
+  <!-- ══════════════════════════════════════════════════ -->
+  <h2 id="db">데이터베이스 — PostgreSQL + TimescaleDB</h2>
 
-      <div class="card">
-        <h3>sentence-transformers <span class="tag">텍스트 임베딩</span></h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>항목</th><th>내용</th></tr></thead>
-            <tbody>
-              <tr><td><strong>무엇</strong></td><td>텍스트를 고정 크기 벡터로 변환하는 모델 라이브러리.</td></tr>
-              <tr><td><strong>사용 버전</strong></td><td><code>&gt;=2.3.0</code></td></tr>
-              <tr><td><strong>특징</strong></td><td>로컬 실행 — 임베딩은 클라우드 API 없이 처리 (데이터 보안)</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <ul class="desc" style="margin-top:12px;">
-          <li><code>embedding.py</code>: 도메인 지식 문서를 벡터로 변환해 pgvector에 저장</li>
-          <li>사용자 질문도 동일 모델로 임베딩 → pgvector 유사 문서 검색</li>
-        </ul>
-      </div>
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+erDiagram
+    corrected_resampled_1h {
+        text meter_id
+        timestamptz ts
+        float W_in
+        float W_out
+        float pf
+        float V
+    }
+    anomaly_results {
+        bigserial id
+        text meter_id
+        timestamptz detected_at
+        text anomaly_type
+        text severity
+        float ratio
+    }
+    work_orders {
+        text id
+        text equipment_id
+        text status
+        text description
+        timestamptz created_at
+    }
+    chat_sessions {
+        text id
+        text title
+        int message_count
+        timestamptz updated_at
+    }
+    chat_messages {
+        bigserial id
+        text session_id
+        text role
+        text content
+        text intent
+    }
+    monthly_report {
+        text period
+        float total_consumption_kwh
+        float self_supply_rate
+        float cop_avg
+        text ai_summary
+    }
+    chat_sessions ||--o{ chat_messages : has
     </div>
-  </section>
+  </div>
 
-  <!-- ─────────────────────────────────────── -->
-  <!-- 6. ML 예측 -->
-  <!-- ─────────────────────────────────────── -->
-  <section id="s6">
-    <h2><span class="num">6</span> ML 예측 모델 — v84 앙상블</h2>
+  <div class="callout callout-warning">
+    <strong>데이터 주의:</strong> 게이트웨이 장애 4구간 마스킹 (2020-02~03, 2020-08~09, 2021-11~12, 2022-05~07) · <code>V.Z81</code> W_in 오버플로우(-55억 kWh) 사용 금지 · CHP 계량기 <code>H1.ZE20</code>(2023~) / <code>H1.Z20</code>(~2022) coalesce 처리.
+  </div>
 
-    <div class="card">
-      <h3>앙상블 아키텍처</h3>
-      <div class="flow">입력: 최근 250시간 전력 데이터 (1시간 간격)
-    │
-    ▼
-[전처리] 잔차 타겟 (P(t) − P(t−1)) + 시간/계절 피처
-    │
-    ├── LSTM ×6개  (다양한 은닉층·드롭아웃 조합)
-    ├── CatBoost
-    ├── LightGBM ×2
-    ├── Ridge Regression
-    └── Seasonal Naive (계절 기준선)
-    │
-    ▼
-[앙상블] 가중 평균 (계량기별 최적 가중치)
-    │
-    ▼
-출력: 1시간 후 / 3시간 후 전력 예측 (kW)</div>
-      <div class="info-box"><strong>45개 계량기 개인화</strong> — 계량기마다 별도 모델 학습 및 아티팩트 저장. 총 ~589MB.</div>
-      <p style="font-size:14px;margin:14px 0 8px;font-weight:600;color:#0f172a;">앙상블 방식 상세</p>
-      <ul class="desc">
-        <li>v63·v67·v71 세 버전의 LSTM 예측을 <strong>중앙값(median)</strong>으로 앙상블</li>
-        <li>검증 데이터 기반 시간대별 <strong>shrunk bias correction × gain 1.30</strong> 후처리 적용</li>
-      </ul>
+  <!-- ══════════════════════════════════════════════════ -->
+  <h2 id="frontend">프론트엔드 — React + Vite</h2>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph LR
+    subgraph APP["App.jsx 루트"]
+        AUTH["LoginScreen&#10;세션 토큰 인증"]
+        SIDE["사이드바 14탭&#10;divider 포함"]
+        FLOAT["플로팅 챗봇&#10;전 패널 공통"]
+    end
+
+    subgraph CMS_G["핵심 CMS"]
+        P1["DashboardPanel&#10;KPI + 시뮬레이터 시계"]
+        P2["EquipmentPanel&#10;설비 헬스·진단·예지보전"]
+        P3["MaintenancePanel&#10;작업지시 칸반"]
+        P4["AnomalyPanel&#10;이상탐지 이력"]
+    end
+
+    subgraph OPS_G["운영 보조"]
+        P5["ControlPanel&#10;제어·최적화·적응형 학습"]
+        P6["ForecastPanel&#10;수요 예측"]
+        P7["BillingPanel&#10;목표 요금"]
+        P8["ReportPanel&#10;에너지 분석 PDF/DOCX"]
+    end
+
+    subgraph REF_G["참고·관리"]
+        P9["ChatWorkspacePanel&#10;AI 대화 + 히스토리"]
+        P10["TopologyPanel&#10;계량기 토폴로지"]
+        P11["SettingsPanel&#10;LLM 설정"]
+        P12["UsersPanel&#10;사용자 관리"]
+    end
+
+    SIDE --> CMS_G & OPS_G & REF_G
+    AUTH --> APP
+    FLOAT --> APP
+
+    style APP fill:#f0fdfa,stroke:#0d9488
+    style CMS_G fill:#f0fdf4,stroke:#16a34a
+    style OPS_G fill:#fffbeb,stroke:#f59e0b
+    style REF_G fill:#f0f9ff,stroke:#0ea5e9
     </div>
+  </div>
 
-    <div class="grid2">
-      <div class="card">
-        <h3>PyTorch <span class="tag purple">딥러닝 프레임워크</span></h3>
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>Meta가 만든 딥러닝 프레임워크. LSTM 구현에 사용.</td></tr>
-            <tr><td><strong>버전</strong></td><td><code>&gt;=2.0.0</code> CPU-only</td></tr>
-          </tbody>
-        </table>
-        <ul class="desc" style="margin-top:10px;">
-          <li><code>RecurrentPredictor</code>: LSTM 기반 예측 모델 클래스</li>
-          <li>6가지 변형으로 앙상블 다양성 확보</li>
-          <li>가중치 <code>.pt</code> 파일 → HF Hub 보관</li>
-        </ul>
-      </div>
+  <table>
+    <tr><th>패키지</th><th>버전</th><th>역할</th></tr>
+    <tr><td>React</td><td>^19.2.5</td><td>UI 프레임워크</td></tr>
+    <tr><td>Vite</td><td>^8.0.10</td><td>빌드 도구 / HMR</td></tr>
+    <tr><td>Recharts</td><td>^3.8.1</td><td>LineChart / BarChart / ComposedChart / AreaChart</td></tr>
+    <tr><td>axios</td><td>^1.16.0</td><td>HTTP 클라이언트 (Bearer 토큰 자동 주입)</td></tr>
+    <tr><td>lucide-react</td><td>^1.17.0</td><td>SVG 아이콘</td></tr>
+    <tr><td>react-markdown</td><td>^10.1.0</td><td>AI 답변 Markdown 렌더링</td></tr>
+    <tr><td>remark-math + rehype-katex</td><td>^6 / ^7</td><td>수식 파싱 + KaTeX 렌더링</td></tr>
+  </table>
 
-      <div class="card">
-        <h3>CatBoost <span class="tag orange">그래디언트 부스팅</span></h3>
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>Yandex가 만든 그래디언트 부스팅. 범주형 피처 처리에 강점.</td></tr>
-            <tr><td><strong>버전</strong></td><td><code>&gt;=1.2.0</code></td></tr>
-          </tbody>
-        </table>
-        <ul class="desc" style="margin-top:10px;">
-          <li>LSTM이 잡지 못하는 비선형 패턴 포착</li>
-          <li>학습 파일: <code>catboost.cbm</code></li>
-        </ul>
-      </div>
+  <div class="callout callout-info">
+    <strong>테마 시스템:</strong> <code>theme.js</code>에서 CSS 변수 기반 라이트/다크 모드 전환. 틸(teal) 브랜드 컬러 + <code>data-theme</code> 속성으로 전환. <code>localStorage</code>에 선호 테마 저장.
+  </div>
 
-      <div class="card">
-        <h3>LightGBM <span class="tag orange">그래디언트 부스팅</span></h3>
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>Microsoft가 만든 그래디언트 부스팅. CatBoost보다 빠른 학습.</td></tr>
-            <tr><td><strong>버전</strong></td><td><code>&gt;=4.0.0</code></td></tr>
-          </tbody>
-        </table>
-        <p style="font-size:14px;color:var(--text-muted);margin-top:10px;">2개 모델 (1h / 3h) 각각 학습.</p>
-      </div>
+  <!-- ══════════════════════════════════════════════════ -->
+  <h2 id="infra">인프라 — Docker + RunPod + HF Hub</h2>
 
-      <div class="card">
-        <h3>scikit-learn <span class="tag">ML 표준 라이브러리</span></h3>
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>버전</strong></td><td><code>&gt;=1.3.0</code></td></tr>
-          </tbody>
-        </table>
-        <ul class="desc" style="margin-top:10px;">
-          <li><code>MinMaxScaler</code>, <code>StandardScaler</code>: 전력 데이터 정규화</li>
-          <li><code>Ridge Regression</code>: 앙상블 기준선 모델</li>
-          <li><code>IsolationForest</code>: 이상탐지 (비지도 학습)</li>
-        </ul>
-      </div>
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+graph TD
+    subgraph LOC["로컬 / EC2"]
+        DC["Docker Compose"]
+        BE["backend 컨테이너&#10;FastAPI port 8000&#10;+ ML artifacts 볼륨"]
+        FE["frontend 컨테이너&#10;Nginx port 8080&#10;React 빌드 서빙"]
+        DC --> BE & FE
+    end
+
+    subgraph RUNPOD["RunPod RTX 3090 24GB"]
+        OL["Ollama v0.30.3+&#10;OLLAMA_HOST=0.0.0.0"]
+        EX["EXAONE 3.5:7.8B&#10;~5GB VRAM"]
+        GM["Gemma4:12B&#10;~8GB VRAM"]
+        OL --> EX & GM
+    end
+
+    subgraph HF["Hugging Face Hub"]
+        ART["mintmarket/ems-agent-artifacts&#10;45계량기 x 1h/3h .pt/.cbm/.joblib&#10;~700MB"]
+    end
+
+    BE -- "httpx /api/chat" --> RUNPOD
+    BE -- "ensure_artifacts.py&#10;시작 시 자동 다운로드" --> HF
+
+    style LOC fill:#f0fdf4,stroke:#16a34a
+    style RUNPOD fill:#eff6ff,stroke:#3b82f6
+    style HF fill:#fff7ed,stroke:#f59e0b
     </div>
+  </div>
 
-    <div class="grid2">
-      <div class="card">
-        <h3>XGBoost <span class="tag orange">그래디언트 부스팅</span></h3>
-        <p style="font-size:14px;color:var(--text-muted);margin-top:8px;">P-Max 피크 예측 앙상블(LightGBM×2 + XGBoost + CatBoost)에서 사용. 버전: <code>&gt;=1.7.0</code></p>
-      </div>
-      <div class="card">
-        <h3>statsmodels + vmdpy <span class="tag">통계 / 신호처리</span></h3>
-        <ul class="desc" style="margin-top:8px;">
-          <li><code>statsmodels</code>: STL 분해 기반 잔차 이상 감지 (<code>&gt;=0.14.0</code>)</li>
-          <li><code>vmdpy</code>: VMD — 전력 시계열 트렌드/주기 성분 분리</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+  <table>
+    <tr><th>항목</th><th>스펙</th><th>역할</th></tr>
+    <tr><td>Docker Compose</td><td>v2</td><td>backend(8000) + frontend Nginx(8080)</td></tr>
+    <tr><td>RunPod</td><td>RTX 3090 24GB · Secure Cloud</td><td>Ollama 서버 · 145 tok/s (EXAONE Q4)</td></tr>
+    <tr><td>HF Hub</td><td>mintmarket/ems-agent-artifacts</td><td>v84 앙상블 + P-Max 아티팩트 ~700MB</td></tr>
+    <tr><td>PostgreSQL</td><td>AWS EC2 13.209.98.228:5432</td><td>TimescaleDB + pgvector (cms DB)</td></tr>
+    <tr><td>reportlab / python-docx</td><td>≥4.0 / ≥1.1</td><td>보고서 PDF / DOCX 다운로드</td></tr>
+    <tr><td>MLflow (skinny)</td><td>≥3.12.0</td><td>v84 학습 실험 지표 추적</td></tr>
+  </table>
 
-  <!-- ─────────────────────────────────────── -->
-  <!-- 7. 이상탐지 -->
-  <!-- ─────────────────────────────────────── -->
-  <section id="s7">
-    <h2><span class="num">7</span> ML 이상탐지 모델</h2>
+  <!-- ══════════════════════════════════════════════════ -->
+  <h2 id="versions">버전 요약표</h2>
 
-    <div class="card">
-      <h3>2경로 이상탐지 구조</h3>
-      <div class="flow">[주력 경로] v84 LSTM 잔차 비율 기반  (artifacts 있을 때)
-  LSTM 예측값과 실젯값의 잔차를 계량기별 임계값(threshold)으로 나눈 비율:
-  ratio = |actual - predicted| / threshold
-  → ratio ≥ 2.0 = HIGH  |  ≥ 1.5 = MEDIUM  |  ≥ 1.0 = LOW
-  ※ IsolationForest는 이 경로에서 미사용 (if_flag 고정 0)
+  <h3>백엔드 Python 패키지</h3>
+  <table>
+    <tr><th>패키지</th><th>버전</th><th>역할</th></tr>
+    <tr><td>fastapi</td><td>≥0.110.0</td><td>REST API 서버</td></tr>
+    <tr><td>uvicorn</td><td>≥0.23.0</td><td>ASGI 웹 서버</td></tr>
+    <tr><td>langgraph</td><td>≥0.1.0</td><td>멀티에이전트 워크플로우</td></tr>
+    <tr><td>langchain-core</td><td>≥0.0.400</td><td>LangGraph 기반 라이브러리</td></tr>
+    <tr><td>openai</td><td>≥1.0.0</td><td>GPT / Ollama 호환 클라이언트</td></tr>
+    <tr><td>anthropic</td><td>≥0.102.0</td><td>Claude 클라이언트</td></tr>
+    <tr><td>torch</td><td>≥2.0.0 (CPU-only)</td><td>LSTM 예측 모델</td></tr>
+    <tr><td>catboost</td><td>≥1.2.0</td><td>그래디언트 부스팅 예측</td></tr>
+    <tr><td>lightgbm</td><td>≥4.0.0</td><td>그래디언트 부스팅 예측</td></tr>
+    <tr><td>xgboost</td><td>≥1.7.0</td><td>P-Max 피크 예측</td></tr>
+    <tr><td>scikit-learn</td><td>≥1.3.0</td><td>전처리 + IsolationForest + Ridge</td></tr>
+    <tr><td>statsmodels</td><td>≥0.14.0</td><td>STL 분해 이상탐지</td></tr>
+    <tr><td>pandas</td><td>≥2.0.0</td><td>시계열 데이터 처리</td></tr>
+    <tr><td>numpy</td><td>≥2.0.0</td><td>수치 연산</td></tr>
+    <tr><td>matplotlib</td><td>≥3.7.0</td><td>ML 파이프라인 시각화</td></tr>
+    <tr><td>psycopg2-binary</td><td>≥2.9.10</td><td>PostgreSQL 드라이버</td></tr>
+    <tr><td>sqlalchemy</td><td>≥2.0.0</td><td>ORM + ML 쿼리 빌더</td></tr>
+    <tr><td>sentence-transformers</td><td>≥2.3.0</td><td>텍스트 임베딩 (RAG)</td></tr>
+    <tr><td>huggingface_hub</td><td>≥1.0.0</td><td>HF Hub 아티팩트 다운로드</td></tr>
+    <tr><td>apscheduler</td><td>≥3.10.0</td><td>크론 스케줄러</td></tr>
+    <tr><td>reportlab</td><td>≥4.0.0</td><td>PDF 보고서 생성</td></tr>
+    <tr><td>python-docx</td><td>≥1.1.0</td><td>Word 보고서 생성</td></tr>
+    <tr><td>mlflow-skinny</td><td>≥3.12.0</td><td>ML 실험 추적</td></tr>
+    <tr><td>httpx</td><td>≥0.27.0</td><td>Ollama 직접 호출 (thinking 지원)</td></tr>
+    <tr><td>jinja2</td><td>≥3.1.2</td><td>템플릿 엔진</td></tr>
+    <tr><td>pytz</td><td>≥2024.1</td><td>시간대 처리</td></tr>
+    <tr><td>sentencepiece</td><td>≥0.1.99</td><td>토큰화 (sentence-transformers 의존)</td></tr>
+    <tr><td>vmdpy</td><td>≥0.1</td><td>VMD 시계열 신호 분해</td></tr>
+  </table>
 
-[폴백 경로] 3단 투표  (v84 artifacts 없을 때)
-  통계 기반 (Z-score, IQR, STL 잔차)
-  IsolationForest
-  LSTM-AE (오토인코더 재구성 오차)
-  → 3표 = HIGH  |  2표 = MEDIUM  |  1표 = LOW</div>
+  <h3>프론트엔드</h3>
+  <table>
+    <tr><th>패키지</th><th>버전</th><th>역할</th></tr>
+    <tr><td>react</td><td>^19.2.5</td><td>UI 프레임워크</td></tr>
+    <tr><td>vite</td><td>^8.0.10</td><td>빌드 도구</td></tr>
+    <tr><td>recharts</td><td>^3.8.1</td><td>차트 라이브러리</td></tr>
+    <tr><td>axios</td><td>^1.16.0</td><td>HTTP 클라이언트</td></tr>
+    <tr><td>lucide-react</td><td>^1.17.0</td><td>SVG 아이콘</td></tr>
+    <tr><td>react-markdown</td><td>^10.1.0</td><td>Markdown 렌더링</td></tr>
+    <tr><td>remark-math</td><td>^6.0.0</td><td>수식 파싱</td></tr>
+    <tr><td>rehype-katex</td><td>^7.0.1</td><td>KaTeX 수식 렌더링</td></tr>
+    <tr><td>katex</td><td>^0.16.45</td><td>수식 렌더링 엔진</td></tr>
+  </table>
 
-      <p style="font-size:14px;margin:16px 0 10px;font-weight:600;color:#0f172a;">이상 유형 분류</p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>유형</th><th>설명</th></tr></thead>
-          <tbody>
-            <tr><td><code>CHPOutage</code></td><td>CHP 발전 중단 감지</td></tr>
-            <tr><td><code>PowerSpike</code></td><td>전력 급증</td></tr>
-            <tr><td><code>COPDrop</code></td><td>냉난방 성능 계수 급락</td></tr>
-            <tr><td><code>NightConsumption</code></td><td>야간 비정상 소비</td></tr>
-            <tr><td><code>PVNightNonZero</code></td><td>PV 야간 비영 발전 (센서 이상)</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="info-box"><strong>LSTM-AE (오토인코더)</strong>: 정상 데이터로만 학습 → 이상 데이터 입력 시 재구성 오차가 커짐. 오차 > 임계값 = 이상.</div>
-    </div>
-  </section>
+  <h3>인프라 / 모델</h3>
+  <table>
+    <tr><th>항목</th><th>버전/사양</th><th>역할</th></tr>
+    <tr><td>Docker</td><td>23.0+</td><td>컨테이너</td></tr>
+    <tr><td>Docker Compose</td><td>v2</td><td>멀티 컨테이너 오케스트레이션</td></tr>
+    <tr><td>PostgreSQL</td><td>15+ (TimescaleDB)</td><td>시계열 DB</td></tr>
+    <tr><td>pgvector</td><td>최신</td><td>벡터 검색</td></tr>
+    <tr><td>Ollama</td><td>v0.30.3+</td><td>LLM 로컬 서빙 (keep_alive=-1)</td></tr>
+    <tr><td>Gemma4:12B</td><td>Google DeepMind</td><td>quality 모드 LLM (thinking 지원)</td></tr>
+    <tr><td>EXAONE 3.5:7.8B</td><td>LG AI Research</td><td>fast 모드 LLM</td></tr>
+    <tr><td>RunPod</td><td>RTX 3090 24GB Secure Cloud</td><td>GPU 서버 · 145 tok/s</td></tr>
+    <tr><td>Hugging Face Hub</td><td>mintmarket/ems-agent-artifacts</td><td>모델 아티팩트 저장소</td></tr>
+  </table>
 
-  <!-- ─────────────────────────────────────── -->
-  <!-- 8. DB -->
-  <!-- ─────────────────────────────────────── -->
-  <section id="s8">
-    <h2><span class="num">8</span> 데이터베이스 — PostgreSQL + TimescaleDB</h2>
+  <div style="margin-top:48px;padding:16px 20px;background:var(--brand-soft);border-radius:10px;font-size:12px;color:var(--text3)">
+    SK Networks AI Family 25기 4팀 · Honda R&amp;D Europe GmbH 에너지 데이터 · 최종 업데이트 2026-06-12
+  </div>
+</main>
 
-    <div class="card">
-      <h3>PostgreSQL + TimescaleDB <span class="tag green">시계열 DB</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>PostgreSQL</strong></td><td>오픈소스 관계형 DB. 가장 기능이 풍부하고 확장성이 뛰어남.</td></tr>
-            <tr><td><strong>TimescaleDB</strong></td><td>PostgreSQL 확장. 시계열 특화 — 자동 파티셔닝, 압축, 시계열 함수.</td></tr>
-            <tr><td><strong>서버</strong></td><td>AWS EC2 / DB명: <code>cms</code></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p style="font-size:14px;margin:14px 0 8px;font-weight:600;color:#0f172a;">주요 테이블</p>
-      <pre><code>reference.corrected_resampled_1h    <span class="cm">-- 계량기별 시간 단위 집계 (주 조회 테이블)</span>
-reference.corrected_resampled_15min <span class="cm">-- 15분 단위</span>
-ems.*                               <span class="cm">-- 원본 계측 데이터 (71개 계량기, 6년치)</span>
-anomaly_results                     <span class="cm">-- 이상탐지 결과 저장</span>
-cms.work_orders                     <span class="cm">-- 정비 작업지시</span>
-cms.control_recommendations         <span class="cm">-- 운영 권고 이력</span></code></pre>
-      <p style="font-size:14px;margin:14px 0 8px;font-weight:600;color:#0f172a;">데이터 특이사항</p>
-      <ul class="desc">
-        <li>게이트웨이 장애 4개 구간 마스킹 처리 (2020-02~03, 2020-08~09, 2021-11~12, 2022-05~07)</li>
-        <li><code>V.Z81</code>의 <code>W_in</code>은 오버플로우 (-55억 kWh) — 사용 금지</li>
-        <li>CHP 계량기: <code>H1.ZE20</code> (2023~) / <code>H1.Z20</code> (~2022) coalesce 처리</li>
-      </ul>
-    </div>
-  </section>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#0d9488',
+      primaryTextColor: '#1e293b',
+      primaryBorderColor: '#0d9488',
+      lineColor: '#64748b',
+      secondaryColor: '#f0fdfa',
+      tertiaryColor: '#f8fafc',
+      fontFamily: 'Pretendard, Inter, system-ui, sans-serif',
+      fontSize: '15px',
+      nodeBorder: '#0d9488',
+      clusterBkg: '#f8fafc',
+      clusterBorder: '#cbd5e1',
+      edgeLabelBackground: '#ffffff',
+    },
+    flowchart: { curve: 'basis', padding: 24, nodeSpacing: 50, rankSpacing: 60 },
+    er: { useMaxWidth: true, fontSize: 15 },
+    sequence: { useMaxWidth: true },
+  });
 
-  <!-- ─────────────────────────────────────── -->
-  <!-- 9. 프론트엔드 -->
-  <!-- ─────────────────────────────────────── -->
-  <section id="s9">
-    <h2><span class="num">9</span> 프론트엔드 — React + Vite</h2>
-
-    <div class="card">
-      <h3>React 19 <span class="tag">UI 프레임워크</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>Facebook이 만든 UI 컴포넌트 라이브러리. 현재 가장 널리 쓰이는 프론트엔드 프레임워크.</td></tr>
-            <tr><td><strong>버전</strong></td><td><code>^19.2.5</code></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p style="font-size:14px;margin:14px 0 10px;font-weight:600;color:#0f172a;">12개 패널 구조</p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>패널</th><th>역할</th></tr></thead>
-          <tbody>
-            <tr><td>DashboardPanel</td><td>KPI 요약 + 실시간 시뮬레이터</td></tr>
-            <tr><td>EquipmentPanel</td><td>설비별 헬스스코어 + AI 진단</td></tr>
-            <tr><td>MaintenancePanel</td><td>작업지시 칸반</td></tr>
-            <tr><td>AnomalyPanel</td><td>이상탐지 이력 + 차트</td></tr>
-            <tr><td>ChatPanel / ChatWorkspacePanel</td><td>AI 대화 + 세션 관리</td></tr>
-            <tr><td>ForecastPanel</td><td>수요 예측 시각화</td></tr>
-            <tr><td>ControlPanel</td><td>운영 권고 + 적응형 학습</td></tr>
-            <tr><td>BillingPanel</td><td>목표 요금 관리</td></tr>
-            <tr><td>ReportPanel</td><td>월간/일일 보고서 (AI 생성 포함)</td></tr>
-            <tr><td>TopologyPanel</td><td>계량기 에너지 흐름 토폴로지</td></tr>
-            <tr><td>SettingsPanel</td><td>LLM 설정 (프로바이더/모델/API키)</td></tr>
-            <tr><td>UsersPanel</td><td>사용자 관리</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="grid2">
-      <div class="card">
-        <h3>Vite 8 <span class="tag">빌드 도구</span></h3>
-        <p style="font-size:14px;margin:8px 0;">차세대 프론트엔드 빌드 도구. CRA보다 10배 이상 빠른 HMR(핫 리로드). <code>^8.0.10</code></p>
-        <ul class="desc">
-          <li>개발: <code>npm run dev</code> → <code>localhost:5173</code></li>
-          <li>프로덕션: <code>npm run build</code> → Docker Nginx 서빙</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Recharts 3 <span class="tag">차트 라이브러리</span></h3>
-        <p style="font-size:14px;margin:8px 0;">React용 차트. D3.js 기반, 선언적 API. <code>^3.8.1</code></p>
-        <ul class="desc">
-          <li><code>LineChart</code>: 전력 트렌드, 예측 결과</li>
-          <li><code>BarChart</code>: 월간 KPI 비교</li>
-          <li><code>ComposedChart</code>: Grid/PV/CHP 스택 바 + COP 라인 오버레이</li>
-          <li><code>AreaChart</code>: 이상탐지 시계열</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>axios <span class="tag">HTTP 클라이언트</span></h3>
-        <p style="font-size:14px;margin:8px 0;">HTTP 클라이언트. <code>fetch</code> API보다 인터셉터·에러 처리 편리. <code>^1.16.0</code></p>
-        <p style="font-size:14px;color:var(--text-muted);">모든 백엔드 API 호출을 <code>frontend/src/api/client.js</code>에서 집중 관리.</p>
-      </div>
-      <div class="card">
-        <h3>react-markdown + KaTeX <span class="tag">렌더링</span></h3>
-        <ul class="desc" style="margin-top:8px;">
-          <li><code>react-markdown ^10.1.0</code>: Markdown → React 컴포넌트</li>
-          <li><code>katex ^0.16.45</code>: 수식 렌더링</li>
-        </ul>
-        <p style="font-size:14px;color:var(--text-muted);margin-top:8px;">AI 진단 결과, 보고서 텍스트 렌더링.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────────────────── -->
-  <!-- 10. 인프라 -->
-  <!-- ─────────────────────────────────────── -->
-  <section id="s10">
-    <h2><span class="num">10</span> 인프라 — Docker + RunPod + HF Hub</h2>
-
-    <div class="card">
-      <h3>Docker + Docker Compose <span class="tag green">컨테이너</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>컨테이너 기반 앱 패키징·실행 도구. "내 컴퓨터에서는 됐는데" 문제 해결.</td></tr>
-            <tr><td><strong>버전</strong></td><td>Docker 23.0+ / Compose v2</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <pre><code><span class="cm"># docker-compose.yml 서비스 구성</span>
-services:
-  backend:   FastAPI (port 8000) + ML 모델 볼륨 마운트
-  frontend:  React 빌드 → Nginx (port 8080)</code></pre>
-      <div class="info-box">컨테이너 시작 시 <code>ensure_artifacts.py</code> 자동 실행 → HF Hub에서 없는 모델만 다운로드.</div>
-    </div>
-
-    <div class="card">
-      <h3>RunPod <span class="tag purple">GPU 클라우드</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>GPU 클라우드 서비스. 시간당 과금으로 RTX 3090 등 GPU 대여.</td></tr>
-            <tr><td><strong>사용 GPU</strong></td><td>RTX 3090 24GB (Secure Cloud)</td></tr>
-            <tr><td><strong>용도</strong></td><td>Ollama 서버 — Gemma4:12B + EXAONE 3.5:7.8B 동시 서빙</td></tr>
-            <tr><td><strong>추론 속도</strong></td><td>145 tok/s (EXAONE 7.8B Q4 기준)</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <pre><code>RunPod Pod 내:
-  ollama serve (OLLAMA_HOST=0.0.0.0)
-  └── gemma4:12b       (~8GB VRAM)
-  └── exaone3.5:7.8b   (~5GB VRAM)
-
-외부 접근: https://&#123;pod-id&#125;-11434.proxy.runpod.net/v1</code></pre>
-    </div>
-
-    <div class="card">
-      <h3>Hugging Face Hub <span class="tag">모델 아티팩트 저장소</span></h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>ML 모델·데이터셋 공유 플랫폼. Git 기반 버전 관리.</td></tr>
-            <tr><td><strong>저장소</strong></td><td><code>mintmarket/ems-agent-artifacts</code> (public dataset)</td></tr>
-            <tr><td><strong>보관 내용</strong></td><td>v84 앙상블 45개 계량기 × 1h/3h (~589MB) + P-Max (~114MB)</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <pre><code><span class="cm"># 다운로드 (팀원, 토큰 불필요)</span>
-.venv/bin/python scripts/download_artifacts.py
-
-<span class="cm"># Docker 실행 시 자동 다운로드</span>
-docker compose up --build -d</code></pre>
-    </div>
-
-    <div class="grid2">
-      <div class="card">
-        <h3>reportlab + python-docx <span class="tag">문서 생성</span></h3>
-        <table>
-          <thead><tr><th>패키지</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><code>reportlab &gt;=4.0.0</code></td><td>Python PDF 생성</td></tr>
-            <tr><td><code>python-docx &gt;=1.1.0</code></td><td>Python Word(.docx) 생성</td></tr>
-          </tbody>
-        </table>
-        <p style="font-size:14px;color:var(--text-muted);margin-top:10px;">보고서 패널의 PDF / DOCX / HWPX 다운로드 기능.</p>
-      </div>
-      <div class="card">
-        <h3>MLflow (skinny) <span class="tag">실험 추적</span></h3>
-        <table>
-          <thead><tr><th>항목</th><th>내용</th></tr></thead>
-          <tbody>
-            <tr><td><strong>무엇</strong></td><td>ML 실험 추적 플랫폼. 모델 파라미터, 지표 버전 관리.</td></tr>
-            <tr><td><strong>버전</strong></td><td><code>mlflow-skinny &gt;=3.12.0</code></td></tr>
-          </tbody>
-        </table>
-        <p style="font-size:14px;color:var(--text-muted);margin-top:10px;">v84 앙상블 학습 실험 지표 기록용. UI 없이 추적만.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────────────────── -->
-  <!-- 11. 개발 도구 -->
-  <!-- ─────────────────────────────────────── -->
-  <section id="s11">
-    <h2><span class="num">11</span> 개발 도구</h2>
-
-    <div class="grid2">
-      <div class="card">
-        <h3>pytest <span class="tag">테스트</span></h3>
-        <p style="font-size:14px;margin:8px 0;">Python 테스트 프레임워크. <code>&gt;=8.0.0</code> + <code>pytest-asyncio</code> + <code>pytest-cov</code></p>
-        <p style="font-size:14px;color:var(--text-muted);"><code>tests/</code> 폴더에 백엔드 API 테스트.</p>
-      </div>
-      <div class="card">
-        <h3>httpx <span class="tag">HTTP 클라이언트</span></h3>
-        <p style="font-size:14px;margin:8px 0;">비동기 HTTP 클라이언트. <code>&gt;=0.27.0</code></p>
-        <p style="font-size:14px;color:var(--text-muted);">FastAPI 테스트 및 Ollama 네이티브 <code>/api/chat</code> 엔드포인트 직접 호출 시 사용.</p>
-      </div>
-      <div class="card">
-        <h3>Git LFS <span class="tag">대용량 파일 관리</span></h3>
-        <p style="font-size:14px;margin:8px 0;">대용량 파일을 Git에서 포인터로 관리. GitHub 100MB 제한 우회.</p>
-        <p style="font-size:14px;color:var(--text-muted);"><code>.gitattributes</code>에 <code>*.joblib filter=lfs</code> 설정. P-Max 모델 파일 16개 관리.</p>
-      </div>
-      <div class="card">
-        <h3>Jinja2 <span class="tag">템플릿 엔진</span></h3>
-        <p style="font-size:14px;margin:8px 0;">Python 템플릿 엔진. <code>&gt;=3.1.2</code></p>
-        <p style="font-size:14px;color:var(--text-muted);">보고서 HTML 템플릿 렌더링에 사용.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────────────────── -->
-  <!-- 12. 버전 요약표 -->
-  <!-- ─────────────────────────────────────── -->
-  <section id="s12">
-    <h2><span class="num">12</span> 버전 요약표</h2>
-
-    <div class="card">
-      <h3>백엔드 Python 패키지</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>패키지</th><th>버전</th><th>역할</th></tr></thead>
-          <tbody>
-            <tr><td>fastapi</td><td><code>&gt;=0.110.0</code></td><td>REST API 서버</td></tr>
-            <tr><td>uvicorn</td><td><code>&gt;=0.23.0</code></td><td>ASGI 웹 서버</td></tr>
-            <tr><td>langgraph</td><td><code>&gt;=0.1.0</code></td><td>멀티에이전트 워크플로우</td></tr>
-            <tr><td>openai</td><td><code>&gt;=1.0.0</code></td><td>GPT / Ollama 호환 LLM 클라이언트</td></tr>
-            <tr><td>anthropic</td><td><code>&gt;=0.102.0</code></td><td>Claude LLM 클라이언트</td></tr>
-            <tr><td>torch</td><td><code>&gt;=2.0.0</code></td><td>LSTM 예측 모델</td></tr>
-            <tr><td>catboost</td><td><code>&gt;=1.2.0</code></td><td>그래디언트 부스팅 예측</td></tr>
-            <tr><td>lightgbm</td><td><code>&gt;=4.0.0</code></td><td>그래디언트 부스팅 예측</td></tr>
-            <tr><td>xgboost</td><td><code>&gt;=1.7.0</code></td><td>그래디언트 부스팅 (P-Max)</td></tr>
-            <tr><td>scikit-learn</td><td><code>&gt;=1.3.0</code></td><td>전처리 + IsolationForest</td></tr>
-            <tr><td>statsmodels</td><td><code>&gt;=0.14.0</code></td><td>STL 분해 이상탐지</td></tr>
-            <tr><td>pandas</td><td><code>&gt;=2.0.0</code></td><td>데이터 처리</td></tr>
-            <tr><td>numpy</td><td><code>&gt;=2.0.0</code></td><td>수치 연산</td></tr>
-            <tr><td>psycopg2-binary</td><td><code>&gt;=2.9.10</code></td><td>PostgreSQL 드라이버</td></tr>
-            <tr><td>sqlalchemy</td><td><code>&gt;=2.0.0</code></td><td>ORM + 쿼리 빌더</td></tr>
-            <tr><td>sentence-transformers</td><td><code>&gt;=2.3.0</code></td><td>텍스트 임베딩 (RAG)</td></tr>
-            <tr><td>huggingface_hub</td><td><code>&gt;=1.0.0</code></td><td>HF Hub artifacts 다운로드</td></tr>
-            <tr><td>apscheduler</td><td><code>&gt;=3.10.0</code></td><td>크론 스케줄러</td></tr>
-            <tr><td>reportlab</td><td><code>&gt;=4.0.0</code></td><td>PDF 생성</td></tr>
-            <tr><td>python-docx</td><td><code>&gt;=1.1.0</code></td><td>Word 문서 생성</td></tr>
-            <tr><td>mlflow-skinny</td><td><code>&gt;=3.12.0</code></td><td>실험 추적</td></tr>
-            <tr><td>httpx</td><td><code>&gt;=0.27.0</code></td><td>비동기 HTTP 클라이언트</td></tr>
-            <tr><td>jinja2</td><td><code>&gt;=3.1.2</code></td><td>템플릿 엔진</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="grid2">
-      <div class="card">
-        <h3>프론트엔드</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>패키지</th><th>버전</th><th>역할</th></tr></thead>
-            <tbody>
-              <tr><td>react</td><td><code>^19.2.5</code></td><td>UI 프레임워크</td></tr>
-              <tr><td>vite</td><td><code>^8.0.10</code></td><td>빌드 도구</td></tr>
-              <tr><td>recharts</td><td><code>^3.8.1</code></td><td>차트 라이브러리</td></tr>
-              <tr><td>axios</td><td><code>^1.16.0</code></td><td>HTTP 클라이언트</td></tr>
-              <tr><td>lucide-react</td><td><code>^1.17.0</code></td><td>아이콘</td></tr>
-              <tr><td>react-markdown</td><td><code>^10.1.0</code></td><td>Markdown 렌더링</td></tr>
-              <tr><td>katex</td><td><code>^0.16.45</code></td><td>수식 렌더링</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>인프라 / 모델</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>항목</th><th>버전/사양</th><th>역할</th></tr></thead>
-            <tbody>
-              <tr><td>Docker</td><td>23.0+</td><td>컨테이너</td></tr>
-              <tr><td>Docker Compose</td><td>v2</td><td>멀티 컨테이너</td></tr>
-              <tr><td>PostgreSQL</td><td>15+ (TimescaleDB)</td><td>시계열 DB</td></tr>
-              <tr><td>pgvector</td><td>최신</td><td>벡터 검색</td></tr>
-              <tr><td>Ollama</td><td>v0.30.3+</td><td>LLM 로컬 서빙</td></tr>
-              <tr><td>Gemma4:12B</td><td>Google DeepMind</td><td>quality 모드 LLM</td></tr>
-              <tr><td>EXAONE 3.5:7.8B</td><td>LG AI Research</td><td>fast 모드 LLM</td></tr>
-              <tr><td>RunPod</td><td>RTX 3090 24GB</td><td>GPU 서버</td></tr>
-              <tr><td>Hugging Face Hub</td><td>—</td><td>모델 아티팩트 저장소</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </section>
-
-</div><!-- /wrapper -->
+  // Mermaid 렌더링 후 SVG width 강제 적용
+  document.addEventListener('DOMContentLoaded', () => {
+    const observer = new MutationObserver(() => {
+      document.querySelectorAll('.mermaid svg').forEach(svg => {
+        svg.removeAttribute('width');
+        svg.removeAttribute('height');
+        svg.style.width = '100%';
+        svg.style.height = 'auto';
+        svg.style.maxWidth = '100%';
+      });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+</script>
 </body>
 </html>
