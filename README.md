@@ -197,6 +197,7 @@ SKN25-FINAL-4Team/
 | 최종 발표 PPT | `presentation/TTF-FMS_최종발표_v2.pptx` | 최종 제출용 PPT (20슬라이드) |
 | 숫자 체크리스트 | `presentation/TTF-FMS_숫자_일관성_체크리스트.md` | PDF 제출 전 수치 검수용 |
 | Q&A 30초 카드 | `presentation/TTF-FMS_QA_30초_구두답변.md` | 발표 당일 암기용 |
+| V7 근거 파일 목록 | `presentation/V7_작성_근거_파일_목록_v2.md` | 풀버전 v7 작성 근거 파일 인벤토리 |
 
 ---
 
