@@ -162,7 +162,23 @@ def normalize_route1(value: Any) -> str | None:
         "approval": "approval_required", "approval_required": "approval_required", "safety_or_control": "approval_required", "승인": "approval_required", "위험": "approval_required",
         "offtopic": "off_topic", "off_topic": "off_topic", "other": "off_topic", "irrelevant": "off_topic", "일반": "off_topic", "무관": "off_topic",
     }
-    return aliases.get(v)
+    if v in aliases:
+        return aliases[v]
+
+    # If a model puts a natural-language explanation inside the value, extract
+    # the branch only when exactly one allowed label is unambiguously present.
+    # The original value is preserved under _raw_route1; route1 itself is never
+    # allowed to store natural-language text.
+    raw = str(value).strip().lower()
+    patterns = {
+        "query": [r"\bquery\b", "일반 질의", "질의", "질문"],
+        "action_request": [r"\baction_request\b", "작업 요청", "작업", "실행 요청"],
+        "approval_required": [r"\bapproval_required\b", "승인 필요", "승인", "권한 확인"],
+        "off_topic": [r"\boff_topic\b", "무관", "관련 없는", "범위 밖"],
+    }
+    hits = [label for label, pats in patterns.items() if any(re.search(pat, raw) for pat in pats)]
+    uniq = list(dict.fromkeys(hits))
+    return uniq[0] if len(uniq) == 1 else None
 
 
 def normalize_route2(value: Any) -> str | None:
@@ -176,19 +192,39 @@ def normalize_route2(value: Any) -> str | None:
         "forecast": "forecast", "prediction": "forecast", "예측": "forecast", "전망": "forecast",
         "rag": "rag", "lookup": "rag", "knowledge": "rag", "definition": "rag", "검색": "rag", "설명": "rag",
     }
-    return aliases.get(v)
+    if v in aliases:
+        return aliases[v]
+
+    raw = str(value).strip().lower()
+    patterns = {
+        "anomaly": [r"\banomaly\b", "이상", "경보", "알람"],
+        "cms": [r"\bcms\b", "설비", "정비", "점검", "유지보수"],
+        "report": [r"\breport\b", "보고서", "리포트", "요약"],
+        "forecast": [r"\bforecast\b", "예측", "전망", "추세"],
+        "rag": [r"\brag\b", "검색", "설명", "정의", "용어"],
+    }
+    hits = [label for label, pats in patterns.items() if any(re.search(pat, raw) for pat in pats)]
+    uniq = list(dict.fromkeys(hits))
+    return uniq[0] if len(uniq) == 1 else None
 
 
 def ollama_predict(message: str, model: str, base_url: str, timeout: int = 180, think: bool | None = False) -> dict[str, str | None]:
     endpoint = api_chat_endpoint_from_base(base_url)
     system = (
-        "You are a deterministic JSON-only router for an EMS agent. "
-        "Never explain. Never include markdown. Never think aloud. "
-        "Return exactly one JSON object with keys route1, route2, final_action. "
-        "route1 must be exactly one of: query, action_request, approval_required, off_topic. "
-        "If route1=query, route2 must be exactly one of: anomaly, cms, report, forecast, rag. "
-        "If route1 is not query, route2 must be null. "
-        "final_action must be route:<route2> for query, otherwise gate:<route1>."
+        "You are a deterministic branch selector for an EMS router. "
+        "Your task is NOT to answer the user. Your only task is to choose the routing branch. "
+        "Return exactly one JSON object and nothing else. No prose, no markdown, no comments, no reasoning. "
+        "The JSON object must contain exactly these three keys: route1, route2, final_action. "
+        "Every value must be one of the allowed literal values below. Do not put explanations inside values. "
+        "Allowed route1 values: query, action_request, approval_required, off_topic. "
+        "Allowed route2 values when route1 is query: anomaly, cms, report, forecast, rag. "
+        "When route1 is not query, route2 must be null. "
+        "Allowed final_action values: route:anomaly, route:cms, route:report, route:forecast, route:rag, "
+        "gate:action_request, gate:approval_required, gate:off_topic. "
+        "Consistency rules: if route1 is query, final_action must be route:<route2>; "
+        "if route1 is not query, final_action must be gate:<route1>. "
+        "Valid example: {\"route1\":\"query\",\"route2\":\"anomaly\",\"final_action\":\"route:anomaly\"}. "
+        "Invalid examples: natural-language values, extra keys, markdown fences, multiple JSON objects, empty content."
     )
     payload = {
         "model": model,
