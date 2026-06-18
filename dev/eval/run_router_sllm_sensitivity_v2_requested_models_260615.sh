@@ -3,7 +3,9 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 
 OLLAMA_URL="${OLLAMA_URL:-http://127.0.0.1:11436/v1}"
-DATASET="${DATASET:-dev/eval/data/router_two_stage_eval_300_v2_260615.json}"
+DATASET="${DATASET:-dev/eval/data/router_two_stage_eval_300_260617.json}"
+RUN_ID_PREFIX="${RUN_ID_PREFIX:-run_260617_anomaly_mart_sensitivity}"
+COMPARISON_OUT="${COMPARISON_OUT:-sensitivity_comparison_260617_anomaly_mart_requested_models_n300.json}"
 MODELS=(
   "llama3.2:3b"
   "llama3.1:8b"
@@ -13,24 +15,28 @@ MODELS=(
   "qwen3.5:9b"
   "exaone3.5:7.8b"
   "gemma4:12b"
+  "deepseek-r1:8b"
+  "phi4-mini:3.8b"
+  "qwen3:8b"
 )
 
 for m in "${MODELS[@]}"; do
   safe=$(echo "$m" | tr ':.' '__')
-  echo "[RUN] model=$m dataset=$DATASET rows=300"
+  echo "[RUN] model=$m dataset=$DATASET rows=300 ollama_url=$OLLAMA_URL"
   python3 dev/eval/router_two_stage_metrics_260615.py \
     --mode ollama \
     --ollama-url "$OLLAMA_URL" \
     --model "$m" \
     --dataset "$DATASET" \
-    --run-id "run_current_260615_v2_sensitivity_${safe}_n300"
+    --run-id "${RUN_ID_PREFIX}_${safe}_n300"
 done
 
-python3 - <<'PY'
-import json
+RUN_ID_PREFIX="$RUN_ID_PREFIX" COMPARISON_OUT="$COMPARISON_OUT" python3 - <<'PY'
+import json, os
 from pathlib import Path
 base=Path('reports/experiments/router_two_stage_classification')
-runs=sorted(base.glob('run_current_260615_v2_sensitivity_*_n300/metrics.json'))
+run_prefix=os.environ['RUN_ID_PREFIX']
+runs=sorted(base.glob(f'{run_prefix}_*_n300/metrics.json'))
 summary=[]
 for p in runs:
     d=json.loads(p.read_text(encoding='utf-8'))
@@ -56,7 +62,7 @@ for p in runs:
         'parsed_llm_json_count': parsed_count,
         'latency_ms': d['phase_latency_ms']['total'],
     })
-out=base/'sensitivity_comparison_260615_v2_requested_models_n300.json'
-out.write_text(json.dumps({'summary':summary}, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
-print(json.dumps({'output':str(out), 'summary':summary}, ensure_ascii=False, indent=2))
+out=base/os.environ['COMPARISON_OUT']
+out.write_text(json.dumps({'run_prefix': run_prefix, 'summary':summary}, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+print(json.dumps({'output':str(out), 'run_prefix': run_prefix, 'summary':summary}, ensure_ascii=False, indent=2))
 PY

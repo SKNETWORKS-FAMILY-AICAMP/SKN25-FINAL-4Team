@@ -1,0 +1,1113 @@
+{
+  "schema_version": "anomaly_qa_quality_eval_260617.v1",
+  "reference_policy": "reference_answer uses GPT-5.5-style curated operational answer; reference_answer_sqllm stores sLLM-generated alternative reference",
+  "rows": [
+    {
+      "id": "R2S2-Q-ANOMALY-001",
+      "question": "2023년 가을 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 가을 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "가을",
+        "meter_count": 3,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "chp_related",
+        "category_name": "CHP 관련 계량기",
+        "warning_step_count": 1440,
+        "reason_distribution": {
+          "평소 시간대 대비 고부하": 684,
+          "평소 시간대 대비 저부하": 756
+        },
+        "warning_event_count": 898,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 756,
+          "평소보다 높은 부하 경보": 684
+        }
+      },
+      "reference_answer_gpt55": "2023년 가을 CHP 관련 계량기는 총 3개이며, 경보 단계은 1440건, 경보 이벤트는 898건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 684, \"평소 시간대 대비 저부하\": 756}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 756, \"평소보다 높은 부하 경보\": 684}입니다.",
+      "reference_answer_sqllm": "2023년 가을 CHP 관련 계량기는 총 3개이며, 원인 분포는 평소 시간대 대비 고부하 684건, 평소 시간대 대비 저부하 756건입니다.",
+      "reference_answer": "2023년 가을 CHP 관련 계량기는 총 3개이며, 경보 단계은 1440건, 경보 이벤트는 898건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 684, \"평소 시간대 대비 저부하\": 756}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 756, \"평소보다 높은 부하 경보\": 684}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-001",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-002",
+      "question": "2023년 가을 냉방 장치 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 가을 냉방 장치 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "가을",
+        "meter_count": 27,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "cooling_related",
+        "category_name": "냉방 장치 관련 계량기",
+        "warning_step_count": 22418,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 8878,
+          "평소 시간대 대비 고부하": 1899,
+          "평소 시간대 대비 저부하": 11641
+        },
+        "warning_event_count": 10382,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 15797,
+          "평소보다 높은 부하 경보": 6621
+        }
+      },
+      "reference_answer_gpt55": "2023년 가을 냉방 장치 관련 계량기는 총 27개이며, 경보 단계은 22418건, 경보 이벤트는 10382건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 8878, \"평소 시간대 대비 고부하\": 1899, \"평소 시간대 대비 저부하\": 11641}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 15797, \"평소보다 높은 부하 경보\": 6621}입니다.",
+      "reference_answer_sqllm": "2023년 가을 냉방 장치 관련 계량기는 총 27건이며, 원인 분포는 알려진 계량기 이슈 8878, 평소 시간대 대비 고부하 1899, 평소 시간대 대비 저부하 11641입니다.",
+      "reference_answer": "2023년 가을 냉방 장치 관련 계량기는 총 27개이며, 경보 단계은 22418건, 경보 이벤트는 10382건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 8878, \"평소 시간대 대비 고부하\": 1899, \"평소 시간대 대비 저부하\": 11641}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 15797, \"평소보다 높은 부하 경보\": 6621}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-002",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-003",
+      "question": "2023년 가을 열 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 가을 열 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "가을",
+        "meter_count": 2,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "heating_related",
+        "category_name": "열 계량기",
+        "warning_step_count": 1327,
+        "reason_distribution": {
+          "평소 시간대 대비 고부하": 84,
+          "평소 시간대 대비 저부하": 1243
+        },
+        "warning_event_count": 783,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 1243,
+          "평소보다 높은 부하 경보": 84
+        }
+      },
+      "reference_answer_gpt55": "2023년 가을 열 계량기는 총 2개이며, 경보 단계은 1327건, 경보 이벤트는 783건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 84, \"평소 시간대 대비 저부하\": 1243}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 1243, \"평소보다 높은 부하 경보\": 84}입니다.",
+      "reference_answer_sqllm": "2023년 가을 열 계량기에서 발생한 이슈는 총 2건이며, 경보 단계는 1327건, 경보 이벤트는 783건입니다. 원인 분포는 평소 시간대 대비 고부하 84건, 평소 시간대 대비 저부하 1243건이며, 경보 방향 분포는 평소보다 낮은 부하 경보 1243건, 평소보다 높은 부하 경보 84건입니다.",
+      "reference_answer": "2023년 가을 열 계량기는 총 2개이며, 경보 단계은 1327건, 경보 이벤트는 783건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 84, \"평소 시간대 대비 저부하\": 1243}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 1243, \"평소보다 높은 부하 경보\": 84}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-003",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-004",
+      "question": "2023년 가을 PV 발전 전력 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 가을 PV 발전 전력 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "가을",
+        "meter_count": 5,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "pv_related",
+        "category_name": "PV 발전 전력 계량기",
+        "warning_step_count": 12527,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 5203,
+          "평소 시간대 대비 고부하": 6086,
+          "평소 시간대 대비 저부하": 1238
+        },
+        "warning_event_count": 6040,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 4803,
+          "평소보다 높은 부하 경보": 7724
+        }
+      },
+      "reference_answer_gpt55": "2023년 가을 PV 발전 전력 계량기는 총 5개이며, 경보 단계은 12527건, 경보 이벤트는 6040건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 5203, \"평소 시간대 대비 고부하\": 6086, \"평소 시간대 대비 저부하\": 1238}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 4803, \"평소보다 높은 부하 경보\": 7724}입니다.",
+      "reference_answer_sqllm": "2023년 가을 PV 발전 전력 계량기 이슈는 총 5건이며, 원인 분포는 알려진 계량기 이슈 5203, 평소 시간대 대비 고부하 6086, 평소 시간대 대비 저부하 1238입니다. 경보 방향 분포는 평소보다 낮은 부하 경보 4803, 평소보다 높은 부하 경보 7724입니다.",
+      "reference_answer": "2023년 가을 PV 발전 전력 계량기는 총 5개이며, 경보 단계은 12527건, 경보 이벤트는 6040건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 5203, \"평소 시간대 대비 고부하\": 6086, \"평소 시간대 대비 저부하\": 1238}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 4803, \"평소보다 높은 부하 경보\": 7724}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-004",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-005",
+      "question": "2023년 겨울 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 겨울 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "겨울",
+        "meter_count": 3,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "chp_related",
+        "category_name": "CHP 관련 계량기",
+        "warning_step_count": 953,
+        "reason_distribution": {
+          "입력 데이터 품질 이슈": 1,
+          "평소 시간대 대비 고부하": 322,
+          "평소 시간대 대비 저부하": 630
+        },
+        "warning_event_count": 678,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 631,
+          "평소보다 높은 부하 경보": 322
+        }
+      },
+      "reference_answer_gpt55": "2023년 겨울 CHP 관련 계량기는 총 3개이며, 경보 단계은 953건, 경보 이벤트는 678건입니다. 원인 분포는 {\"입력 데이터 품질 이슈\": 1, \"평소 시간대 대비 고부하\": 322, \"평소 시간대 대비 저부하\": 630}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 631, \"평소보다 높은 부하 경보\": 322}입니다.",
+      "reference_answer_sqllm": "2023년 겨울 CHP 관련 계량기는 총 3개이며, 원인 분포는 입력 데이터 품질 이슈 1건, 평소 시간대 대비 고부하 322건, 평소 시간대 대비 저부하 630건입니다.",
+      "reference_answer": "2023년 겨울 CHP 관련 계량기는 총 3개이며, 경보 단계은 953건, 경보 이벤트는 678건입니다. 원인 분포는 {\"입력 데이터 품질 이슈\": 1, \"평소 시간대 대비 고부하\": 322, \"평소 시간대 대비 저부하\": 630}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 631, \"평소보다 높은 부하 경보\": 322}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-005",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-006",
+      "question": "2023년 겨울 냉방 장치 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 겨울 냉방 장치 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "겨울",
+        "meter_count": 27,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "cooling_related",
+        "category_name": "냉방 장치 관련 계량기",
+        "warning_step_count": 28240,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 6033,
+          "평소 시간대 대비 고부하": 1270,
+          "평소 시간대 대비 저부하": 20937
+        },
+        "warning_event_count": 12774,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 25761,
+          "평소보다 높은 부하 경보": 2479
+        }
+      },
+      "reference_answer_gpt55": "2023년 겨울 냉방 장치 관련 계량기는 총 27개이며, 경보 단계은 28240건, 경보 이벤트는 12774건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 6033, \"평소 시간대 대비 고부하\": 1270, \"평소 시간대 대비 저부하\": 20937}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 25761, \"평소보다 높은 부하 경보\": 2479}입니다.",
+      "reference_answer_sqllm": "2023년 겨울 냉방 장치 관련 계량기는 총 27개이며, 원인 분포는 알려진 계량기 이슈 6033, 평소 시간대 대비 고부하 1270, 평소 시간대 대비 저부하 20937입니다. 경보 방향 분포는 평소보다 낮은 부하 경보 25761, 평소보다 높은 부하 경보 2479입니다.",
+      "reference_answer": "2023년 겨울 냉방 장치 관련 계량기는 총 27개이며, 경보 단계은 28240건, 경보 이벤트는 12774건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 6033, \"평소 시간대 대비 고부하\": 1270, \"평소 시간대 대비 저부하\": 20937}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 25761, \"평소보다 높은 부하 경보\": 2479}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-006",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-007",
+      "question": "2023년 겨울 열 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 겨울 열 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "겨울",
+        "meter_count": 2,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "heating_related",
+        "category_name": "열 계량기",
+        "warning_step_count": 519,
+        "reason_distribution": {
+          "평소 시간대 대비 고부하": 440,
+          "평소 시간대 대비 저부하": 79
+        },
+        "warning_event_count": 382,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 79,
+          "평소보다 높은 부하 경보": 440
+        }
+      },
+      "reference_answer_gpt55": "2023년 겨울 열 계량기는 총 2개이며, 경보 단계은 519건, 경보 이벤트는 382건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 440, \"평소 시간대 대비 저부하\": 79}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 79, \"평소보다 높은 부하 경보\": 440}입니다.",
+      "reference_answer_sqllm": "2023년 겨울 열 계량기에서 발생한 이슈는 총 2건이며, 경보 단계는 519건, 경보 이벤트는 382건입니다. 원인 분포는 평소 시간대 대비 고부하 440건, 평소 시간대 대비 저부하 79건이며, 경보 방향 분포는 평소보다 낮은 부하 경보 79건, 평소보다 높은 부하 경보 440건입니다.",
+      "reference_answer": "2023년 겨울 열 계량기는 총 2개이며, 경보 단계은 519건, 경보 이벤트는 382건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 440, \"평소 시간대 대비 저부하\": 79}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 79, \"평소보다 높은 부하 경보\": 440}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-007",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-008",
+      "question": "2023년 겨울 PV 발전 전력 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 겨울 PV 발전 전력 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "겨울",
+        "meter_count": 5,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "pv_related",
+        "category_name": "PV 발전 전력 계량기",
+        "warning_step_count": 13295,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 5022,
+          "평소 시간대 대비 고부하": 7817,
+          "평소 시간대 대비 저부하": 456
+        },
+        "warning_event_count": 6387,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 3479,
+          "평소보다 높은 부하 경보": 9816
+        }
+      },
+      "reference_answer_gpt55": "2023년 겨울 PV 발전 전력 계량기는 총 5개이며, 경보 단계은 13295건, 경보 이벤트는 6387건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 5022, \"평소 시간대 대비 고부하\": 7817, \"평소 시간대 대비 저부하\": 456}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 3479, \"평소보다 높은 부하 경보\": 9816}입니다.",
+      "reference_answer_sqllm": "2023년 겨울 PV 발전 전력 계량기에서 발생한 이슈는 총 5건이며, 경보 단계는 13295건, 경보 이벤트는 6387건입니다. 원인 분포는 알려진 계량기 이슈 5022, 평소 시간대 대비 고부하 7817, 평소 시간대 대비 저부하 456이며, 경보 방향 분포는 평소보다 낮은 부하 경보 3479, 평소보다 높은 부하 경보 9816입니다.",
+      "reference_answer": "2023년 겨울 PV 발전 전력 계량기는 총 5개이며, 경보 단계은 13295건, 경보 이벤트는 6387건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 5022, \"평소 시간대 대비 고부하\": 7817, \"평소 시간대 대비 저부하\": 456}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 3479, \"평소보다 높은 부하 경보\": 9816}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-008",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-009",
+      "question": "2023년 봄 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 봄 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "봄",
+        "meter_count": 3,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "chp_related",
+        "category_name": "CHP 관련 계량기",
+        "warning_step_count": 881,
+        "reason_distribution": {
+          "입력 데이터 품질 이슈": 1,
+          "평소 시간대 대비 고부하": 283,
+          "평소 시간대 대비 저부하": 597
+        },
+        "warning_event_count": 523,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 597,
+          "평소보다 높은 부하 경보": 284
+        }
+      },
+      "reference_answer_gpt55": "2023년 봄 CHP 관련 계량기는 총 3개이며, 경보 단계은 881건, 경보 이벤트는 523건입니다. 원인 분포는 {\"입력 데이터 품질 이슈\": 1, \"평소 시간대 대비 고부하\": 283, \"평소 시간대 대비 저부하\": 597}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 597, \"평소보다 높은 부하 경보\": 284}입니다.",
+      "reference_answer_sqllm": "2023년 봄 CHP 관련 계량기는 총 3개이며, 원인 분포는 입력 데이터 품질 이슈 1건, 평소 시간대 대비 고부하 283건, 평소 시간대 대비 저부하 597건입니다. 경보 방향 분포는 평소보다 낮은 부하 경보 597건, 평소보다 높은 부하 경보 284건입니다.",
+      "reference_answer": "2023년 봄 CHP 관련 계량기는 총 3개이며, 경보 단계은 881건, 경보 이벤트는 523건입니다. 원인 분포는 {\"입력 데이터 품질 이슈\": 1, \"평소 시간대 대비 고부하\": 283, \"평소 시간대 대비 저부하\": 597}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 597, \"평소보다 높은 부하 경보\": 284}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-009",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-010",
+      "question": "2023년 봄 냉방 장치 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 봄 냉방 장치 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "봄",
+        "meter_count": 27,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "cooling_related",
+        "category_name": "냉방 장치 관련 계량기",
+        "warning_step_count": 27908,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 13805,
+          "평소 시간대 대비 고부하": 1714,
+          "평소 시간대 대비 저부하": 12389
+        },
+        "warning_event_count": 12257,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 17656,
+          "평소보다 높은 부하 경보": 10252
+        }
+      },
+      "reference_answer_gpt55": "2023년 봄 냉방 장치 관련 계량기는 총 27개이며, 경보 단계은 27908건, 경보 이벤트는 12257건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 13805, \"평소 시간대 대비 고부하\": 1714, \"평소 시간대 대비 저부하\": 12389}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 17656, \"평소보다 높은 부하 경보\": 10252}입니다.",
+      "reference_answer_sqllm": "2023년 봄 냉방 장치 관련 계량기는 총 27개이며, 원인 분포는 알려진 계량기 이슈 13805, 평소 시간대 대비 고부하 1714, 평소 시간대 대비 저부하 12389입니다. 경보 방향 분포는 평소보다 낮은 부하 경보 17656, 평소보다 높은 부하 경보 10252입니다.",
+      "reference_answer": "2023년 봄 냉방 장치 관련 계량기는 총 27개이며, 경보 단계은 27908건, 경보 이벤트는 12257건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 13805, \"평소 시간대 대비 고부하\": 1714, \"평소 시간대 대비 저부하\": 12389}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 17656, \"평소보다 높은 부하 경보\": 10252}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-010",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-011",
+      "question": "2023년 봄 열 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 봄 열 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "봄",
+        "meter_count": 2,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "heating_related",
+        "category_name": "열 계량기",
+        "warning_step_count": 547,
+        "reason_distribution": {
+          "평소 시간대 대비 고부하": 10,
+          "평소 시간대 대비 저부하": 537
+        },
+        "warning_event_count": 305,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 537,
+          "평소보다 높은 부하 경보": 10
+        }
+      },
+      "reference_answer_gpt55": "2023년 봄 열 계량기는 총 2개이며, 경보 단계은 547건, 경보 이벤트는 305건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 10, \"평소 시간대 대비 저부하\": 537}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 537, \"평소보다 높은 부하 경보\": 10}입니다.",
+      "reference_answer_sqllm": "2023년 봄 열 계량기에서 발생한 이슈는 총 2건이며, 경보 단계는 547건, 경보 이벤트는 305건입니다. 원인 분포는 평소 시간대 대비 고부하 10건, 평소 시간대 대비 저부하 537건이며, 경보 방향 분포는 평소보다 낮은 부하 경보 537건, 평소보다 높은 부하 경보 10건입니다.",
+      "reference_answer": "2023년 봄 열 계량기는 총 2개이며, 경보 단계은 547건, 경보 이벤트는 305건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 10, \"평소 시간대 대비 저부하\": 537}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 537, \"평소보다 높은 부하 경보\": 10}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-011",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-012",
+      "question": "2023년 봄 PV 발전 전력 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 봄 PV 발전 전력 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "봄",
+        "meter_count": 5,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "pv_related",
+        "category_name": "PV 발전 전력 계량기",
+        "warning_step_count": 11352,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 5478,
+          "평소 시간대 대비 고부하": 2236,
+          "평소 시간대 대비 저부하": 3638
+        },
+        "warning_event_count": 5335,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 8119,
+          "평소보다 높은 부하 경보": 3233
+        }
+      },
+      "reference_answer_gpt55": "2023년 봄 PV 발전 전력 계량기는 총 5개이며, 경보 단계은 11352건, 경보 이벤트는 5335건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 5478, \"평소 시간대 대비 고부하\": 2236, \"평소 시간대 대비 저부하\": 3638}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 8119, \"평소보다 높은 부하 경보\": 3233}입니다.",
+      "reference_answer_sqllm": "2023년 봄 PV 발전 전력 계량기에서 발생한 이슈는 총 5건이며, 경보 단계는 11352건, 경보 이벤트는 5335건입니다. 원인 분포는 알려진 계량기 이슈 5478, 평소 시간대 대비 고부하 2236, 평소 시간대 대비 저부하 3638이며, 경보 방향 분포는 평소보다 낮은 부하 경보 8119, 평소보다 높은 부하 경보 3233입니다.",
+      "reference_answer": "2023년 봄 PV 발전 전력 계량기는 총 5개이며, 경보 단계은 11352건, 경보 이벤트는 5335건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 5478, \"평소 시간대 대비 고부하\": 2236, \"평소 시간대 대비 저부하\": 3638}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 8119, \"평소보다 높은 부하 경보\": 3233}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-012",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-013",
+      "question": "2023년 여름 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 여름 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "여름",
+        "meter_count": 3,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "chp_related",
+        "category_name": "CHP 관련 계량기",
+        "warning_step_count": 5871,
+        "reason_distribution": {
+          "평소 시간대 대비 고부하": 3355,
+          "평소 시간대 대비 저부하": 2516
+        },
+        "warning_event_count": 3166,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 2516,
+          "평소보다 높은 부하 경보": 3355
+        }
+      },
+      "reference_answer_gpt55": "2023년 여름 CHP 관련 계량기는 총 3개이며, 경보 단계은 5871건, 경보 이벤트는 3166건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 3355, \"평소 시간대 대비 저부하\": 2516}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 2516, \"평소보다 높은 부하 경보\": 3355}입니다.",
+      "reference_answer_sqllm": "2023년 여름 CHP 관련 계량기에서 발생한 이슈는 총 3건이며, 원인 분포는 평소 시간대 대비 고부하 3355, 평소 시간대 대비 저부하 2516입니다. 경보 방향 분포는 평소보다 높은 부하 경보 3355, 평소보다 낮은 부하 경보 2516입니다.",
+      "reference_answer": "2023년 여름 CHP 관련 계량기는 총 3개이며, 경보 단계은 5871건, 경보 이벤트는 3166건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 3355, \"평소 시간대 대비 저부하\": 2516}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 2516, \"평소보다 높은 부하 경보\": 3355}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-013",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-014",
+      "question": "2023년 여름 냉방 장치 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 여름 냉방 장치 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "여름",
+        "meter_count": 27,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "cooling_related",
+        "category_name": "냉방 장치 관련 계량기",
+        "warning_step_count": 25994,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 9005,
+          "평소 시간대 대비 고부하": 4991,
+          "평소 시간대 대비 저부하": 11998
+        },
+        "warning_event_count": 11324,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 16463,
+          "평소보다 높은 부하 경보": 9531
+        }
+      },
+      "reference_answer_gpt55": "2023년 여름 냉방 장치 관련 계량기는 총 27개이며, 경보 단계은 25994건, 경보 이벤트는 11324건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 9005, \"평소 시간대 대비 고부하\": 4991, \"평소 시간대 대비 저부하\": 11998}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 16463, \"평소보다 높은 부하 경보\": 9531}입니다.",
+      "reference_answer_sqllm": "2023년 여름 냉방 장치 관련 계량기는 총 27건이며, 원인 분포는 알려진 계량기 이슈 9005, 평소 시간대 대비 고부하 4991, 평소 시간대 대비 저부하 11998입니다.",
+      "reference_answer": "2023년 여름 냉방 장치 관련 계량기는 총 27개이며, 경보 단계은 25994건, 경보 이벤트는 11324건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 9005, \"평소 시간대 대비 고부하\": 4991, \"평소 시간대 대비 저부하\": 11998}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 16463, \"평소보다 높은 부하 경보\": 9531}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-014",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-015",
+      "question": "2023년 여름 열 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 여름 열 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "여름",
+        "meter_count": 2,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "heating_related",
+        "category_name": "열 계량기",
+        "warning_step_count": 4265,
+        "reason_distribution": {
+          "평소 시간대 대비 저부하": 4265
+        },
+        "warning_event_count": 2175,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 4265
+        }
+      },
+      "reference_answer_gpt55": "2023년 여름 열 계량기는 총 2개이며, 경보 단계은 4265건, 경보 이벤트는 2175건입니다. 원인 분포는 {\"평소 시간대 대비 저부하\": 4265}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 4265}입니다.",
+      "reference_answer_sqllm": "2023년 여름 열 계량기에서 발생한 이슈는 총 2건이며, 경보 단계는 4265건, 경보 이벤트는 2175건입니다. 원인 분포는 평소 시간대 대비 저부하 4265건이며, 경보 유형 분포는 평소보다 낮은 부하 경보 4265건입니다.",
+      "reference_answer": "2023년 여름 열 계량기는 총 2개이며, 경보 단계은 4265건, 경보 이벤트는 2175건입니다. 원인 분포는 {\"평소 시간대 대비 저부하\": 4265}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 4265}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-015",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-016",
+      "question": "2023년 여름 PV 발전 전력 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "message": "2023년 여름 PV 발전 전력 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "여름",
+        "meter_count": 5,
+        "source_view": "mart.v_qa_anomaly_category_summary",
+        "category_key": "pv_related",
+        "category_name": "PV 발전 전력 계량기",
+        "warning_step_count": 12317,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 5706,
+          "평소 시간대 대비 고부하": 2212,
+          "평소 시간대 대비 저부하": 4399
+        },
+        "warning_event_count": 5518,
+        "warning_type_distribution": {
+          "평소보다 낮은 부하 경보": 9044,
+          "평소보다 높은 부하 경보": 3273
+        }
+      },
+      "reference_answer_gpt55": "2023년 여름 PV 발전 전력 계량기는 총 5개이며, 경보 단계은 12317건, 경보 이벤트는 5518건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 5706, \"평소 시간대 대비 고부하\": 2212, \"평소 시간대 대비 저부하\": 4399}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 9044, \"평소보다 높은 부하 경보\": 3273}입니다.",
+      "reference_answer_sqllm": "2023년 여름 PV 발전 전력 계량기에서 발생한 이슈는 총 5건이며, 경보 단계는 12317건, 경보 이벤트는 5518건입니다. 원인 분포는 알려진 계량기 이슈 5706, 평소 시간대 대비 고부하 2212, 평소 시간대 대비 저부하 4399이며, 경보 방향 분포는 평소보다 낮은 부하 경보 9044, 평소보다 높은 부하 경보 3273입니다.",
+      "reference_answer": "2023년 여름 PV 발전 전력 계량기는 총 5개이며, 경보 단계은 12317건, 경보 이벤트는 5518건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 5706, \"평소 시간대 대비 고부하\": 2212, \"평소 시간대 대비 저부하\": 4399}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 9044, \"평소보다 높은 부하 경보\": 3273}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-016",
+      "source_view": "mart.v_qa_anomaly_category_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-017",
+      "question": "2023년 가을 PV 발전 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "message": "2023년 가을 PV 발전 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "가을",
+        "meter_count": 5,
+        "source_view": "mart.v_qa_anomaly_equipment_summary",
+        "equipment_name": "PV 발전 전력 계량기",
+        "equipment_category": "pv",
+        "warning_step_count": 18,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 2,
+          "평소 시간대 대비 고부하": 8,
+          "평소 시간대 대비 저부하": 8
+        }
+      },
+      "reference_answer_gpt55": "2023년 가을 PV 발전 전력 계량기는 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"평소 시간대 대비 고부하\": 8, \"평소 시간대 대비 저부하\": 8}입니다.",
+      "reference_answer_sqllm": "2023년 가을 PV 발전 전력 계량기에서는 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 알려진 계량기 이슈 2, 평소 시간대 대비 고부하 8, 평소 시간대 대비 저부하 8입니다.",
+      "reference_answer": "2023년 가을 PV 발전 전력 계량기는 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"평소 시간대 대비 고부하\": 8, \"평소 시간대 대비 저부하\": 8}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-017",
+      "source_view": "mart.v_qa_anomaly_equipment_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-018",
+      "question": "2023년 겨울 PV 발전 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "message": "2023년 겨울 PV 발전 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "겨울",
+        "meter_count": 5,
+        "source_view": "mart.v_qa_anomaly_equipment_summary",
+        "equipment_name": "PV 발전 전력 계량기",
+        "equipment_category": "pv",
+        "warning_step_count": 18,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 2,
+          "평소 시간대 대비 고부하": 8,
+          "평소 시간대 대비 저부하": 8
+        }
+      },
+      "reference_answer_gpt55": "2023년 겨울 PV 발전 전력 계량기는 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"평소 시간대 대비 고부하\": 8, \"평소 시간대 대비 저부하\": 8}입니다.",
+      "reference_answer_sqllm": "2023년 겨울 PV 발전 전력 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 알려진 계량기 이슈 2, 평소 시간대 대비 고부하 8, 평소 시간대 대비 저부하 8입니다.",
+      "reference_answer": "2023년 겨울 PV 발전 전력 계량기는 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"평소 시간대 대비 고부하\": 8, \"평소 시간대 대비 저부하\": 8}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-018",
+      "source_view": "mart.v_qa_anomaly_equipment_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-019",
+      "question": "2023년 봄 PV 발전 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "message": "2023년 봄 PV 발전 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "봄",
+        "meter_count": 5,
+        "source_view": "mart.v_qa_anomaly_equipment_summary",
+        "equipment_name": "PV 발전 전력 계량기",
+        "equipment_category": "pv",
+        "warning_step_count": 18,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 2,
+          "평소 시간대 대비 고부하": 8,
+          "평소 시간대 대비 저부하": 8
+        }
+      },
+      "reference_answer_gpt55": "2023년 봄 PV 발전 전력 계량기는 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"평소 시간대 대비 고부하\": 8, \"평소 시간대 대비 저부하\": 8}입니다.",
+      "reference_answer_sqllm": "2023년 봄 PV 발전 전력 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 알려진 계량기 이슈 2, 평소 시간대 대비 고부하 8, 평소 시간대 대비 저부하 8입니다.",
+      "reference_answer": "2023년 봄 PV 발전 전력 계량기는 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"평소 시간대 대비 고부하\": 8, \"평소 시간대 대비 저부하\": 8}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-019",
+      "source_view": "mart.v_qa_anomaly_equipment_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-020",
+      "question": "2023년 여름 PV 발전 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "message": "2023년 여름 PV 발전 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "여름",
+        "meter_count": 5,
+        "source_view": "mart.v_qa_anomaly_equipment_summary",
+        "equipment_name": "PV 발전 전력 계량기",
+        "equipment_category": "pv",
+        "warning_step_count": 18,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 2,
+          "평소 시간대 대비 고부하": 8,
+          "평소 시간대 대비 저부하": 8
+        }
+      },
+      "reference_answer_gpt55": "2023년 여름 PV 발전 전력 계량기는 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"평소 시간대 대비 고부하\": 8, \"평소 시간대 대비 저부하\": 8}입니다.",
+      "reference_answer_sqllm": "2023년 여름 PV 발전 전력 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 알려진 계량기 이슈 2, 평소 시간대 대비 고부하 8, 평소 시간대 대비 저부하 8입니다.",
+      "reference_answer": "2023년 여름 PV 발전 전력 계량기는 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"평소 시간대 대비 고부하\": 8, \"평소 시간대 대비 저부하\": 8}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-020",
+      "source_view": "mart.v_qa_anomaly_equipment_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-021",
+      "question": "2023년 가을 배출가스 시험실 냉방/HVAC 계량기에서 발생한 이슈를 요약해줘.",
+      "message": "2023년 가을 배출가스 시험실 냉방/HVAC 계량기에서 발생한 이슈를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "가을",
+        "meter_count": 9,
+        "source_view": "mart.v_qa_anomaly_equipment_summary",
+        "equipment_name": "배출가스 시험실 냉방/HVAC 계량기",
+        "equipment_category": "emission_lab_cooling",
+        "warning_step_count": 13,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 4,
+          "평소 시간대 대비 고부하": 2,
+          "평소 시간대 대비 저부하": 7
+        }
+      },
+      "reference_answer_gpt55": "2023년 가을 배출가스 시험실 냉방/HVAC 계량기는 계량기 9개에서 경보 단계 13건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 4, \"평소 시간대 대비 고부하\": 2, \"평소 시간대 대비 저부하\": 7}입니다.",
+      "reference_answer_sqllm": "2023년 가을 배출가스 시험실 냉방/HVAC 계량기 9개에서 경보 단계 13건이 발생했습니다. 원인 분포는 알려진 계량기 이슈 4, 평소 시간대 대비 고부하 2, 평소 시간대 대비 저부하 7입니다.",
+      "reference_answer": "2023년 가을 배출가스 시험실 냉방/HVAC 계량기는 계량기 9개에서 경보 단계 13건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 4, \"평소 시간대 대비 고부하\": 2, \"평소 시간대 대비 저부하\": 7}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-021",
+      "source_view": "mart.v_qa_anomaly_equipment_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-022",
+      "question": "2023년 여름 서버실 냉방 계량기에서 발생한 이슈를 요약해줘.",
+      "message": "2023년 여름 서버실 냉방 계량기에서 발생한 이슈를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "여름",
+        "meter_count": 9,
+        "source_view": "mart.v_qa_anomaly_equipment_summary",
+        "equipment_name": "서버실 냉방 계량기",
+        "equipment_category": "server_cooling",
+        "warning_step_count": 13,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 5,
+          "평소 시간대 대비 고부하": 4,
+          "평소 시간대 대비 저부하": 4
+        }
+      },
+      "reference_answer_gpt55": "2023년 여름 서버실 냉방 계량기는 계량기 9개에서 경보 단계 13건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 5, \"평소 시간대 대비 고부하\": 4, \"평소 시간대 대비 저부하\": 4}입니다.",
+      "reference_answer_sqllm": "2023년 여름 서버실 냉방 계량기 9개에서 경보 단계 13건이 발생했습니다. 원인 분포는 알려진 계량기 이슈 5, 평소 시간대 대비 고부하 4, 평소 시간대 대비 저부하 4입니다.",
+      "reference_answer": "2023년 여름 서버실 냉방 계량기는 계량기 9개에서 경보 단계 13건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 5, \"평소 시간대 대비 고부하\": 4, \"평소 시간대 대비 저부하\": 4}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-022",
+      "source_view": "mart.v_qa_anomaly_equipment_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-023",
+      "question": "2023년 가을 냉방 열량 계량기에서 발생한 이슈를 요약해줘.",
+      "message": "2023년 가을 냉방 열량 계량기에서 발생한 이슈를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "가을",
+        "meter_count": 7,
+        "source_view": "mart.v_qa_anomaly_equipment_summary",
+        "equipment_name": "냉방 열량 계량기",
+        "equipment_category": "cooling",
+        "warning_step_count": 12,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 3,
+          "평소 시간대 대비 고부하": 5,
+          "평소 시간대 대비 저부하": 4
+        }
+      },
+      "reference_answer_gpt55": "2023년 가을 냉방 열량 계량기는 계량기 7개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 3, \"평소 시간대 대비 고부하\": 5, \"평소 시간대 대비 저부하\": 4}입니다.",
+      "reference_answer_sqllm": "2023년 가을 냉방 열량 계량기에서는 계량기 7개에서 경보 단계 12건이 발생했습니다. 원인 분포는 알려진 계량기 이슈 3, 평소 시간대 대비 고부하 5, 평소 시간대 대비 저부하 4입니다.",
+      "reference_answer": "2023년 가을 냉방 열량 계량기는 계량기 7개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 3, \"평소 시간대 대비 고부하\": 5, \"평소 시간대 대비 저부하\": 4}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-023",
+      "source_view": "mart.v_qa_anomaly_equipment_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-024",
+      "question": "2023년 겨울 배출가스 시험실 시험장비 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "message": "2023년 겨울 배출가스 시험실 시험장비 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "겨울",
+        "meter_count": 6,
+        "source_view": "mart.v_qa_anomaly_equipment_summary",
+        "equipment_name": "배출가스 시험실 시험장비 전력 계량기",
+        "equipment_category": "emission_lab_test_chamber",
+        "warning_step_count": 12,
+        "reason_distribution": {
+          "평소 시간대 대비 고부하": 6,
+          "평소 시간대 대비 저부하": 6
+        }
+      },
+      "reference_answer_gpt55": "2023년 겨울 배출가스 시험실 시험장비 전력 계량기는 계량기 6개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 6, \"평소 시간대 대비 저부하\": 6}입니다.",
+      "reference_answer_sqllm": "2023년 겨울 배출가스 시험실 시험장비 전력 계량기에서는 계량기 6개에서 경보 단계 12건이 발생했습니다. 원인 분포는 평소 시간대 대비 고부하 6, 평소 시간대 대비 저부하 6입니다.",
+      "reference_answer": "2023년 겨울 배출가스 시험실 시험장비 전력 계량기는 계량기 6개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 6, \"평소 시간대 대비 저부하\": 6}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-024",
+      "source_view": "mart.v_qa_anomaly_equipment_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-025",
+      "question": "2023년 겨울 서버 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "message": "2023년 겨울 서버 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "겨울",
+        "meter_count": 8,
+        "source_view": "mart.v_qa_anomaly_equipment_summary",
+        "equipment_name": "서버 전력 계량기",
+        "equipment_category": "server_power",
+        "warning_step_count": 12,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 2,
+          "입력 데이터 품질 이슈": 1,
+          "평소 시간대 대비 고부하": 5,
+          "평소 시간대 대비 저부하": 4
+        }
+      },
+      "reference_answer_gpt55": "2023년 겨울 서버 전력 계량기는 계량기 8개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"입력 데이터 품질 이슈\": 1, \"평소 시간대 대비 고부하\": 5, \"평소 시간대 대비 저부하\": 4}입니다.",
+      "reference_answer_sqllm": "2023년 겨울 서버 전력 계량기 8개에서 경보 단계 12건이 발생했습니다. 원인 분포는 알려진 계량기 이슈 2, 입력 데이터 품질 이슈 1, 평소 시간대 대비 고부하 5, 평소 시간대 대비 저부하 4입니다.",
+      "reference_answer": "2023년 겨울 서버 전력 계량기는 계량기 8개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"입력 데이터 품질 이슈\": 1, \"평소 시간대 대비 고부하\": 5, \"평소 시간대 대비 저부하\": 4}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-025",
+      "source_view": "mart.v_qa_anomaly_equipment_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-026",
+      "question": "2023년 봄 냉방 열량 계량기에서 발생한 이슈를 요약해줘.",
+      "message": "2023년 봄 냉방 열량 계량기에서 발생한 이슈를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "봄",
+        "meter_count": 7,
+        "source_view": "mart.v_qa_anomaly_equipment_summary",
+        "equipment_name": "냉방 열량 계량기",
+        "equipment_category": "cooling",
+        "warning_step_count": 12,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 3,
+          "평소 시간대 대비 고부하": 4,
+          "평소 시간대 대비 저부하": 5
+        }
+      },
+      "reference_answer_gpt55": "2023년 봄 냉방 열량 계량기는 계량기 7개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 3, \"평소 시간대 대비 고부하\": 4, \"평소 시간대 대비 저부하\": 5}입니다.",
+      "reference_answer_sqllm": "2023년 봄 냉방 열량 계량기 7개에서 경보 단계 12건이 발생했습니다. 원인 분포는 알려진 계량기 이슈 3, 평소 시간대 대비 고부하 4, 평소 시간대 대비 저부하 5입니다.",
+      "reference_answer": "2023년 봄 냉방 열량 계량기는 계량기 7개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 3, \"평소 시간대 대비 고부하\": 4, \"평소 시간대 대비 저부하\": 5}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-026",
+      "source_view": "mart.v_qa_anomaly_equipment_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-027",
+      "question": "2023년 여름 배출가스 시험실 시험장비 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "message": "2023년 여름 배출가스 시험실 시험장비 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "여름",
+        "meter_count": 6,
+        "source_view": "mart.v_qa_anomaly_equipment_summary",
+        "equipment_name": "배출가스 시험실 시험장비 전력 계량기",
+        "equipment_category": "emission_lab_test_chamber",
+        "warning_step_count": 12,
+        "reason_distribution": {
+          "평소 시간대 대비 고부하": 6,
+          "평소 시간대 대비 저부하": 6
+        }
+      },
+      "reference_answer_gpt55": "2023년 여름 배출가스 시험실 시험장비 전력 계량기는 계량기 6개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 6, \"평소 시간대 대비 저부하\": 6}입니다.",
+      "reference_answer_sqllm": "2023년 여름 배출가스 시험실 시험장비 전력 계량기에서는 계량기 6개에서 경보 단계 12건이 발생했습니다. 원인 분포는 평소 시간대 대비 고부하 6, 평소 시간대 대비 저부하 6입니다.",
+      "reference_answer": "2023년 여름 배출가스 시험실 시험장비 전력 계량기는 계량기 6개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 6, \"평소 시간대 대비 저부하\": 6}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-027",
+      "source_view": "mart.v_qa_anomaly_equipment_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-028",
+      "question": "2023년 여름 서버 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "message": "2023년 여름 서버 전력 계량기에서 발생한 이슈를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "year": 2023,
+        "season": "여름",
+        "meter_count": 8,
+        "source_view": "mart.v_qa_anomaly_equipment_summary",
+        "equipment_name": "서버 전력 계량기",
+        "equipment_category": "server_power",
+        "warning_step_count": 12,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 3,
+          "평소 시간대 대비 고부하": 3,
+          "평소 시간대 대비 저부하": 6
+        }
+      },
+      "reference_answer_gpt55": "2023년 여름 서버 전력 계량기는 계량기 8개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 3, \"평소 시간대 대비 고부하\": 3, \"평소 시간대 대비 저부하\": 6}입니다.",
+      "reference_answer_sqllm": "2023년 여름 서버 전력 계량기 8개에서 경보 단계 12건이 발생했습니다. 원인 분포는 알려진 계량기 이슈 3, 평소 시간대 대비 고부하 3, 평소 시간대 대비 저부하 6입니다.",
+      "reference_answer": "2023년 여름 서버 전력 계량기는 계량기 8개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 3, \"평소 시간대 대비 고부하\": 3, \"평소 시간대 대비 저부하\": 6}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-028",
+      "source_view": "mart.v_qa_anomaly_equipment_summary"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-029",
+      "question": "V.ZE84에서 발생한 이상 징후를 요약해줘.",
+      "message": "V.ZE84에서 발생한 이상 징후를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "meter_urn": "V.ZE84",
+        "korean_name": "PV 발전 전력 계량기",
+        "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+        "warning_step_count": 21431,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 21431
+        },
+        "warning_event_count": 8244
+      },
+      "reference_answer_gpt55": "V.ZE84(PV 발전 전력 계량기)는 전체 기간 동안 경보 단계 21431건, 경보 이벤트 8244건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 21431}입니다.",
+      "reference_answer_sqllm": "V.ZE84(PV 발전 전력 계량기)에서 경보 단계 21431건, 경보 이벤트 8244건이 발생했으며, 원인 분포는 알려진 계량기 이슈 21431건입니다.",
+      "reference_answer": "V.ZE84(PV 발전 전력 계량기)는 전체 기간 동안 경보 단계 21431건, 경보 이벤트 8244건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 21431}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-029",
+      "source_view": "mart.v_qa_anomaly_meter_summary_natural"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-030",
+      "question": "H2.Z63에서 발생한 이상 징후를 요약해줘.",
+      "message": "H2.Z63에서 발생한 이상 징후를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "meter_urn": "H2.Z63",
+        "korean_name": "서버 전력 계량기",
+        "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+        "warning_step_count": 20517,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 17603,
+          "평소 시간대 대비 고부하": 2797,
+          "평소 시간대 대비 저부하": 117
+        },
+        "warning_event_count": 6845
+      },
+      "reference_answer_gpt55": "H2.Z63(서버 전력 계량기)는 전체 기간 동안 경보 단계 20517건, 경보 이벤트 6845건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 17603, \"평소 시간대 대비 고부하\": 2797, \"평소 시간대 대비 저부하\": 117}입니다.",
+      "reference_answer_sqllm": "H2.Z63(서버 전력 계량기)에서 경보 단계 20517건, 경보 이벤트 6845건이 발생했습니다. 원인 분포는 알려진 계량기 이슈 17603, 평소 시간대 대비 고부하 2797, 평소 시간대 대비 저부하 117입니다.",
+      "reference_answer": "H2.Z63(서버 전력 계량기)는 전체 기간 동안 경보 단계 20517건, 경보 이벤트 6845건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 17603, \"평소 시간대 대비 고부하\": 2797, \"평소 시간대 대비 저부하\": 117}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-030",
+      "source_view": "mart.v_qa_anomaly_meter_summary_natural"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-031",
+      "question": "H2.Z62에서 발생한 이상 징후를 요약해줘.",
+      "message": "H2.Z62에서 발생한 이상 징후를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "meter_urn": "H2.Z62",
+        "korean_name": "서버 전력 계량기",
+        "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+        "warning_step_count": 16357,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 16180,
+          "평소 시간대 대비 저부하": 177
+        },
+        "warning_event_count": 5529
+      },
+      "reference_answer_gpt55": "H2.Z62(서버 전력 계량기)는 전체 기간 동안 경보 단계 16357건, 경보 이벤트 5529건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 16180, \"평소 시간대 대비 저부하\": 177}입니다.",
+      "reference_answer_sqllm": "H2.Z62(서버 전력 계량기)는 경보 단계 16357건, 경보 이벤트 5529건이 발생했습니다. 원인 분포는 알려진 계량기 이슈 16180건, 평소 시간대 대비 저부하 177건입니다.",
+      "reference_answer": "H2.Z62(서버 전력 계량기)는 전체 기간 동안 경보 단계 16357건, 경보 이벤트 5529건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 16180, \"평소 시간대 대비 저부하\": 177}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-031",
+      "source_view": "mart.v_qa_anomaly_meter_summary_natural"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-032",
+      "question": "H3.Z46에서 발생한 이상 징후를 요약해줘.",
+      "message": "H3.Z46에서 발생한 이상 징후를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "meter_urn": "H3.Z46",
+        "korean_name": "서버 전력 계량기",
+        "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+        "warning_step_count": 11703,
+        "reason_distribution": {
+          "평소 시간대 대비 고부하": 10,
+          "평소 시간대 대비 저부하": 11693
+        },
+        "warning_event_count": 4124
+      },
+      "reference_answer_gpt55": "H3.Z46(서버 전력 계량기)는 전체 기간 동안 경보 단계 11703건, 경보 이벤트 4124건이 발생했습니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 10, \"평소 시간대 대비 저부하\": 11693}입니다.",
+      "reference_answer_sqllm": "H3.Z46(서버 전력 계량기)에서 경보 단계 11703건, 경보 이벤트 4124건이 발생했습니다. 원인 분포는 평소 시간대 대비 고부하 10건, 평소 시간대 대비 저부하 11693건입니다.",
+      "reference_answer": "H3.Z46(서버 전력 계량기)는 전체 기간 동안 경보 단계 11703건, 경보 이벤트 4124건이 발생했습니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 10, \"평소 시간대 대비 저부하\": 11693}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-032",
+      "source_view": "mart.v_qa_anomaly_meter_summary_natural"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-033",
+      "question": "H2.ZE65에서 발생한 이상 징후를 요약해줘.",
+      "message": "H2.ZE65에서 발생한 이상 징후를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "meter_urn": "H2.ZE65",
+        "korean_name": "서버 전력 계량기",
+        "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+        "warning_step_count": 10176,
+        "reason_distribution": {
+          "입력 데이터 품질 이슈": 1587,
+          "평소 시간대 대비 고부하": 8522,
+          "평소 시간대 대비 저부하": 67
+        },
+        "warning_event_count": 3465
+      },
+      "reference_answer_gpt55": "H2.ZE65(서버 전력 계량기)는 전체 기간 동안 경보 단계 10176건, 경보 이벤트 3465건이 발생했습니다. 원인 분포는 {\"입력 데이터 품질 이슈\": 1587, \"평소 시간대 대비 고부하\": 8522, \"평소 시간대 대비 저부하\": 67}입니다.",
+      "reference_answer_sqllm": "H2.ZE65(서버 전력 계량기)에서 경보 단계 10176건, 경보 이벤트 3465건이 발생했습니다. 원인 분포는 입력 데이터 품질 이슈 1587, 평소 시간대 대비 고부하 8522, 평소 시간대 대비 저부하 67입니다.",
+      "reference_answer": "H2.ZE65(서버 전력 계량기)는 전체 기간 동안 경보 단계 10176건, 경보 이벤트 3465건이 발생했습니다. 원인 분포는 {\"입력 데이터 품질 이슈\": 1587, \"평소 시간대 대비 고부하\": 8522, \"평소 시간대 대비 저부하\": 67}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-033",
+      "source_view": "mart.v_qa_anomaly_meter_summary_natural"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-034",
+      "question": "H1.Z23에서 발생한 이상 징후를 요약해줘.",
+      "message": "H1.Z23에서 발생한 이상 징후를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "meter_urn": "H1.Z23",
+        "korean_name": "배출가스 시험실 냉방/HVAC 계량기",
+        "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+        "warning_step_count": 9204,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 9204
+        },
+        "warning_event_count": 3961
+      },
+      "reference_answer_gpt55": "H1.Z23(배출가스 시험실 냉방/HVAC 계량기)는 전체 기간 동안 경보 단계 9204건, 경보 이벤트 3961건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 9204}입니다.",
+      "reference_answer_sqllm": "H1.Z23(배출가스 시험실 냉방/HVAC 계량기)에서 경보 단계 9204건, 경보 이벤트 3961건이 발생했으며, 원인 분포는 알려진 계량기 이슈 9204건입니다.",
+      "reference_answer": "H1.Z23(배출가스 시험실 냉방/HVAC 계량기)는 전체 기간 동안 경보 단계 9204건, 경보 이벤트 3961건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 9204}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-034",
+      "source_view": "mart.v_qa_anomaly_meter_summary_natural"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-035",
+      "question": "H2.ZE66에서 발생한 이상 징후를 요약해줘.",
+      "message": "H2.ZE66에서 발생한 이상 징후를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "meter_urn": "H2.ZE66",
+        "korean_name": "서버실 냉방 계량기",
+        "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+        "warning_step_count": 8871,
+        "reason_distribution": {
+          "알려진 계량기 이슈": 7802,
+          "평소 시간대 대비 저부하": 1069
+        },
+        "warning_event_count": 3507
+      },
+      "reference_answer_gpt55": "H2.ZE66(서버실 냉방 계량기)는 전체 기간 동안 경보 단계 8871건, 경보 이벤트 3507건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 7802, \"평소 시간대 대비 저부하\": 1069}입니다.",
+      "reference_answer_sqllm": "H2.ZE66(서버실 냉방 계량기)에서 경보 단계 8871건, 경보 이벤트 3507건이 발생했습니다. 원인 분포는 알려진 계량기 이슈 7802건, 평소 시간대 대비 저부하 1069건입니다.",
+      "reference_answer": "H2.ZE66(서버실 냉방 계량기)는 전체 기간 동안 경보 단계 8871건, 경보 이벤트 3507건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 7802, \"평소 시간대 대비 저부하\": 1069}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-035",
+      "source_view": "mart.v_qa_anomaly_meter_summary_natural"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-036",
+      "question": "H2.ZE64에서 발생한 이상 징후를 요약해줘.",
+      "message": "H2.ZE64에서 발생한 이상 징후를 요약해줘.",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "meter_urn": "H2.ZE64",
+        "korean_name": "서버 전력 계량기",
+        "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+        "warning_step_count": 8823,
+        "reason_distribution": {
+          "평소 시간대 대비 고부하": 7349,
+          "평소 시간대 대비 저부하": 1474
+        },
+        "warning_event_count": 3022
+      },
+      "reference_answer_gpt55": "H2.ZE64(서버 전력 계량기)는 전체 기간 동안 경보 단계 8823건, 경보 이벤트 3022건이 발생했습니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 7349, \"평소 시간대 대비 저부하\": 1474}입니다.",
+      "reference_answer_sqllm": "H2.ZE64(서버 전력 계량기)에서 경보 단계 8823건, 경보 이벤트 3022건이 발생했습니다. 원인 분포는 평소 시간대 대비 고부하 7349건, 평소 시간대 대비 저부하 1474건입니다.",
+      "reference_answer": "H2.ZE64(서버 전력 계량기)는 전체 기간 동안 경보 단계 8823건, 경보 이벤트 3022건이 발생했습니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 7349, \"평소 시간대 대비 저부하\": 1474}입니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-036",
+      "source_view": "mart.v_qa_anomaly_meter_summary_natural"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-037",
+      "question": "V.ZE84 계량기가 무슨 계량기야?",
+      "message": "V.ZE84 계량기가 무슨 계량기야?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "answer": "V.ZE84는 PV 발전 전력 계량기입니다. 주차장 태양광 발전 설비 계열의 전력 생산량을 계측합니다.",
+        "domain": "electricity",
+        "meter_urn": "V.ZE84",
+        "group_code": "pv",
+        "korean_name": "PV 발전 전력 계량기",
+        "source_view": "mart.v_qa_meter_semantic_lookup",
+        "equipment_category": "pv"
+      },
+      "reference_answer_gpt55": "V.ZE84는 PV 발전 전력 계량기입니다. 주차장 태양광 발전 설비 계열의 전력 생산량을 계측합니다.",
+      "reference_answer_sqllm": "V.ZE84는 PV 발전 전력 계량기이며, 주차장 태양광 발전 설비 계열의 전력 생산량을 계측합니다.",
+      "reference_answer": "V.ZE84는 PV 발전 전력 계량기입니다. 주차장 태양광 발전 설비 계열의 전력 생산량을 계측합니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-037",
+      "source_view": "mart.v_qa_meter_semantic_lookup"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-038",
+      "question": "V.K21 계량기가 무슨 계량기야?",
+      "message": "V.K21 계량기가 무슨 계량기야?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "answer": "V.K21는 냉방 장치 계량기입니다. 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+        "domain": "cooling",
+        "meter_urn": "V.K21",
+        "group_code": "cooling_total",
+        "korean_name": "냉방 장치 총괄 계량기",
+        "source_view": "mart.v_qa_meter_semantic_lookup",
+        "equipment_category": "cooling"
+      },
+      "reference_answer_gpt55": "V.K21는 냉방 장치 계량기입니다. 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+      "reference_answer_sqllm": "V.K21은 냉방 장치 계량기이며, 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+      "reference_answer": "V.K21는 냉방 장치 계량기입니다. 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-038",
+      "source_view": "mart.v_qa_meter_semantic_lookup"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-039",
+      "question": "H1.W11 계량기가 무슨 계량기야?",
+      "message": "H1.W11 계량기가 무슨 계량기야?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "answer": "H1.W11는 열 계량기입니다. 건물의 열 생산량을 계측합니다.",
+        "domain": "heating",
+        "meter_urn": "H1.W11",
+        "group_code": "heating_total",
+        "korean_name": "열 계량기",
+        "source_view": "mart.v_qa_meter_semantic_lookup",
+        "equipment_category": "heating"
+      },
+      "reference_answer_gpt55": "H1.W11는 열 계량기입니다. 건물의 열 생산량을 계측합니다.",
+      "reference_answer_sqllm": "H1.W11은 열 계량기이며, 건물의 열 생산량을 계측합니다.",
+      "reference_answer": "H1.W11는 열 계량기입니다. 건물의 열 생산량을 계측합니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-039",
+      "source_view": "mart.v_qa_meter_semantic_lookup"
+    },
+    {
+      "id": "R2S2-Q-ANOMALY-040",
+      "question": "H1.K11 계량기가 무슨 계량기야?",
+      "message": "H1.K11 계량기가 무슨 계량기야?",
+      "expected_route1": "query",
+      "expected_route2": "anomaly",
+      "expected_final_action": "route:anomaly",
+      "answer_evidence": {
+        "answer": "H1.K11는 냉방 장치 계량기입니다. 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+        "domain": "cooling",
+        "meter_urn": "H1.K11",
+        "group_code": "cooling_thermal",
+        "korean_name": "냉방 열량 계량기",
+        "source_view": "mart.v_qa_meter_semantic_lookup",
+        "equipment_category": "cooling"
+      },
+      "reference_answer_gpt55": "H1.K11는 냉방 장치 계량기입니다. 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+      "reference_answer_sqllm": "H1.K11은 냉방 장치 계량기이며, 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+      "reference_answer": "H1.K11는 냉방 장치 계량기입니다. 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+      "source_dataset_id": "R2S2-Q-ANOMALY-040",
+      "source_view": "mart.v_qa_meter_semantic_lookup"
+    }
+  ]
+}

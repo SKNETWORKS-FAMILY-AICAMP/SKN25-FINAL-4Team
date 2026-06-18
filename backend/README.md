@@ -135,5 +135,5 @@ python -m pytest tests/
 | EXAONE 3.5 7.8B | 속도 경로 (의도 분류) | 10.0 (담당 4문항) | — |
 
 현재 라우터 v2 sensitivity 평가는 `dev/eval/router_two_stage_metrics_260615.py`와
-`dev/eval/data/router_two_stage_eval_300_v2_260615.json` 기준으로 실행합니다.
+`dev/eval/data/router_two_stage_eval_300_260617.json` 기준으로 실행합니다.
 모델별 실행 결과는 `reports/experiments/router_two_stage_classification/`에 생성됩니다.

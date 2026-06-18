@@ -1,0 +1,22 @@
+{
+  "schema_version": "experiment-metrics.v1",
+  "test_id": "answer_quality_sensitivity",
+  "run_id": "gated_260618_ragas_bert_fixed_qwen3_5_2b_think_on_n40",
+  "mode": "skipped_after_preflight",
+  "model": "qwen3.5:2b",
+  "think": "on",
+  "summary": {
+    "skipped": true,
+    "skip_reason": "qa_preflight_failed:error_rate=1.0"
+  },
+  "gates": {
+    "preflight_passed": false
+  },
+  "errors": [
+    {
+      "reason": "qa_preflight_failed:error_rate=1.0",
+      "preflight_metrics": "reports/experiments/answer_quality_sensitivity/preflight_gated_260618_ragas_bert_fixed_qwen3_5_2b_think_on_n40_limit20/metrics.json"
+    }
+  ],
+  "details": {}
+}

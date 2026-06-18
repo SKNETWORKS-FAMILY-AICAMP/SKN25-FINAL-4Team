@@ -34,6 +34,7 @@ Prediction modes:
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import re
@@ -45,7 +46,7 @@ from typing import Any
 from urllib import request, error
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_DATASET = ROOT / "dev" / "eval" / "data" / "router_two_stage_eval_300_v2_260615.json"
+DEFAULT_DATASET = ROOT / "dev" / "eval" / "data" / "router_two_stage_eval_300_260617.json"
 REPORT_ROOT = ROOT / "reports" / "experiments" / "router_two_stage_classification"
 
 ROUTE1_LABELS = ["query", "action_request", "approval_required", "off_topic"]
@@ -100,21 +101,94 @@ def rule_predict(message: str) -> dict[str, str | None]:
     return {"route1": route1, "route2": route2, "final_action": f"route:{route2}"}
 
 
-def ollama_predict(message: str, model: str, base_url: str, timeout: int = 60) -> dict[str, str | None]:
+def api_chat_endpoint_from_base(base_url: str) -> str:
     endpoint = base_url.rstrip("/")
-    if endpoint.endswith("/v1"):
-        endpoint = endpoint + "/chat/completions"
-    elif endpoint.endswith("/v1/chat/completions"):
-        pass
-    else:
-        endpoint = endpoint + "/v1/chat/completions"
+    if endpoint.endswith("/v1/chat/completions"):
+        endpoint = endpoint[: -len("/v1/chat/completions")]
+    elif endpoint.endswith("/v1"):
+        endpoint = endpoint[: -len("/v1")]
+    return endpoint + "/api/chat"
+
+
+def extract_json_object(text: str) -> dict[str, Any]:
+    """Parse model output robustly: raw JSON, fenced JSON, or first balanced object."""
+    cleaned = text.strip()
+    cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned, flags=re.I).strip()
+    cleaned = re.sub(r"\s*```$", "", cleaned).strip()
+    candidates = [cleaned]
+    start = cleaned.find("{")
+    if start >= 0:
+        depth = 0
+        in_str = False
+        esc = False
+        for i, ch in enumerate(cleaned[start:], start):
+            if in_str:
+                if esc:
+                    esc = False
+                elif ch == "\\":
+                    esc = True
+                elif ch == '"':
+                    in_str = False
+            else:
+                if ch == '"':
+                    in_str = True
+                elif ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+                    if depth == 0:
+                        candidates.append(cleaned[start : i + 1])
+                        break
+    last_exc: Exception | None = None
+    for cand in candidates:
+        try:
+            parsed = json.loads(cand)
+            if isinstance(parsed, str):
+                parsed = json.loads(parsed)
+            if isinstance(parsed, dict):
+                return parsed
+        except Exception as exc:
+            last_exc = exc
+    raise ValueError(f"cannot parse JSON object: {last_exc}")
+
+
+def normalize_route1(value: Any) -> str | None:
+    if value is None:
+        return None
+    v = str(value).strip().lower().replace("-", "_").replace(" ", "_")
+    aliases = {
+        "query": "query", "질문": "query", "qa": "query", "question": "query", "route": "query",
+        "action": "action_request", "action_request": "action_request", "job_or_workflow": "action_request", "작업": "action_request", "실행": "action_request",
+        "approval": "approval_required", "approval_required": "approval_required", "safety_or_control": "approval_required", "승인": "approval_required", "위험": "approval_required",
+        "offtopic": "off_topic", "off_topic": "off_topic", "other": "off_topic", "irrelevant": "off_topic", "일반": "off_topic", "무관": "off_topic",
+    }
+    return aliases.get(v)
+
+
+def normalize_route2(value: Any) -> str | None:
+    if value is None:
+        return None
+    v = str(value).strip().lower().replace("-", "_").replace(" ", "_").replace("route:", "")
+    aliases = {
+        "anomaly": "anomaly", "anomalies": "anomaly", "abnormal": "anomaly", "이상": "anomaly", "경보": "anomaly",
+        "cms": "cms", "maintenance": "cms", "equipment": "cms", "설비": "cms", "정비": "cms",
+        "report": "report", "summary": "report", "리포트": "report", "보고서": "report", "요약": "report",
+        "forecast": "forecast", "prediction": "forecast", "예측": "forecast", "전망": "forecast",
+        "rag": "rag", "lookup": "rag", "knowledge": "rag", "definition": "rag", "검색": "rag", "설명": "rag",
+    }
+    return aliases.get(v)
+
+
+def ollama_predict(message: str, model: str, base_url: str, timeout: int = 180, think: bool | None = False) -> dict[str, str | None]:
+    endpoint = api_chat_endpoint_from_base(base_url)
     system = (
-        "You are a strict JSON router for an EMS agent. "
-        "Route1 labels: query, action_request, approval_required, off_topic. "
-        "If route1 is query, choose route2 from anomaly, cms, report, forecast, rag. "
+        "You are a deterministic JSON-only router for an EMS agent. "
+        "Never explain. Never include markdown. Never think aloud. "
+        "Return exactly one JSON object with keys route1, route2, final_action. "
+        "route1 must be exactly one of: query, action_request, approval_required, off_topic. "
+        "If route1=query, route2 must be exactly one of: anomaly, cms, report, forecast, rag. "
         "If route1 is not query, route2 must be null. "
-        "Return only JSON: {\"route1\":...,\"route2\":...,\"final_action\":...}. "
-        "final_action is route:<route2> for query, gate:<route1> otherwise. No confidence field."
+        "final_action must be route:<route2> for query, otherwise gate:<route1>."
     )
     payload = {
         "model": model,
@@ -122,35 +196,51 @@ def ollama_predict(message: str, model: str, base_url: str, timeout: int = 60) -
             {"role": "system", "content": system},
             {"role": "user", "content": message},
         ],
-        "temperature": 0,
-        "max_tokens": 128,
         "stream": False,
+        "think": think,
+        "format": "json",
+        "options": {"temperature": 0, "num_predict": 128},
     }
     req = request.Request(endpoint, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"})
     try:
         with request.urlopen(req, timeout=timeout) as resp:
             raw = resp.read().decode("utf-8", errors="replace")
         data = json.loads(raw)
-        content = data["choices"][0]["message"]["content"]
-        match = re.search(r"\{.*\}", content, flags=re.S)
-        parsed = json.loads(match.group(0) if match else content)
-        if isinstance(parsed, str):
-            # Some Ollama models return a JSON string containing the object.
-            inner = re.search(r"\{.*\}", parsed, flags=re.S)
-            parsed = json.loads(inner.group(0) if inner else parsed)
+        msg = data.get("message", {})
+        content = str(msg.get("content") or "").strip()
+        reasoning = str(msg.get("reasoning") or "").strip()
+        if not content and reasoning:
+            content = reasoning
+        parsed = extract_json_object(content)
         if not isinstance(parsed, dict):
             raise ValueError(f"router output is not an object: {type(parsed).__name__}")
         parsed["_raw_content"] = content
+        parsed["_raw_reasoning_prefix"] = reasoning[:500]
         parsed["_parse_status"] = "parsed_llm_json"
+        parsed["_api_model"] = data.get("model")
+        parsed["_api_endpoint"] = "/api/chat"
+        parsed["_think"] = think
+        parsed["_raw_message_keys"] = sorted(msg.keys())
     except Exception as exc:
         parsed = rule_predict(message)
         parsed["_fallback"] = "rule_after_llm_error"  # type: ignore[index]
         parsed["_parse_error"] = f"{type(exc).__name__}: {str(exc)[:200]}"  # type: ignore[index]
-    r1 = parsed.get("route1")
-    r2 = parsed.get("route2")
+        parsed["_think"] = think  # type: ignore[index]
+    r1_raw = parsed.get("route1")
+    r2_raw = parsed.get("route2")
+    r1 = normalize_route1(r1_raw)
+    r2 = normalize_route2(r2_raw)
+    parsed["_raw_route1"] = r1_raw
+    parsed["_raw_route2"] = r2_raw
     if r1 not in ROUTE1_LABELS:
         fallback = rule_predict(message)
         fallback["_fallback"] = "rule_after_invalid_route1"  # type: ignore[index]
+        fallback["_parse_status"] = parsed.get("_parse_status")  # type: ignore[index]
+        fallback["_parse_error"] = parsed.get("_parse_error")  # type: ignore[index]
+        fallback["_raw_route1"] = r1_raw  # type: ignore[index]
+        fallback["_raw_route2"] = r2_raw  # type: ignore[index]
+        fallback["_raw_content"] = parsed.get("_raw_content")  # type: ignore[index]
+        fallback["_think"] = think  # type: ignore[index]
         return fallback
     if r1 == "query":
         if r2 not in ROUTE2_LABELS:
@@ -159,7 +249,11 @@ def ollama_predict(message: str, model: str, base_url: str, timeout: int = 60) -
     else:
         r2 = None
         final = f"gate:{r1}"
-    return {"route1": r1, "route2": r2, "final_action": final}
+    out = {"route1": r1, "route2": r2, "final_action": final}
+    for k, v in parsed.items():
+        if str(k).startswith("_"):
+            out[k] = v
+    return out
 
 
 def prf(labels: list[str], y_true: list[str], y_pred: list[str]) -> dict[str, Any]:
@@ -249,6 +343,8 @@ def main() -> None:
     ap.add_argument("--model", default=os.getenv("LLM_MODEL", "gemma4:12b"))
     ap.add_argument("--ollama-url", default=os.getenv("OLLAMA_URL", "http://127.0.0.1:11434/v1"))
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--workers", type=int, default=int(os.getenv("ROUTER_WORKERS", "1")))
+    ap.add_argument("--think", choices=["on", "off", "none"], default=os.getenv("OLLAMA_THINK", "off"))
     args = ap.parse_args()
 
     dataset = Path(args.dataset)
@@ -258,17 +354,25 @@ def main() -> None:
 
     preds = []
     start = time.time()
-    for row in rows:
-        if args.mode == "rule":
-            pred = rule_predict(row["message"])
-        else:
-            pred = ollama_predict(row["message"], args.model, args.ollama_url)
-        preds.append(pred)
+    think_value = None if args.think == "none" else args.think == "on"
+    if args.mode == "ollama" and args.workers > 1:
+        with ThreadPoolExecutor(max_workers=args.workers) as ex:
+            preds = list(ex.map(lambda row: ollama_predict(row["message"], args.model, args.ollama_url, think=think_value), rows))
+    else:
+        for row in rows:
+            if args.mode == "rule":
+                pred = rule_predict(row["message"])
+            else:
+                pred = ollama_predict(row["message"], args.model, args.ollama_url, think=think_value)
+            preds.append(pred)
     elapsed_ms = round((time.time() - start) * 1000, 2)
     metrics = evaluate(rows, preds)
 
     out_dir = REPORT_ROOT / args.run_id
     out_dir.mkdir(parents=True, exist_ok=True)
+    parsed_llm_json_count = sum(1 for p in preds if p.get("_parse_status") == "parsed_llm_json")
+    fallback_count = sum(1 for p in preds if p.get("_fallback"))
+    parse_error_count = sum(1 for p in preds if p.get("_parse_error"))
     payload = {
         "schema_version": "experiment-metrics.v1",
         "test_id": "router_two_stage_classification",
@@ -277,11 +381,22 @@ def main() -> None:
         "dataset": {"path": str(dataset.relative_to(ROOT) if dataset.is_relative_to(ROOT) else dataset), "row_count": len(rows)},
         "mode": args.mode,
         "model": args.model if args.mode == "ollama" else None,
+        "workers": args.workers,
+        "think": args.think if args.mode == "ollama" else None,
+        "runtime": {
+            "ollama_url": args.ollama_url if args.mode == "ollama" else None,
+            "ollama_num_parallel": os.getenv("OLLAMA_NUM_PARALLEL"),
+            "ollama_max_loaded_models": os.getenv("OLLAMA_MAX_LOADED_MODELS"),
+            "ollama_keep_alive": os.getenv("OLLAMA_KEEP_ALIVE"),
+        },
         "phase_latency_ms": {"total": elapsed_ms},
         "summary": {
             **metrics["route1"],
             **{k: v for k, v in metrics["route2"].items() if k not in {"route2_confusion_matrix", "route2_per_label_precision_recall_f1", "route2_top_confusion_pairs"}},
             **{k: v for k, v in metrics["final"].items() if k != "final_action_per_label_precision_recall_f1"},
+            "parsed_llm_json_count": parsed_llm_json_count,
+            "fallback_count": fallback_count,
+            "parse_error_count": parse_error_count,
         },
         "gates": {
             "route1_accuracy_min_0_90": metrics["route1"]["route1_accuracy"] >= 0.90,
@@ -289,7 +404,7 @@ def main() -> None:
             "final_action_accuracy_min_0_70": metrics["final"]["final_action_accuracy"] >= 0.70,
             "leakage_error_rate_max_0_10": metrics["route1"]["route1_leakage_error_rate"] <= 0.10,
         },
-        "errors": [],
+        "errors": [{"id": r["id"], "error": p.get("_parse_error"), "fallback": p.get("_fallback")} for r, p in zip(rows, preds) if p.get("_parse_error") or p.get("_fallback")],
         "details": {"metrics": metrics, "predictions": [{"id": r["id"], "message": r["message"], "expected": {"route1": r["expected_route1"], "route2": r["expected_route2"], "final_action": r["expected_final_action"]}, "predicted": p} for r, p in zip(rows, preds)]},
     }
     (out_dir / "metrics.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

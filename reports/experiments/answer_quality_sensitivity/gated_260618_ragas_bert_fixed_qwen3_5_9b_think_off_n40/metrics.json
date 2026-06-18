@@ -1,0 +1,1963 @@
+{
+  "schema_version": "answer-quality-metrics.v1",
+  "test_id": "answer_quality_sensitivity",
+  "run_id": "gated_260618_ragas_bert_fixed_qwen3_5_9b_think_off_n40",
+  "metric_family": "ragas_style_reference_and_evidence_proxy",
+  "dataset": {
+    "path": "dev/eval/data/anomaly_qa_quality_eval_260617.json",
+    "row_count": 40,
+    "filter": "rows with answer_text and answer_evidence"
+  },
+  "mode": "ollama_answer_generation",
+  "model": "qwen3.5:9b",
+  "model_params_b": 9.0,
+  "think": "off",
+  "bertscore": {
+    "enabled": true,
+    "model": "distilbert-base-multilingual-cased",
+    "error": null
+  },
+  "workers": 2,
+  "runtime": {
+    "ollama_url": "http://127.0.0.1:11434/v1",
+    "ollama_num_parallel": "4",
+    "ollama_max_loaded_models": "3",
+    "ollama_keep_alive": "30m"
+  },
+  "phase_latency_ms": {
+    "total": 128808.72
+  },
+  "summary": {
+    "reference_token_f1": 0.548,
+    "rouge_l_f1": 0.4424,
+    "numeric_precision": 0.9875,
+    "numeric_recall": 0.6819,
+    "numeric_f1": 0.7881,
+    "evidence_numeric_recall": 0.6319,
+    "answer_quality_composite": 0.6545,
+    "source_leakage_rate": 0.0,
+    "error_rate": 0.0,
+    "avg_latency_ms_per_row": 6418.268,
+    "bertscore_precision": 0.9063,
+    "bertscore_recall": 0.8738,
+    "bertscore_f1": 0.8895
+  },
+  "gates": {
+    "numeric_f1_min_0_90": false,
+    "evidence_numeric_recall_min_0_90": false,
+    "source_leakage_rate_eq_0": true,
+    "error_rate_eq_0": true
+  },
+  "errors": [],
+  "details": {
+    "predictions": [
+      {
+        "id": "R2S2-Q-ANOMALY-001",
+        "message": "2023년 가을 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 가을 CHP 관련 계량기는 총 3개이며, 경보 단계은 1440건, 경보 이벤트는 898건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 684, \"평소 시간대 대비 저부하\": 756}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 756, \"평소보다 높은 부하 경보\": 684}입니다.",
+        "predicted_answer": "2023 년 가을 CHP 관련 계량기에서 발생한 이슈는 총 898 건입니다. 그중 평소 시간대 대비 고부하가 684 건, 평소 시간대 대비 저부하가 756 건으로 분포되어 있습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "가을",
+          "meter_count": 3,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "chp_related",
+          "category_name": "CHP 관련 계량기",
+          "warning_step_count": 1440,
+          "reason_distribution": {
+            "평소 시간대 대비 고부하": 684,
+            "평소 시간대 대비 저부하": 756
+          },
+          "warning_event_count": 898,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 756,
+            "평소보다 높은 부하 경보": 684
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.4928,
+          "rouge_l_f1": 0.4638,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.5,
+          "numeric_f1": 0.6667,
+          "evidence_numeric_recall": 0.5,
+          "source_leakage": false,
+          "answer_quality_composite": 0.575,
+          "bertscore_precision": 0.9025,
+          "bertscore_recall": 0.8442,
+          "bertscore_f1": 0.8724
+        },
+        "latency_ms": 23073.55,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-002",
+        "message": "2023년 가을 냉방 장치 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 가을 냉방 장치 관련 계량기는 총 27개이며, 경보 단계은 22418건, 경보 이벤트는 10382건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 8878, \"평소 시간대 대비 고부하\": 1899, \"평소 시간대 대비 저부하\": 11641}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 15797, \"평소보다 높은 부하 경보\": 6621}입니다.",
+        "predicted_answer": "2023 년 가을 냉방 장치 관련 계량기에서 발생한 이슈는 총 10,382 건입니다. 이 중 평소 시간대 대비 저부하가 11,641 건으로 가장 많고, 알려진 계량기 이슈가 8,878 건이며, 평소 시간대 대비 고부하는 1,899 건입니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "가을",
+          "meter_count": 27,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "cooling_related",
+          "category_name": "냉방 장치 관련 계량기",
+          "warning_step_count": 22418,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 8878,
+            "평소 시간대 대비 고부하": 1899,
+            "평소 시간대 대비 저부하": 11641
+          },
+          "warning_event_count": 10382,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 15797,
+            "평소보다 높은 부하 경보": 6621
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.4938,
+          "rouge_l_f1": 0.3951,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.5556,
+          "numeric_f1": 0.7143,
+          "evidence_numeric_recall": 0.5556,
+          "source_leakage": false,
+          "answer_quality_composite": 0.592,
+          "bertscore_precision": 0.8686,
+          "bertscore_recall": 0.8146,
+          "bertscore_f1": 0.8407
+        },
+        "latency_ms": 25260.33,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-003",
+        "message": "2023년 가을 열 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 가을 열 계량기는 총 2개이며, 경보 단계은 1327건, 경보 이벤트는 783건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 84, \"평소 시간대 대비 저부하\": 1243}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 1243, \"평소보다 높은 부하 경보\": 84}입니다.",
+        "predicted_answer": "2023 년 가을 열 계량기에서 발생한 이슈는 총 783 건입니다. 그중 평소 시간대 대비 고부하는 84 건, 저부하는 1,243 건으로 분포되어 있습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "가을",
+          "meter_count": 2,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "heating_related",
+          "category_name": "열 계량기",
+          "warning_step_count": 1327,
+          "reason_distribution": {
+            "평소 시간대 대비 고부하": 84,
+            "평소 시간대 대비 저부하": 1243
+          },
+          "warning_event_count": 783,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 1243,
+            "평소보다 높은 부하 경보": 84
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.4063,
+          "rouge_l_f1": 0.375,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.5,
+          "numeric_f1": 0.6667,
+          "evidence_numeric_recall": 0.5,
+          "source_leakage": false,
+          "answer_quality_composite": 0.5443,
+          "bertscore_precision": 0.873,
+          "bertscore_recall": 0.8234,
+          "bertscore_f1": 0.8475
+        },
+        "latency_ms": 5918.39,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-004",
+        "message": "2023년 가을 PV 발전 전력 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 가을 PV 발전 전력 계량기는 총 5개이며, 경보 단계은 12527건, 경보 이벤트는 6040건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 5203, \"평소 시간대 대비 고부하\": 6086, \"평소 시간대 대비 저부하\": 1238}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 4803, \"평소보다 높은 부하 경보\": 7724}입니다.",
+        "predicted_answer": "2023 년 가을 PV 발전 전력 계량기에서 발생한 이슈는 총 6,040 건입니다. 그중 평소 시간대 대비 고부하가 6,086 건으로 가장 많고, 알려진 계량기 이슈가 5,203 건이며, 평소 시간대 대비 저부하는 1,238 건입니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "가을",
+          "meter_count": 5,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "pv_related",
+          "category_name": "PV 발전 전력 계량기",
+          "warning_step_count": 12527,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 5203,
+            "평소 시간대 대비 고부하": 6086,
+            "평소 시간대 대비 저부하": 1238
+          },
+          "warning_event_count": 6040,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 4803,
+            "평소보다 높은 부하 경보": 7724
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.5,
+          "rouge_l_f1": 0.425,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.5556,
+          "numeric_f1": 0.7143,
+          "evidence_numeric_recall": 0.5556,
+          "source_leakage": false,
+          "answer_quality_composite": 0.5989,
+          "bertscore_precision": 0.8727,
+          "bertscore_recall": 0.8168,
+          "bertscore_f1": 0.8438
+        },
+        "latency_ms": 5840.37,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-005",
+        "message": "2023년 겨울 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 겨울 CHP 관련 계량기는 총 3개이며, 경보 단계은 953건, 경보 이벤트는 678건입니다. 원인 분포는 {\"입력 데이터 품질 이슈\": 1, \"평소 시간대 대비 고부하\": 322, \"평소 시간대 대비 저부하\": 630}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 631, \"평소보다 높은 부하 경보\": 322}입니다.",
+        "predicted_answer": "2023 년 겨울 CHP 관련 계량기에서 발생한 이슈는 총 678 건입니다. 그중 평소 시간대 대비 저부하가 631 건, 평소 시간대 대비 고부하가 322 건으로 분포되어 있습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "겨울",
+          "meter_count": 3,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "chp_related",
+          "category_name": "CHP 관련 계량기",
+          "warning_step_count": 953,
+          "reason_distribution": {
+            "입력 데이터 품질 이슈": 1,
+            "평소 시간대 대비 고부하": 322,
+            "평소 시간대 대비 저부하": 630
+          },
+          "warning_event_count": 678,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 631,
+            "평소보다 높은 부하 경보": 322
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.4595,
+          "rouge_l_f1": 0.4054,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.4444,
+          "numeric_f1": 0.6154,
+          "evidence_numeric_recall": 0.4444,
+          "source_leakage": false,
+          "answer_quality_composite": 0.5265,
+          "bertscore_precision": 0.8893,
+          "bertscore_recall": 0.8168,
+          "bertscore_f1": 0.8515
+        },
+        "latency_ms": 5965.96,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-006",
+        "message": "2023년 겨울 냉방 장치 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 겨울 냉방 장치 관련 계량기는 총 27개이며, 경보 단계은 28240건, 경보 이벤트는 12774건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 6033, \"평소 시간대 대비 고부하\": 1270, \"평소 시간대 대비 저부하\": 20937}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 25761, \"평소보다 높은 부하 경보\": 2479}입니다.",
+        "predicted_answer": "2023 년 겨울 냉방 장치 관련 계량기에서 발생한 이슈는 총 12,774 건입니다. 이 중 평소 시간대 대비 고부하가 1,270 건이고, 평소 시간대 대비 저부하는 20,937 건으로 나타났습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "겨울",
+          "meter_count": 27,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "cooling_related",
+          "category_name": "냉방 장치 관련 계량기",
+          "warning_step_count": 28240,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 6033,
+            "평소 시간대 대비 고부하": 1270,
+            "평소 시간대 대비 저부하": 20937
+          },
+          "warning_event_count": 12774,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 25761,
+            "평소보다 높은 부하 경보": 2479
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.4533,
+          "rouge_l_f1": 0.4533,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.4444,
+          "numeric_f1": 0.6154,
+          "evidence_numeric_recall": 0.4444,
+          "source_leakage": false,
+          "answer_quality_composite": 0.5352,
+          "bertscore_precision": 0.8827,
+          "bertscore_recall": 0.8264,
+          "bertscore_f1": 0.8536
+        },
+        "latency_ms": 5676.19,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-007",
+        "message": "2023년 겨울 열 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 겨울 열 계량기는 총 2개이며, 경보 단계은 519건, 경보 이벤트는 382건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 440, \"평소 시간대 대비 저부하\": 79}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 79, \"평소보다 높은 부하 경보\": 440}입니다.",
+        "predicted_answer": "2023 년 겨울 열 계량기에서 발생한 이슈는 총 51 건입니다. 그중 평소 시간대 대비 고부하는 44 건, 저부하는 79 건으로 분포되어 있습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "겨울",
+          "meter_count": 2,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "heating_related",
+          "category_name": "열 계량기",
+          "warning_step_count": 519,
+          "reason_distribution": {
+            "평소 시간대 대비 고부하": 440,
+            "평소 시간대 대비 저부하": 79
+          },
+          "warning_event_count": 382,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 79,
+            "평소보다 높은 부하 경보": 440
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.3438,
+          "rouge_l_f1": 0.3125,
+          "numeric_precision": 0.5,
+          "numeric_recall": 0.25,
+          "numeric_f1": 0.3333,
+          "evidence_numeric_recall": 0.25,
+          "source_leakage": false,
+          "answer_quality_composite": 0.3432,
+          "bertscore_precision": 0.8811,
+          "bertscore_recall": 0.8294,
+          "bertscore_f1": 0.8545
+        },
+        "latency_ms": 5420.82,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-008",
+        "message": "2023년 겨울 PV 발전 전력 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 겨울 PV 발전 전력 계량기는 총 5개이며, 경보 단계은 13295건, 경보 이벤트는 6387건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 5022, \"평소 시간대 대비 고부하\": 7817, \"평소 시간대 대비 저부하\": 456}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 3479, \"평소보다 높은 부하 경보\": 9816}입니다.",
+        "predicted_answer": "2023 년 겨울 PV 발전 전력 계량기에서 발생한 이슈는 총 6,387 건입니다. 이 중 평소 시간대 대비 고부하가 7,817 건으로 가장 많고, 알려진 계량기 이슈가 5,022 건이며, 평소 시간대 대비 저부하는 456 건입니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "겨울",
+          "meter_count": 5,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "pv_related",
+          "category_name": "PV 발전 전력 계량기",
+          "warning_step_count": 13295,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 5022,
+            "평소 시간대 대비 고부하": 7817,
+            "평소 시간대 대비 저부하": 456
+          },
+          "warning_event_count": 6387,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 3479,
+            "평소보다 높은 부하 경보": 9816
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.4938,
+          "rouge_l_f1": 0.4198,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.5556,
+          "numeric_f1": 0.7143,
+          "evidence_numeric_recall": 0.5556,
+          "source_leakage": false,
+          "answer_quality_composite": 0.5969,
+          "bertscore_precision": 0.8841,
+          "bertscore_recall": 0.8162,
+          "bertscore_f1": 0.8488
+        },
+        "latency_ms": 5640.68,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-009",
+        "message": "2023년 봄 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 봄 CHP 관련 계량기는 총 3개이며, 경보 단계은 881건, 경보 이벤트는 523건입니다. 원인 분포는 {\"입력 데이터 품질 이슈\": 1, \"평소 시간대 대비 고부하\": 283, \"평소 시간대 대비 저부하\": 597}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 597, \"평소보다 높은 부하 경보\": 284}입니다.",
+        "predicted_answer": "2023 년 봄 CHP 관련 계량기에서 발생한 이슈는 총 523 건입니다. 그중 평소 시간대 대비 저부하가 597 건, 평소 시간대 대비 고부하가 284 건으로 발생했습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "봄",
+          "meter_count": 3,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "chp_related",
+          "category_name": "CHP 관련 계량기",
+          "warning_step_count": 881,
+          "reason_distribution": {
+            "입력 데이터 품질 이슈": 1,
+            "평소 시간대 대비 고부하": 283,
+            "평소 시간대 대비 저부하": 597
+          },
+          "warning_event_count": 523,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 597,
+            "평소보다 높은 부하 경보": 284
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.4658,
+          "rouge_l_f1": 0.411,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.4444,
+          "numeric_f1": 0.6154,
+          "evidence_numeric_recall": 0.4444,
+          "source_leakage": false,
+          "answer_quality_composite": 0.5286,
+          "bertscore_precision": 0.8818,
+          "bertscore_recall": 0.8112,
+          "bertscore_f1": 0.845
+        },
+        "latency_ms": 5848.18,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-010",
+        "message": "2023년 봄 냉방 장치 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 봄 냉방 장치 관련 계량기는 총 27개이며, 경보 단계은 27908건, 경보 이벤트는 12257건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 13805, \"평소 시간대 대비 고부하\": 1714, \"평소 시간대 대비 저부하\": 12389}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 17656, \"평소보다 높은 부하 경보\": 10252}입니다.",
+        "predicted_answer": "2023 년 봄 냉방 장치 관련 계량기에서 발생한 이슈는 총 27 건이며, 그 중 평소 시간대 대비 저부하가 12,389 건으로 가장 많고, 알려진 계량기 이슈가 13,805 건, 평소 시간대 대비 고부하가 1,714 건입니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "봄",
+          "meter_count": 27,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "cooling_related",
+          "category_name": "냉방 장치 관련 계량기",
+          "warning_step_count": 27908,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 13805,
+            "평소 시간대 대비 고부하": 1714,
+            "평소 시간대 대비 저부하": 12389
+          },
+          "warning_event_count": 12257,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 17656,
+            "평소보다 높은 부하 경보": 10252
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.5185,
+          "rouge_l_f1": 0.3704,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.5556,
+          "numeric_f1": 0.7143,
+          "evidence_numeric_recall": 0.5556,
+          "source_leakage": false,
+          "answer_quality_composite": 0.5907,
+          "bertscore_precision": 0.8775,
+          "bertscore_recall": 0.8176,
+          "bertscore_f1": 0.8465
+        },
+        "latency_ms": 5905.59,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-011",
+        "message": "2023년 봄 열 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 봄 열 계량기는 총 2개이며, 경보 단계은 547건, 경보 이벤트는 305건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 10, \"평소 시간대 대비 저부하\": 537}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 537, \"평소보다 높은 부하 경보\": 10}입니다.",
+        "predicted_answer": "2023 년 봄 열 계량기에서 발생한 이슈는 총 305 건입니다. 이 중 평소 시간대 대비 저부하가 537 건, 고부하가 10 건으로 분포되어 있습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "봄",
+          "meter_count": 2,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "heating_related",
+          "category_name": "열 계량기",
+          "warning_step_count": 547,
+          "reason_distribution": {
+            "평소 시간대 대비 고부하": 10,
+            "평소 시간대 대비 저부하": 537
+          },
+          "warning_event_count": 305,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 537,
+            "평소보다 높은 부하 경보": 10
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.4,
+          "rouge_l_f1": 0.3692,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.5,
+          "numeric_f1": 0.6667,
+          "evidence_numeric_recall": 0.5,
+          "source_leakage": false,
+          "answer_quality_composite": 0.5422,
+          "bertscore_precision": 0.8893,
+          "bertscore_recall": 0.8402,
+          "bertscore_f1": 0.8641
+        },
+        "latency_ms": 5785.29,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-012",
+        "message": "2023년 봄 PV 발전 전력 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 봄 PV 발전 전력 계량기는 총 5개이며, 경보 단계은 11352건, 경보 이벤트는 5335건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 5478, \"평소 시간대 대비 고부하\": 2236, \"평소 시간대 대비 저부하\": 3638}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 8119, \"평소보다 높은 부하 경보\": 3233}입니다.",
+        "predicted_answer": "2023 년 봄 PV 발전 전력 계량기에서 발생한 이슈는 총 5 건이며, 그 중 '알려진 계량기 이슈'가 5478 건으로 가장 많고, 이어 '평소 시간대 대비 저부하'가 3638 건, '평소 시간대 대비 고부하'가 2236 건입니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "봄",
+          "meter_count": 5,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "pv_related",
+          "category_name": "PV 발전 전력 계량기",
+          "warning_step_count": 11352,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 5478,
+            "평소 시간대 대비 고부하": 2236,
+            "평소 시간대 대비 저부하": 3638
+          },
+          "warning_event_count": 5335,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 8119,
+            "평소보다 높은 부하 경보": 3233
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.5647,
+          "rouge_l_f1": 0.4235,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.5556,
+          "numeric_f1": 0.7143,
+          "evidence_numeric_recall": 0.5556,
+          "source_leakage": false,
+          "answer_quality_composite": 0.6083,
+          "bertscore_precision": 0.8929,
+          "bertscore_recall": 0.85,
+          "bertscore_f1": 0.8709
+        },
+        "latency_ms": 5874.4,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-013",
+        "message": "2023년 여름 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 여름 CHP 관련 계량기는 총 3개이며, 경보 단계은 5871건, 경보 이벤트는 3166건입니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 3355, \"평소 시간대 대비 저부하\": 2516}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 2516, \"평소보다 높은 부하 경보\": 3355}입니다.",
+        "predicted_answer": "2023 년 여름 CHP 관련 계량기에서 발생한 이슈는 총 3 건입니다. 이 중 평소 시간대 대비 고부하는 3,355 건이고, 평소 시간대 대비 저부하는 2,516 건으로 분포되어 있습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "여름",
+          "meter_count": 3,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "chp_related",
+          "category_name": "CHP 관련 계량기",
+          "warning_step_count": 5871,
+          "reason_distribution": {
+            "평소 시간대 대비 고부하": 3355,
+            "평소 시간대 대비 저부하": 2516
+          },
+          "warning_event_count": 3166,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 2516,
+            "평소보다 높은 부하 경보": 3355
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.4571,
+          "rouge_l_f1": 0.4571,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.5,
+          "numeric_f1": 0.6667,
+          "evidence_numeric_recall": 0.5,
+          "source_leakage": false,
+          "answer_quality_composite": 0.5683,
+          "bertscore_precision": 0.8916,
+          "bertscore_recall": 0.8271,
+          "bertscore_f1": 0.8581
+        },
+        "latency_ms": 6074.39,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-014",
+        "message": "2023년 여름 냉방 장치 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 여름 냉방 장치 관련 계량기는 총 27개이며, 경보 단계은 25994건, 경보 이벤트는 11324건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 9005, \"평소 시간대 대비 고부하\": 4991, \"평소 시간대 대비 저부하\": 11998}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 16463, \"평소보다 높은 부하 경보\": 9531}입니다.",
+        "predicted_answer": "2023 년 여름 냉방 장치 관련 계량기에서 발생한 이슈는 총 11,324 건입니다. 그중 평소 시간대 대비 고부하가 4,991 건, 알려진 계량기 이슈가 9,005 건, 평소 시간대 대비 저부하는 11,998 건으로 분포되어 있습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "여름",
+          "meter_count": 27,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "cooling_related",
+          "category_name": "냉방 장치 관련 계량기",
+          "warning_step_count": 25994,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 9005,
+            "평소 시간대 대비 고부하": 4991,
+            "평소 시간대 대비 저부하": 11998
+          },
+          "warning_event_count": 11324,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 16463,
+            "평소보다 높은 부하 경보": 9531
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.525,
+          "rouge_l_f1": 0.425,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.5556,
+          "numeric_f1": 0.7143,
+          "evidence_numeric_recall": 0.5556,
+          "source_leakage": false,
+          "answer_quality_composite": 0.6026,
+          "bertscore_precision": 0.882,
+          "bertscore_recall": 0.8355,
+          "bertscore_f1": 0.8581
+        },
+        "latency_ms": 6084.29,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-015",
+        "message": "2023년 여름 열 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 여름 열 계량기는 총 2개이며, 경보 단계은 4265건, 경보 이벤트는 2175건입니다. 원인 분포는 {\"평소 시간대 대비 저부하\": 4265}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 4265}입니다.",
+        "predicted_answer": "2023 년 여름 열 계량기에서 발생한 이슈는 총 2 건이며, 그 중 평소 시간대 대비 저부하가 4,265 회 발생했습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "여름",
+          "meter_count": 2,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "heating_related",
+          "category_name": "열 계량기",
+          "warning_step_count": 4265,
+          "reason_distribution": {
+            "평소 시간대 대비 저부하": 4265
+          },
+          "warning_event_count": 2175,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 4265
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.3922,
+          "rouge_l_f1": 0.3922,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.5,
+          "numeric_f1": 0.6667,
+          "evidence_numeric_recall": 0.5,
+          "source_leakage": false,
+          "answer_quality_composite": 0.5456,
+          "bertscore_precision": 0.885,
+          "bertscore_recall": 0.8345,
+          "bertscore_f1": 0.859
+        },
+        "latency_ms": 5596.17,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-016",
+        "message": "2023년 여름 PV 발전 전력 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?",
+        "reference_answer": "2023년 여름 PV 발전 전력 계량기는 총 5개이며, 경보 단계은 12317건, 경보 이벤트는 5518건입니다. 원인 분포는 {\"알려진 계량기 이슈\": 5706, \"평소 시간대 대비 고부하\": 2212, \"평소 시간대 대비 저부하\": 4399}, 경보 방향 분포는 {\"평소보다 낮은 부하 경보\": 9044, \"평소보다 높은 부하 경보\": 3273}입니다.",
+        "predicted_answer": "2023 년 여름 PV 발전 전력 계량기에서 발생한 이슈는 총 5 건이며, 그 중 '알려진 계량기 이슈'가 5,706 건으로 가장 많고, '평소 시간대 대비 저부하'가 4,399 건, '평소 시간대 대비 고부하'가 2,212 건입니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "여름",
+          "meter_count": 5,
+          "source_view": "mart.v_qa_anomaly_category_summary",
+          "category_key": "pv_related",
+          "category_name": "PV 발전 전력 계량기",
+          "warning_step_count": 12317,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 5706,
+            "평소 시간대 대비 고부하": 2212,
+            "평소 시간대 대비 저부하": 4399
+          },
+          "warning_event_count": 5518,
+          "warning_type_distribution": {
+            "평소보다 낮은 부하 경보": 9044,
+            "평소보다 높은 부하 경보": 3273
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.5714,
+          "rouge_l_f1": 0.4286,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.5556,
+          "numeric_f1": 0.7143,
+          "evidence_numeric_recall": 0.5556,
+          "source_leakage": false,
+          "answer_quality_composite": 0.6103,
+          "bertscore_precision": 0.8898,
+          "bertscore_recall": 0.8511,
+          "bertscore_f1": 0.87
+        },
+        "latency_ms": 5627.66,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-017",
+        "message": "2023년 가을 PV 발전 전력 계량기에서 발생한 이슈를 요약해줘.",
+        "reference_answer": "2023년 가을 PV 발전 전력 계량기는 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"평소 시간대 대비 고부하\": 8, \"평소 시간대 대비 저부하\": 8}입니다.",
+        "predicted_answer": "2023 년 가을 PV 발전 전력 계량기에서 평소 시간대 대비 고부하와 저부하가 각각 8 건씩 발생했으며, 알려진 계량기 이슈는 2 건이 있었습니다. 총 18 단계의 경고가 기록되었습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "가을",
+          "meter_count": 5,
+          "source_view": "mart.v_qa_anomaly_equipment_summary",
+          "equipment_name": "PV 발전 전력 계량기",
+          "equipment_category": "pv",
+          "warning_step_count": 18,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 2,
+            "평소 시간대 대비 고부하": 8,
+            "평소 시간대 대비 저부하": 8
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.5085,
+          "rouge_l_f1": 0.339,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.6667,
+          "numeric_f1": 0.8,
+          "evidence_numeric_recall": 0.6667,
+          "source_leakage": false,
+          "answer_quality_composite": 0.6407,
+          "bertscore_precision": 0.9089,
+          "bertscore_recall": 0.8924,
+          "bertscore_f1": 0.9006
+        },
+        "latency_ms": 6217.12,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-018",
+        "message": "2023년 겨울 PV 발전 전력 계량기에서 발생한 이슈를 요약해줘.",
+        "reference_answer": "2023년 겨울 PV 발전 전력 계량기는 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"평소 시간대 대비 고부하\": 8, \"평소 시간대 대비 저부하\": 8}입니다.",
+        "predicted_answer": "2023 년 겨울 PV 발전 전력 계량기에서 평소 시간대 대비 고부하와 저부하가 각각 8 건씩 발생했으며, 알려진 계량기 이슈는 2 건이었습니다. 총 18 단계의 경고가 발동되었습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "겨울",
+          "meter_count": 5,
+          "source_view": "mart.v_qa_anomaly_equipment_summary",
+          "equipment_name": "PV 발전 전력 계량기",
+          "equipment_category": "pv",
+          "warning_step_count": 18,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 2,
+            "평소 시간대 대비 고부하": 8,
+            "평소 시간대 대비 저부하": 8
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.4828,
+          "rouge_l_f1": 0.3448,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.6667,
+          "numeric_f1": 0.8,
+          "evidence_numeric_recall": 0.6667,
+          "source_leakage": false,
+          "answer_quality_composite": 0.638,
+          "bertscore_precision": 0.9133,
+          "bertscore_recall": 0.8932,
+          "bertscore_f1": 0.9031
+        },
+        "latency_ms": 5524.31,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-019",
+        "message": "2023년 봄 PV 발전 전력 계량기에서 발생한 이슈를 요약해줘.",
+        "reference_answer": "2023년 봄 PV 발전 전력 계량기는 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"평소 시간대 대비 고부하\": 8, \"평소 시간대 대비 저부하\": 8}입니다.",
+        "predicted_answer": "2023 년 봄 PV 발전 전력 계량기에서 평소 시간대 대비 고부하와 저부하가 각각 8 건씩 발생했으며, 알려진 계량기 이슈는 2 건이 있었습니다. 총 18 개의 경고 단계가 기록되었습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "봄",
+          "meter_count": 5,
+          "source_view": "mart.v_qa_anomaly_equipment_summary",
+          "equipment_name": "PV 발전 전력 계량기",
+          "equipment_category": "pv",
+          "warning_step_count": 18,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 2,
+            "평소 시간대 대비 고부하": 8,
+            "평소 시간대 대비 저부하": 8
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.5,
+          "rouge_l_f1": 0.3333,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.6667,
+          "numeric_f1": 0.8,
+          "evidence_numeric_recall": 0.6667,
+          "source_leakage": false,
+          "answer_quality_composite": 0.6383,
+          "bertscore_precision": 0.909,
+          "bertscore_recall": 0.8914,
+          "bertscore_f1": 0.9001
+        },
+        "latency_ms": 5523.85,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-020",
+        "message": "2023년 여름 PV 발전 전력 계량기에서 발생한 이슈를 요약해줘.",
+        "reference_answer": "2023년 여름 PV 발전 전력 계량기는 계량기 5개에서 경보 단계 18건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"평소 시간대 대비 고부하\": 8, \"평소 시간대 대비 저부하\": 8}입니다.",
+        "predicted_answer": "2023 년 여름 PV 발전 전력 계량기에서 평소 시간대 대비 고부하와 저부하가 각각 8 건씩 발생했으며, 알려진 계량기 이슈는 2 건이었습니다. 총 18 단계의 경고가 발동되었습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "여름",
+          "meter_count": 5,
+          "source_view": "mart.v_qa_anomaly_equipment_summary",
+          "equipment_name": "PV 발전 전력 계량기",
+          "equipment_category": "pv",
+          "warning_step_count": 18,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 2,
+            "평소 시간대 대비 고부하": 8,
+            "평소 시간대 대비 저부하": 8
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.4828,
+          "rouge_l_f1": 0.3448,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.6667,
+          "numeric_f1": 0.8,
+          "evidence_numeric_recall": 0.6667,
+          "source_leakage": false,
+          "answer_quality_composite": 0.638,
+          "bertscore_precision": 0.9135,
+          "bertscore_recall": 0.8936,
+          "bertscore_f1": 0.9035
+        },
+        "latency_ms": 5522.05,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-021",
+        "message": "2023년 가을 배출가스 시험실 냉방/HVAC 계량기에서 발생한 이슈를 요약해줘.",
+        "reference_answer": "2023년 가을 배출가스 시험실 냉방/HVAC 계량기는 계량기 9개에서 경보 단계 13건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 4, \"평소 시간대 대비 고부하\": 2, \"평소 시간대 대비 저부하\": 7}입니다.",
+        "predicted_answer": "2023 년 가을 배출가스 시험실 냉방/HVAC 계량기에서 총 9 개기의 이슈가 발생했습니다. 그중 평소 시간대 대비 저부하 현상이 7 기, 평소 시간대 대비 고부하가 2 기, 알려진 계량기 이슈가 4 기로 확인되었습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "가을",
+          "meter_count": 9,
+          "source_view": "mart.v_qa_anomaly_equipment_summary",
+          "equipment_name": "배출가스 시험실 냉방/HVAC 계량기",
+          "equipment_category": "emission_lab_cooling",
+          "warning_step_count": 13,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 4,
+            "평소 시간대 대비 고부하": 2,
+            "평소 시간대 대비 저부하": 7
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.6364,
+          "rouge_l_f1": 0.4545,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.8333,
+          "numeric_f1": 0.9091,
+          "evidence_numeric_recall": 0.8333,
+          "source_leakage": false,
+          "answer_quality_composite": 0.7629,
+          "bertscore_precision": 0.92,
+          "bertscore_recall": 0.9,
+          "bertscore_f1": 0.9099
+        },
+        "latency_ms": 5689.09,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-022",
+        "message": "2023년 여름 서버실 냉방 계량기에서 발생한 이슈를 요약해줘.",
+        "reference_answer": "2023년 여름 서버실 냉방 계량기는 계량기 9개에서 경보 단계 13건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 5, \"평소 시간대 대비 고부하\": 4, \"평소 시간대 대비 저부하\": 4}입니다.",
+        "predicted_answer": "2023 년 여름 서버실 냉방 계량기 (총 9 개) 에서 발생한 이슈는 '알려진 계량기 이슈'가 5 건으로 가장 많았고, 그 외에는 평소 시간대 대비 고부하와 저부하 사례 각각 4 건씩 발생했습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "여름",
+          "meter_count": 9,
+          "source_view": "mart.v_qa_anomaly_equipment_summary",
+          "equipment_name": "서버실 냉방 계량기",
+          "equipment_category": "server_cooling",
+          "warning_step_count": 13,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 5,
+            "평소 시간대 대비 고부하": 4,
+            "평소 시간대 대비 저부하": 4
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.5397,
+          "rouge_l_f1": 0.5079,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.6667,
+          "numeric_f1": 0.8,
+          "evidence_numeric_recall": 0.6667,
+          "source_leakage": false,
+          "answer_quality_composite": 0.6792,
+          "bertscore_precision": 0.904,
+          "bertscore_recall": 0.8997,
+          "bertscore_f1": 0.9018
+        },
+        "latency_ms": 5906.34,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-023",
+        "message": "2023년 가을 냉방 열량 계량기에서 발생한 이슈를 요약해줘.",
+        "reference_answer": "2023년 가을 냉방 열량 계량기는 계량기 7개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 3, \"평소 시간대 대비 고부하\": 5, \"평소 시간대 대비 저부하\": 4}입니다.",
+        "predicted_answer": "2023 년 가을 냉방 열량 계량기 (총 7 개) 에서 총 12 단계의 경고가 발생했습니다. 주요 이슈는 평소 시간대 대비 고부하 (5 건), 저부하 (4 건), 그리고 알려진 계량기 이슈 (3 건) 로 구성되었습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "가을",
+          "meter_count": 7,
+          "source_view": "mart.v_qa_anomaly_equipment_summary",
+          "equipment_name": "냉방 열량 계량기",
+          "equipment_category": "cooling",
+          "warning_step_count": 12,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 3,
+            "평소 시간대 대비 고부하": 5,
+            "평소 시간대 대비 저부하": 4
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.6154,
+          "rouge_l_f1": 0.4923,
+          "numeric_precision": 1.0,
+          "numeric_recall": 1.0,
+          "numeric_f1": 1.0,
+          "evidence_numeric_recall": 1.0,
+          "source_leakage": false,
+          "answer_quality_composite": 0.8408,
+          "bertscore_precision": 0.9049,
+          "bertscore_recall": 0.908,
+          "bertscore_f1": 0.9065
+        },
+        "latency_ms": 5818.63,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-024",
+        "message": "2023년 겨울 배출가스 시험실 시험장비 전력 계량기에서 발생한 이슈를 요약해줘.",
+        "reference_answer": "2023년 겨울 배출가스 시험실 시험장비 전력 계량기는 계량기 6개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 6, \"평소 시간대 대비 저부하\": 6}입니다.",
+        "predicted_answer": "2023 년 겨울 배출가스 시험실 전력 계량기 (총 6 개) 에서 평소 시간대 대비 고부하와 저부하 현상이 각각 6 건씩 발생했습니다. 총 12 개의 경고가 기록되었습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "겨울",
+          "meter_count": 6,
+          "source_view": "mart.v_qa_anomaly_equipment_summary",
+          "equipment_name": "배출가스 시험실 시험장비 전력 계량기",
+          "equipment_category": "emission_lab_test_chamber",
+          "warning_step_count": 12,
+          "reason_distribution": {
+            "평소 시간대 대비 고부하": 6,
+            "평소 시간대 대비 저부하": 6
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.5455,
+          "rouge_l_f1": 0.4727,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.8,
+          "numeric_f1": 0.8889,
+          "evidence_numeric_recall": 0.8,
+          "source_leakage": false,
+          "answer_quality_composite": 0.7375,
+          "bertscore_precision": 0.913,
+          "bertscore_recall": 0.9003,
+          "bertscore_f1": 0.9066
+        },
+        "latency_ms": 5512.72,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-025",
+        "message": "2023년 겨울 서버 전력 계량기에서 발생한 이슈를 요약해줘.",
+        "reference_answer": "2023년 겨울 서버 전력 계량기는 계량기 8개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 2, \"입력 데이터 품질 이슈\": 1, \"평소 시간대 대비 고부하\": 5, \"평소 시간대 대비 저부하\": 4}입니다.",
+        "predicted_answer": "2023 년 겨울 서버 전력 계량기 (총 8 개) 에서 평소 시간대 대비 고부하가 5 건, 저부하가 4 건 발생했습니다. 또한 입력 데이터 품질 이슈와 알려진 계량기 이슈 각각 1~2 건이 확인되었습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "겨울",
+          "meter_count": 8,
+          "source_view": "mart.v_qa_anomaly_equipment_summary",
+          "equipment_name": "서버 전력 계량기",
+          "equipment_category": "server_power",
+          "warning_step_count": 12,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 2,
+            "입력 데이터 품질 이슈": 1,
+            "평소 시간대 대비 고부하": 5,
+            "평소 시간대 대비 저부하": 4
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.6377,
+          "rouge_l_f1": 0.3768,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.8571,
+          "numeric_f1": 0.9231,
+          "evidence_numeric_recall": 0.8571,
+          "source_leakage": false,
+          "answer_quality_composite": 0.7584,
+          "bertscore_precision": 0.9141,
+          "bertscore_recall": 0.8884,
+          "bertscore_f1": 0.9011
+        },
+        "latency_ms": 5431.75,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-026",
+        "message": "2023년 봄 냉방 열량 계량기에서 발생한 이슈를 요약해줘.",
+        "reference_answer": "2023년 봄 냉방 열량 계량기는 계량기 7개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 3, \"평소 시간대 대비 고부하\": 4, \"평소 시간대 대비 저부하\": 5}입니다.",
+        "predicted_answer": "2023 년 봄 냉방 열량 계량기 (총 7 개) 에서 총 12 단계의 경고가 발생했습니다. 주요 이슈는 평소 시간대 대비 고부하 사례 4 건과 저부하 사례 5 건이며, 알려진 특정 계량기 관련 이슈도 3 건 확인되었습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "봄",
+          "meter_count": 7,
+          "source_view": "mart.v_qa_anomaly_equipment_summary",
+          "equipment_name": "냉방 열량 계량기",
+          "equipment_category": "cooling",
+          "warning_step_count": 12,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 3,
+            "평소 시간대 대비 고부하": 4,
+            "평소 시간대 대비 저부하": 5
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.5672,
+          "rouge_l_f1": 0.4776,
+          "numeric_precision": 1.0,
+          "numeric_recall": 1.0,
+          "numeric_f1": 1.0,
+          "evidence_numeric_recall": 1.0,
+          "source_leakage": false,
+          "answer_quality_composite": 0.8306,
+          "bertscore_precision": 0.8991,
+          "bertscore_recall": 0.8965,
+          "bertscore_f1": 0.8978
+        },
+        "latency_ms": 5856.29,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-027",
+        "message": "2023년 여름 배출가스 시험실 시험장비 전력 계량기에서 발생한 이슈를 요약해줘.",
+        "reference_answer": "2023년 여름 배출가스 시험실 시험장비 전력 계량기는 계량기 6개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 6, \"평소 시간대 대비 저부하\": 6}입니다.",
+        "predicted_answer": "2023 년 여름 배출가스 시험실 전력 계량기 (총 6 개) 에서 평소 시간대 대비 고부하와 저부하 현상이 각각 6 건씩 발생했습니다. 총 12 개의 경고가 기록되었습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "여름",
+          "meter_count": 6,
+          "source_view": "mart.v_qa_anomaly_equipment_summary",
+          "equipment_name": "배출가스 시험실 시험장비 전력 계량기",
+          "equipment_category": "emission_lab_test_chamber",
+          "warning_step_count": 12,
+          "reason_distribution": {
+            "평소 시간대 대비 고부하": 6,
+            "평소 시간대 대비 저부하": 6
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.5455,
+          "rouge_l_f1": 0.4727,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.8,
+          "numeric_f1": 0.8889,
+          "evidence_numeric_recall": 0.8,
+          "source_leakage": false,
+          "answer_quality_composite": 0.7375,
+          "bertscore_precision": 0.9134,
+          "bertscore_recall": 0.9005,
+          "bertscore_f1": 0.9069
+        },
+        "latency_ms": 5625.0,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-028",
+        "message": "2023년 여름 서버 전력 계량기에서 발생한 이슈를 요약해줘.",
+        "reference_answer": "2023년 여름 서버 전력 계량기는 계량기 8개에서 경보 단계 12건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 3, \"평소 시간대 대비 고부하\": 3, \"평소 시간대 대비 저부하\": 6}입니다.",
+        "predicted_answer": "2023 년 여름 서버 전력 계량기 (총 8 개) 에서 총 12 건의 경고가 발생했습니다. 주요 이슈는 평소 시간대 대비 저부하인 경우 6 건, 고부하는 3 건이며, 알려진 계량기 관련 이슈도 3 건 있었습니다.",
+        "answer_evidence": {
+          "year": 2023,
+          "season": "여름",
+          "meter_count": 8,
+          "source_view": "mart.v_qa_anomaly_equipment_summary",
+          "equipment_name": "서버 전력 계량기",
+          "equipment_category": "server_power",
+          "warning_step_count": 12,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 3,
+            "평소 시간대 대비 고부하": 3,
+            "평소 시간대 대비 저부하": 6
+          }
+        },
+        "scores": {
+          "reference_token_f1": 0.5231,
+          "rouge_l_f1": 0.4,
+          "numeric_precision": 1.0,
+          "numeric_recall": 1.0,
+          "numeric_f1": 1.0,
+          "evidence_numeric_recall": 1.0,
+          "source_leakage": false,
+          "answer_quality_composite": 0.8085,
+          "bertscore_precision": 0.9095,
+          "bertscore_recall": 0.9005,
+          "bertscore_f1": 0.905
+        },
+        "latency_ms": 5504.34,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-029",
+        "message": "V.ZE84에서 발생한 이상 징후를 요약해줘.",
+        "reference_answer": "V.ZE84(PV 발전 전력 계량기)는 전체 기간 동안 경보 단계 21431건, 경보 이벤트 8244건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 21431}입니다.",
+        "predicted_answer": "V.ZE84(PV 발전 전력 계량기) 에서 총 8,244 건의 경고 이벤트가 발생했으며, 이는 알려진 계량기 이슈로 분류되어 있습니다.",
+        "answer_evidence": {
+          "meter_urn": "V.ZE84",
+          "korean_name": "PV 발전 전력 계량기",
+          "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+          "warning_step_count": 21431,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 21431
+          },
+          "warning_event_count": 8244
+        },
+        "scores": {
+          "reference_token_f1": 0.4255,
+          "rouge_l_f1": 0.4255,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.5,
+          "numeric_f1": 0.6667,
+          "evidence_numeric_recall": 0.5,
+          "source_leakage": false,
+          "answer_quality_composite": 0.5573,
+          "bertscore_precision": 0.9206,
+          "bertscore_recall": 0.8906,
+          "bertscore_f1": 0.9053
+        },
+        "latency_ms": 5159.57,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-030",
+        "message": "H2.Z63에서 발생한 이상 징후를 요약해줘.",
+        "reference_answer": "H2.Z63(서버 전력 계량기)는 전체 기간 동안 경보 단계 20517건, 경보 이벤트 6845건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 17603, \"평소 시간대 대비 고부하\": 2797, \"평소 시간대 대비 저부하\": 117}입니다.",
+        "predicted_answer": "서버 전력 계량기 (H2.Z63) 에서 총 6,845 건의 경고가 발생했습니다. 주요 원인은 '알려진 계량기 이슈'로 17,603 회 기록되었으며, 평소 시간대 대비 고부하와 저부하는 각각 2,797 회 및 117 회였습니다.",
+        "answer_evidence": {
+          "meter_urn": "H2.Z63",
+          "korean_name": "서버 전력 계량기",
+          "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+          "warning_step_count": 20517,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 17603,
+            "평소 시간대 대비 고부하": 2797,
+            "평소 시간대 대비 저부하": 117
+          },
+          "warning_event_count": 6845
+        },
+        "scores": {
+          "reference_token_f1": 0.5143,
+          "rouge_l_f1": 0.4286,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.8571,
+          "numeric_f1": 0.9231,
+          "evidence_numeric_recall": 0.8571,
+          "source_leakage": false,
+          "answer_quality_composite": 0.7502,
+          "bertscore_precision": 0.8861,
+          "bertscore_recall": 0.88,
+          "bertscore_f1": 0.8831
+        },
+        "latency_ms": 5475.6,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-031",
+        "message": "H2.Z62에서 발생한 이상 징후를 요약해줘.",
+        "reference_answer": "H2.Z62(서버 전력 계량기)는 전체 기간 동안 경보 단계 16357건, 경보 이벤트 5529건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 16180, \"평소 시간대 대비 저부하\": 177}입니다.",
+        "predicted_answer": "서버 전력 계량기 (H2.Z62) 에서 평소 시간대 대비 저부하가 발생했습니다.",
+        "answer_evidence": {
+          "meter_urn": "H2.Z62",
+          "korean_name": "서버 전력 계량기",
+          "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+          "warning_step_count": 16357,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 16180,
+            "평소 시간대 대비 저부하": 177
+          },
+          "warning_event_count": 5529
+        },
+        "scores": {
+          "reference_token_f1": 0.4889,
+          "rouge_l_f1": 0.3111,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.3333,
+          "numeric_f1": 0.5,
+          "evidence_numeric_recall": 0.3333,
+          "source_leakage": false,
+          "answer_quality_composite": 0.4439,
+          "bertscore_precision": 0.9458,
+          "bertscore_recall": 0.859,
+          "bertscore_f1": 0.9003
+        },
+        "latency_ms": 5174.87,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-032",
+        "message": "H3.Z46에서 발생한 이상 징후를 요약해줘.",
+        "reference_answer": "H3.Z46(서버 전력 계량기)는 전체 기간 동안 경보 단계 11703건, 경보 이벤트 4124건이 발생했습니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 10, \"평소 시간대 대비 저부하\": 11693}입니다.",
+        "predicted_answer": "서버 전력 계량기 (H3.Z46) 는 평소 시간대 대비 저부하가 11,693 회 발생했으며, 고부하는 10 회였습니다. 총 경고 이벤트는 4,124 건이고 경고 단계 수는 11,703 단계입니다.",
+        "answer_evidence": {
+          "meter_urn": "H3.Z46",
+          "korean_name": "서버 전력 계량기",
+          "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+          "warning_step_count": 11703,
+          "reason_distribution": {
+            "평소 시간대 대비 고부하": 10,
+            "평소 시간대 대비 저부하": 11693
+          },
+          "warning_event_count": 4124
+        },
+        "scores": {
+          "reference_token_f1": 0.5246,
+          "rouge_l_f1": 0.2951,
+          "numeric_precision": 1.0,
+          "numeric_recall": 1.0,
+          "numeric_f1": 1.0,
+          "evidence_numeric_recall": 1.0,
+          "source_leakage": false,
+          "answer_quality_composite": 0.7877,
+          "bertscore_precision": 0.8878,
+          "bertscore_recall": 0.8834,
+          "bertscore_f1": 0.8856
+        },
+        "latency_ms": 4884.45,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-033",
+        "message": "H2.ZE65에서 발생한 이상 징후를 요약해줘.",
+        "reference_answer": "H2.ZE65(서버 전력 계량기)는 전체 기간 동안 경보 단계 10176건, 경보 이벤트 3465건이 발생했습니다. 원인 분포는 {\"입력 데이터 품질 이슈\": 1587, \"평소 시간대 대비 고부하\": 8522, \"평소 시간대 대비 저부하\": 67}입니다.",
+        "predicted_answer": "서버 전력 계량기 (H2.ZE65) 에서 총 3,465 건의 경고가 발생했습니다. 주요 원인은 평소 시간대 대비 고부하로 8,522 단계에서 확인되었으며, 입력 데이터 품질 이슈는 1,587 단계, 평소 시간대 대비 저부하는 67 단계였습니다.",
+        "answer_evidence": {
+          "meter_urn": "H2.ZE65",
+          "korean_name": "서버 전력 계량기",
+          "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+          "warning_step_count": 10176,
+          "reason_distribution": {
+            "입력 데이터 품질 이슈": 1587,
+            "평소 시간대 대비 고부하": 8522,
+            "평소 시간대 대비 저부하": 67
+          },
+          "warning_event_count": 3465
+        },
+        "scores": {
+          "reference_token_f1": 0.6111,
+          "rouge_l_f1": 0.3889,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.8571,
+          "numeric_f1": 0.9231,
+          "evidence_numeric_recall": 0.8571,
+          "source_leakage": false,
+          "answer_quality_composite": 0.7568,
+          "bertscore_precision": 0.8963,
+          "bertscore_recall": 0.8851,
+          "bertscore_f1": 0.8907
+        },
+        "latency_ms": 6076.11,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-034",
+        "message": "H1.Z23에서 발생한 이상 징후를 요약해줘.",
+        "reference_answer": "H1.Z23(배출가스 시험실 냉방/HVAC 계량기)는 전체 기간 동안 경보 단계 9204건, 경보 이벤트 3961건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 9204}입니다.",
+        "predicted_answer": "H1.Z23(배출가스 시험실 냉방/HVAC 계량기) 에서 알려진 계량기 이슈가 발생했습니다. 총 3,961 건의 경고 이벤트와 9,204 단계의 경보 단계를 기록하였습니다.",
+        "answer_evidence": {
+          "meter_urn": "H1.Z23",
+          "korean_name": "배출가스 시험실 냉방/HVAC 계량기",
+          "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+          "warning_step_count": 9204,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 9204
+          },
+          "warning_event_count": 3961
+        },
+        "scores": {
+          "reference_token_f1": 0.566,
+          "rouge_l_f1": 0.4528,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.8,
+          "numeric_f1": 0.8889,
+          "evidence_numeric_recall": 0.8,
+          "source_leakage": false,
+          "answer_quality_composite": 0.7366,
+          "bertscore_precision": 0.9171,
+          "bertscore_recall": 0.9039,
+          "bertscore_f1": 0.9105
+        },
+        "latency_ms": 5846.73,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-035",
+        "message": "H2.ZE66에서 발생한 이상 징후를 요약해줘.",
+        "reference_answer": "H2.ZE66(서버실 냉방 계량기)는 전체 기간 동안 경보 단계 8871건, 경보 이벤트 3507건이 발생했습니다. 원인 분포는 {\"알려진 계량기 이슈\": 7802, \"평소 시간대 대비 저부하\": 1069}입니다.",
+        "predicted_answer": "서버실 냉방 계량기 (H2.ZE66) 에서 평소 시간대 대비 저부하가 발생했습니다.",
+        "answer_evidence": {
+          "meter_urn": "H2.ZE66",
+          "korean_name": "서버실 냉방 계량기",
+          "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+          "warning_step_count": 8871,
+          "reason_distribution": {
+            "알려진 계량기 이슈": 7802,
+            "평소 시간대 대비 저부하": 1069
+          },
+          "warning_event_count": 3507
+        },
+        "scores": {
+          "reference_token_f1": 0.4889,
+          "rouge_l_f1": 0.3111,
+          "numeric_precision": 1.0,
+          "numeric_recall": 0.3333,
+          "numeric_f1": 0.5,
+          "evidence_numeric_recall": 0.3333,
+          "source_leakage": false,
+          "answer_quality_composite": 0.4439,
+          "bertscore_precision": 0.9475,
+          "bertscore_recall": 0.8547,
+          "bertscore_f1": 0.8987
+        },
+        "latency_ms": 4660.17,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-036",
+        "message": "H2.ZE64에서 발생한 이상 징후를 요약해줘.",
+        "reference_answer": "H2.ZE64(서버 전력 계량기)는 전체 기간 동안 경보 단계 8823건, 경보 이벤트 3022건이 발생했습니다. 원인 분포는 {\"평소 시간대 대비 고부하\": 7349, \"평소 시간대 대비 저부하\": 1474}입니다.",
+        "predicted_answer": "서버 전력 계량기 (H2.ZE64) 에서 평소 시간대 대비 고부하가 7,349 건, 저부하가 1,474 건 발생했습니다. 총 경고 이벤트는 3,022 건이며, 경고 단계 수는 8,823 입니다.",
+        "answer_evidence": {
+          "meter_urn": "H2.ZE64",
+          "korean_name": "서버 전력 계량기",
+          "source_view": "mart.v_qa_anomaly_meter_summary_natural",
+          "warning_step_count": 8823,
+          "reason_distribution": {
+            "평소 시간대 대비 고부하": 7349,
+            "평소 시간대 대비 저부하": 1474
+          },
+          "warning_event_count": 3022
+        },
+        "scores": {
+          "reference_token_f1": 0.5902,
+          "rouge_l_f1": 0.3279,
+          "numeric_precision": 1.0,
+          "numeric_recall": 1.0,
+          "numeric_f1": 1.0,
+          "evidence_numeric_recall": 1.0,
+          "source_leakage": false,
+          "answer_quality_composite": 0.8041,
+          "bertscore_precision": 0.8909,
+          "bertscore_recall": 0.8912,
+          "bertscore_f1": 0.891
+        },
+        "latency_ms": 4946.22,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-037",
+        "message": "V.ZE84 계량기가 무슨 계량기야?",
+        "reference_answer": "V.ZE84는 PV 발전 전력 계량기입니다. 주차장 태양광 발전 설비 계열의 전력 생산량을 계측합니다.",
+        "predicted_answer": "V.ZE84는 주차장 태양광 발전 설비 계열의 PV 발전 전력을 계측하는 전력 계량기입니다.",
+        "answer_evidence": {
+          "answer": "V.ZE84는 PV 발전 전력 계량기입니다. 주차장 태양광 발전 설비 계열의 전력 생산량을 계측합니다.",
+          "domain": "electricity",
+          "meter_urn": "V.ZE84",
+          "group_code": "pv",
+          "korean_name": "PV 발전 전력 계량기",
+          "source_view": "mart.v_qa_meter_semantic_lookup",
+          "equipment_category": "pv"
+        },
+        "scores": {
+          "reference_token_f1": 0.8387,
+          "rouge_l_f1": 0.6452,
+          "numeric_precision": 1.0,
+          "numeric_recall": 1.0,
+          "numeric_f1": 1.0,
+          "evidence_numeric_recall": 0.5,
+          "source_leakage": false,
+          "answer_quality_composite": 0.7798,
+          "bertscore_precision": 0.9635,
+          "bertscore_recall": 0.9512,
+          "bertscore_f1": 0.9573
+        },
+        "latency_ms": 4957.48,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-038",
+        "message": "V.K21 계량기가 무슨 계량기야?",
+        "reference_answer": "V.K21는 냉방 장치 계량기입니다. 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+        "predicted_answer": "V.K21 는 냉방 장치 총괄 계량기로, 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+        "answer_evidence": {
+          "answer": "V.K21는 냉방 장치 계량기입니다. 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+          "domain": "cooling",
+          "meter_urn": "V.K21",
+          "group_code": "cooling_total",
+          "korean_name": "냉방 장치 총괄 계량기",
+          "source_view": "mart.v_qa_meter_semantic_lookup",
+          "equipment_category": "cooling"
+        },
+        "scores": {
+          "reference_token_f1": 0.9032,
+          "rouge_l_f1": 0.9032,
+          "numeric_precision": 1.0,
+          "numeric_recall": 1.0,
+          "numeric_f1": 1.0,
+          "evidence_numeric_recall": 0.5,
+          "source_leakage": false,
+          "answer_quality_composite": 0.8411,
+          "bertscore_precision": 0.9744,
+          "bertscore_recall": 0.9806,
+          "bertscore_f1": 0.9775
+        },
+        "latency_ms": 4031.08,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-039",
+        "message": "H1.W11 계량기가 무슨 계량기야?",
+        "reference_answer": "H1.W11는 열 계량기입니다. 건물의 열 생산량을 계측합니다.",
+        "predicted_answer": "H1.W11는 건물의 열 생산량을 계측하는 열 계량기입니다.",
+        "answer_evidence": {
+          "answer": "H1.W11는 열 계량기입니다. 건물의 열 생산량을 계측합니다.",
+          "domain": "heating",
+          "meter_urn": "H1.W11",
+          "group_code": "heating_total",
+          "korean_name": "열 계량기",
+          "source_view": "mart.v_qa_meter_semantic_lookup",
+          "equipment_category": "heating"
+        },
+        "scores": {
+          "reference_token_f1": 0.9091,
+          "rouge_l_f1": 0.7273,
+          "numeric_precision": 1.0,
+          "numeric_recall": 1.0,
+          "numeric_f1": 1.0,
+          "evidence_numeric_recall": 0.5,
+          "source_leakage": false,
+          "answer_quality_composite": 0.8068,
+          "bertscore_precision": 0.9685,
+          "bertscore_recall": 0.9684,
+          "bertscore_f1": 0.9685
+        },
+        "latency_ms": 3907.7,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      },
+      {
+        "id": "R2S2-Q-ANOMALY-040",
+        "message": "H1.K11 계량기가 무슨 계량기야?",
+        "reference_answer": "H1.K11는 냉방 장치 계량기입니다. 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+        "predicted_answer": "H1.K11는 냉방 장치 계량기로, 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+        "answer_evidence": {
+          "answer": "H1.K11는 냉방 장치 계량기입니다. 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
+          "domain": "cooling",
+          "meter_urn": "H1.K11",
+          "group_code": "cooling_thermal",
+          "korean_name": "냉방 열량 계량기",
+          "source_view": "mart.v_qa_meter_semantic_lookup",
+          "equipment_category": "cooling"
+        },
+        "scores": {
+          "reference_token_f1": 0.9375,
+          "rouge_l_f1": 0.9375,
+          "numeric_precision": 1.0,
+          "numeric_recall": 1.0,
+          "numeric_f1": 1.0,
+          "evidence_numeric_recall": 0.5,
+          "source_leakage": false,
+          "answer_quality_composite": 0.8531,
+          "bertscore_precision": 0.9866,
+          "bertscore_recall": 0.9836,
+          "bertscore_f1": 0.9851
+        },
+        "latency_ms": 3886.99,
+        "api_meta": {
+          "api_model": "qwen3.5:9b",
+          "api_endpoint": "/api/chat",
+          "raw_message_keys": [
+            "content",
+            "role"
+          ],
+          "used_reasoning_fallback": false,
+          "empty_content_with_thinking": false,
+          "reasoning_or_thinking_chars": 0,
+          "think": false
+        },
+        "error": null
+      }
+    ]
+  }
+}

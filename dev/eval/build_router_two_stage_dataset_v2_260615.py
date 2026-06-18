@@ -2,7 +2,7 @@
 """Build duplicate-free standalone two-stage router evaluation dataset v2.
 
 Output:
-- dev/eval/data/router_two_stage_eval_300_v2_260615.json
+- dev/eval/data/router_two_stage_eval_300_260617.json
 
 Differences from v1:
 - Same balanced label distribution: Route1 200/40/30/30, Route2 40 each.
@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "dev" / "eval" / "data" / "router_two_stage_eval_300_v2_260615.json"
+OUT = ROOT / "dev" / "eval" / "data" / "router_two_stage_eval_300_260617.json"
 
 route2_specs = {
     "anomaly": {

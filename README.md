@@ -5,7 +5,7 @@
 현재 기준 source of truth는 `260615`에 재정리한 **300개 v2 router dataset**입니다.
 
 ```text
-dev/eval/data/router_two_stage_eval_300_v2_260615.json
+dev/eval/data/router_two_stage_eval_300_260617.json
 ```
 
 ---
@@ -17,7 +17,7 @@ dev/eval/data/router_two_stage_eval_300_v2_260615.json
 | 구분 | 내용 |
 |---|---|
 | 평가 대상 | two-stage router classification |
-| 기준 dataset | `router_two_stage_eval_300_v2_260615.json` |
+| 기준 dataset | `router_two_stage_eval_300_260617.json` |
 | row 수 | 300 |
 | Stage 1 | `query`, `action_request`, `approval_required`, `off_topic` |
 | Stage 2 | `anomaly`, `cms`, `report`, `forecast`, `rag` |
@@ -42,7 +42,7 @@ dev/eval/data/router_two_stage_eval_300_v2_260615.json
 
 ```text
 dev/eval/build_router_two_stage_dataset_v2_260615.py
-dev/eval/data/router_two_stage_eval_300_v2_260615.json
+dev/eval/data/router_two_stage_eval_300_260617.json
 dev/eval/router_two_stage_metrics_260615.py
 dev/eval/run_router_sllm_sensitivity_v2_requested_models_260615.sh
 ```
@@ -51,7 +51,7 @@ dev/eval/run_router_sllm_sensitivity_v2_requested_models_260615.sh
 
 ## 3. Dataset 검증 결과
 
-`router_two_stage_eval_300_v2_260615.json` 기준 검증 결과입니다.
+`router_two_stage_eval_300_260617.json` 기준 검증 결과입니다.
 
 | 항목 | 결과 |
 |---|---:|
@@ -101,7 +101,7 @@ python3 dev/eval/build_router_two_stage_dataset_v2_260615.py
 생성 파일:
 
 ```text
-dev/eval/data/router_two_stage_eval_300_v2_260615.json
+dev/eval/data/router_two_stage_eval_300_260617.json
 ```
 
 ### 5.2 Rule baseline 또는 단일 모델 평가
@@ -245,7 +245,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
-p = Path('dev/eval/data/router_two_stage_eval_300_v2_260615.json')
+p = Path('dev/eval/data/router_two_stage_eval_300_260617.json')
 data = json.loads(p.read_text(encoding='utf-8'))
 rows = data['rows'] if isinstance(data, dict) and 'rows' in data else data
 
