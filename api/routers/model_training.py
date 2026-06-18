@@ -5,17 +5,20 @@ import os
 import re
 import secrets
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from api.routers.model_auth import require_model_ops_token, validate_run_id
-from api.routers.model_paths import TRAINING_JOBS_DIR
+from api.routers.model_paths import TRAINING_DATA_DIR, TRAINING_JOBS_DIR
 from energy_v84.common.config import METER_SPECS_BY_URN
+from energy_v84.export_training_data import export_training_data_archive
 
 
 router = APIRouter()
@@ -46,6 +49,8 @@ class TrainingStartRequest(BaseModel):
     timeout_seconds: int | None = None
     overwrite_upload: bool = True
     overwrite_candidate: bool = False
+    export_training_data: bool = True
+    overwrite_training_data: bool = False
 
 
 def _now_iso() -> str:
@@ -178,6 +183,8 @@ def _sanitize_job_input_for_record(value: dict[str, Any]) -> dict[str, Any]:
     sanitized = dict(value)
     if "upload_url" in sanitized:
         sanitized["upload_url"] = "[REDACTED]"
+    if "training_data_url" in sanitized:
+        sanitized["training_data_url"] = "[REDACTED]"
     return sanitized
 
 
@@ -227,6 +234,26 @@ def _build_runpod_input(body: TrainingStartRequest) -> dict[str, Any]:
     return payload
 
 
+def _runpod_public_base_url() -> str:
+    raw = os.getenv("RUNPOD_TRAINING_DATA_BASE_URL", "").strip()
+    if raw:
+        parsed = urllib.parse.urlparse(raw)
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            raise HTTPException(status_code=500, detail="RUNPOD_TRAINING_DATA_BASE_URL must be an absolute URL")
+        return raw.rstrip("/")
+
+    upload_url = (
+        os.getenv("RUNPOD_ARTIFACT_UPLOAD_URL", "").strip()
+        or os.getenv("MODEL_ARTIFACT_UPLOAD_URL", "").strip()
+    )
+    if not upload_url:
+        raise HTTPException(status_code=500, detail="RUNPOD_TRAINING_DATA_BASE_URL or RUNPOD_ARTIFACT_UPLOAD_URL is required")
+    parsed = urllib.parse.urlparse(upload_url)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise HTTPException(status_code=500, detail="artifact upload URL must be an absolute URL")
+    return f"{parsed.scheme}://{parsed.netloc}"
+
+
 def _next_action(record: dict[str, Any]) -> str:
     response = record.get("runpod_status_response")
     if isinstance(response, dict) and isinstance(response.get("output"), dict):
@@ -270,6 +297,20 @@ def start_training(
     body = body or TrainingStartRequest()
     endpoint_id = _runpod_endpoint_id()
     runpod_input = _build_runpod_input(body)
+    training_data: dict[str, Any] | None = None
+    if body.export_training_data:
+        try:
+            training_data = export_training_data_archive(
+                TRAINING_DATA_DIR,
+                runpod_input["run_id"],
+                meters=body.meters,
+                groups=body.groups,
+                overwrite=body.overwrite_training_data,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=f"training data export failed: {type(exc).__name__}: {exc}") from exc
+        runpod_input["training_data_url"] = f"{_runpod_public_base_url()}/training/data/{runpod_input['run_id']}"
+
     response = _call_runpod("POST", "/run", {"input": runpod_input}, endpoint_id=endpoint_id)
     sanitized_response = _sanitize_runpod_response(response)
     job_id = response.get("id")
@@ -287,6 +328,7 @@ def start_training(
         "runpod_endpoint_id": endpoint_id,
         "request_input": _sanitize_job_input_for_record(runpod_input),
         "runpod_response": sanitized_response,
+        "training_data": training_data,
         "next_action": "wait",
     }
     _write_job_record(record)
@@ -298,7 +340,25 @@ def start_training(
         "horizon": runpod_input["horizon"],
         "runpod_status": response.get("status"),
         "runpod_response": sanitized_response,
+        "training_data": training_data,
     }
+
+
+@router.get("/data/{run_id}")
+def download_training_data(
+    run_id: str,
+    authorization: str | None = Header(default=None),
+) -> FileResponse:
+    require_model_ops_token(authorization)
+    validate_run_id(run_id)
+    archive_path = TRAINING_DATA_DIR / f"{run_id}.tar.gz"
+    if not archive_path.is_file():
+        raise HTTPException(status_code=404, detail=f"training data archive not found: {run_id}")
+    return FileResponse(
+        archive_path,
+        media_type="application/gzip",
+        filename=f"{run_id}.tar.gz",
+    )
 
 
 @router.get("/latest")

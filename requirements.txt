@@ -5,6 +5,7 @@ pgvector
 
 # 전처리
 pandas>=2.0
+pyarrow>=14,<18
 numpy
 statsmodels
 

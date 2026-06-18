@@ -25,9 +25,11 @@ CANDIDATE_DIR = Path(os.getenv("MODEL_CANDIDATE_DIR", str(ARTIFACTS_DIR / "candi
 DEFAULT_LOG_DIR = Path(os.getenv("RUNPOD_JOB_LOG_DIR", "/tmp/runpod_job_logs"))
 DEFAULT_TIMEOUT_SECONDS = int(os.getenv("RUNPOD_TRAIN_TIMEOUT_SECONDS", str(24 * 60 * 60)))
 DEFAULT_UPLOAD_TIMEOUT_SECONDS = int(os.getenv("RUNPOD_UPLOAD_TIMEOUT_SECONDS", str(60 * 60)))
+DEFAULT_DATA_DOWNLOAD_TIMEOUT_SECONDS = int(os.getenv("RUNPOD_DATA_DOWNLOAD_TIMEOUT_SECONDS", str(60 * 60)))
 DEFAULT_UPLOAD_RETRIES = int(os.getenv("RUNPOD_UPLOAD_RETRIES", "3"))
 MAX_LOG_TAIL_CHARS = int(os.getenv("RUNPOD_JOB_LOG_TAIL_CHARS", "12000"))
 UPLOAD_CHUNK_SIZE = int(os.getenv("RUNPOD_UPLOAD_CHUNK_SIZE", str(1024 * 1024)))
+DOWNLOAD_CHUNK_SIZE = int(os.getenv("RUNPOD_DOWNLOAD_CHUNK_SIZE", str(1024 * 1024)))
 RUN_ID_RE = re.compile(r"^[A-Za-z0-9_.-]{1,80}$")
 _ACTIVE_PROC: subprocess.Popen | None = None
 
@@ -114,6 +116,22 @@ def _as_bool(value: Any, name: str, *, default: bool = False) -> bool:
     raise JobInputError(f"{name} must be a boolean")
 
 
+def _validate_allowed_host(url: str, env_name: str, allow_any_name: str) -> None:
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise JobInputError(f"{env_name.lower()} target must be an absolute http:// or https:// URL")
+    allowed_hosts = {
+        h.strip().lower()
+        for h in os.getenv(env_name, "").split(",")
+        if h.strip()
+    }
+    allow_any_host = os.getenv(allow_any_name, "0") == "1"
+    if not allowed_hosts and not allow_any_host:
+        raise JobInputError(f"{env_name} is required unless {allow_any_name}=1")
+    if allowed_hosts and (parsed.hostname or "").lower() not in allowed_hosts:
+        raise JobInputError(f"host is not allowed for {env_name}: {parsed.hostname}")
+
+
 def _read_input(job: dict[str, Any]) -> dict[str, Any]:
     raw = job.get("input", {})
     if not isinstance(raw, dict):
@@ -172,7 +190,7 @@ def _read_input(job: dict[str, Any]) -> dict[str, Any]:
         minimum=10,
     )
 
-    return {
+    result = {
         "run_id": run_id,
         "horizon": horizon,
         "upload_url": upload_url,
@@ -187,10 +205,24 @@ def _read_input(job: dict[str, Any]) -> dict[str, Any]:
         "timeout_seconds": timeout_seconds,
         "upload_timeout_seconds": upload_timeout_seconds,
         "upload_retries": _as_int(raw.get("upload_retries"), "upload_retries", default=DEFAULT_UPLOAD_RETRIES, minimum=1),
+        "training_data_url": None,
+        "training_data_token": None,
+        "data_download_timeout_seconds": _as_int(
+            raw.get("data_download_timeout_seconds"),
+            "data_download_timeout_seconds",
+            default=DEFAULT_DATA_DOWNLOAD_TIMEOUT_SECONDS,
+            minimum=10,
+        ),
     }
+    training_data_url = str(raw.get("training_data_url", "") or "").strip()
+    if training_data_url:
+        _validate_allowed_host(training_data_url, "RUNPOD_ALLOWED_DATA_HOSTS", "RUNPOD_ALLOW_ANY_DATA_HOST")
+        result["training_data_url"] = training_data_url
+        result["training_data_token"] = os.getenv("TRAINING_DATA_TOKEN", "").strip() or upload_token
+    return result
 
 
-def _build_train_command(req: dict[str, Any], candidate_dir: Path) -> list[str]:
+def _build_train_command(req: dict[str, Any], candidate_dir: Path, input_data_dir: Path | None = None) -> list[str]:
     cmd = [
         sys.executable,
         "-m",
@@ -200,6 +232,8 @@ def _build_train_command(req: dict[str, Any], candidate_dir: Path) -> list[str]:
         "--output-dir",
         str(candidate_dir),
     ]
+    if input_data_dir is not None:
+        cmd.extend(["--input-data-dir", str(input_data_dir)])
     if req["meters"]:
         cmd.extend(["--meters", *req["meters"]])
     if req["groups"]:
@@ -211,6 +245,85 @@ def _build_train_command(req: dict[str, Any], candidate_dir: Path) -> list[str]:
     if req["seed"] is not None:
         cmd.extend(["--seed", str(req["seed"])])
     return cmd
+
+
+def _safe_extract_training_tar(archive_path: Path, destination: Path) -> None:
+    with tarfile.open(archive_path) as tar:
+        dest = destination.resolve()
+        for member in tar.getmembers():
+            target = (destination / member.name).resolve()
+            if target != dest and dest not in target.parents:
+                raise JobStageError("data", f"unsafe training data member: {member.name}")
+            if member.issym() or member.islnk():
+                raise JobStageError("data", f"training data links are not allowed: {member.name}")
+            if member.isdev() or member.isfifo():
+                raise JobStageError("data", f"training data special files are not allowed: {member.name}")
+            if not (member.isdir() or member.isfile()):
+                raise JobStageError("data", f"unsupported training data member: {member.name}")
+        for member in tar.getmembers():
+            target = (destination / member.name).resolve()
+            if member.isdir():
+                target.mkdir(parents=True, exist_ok=True)
+                continue
+
+            source = tar.extractfile(member)
+            if source is None:
+                raise JobStageError("data", f"cannot read training data member: {member.name}")
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with source, target.open("wb") as out:
+                shutil.copyfileobj(source, out)
+
+
+def _find_training_data_dir(extract_dir: Path, run_id: str) -> Path:
+    candidates = [
+        extract_dir / run_id / "frames",
+        extract_dir / "frames",
+        extract_dir / run_id,
+        extract_dir,
+    ]
+    for candidate in candidates:
+        if candidate.is_dir() and any(candidate.glob("*.parquet")):
+            return candidate
+    raise JobStageError("data", f"training data archive does not contain parquet frames for run_id={run_id}")
+
+
+def _download_training_data(req: dict[str, Any], log_dir: Path) -> Path | None:
+    url = req.get("training_data_url")
+    if not url:
+        return None
+    parsed = urlparse(url)
+    path = parsed.path or "/"
+    if parsed.query:
+        path = f"{path}?{parsed.query}"
+    archive_path = log_dir / "training_data.tar.gz"
+    conn_cls = http.client.HTTPSConnection if parsed.scheme == "https" else http.client.HTTPConnection
+    conn = conn_cls(parsed.netloc, timeout=req["data_download_timeout_seconds"])
+    try:
+        conn.putrequest("GET", path, skip_host=True)
+        conn.putheader("Host", parsed.netloc)
+        conn.putheader("User-Agent", "energy-runpod-job/1.0")
+        if req.get("training_data_token"):
+            conn.putheader("Authorization", f"Bearer {req['training_data_token']}")
+        conn.endheaders()
+        response = conn.getresponse()
+        if response.status >= 300:
+            body = response.read().decode(errors="replace")
+            raise JobStageError("data", f"training data download failed: HTTP {response.status} {body[:1000]}")
+        with archive_path.open("wb") as out:
+            while True:
+                chunk = response.read(DOWNLOAD_CHUNK_SIZE)
+                if not chunk:
+                    break
+                out.write(chunk)
+    finally:
+        conn.close()
+
+    extract_dir = log_dir / "training_data"
+    if extract_dir.exists():
+        shutil.rmtree(extract_dir)
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    _safe_extract_training_tar(archive_path, extract_dir)
+    return _find_training_data_dir(extract_dir, req["run_id"])
 
 
 def _run_process_to_logs(cmd: list[str], stdout_path: Path, stderr_path: Path, timeout_seconds: int) -> int:
@@ -376,6 +489,8 @@ def _safe_error(req: dict[str, Any] | None, error: str) -> str:
     text = str(error)
     if req and req.get("upload_token"):
         text = text.replace(str(req["upload_token"]), "[REDACTED]")
+    if req and req.get("training_data_token"):
+        text = text.replace(str(req["training_data_token"]), "[REDACTED]")
     return text[:2000]
 
 
@@ -417,7 +532,8 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
             shutil.rmtree(candidate_dir)
         candidate_dir.parent.mkdir(parents=True, exist_ok=True)
 
-        cmd = _build_train_command(req, candidate_dir)
+        input_data_dir = _download_training_data(req, log_dir)
+        cmd = _build_train_command(req, candidate_dir, input_data_dir)
         try:
             returncode = _run_process_to_logs(cmd, stdout_path, stderr_path, req["timeout_seconds"])
         except subprocess.TimeoutExpired as exc:

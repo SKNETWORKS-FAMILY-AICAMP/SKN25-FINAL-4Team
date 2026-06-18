@@ -14,3 +14,4 @@ ARTIFACTS_DIR = Path(
 CANDIDATE_DIR = ARTIFACTS_DIR / "candidate"
 INCOMING_DIR = ARTIFACTS_DIR / "incoming_uploads"
 TRAINING_JOBS_DIR = ARTIFACTS_DIR / "training_jobs"
+TRAINING_DATA_DIR = ARTIFACTS_DIR / "training_data"

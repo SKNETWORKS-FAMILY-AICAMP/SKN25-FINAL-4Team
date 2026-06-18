@@ -37,9 +37,10 @@ from energy_v84.common.config import (
     V57_MIN_METER_IMPROVEMENT,
     USE_RESIDUAL_TARGET,
     MeterSpec,
-    specs_for_group,
+    training_specs_for_group,
 )
 from energy_v84.common.db import build_engine, fetch_meter_frame
+from energy_v84.common.local_data import fetch_meter_frame_from_dir
 from energy_v84.common.preprocessing import build_windows, prepare_model_frame
 from energy_v84.common.model import (
     RecurrentPredictor,
@@ -95,16 +96,22 @@ def parse_args():
     p.add_argument("--seed", type=int, default=SEED)
     p.add_argument("--output-dir", type=str, default=None,
                    help="artifact 저장 루트. 미지정 시 candidate/run_YYYYMMDD 자동 생성.")
+    p.add_argument("--input-data-dir", type=str, default=None,
+                   help="계량기별 parquet 입력 디렉터리. 지정 시 DB 조회 대신 로컬 파일을 사용.")
     return p.parse_args()
 
 
 def _get_specs(args):
-    specs = specs_for_group()
+    specs = training_specs_for_group()
     if args.groups:
         gs = set(args.groups)
         specs = [s for s in specs if s.group in gs]
     if args.meters:
         ms = set(args.meters)
+        training_urns = {s.meter_urn for s in specs}
+        excluded = sorted(ms - training_urns)
+        if excluded:
+            print(f"[경고] 학습 대상이 아닌 계량기는 제외됨: {excluded}")
         specs = [s for s in specs if s.meter_urn in ms]
     return specs
 
@@ -170,7 +177,10 @@ def pass1_train_meter(engine, spec: MeterSpec, horizon: int, args,
     urn = spec.meter_urn
     print(f"  [패스1] {urn}", end="", flush=True)
 
-    raw = fetch_meter_frame(engine, spec)
+    if args.input_data_dir:
+        raw = fetch_meter_frame_from_dir(args.input_data_dir, spec)
+    else:
+        raw = fetch_meter_frame(engine, spec)
     bundle_24  = _make_bundle(raw, spec, horizon, 24,  False)
     bundle_24t = _make_bundle(raw, spec, horizon, 24,  True)
     bundle_168 = _make_bundle(raw, spec, horizon, 168, True)
@@ -552,7 +562,11 @@ def main():
         output_dir = ARTIFACTS_DIR / "candidate" / run_name
         print(f"[참고] --output-dir 미지정 → candidate 자동 생성: {output_dir}")
     output_dir.mkdir(parents=True, exist_ok=True)
-    engine = build_engine()
+    if args.input_data_dir:
+        print(f"[참고] 로컬 학습 입력 사용: {args.input_data_dir}")
+        engine = None
+    else:
+        engine = build_engine()
     specs = _get_specs(args)
     horizon = args.horizon
 

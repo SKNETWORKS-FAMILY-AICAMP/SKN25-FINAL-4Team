@@ -3,6 +3,7 @@ runpod>=1.6,<2
 
 # Data / DB
 pandas>=2.0,<3
+pyarrow>=14,<18
 numpy>=1.24,<3
 sqlalchemy>=2.0,<3
 psycopg2-binary>=2.9,<3

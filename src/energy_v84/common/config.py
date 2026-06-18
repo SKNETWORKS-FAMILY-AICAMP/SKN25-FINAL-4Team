@@ -170,6 +170,15 @@ ELECTRIC_TRANSFER_MEMBER_SPECS: tuple[MeterSpec, ...] = (
     MeterSpec("H1.ZE20",  "electric", "transfer_member", ("P","U1","PF"), "P2",  "P2 transfer member → H1.Z20"),
 )
 
+# 직접 학습 대상 51개. 전이 멤버는 별도 artifact를 만들지 않고 대표 artifact를 사용한다.
+TRAINING_METER_SPECS: tuple[MeterSpec, ...] = (
+    *ELECTRIC_REPRESENTATIVE_SPECS,
+    *ELECTRIC_SINGLETON_SPECS,
+    *ELECTRIC_MEMBER_SINGLETON_SPECS,
+    *THERMAL_SINGLETON_SPECS,
+)
+
+# 전체 추론 대상 63개. 학습 대상 51개 + 대표 artifact를 공유하는 전이 멤버 12개.
 ALL_METER_SPECS: tuple[MeterSpec, ...] = (
     *ELECTRIC_REPRESENTATIVE_SPECS,
     *ELECTRIC_SINGLETON_SPECS,
@@ -178,6 +187,19 @@ ALL_METER_SPECS: tuple[MeterSpec, ...] = (
     *THERMAL_SINGLETON_SPECS,
 )
 METER_SPECS_BY_URN: dict[str, MeterSpec] = {s.meter_urn: s for s in ALL_METER_SPECS}
+
+_TRAINING_URNS = {s.meter_urn for s in TRAINING_METER_SPECS}
+_TRANSFER_URNS = {s.meter_urn for s in ELECTRIC_TRANSFER_MEMBER_SPECS}
+_ALL_URNS = {s.meter_urn for s in ALL_METER_SPECS}
+assert _TRAINING_URNS.isdisjoint(_TRANSFER_URNS), "training specs must not contain transfer members"
+assert _TRAINING_URNS | _TRANSFER_URNS == _ALL_URNS, "all specs must equal training specs plus transfer members"
+
+
+def training_specs_for_group(group: str | None = None) -> list[MeterSpec]:
+    specs = list(TRAINING_METER_SPECS)
+    if group is not None:
+        specs = [s for s in specs if s.group == group]
+    return specs
 
 
 def specs_for_group(group: str | None = None) -> list[MeterSpec]:
