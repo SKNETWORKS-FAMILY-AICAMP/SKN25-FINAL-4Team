@@ -1,6 +1,13 @@
 {
-  "schema_version": "anomaly_qa_quality_eval_260617.v1",
-  "reference_policy": "reference_answer uses GPT-5.5-style curated operational answer; reference_answer_sqllm stores sLLM-generated alternative reference",
+  "schema_version": "anomaly_qa_quality_eval_260617.v2_multi_intent",
+  "reference_policy": "reference_answer uses GPT-5.5-style curated operational answer for anomaly rows and deterministic clarification answer for multi_intent rows; reference_answer_sqllm stores sLLM-generated alternative reference",
+  "summary": {
+    "row_count": 60,
+    "route1_distribution": {
+      "query": 40,
+      "multi_intent": 20
+    }
+  },
   "rows": [
     {
       "id": "R2S2-Q-ANOMALY-001",
@@ -1108,6 +1115,526 @@
       "reference_answer": "H1.K11는 냉방 장치 계량기입니다. 중앙 냉방기 또는 냉방 설비의 에너지 흐름을 계측합니다.",
       "source_dataset_id": "R2S2-Q-ANOMALY-040",
       "source_view": "mart.v_qa_meter_semantic_lookup"
+    },
+    {
+      "id": "R2S2-MULTI-001",
+      "question": "2023년 11월 A동 이상 경보를 분석하고 보고서로 요약한 뒤 담당자에게 점검 작업도 등록해줘.",
+      "message": "2023년 11월 A동 이상 경보를 분석하고 보고서로 요약한 뒤 담당자에게 점검 작업도 등록해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "2023년 11월 A동 이상 경보를 분석하고 보고서로 요약한 뒤 담당자에게 점검 작업도 등록해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-001",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-002",
+      "question": "냉동기 2호  원인을 확인해서 월간 리포트에 넣고 정비 티켓까지 생성해줘.",
+      "message": "냉동기 2호  원인을 확인해서 월간 리포트에 넣고 정비 티켓까지 생성해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "냉동기 2호  원인을 확인해서 월간 리포트에 넣고 정비 티켓까지 생성해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-002",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-003",
+      "question": "최근 2주 C동 알람 추이를 분석하고 다음 주 사용량도 예측해서 경영진 보고서로 만들어줘.",
+      "message": "최근 2주 C동 알람 추이를 분석하고 다음 주 사용량도 예측해서 경영진 보고서로 만들어줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "최근 2주 C동 알람 추이를 분석하고 다음 주 사용량도 예측해서 경영진 보고서로 만들어줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-003",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-004",
+      "question": "H2.Z35x 의미를 설명하고, 이상 경보가 있으면 원인 분석과 작업 배정까지 해줘.",
+      "message": "H2.Z35x 의미를 설명하고, 이상 경보가 있으면 원인 분석과 작업 배정까지 해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "H2.Z35x 의미를 설명하고, 이상 경보가 있으면 원인 분석과 작업 배정까지 해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-004",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-005",
+      "question": "CHP2 라인 설비 상태를 점검하고 이상 경보 요약 보고서를 작성한 다음 승인 처리까지 진행해줘.",
+      "message": "CHP2 라인 설비 상태를 점검하고 이상 경보 요약 보고서를 작성한 다음 승인 처리까지 진행해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "CHP2 라인 설비 상태를 점검하고 이상 경보 요약 보고서를 작성한 다음 승인 처리까지 진행해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-005",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-006",
+      "question": "이번 분기 PowerSpike 경보 원인을 분석하면서 피크 전력 전망과 조치 일정을 같이 잡아줘.",
+      "message": "이번 분기 PowerSpike 경보 원인을 분석하면서 피크 전력 전망과 조치 일정을 같이 잡아줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "이번 분기 PowerSpike 경보 원인을 분석하면서 피크 전력 전망과 조치 일정을 같이 잡아줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-006",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-007",
+      "question": "COPDrop 이상 내역을 정리하고 냉동기 점검 체크리스트 실행 상태로 바꾼 뒤 리포트도 작성해줘.",
+      "message": "COPDrop 이상 내역을 정리하고 냉동기 점검 체크리스트 실행 상태로 바꾼 뒤 리포트도 작성해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "COPDrop 이상 내역을 정리하고 냉동기 점검 체크리스트 실행 상태로 바꾼 뒤 리포트도 작성해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-007",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-008",
+      "question": "태양광 구역 PVNightNonZero 경보를 분석하고 센서 설명과 보고서 문구를 한 번에 만들어줘.",
+      "message": "태양광 구역 PVNightNonZero 경보를 분석하고 센서 설명과 보고서 문구를 한 번에 만들어줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "태양광 구역 PVNightNonZero 경보를 분석하고 센서 설명과 보고서 문구를 한 번에 만들어줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-008",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-009",
+      "question": "CHP 설비 이상 경보를 확인하고 예방정비 우선순위와 보고서 배포까지 처리해줘.",
+      "message": "CHP 설비 이상 경보를 확인하고 예방정비 우선순위와 보고서 배포까지 처리해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "CHP 설비 이상 경보를 확인하고 예방정비 우선순위와 보고서 배포까지 처리해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-009",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-010",
+      "question": "B동 운영 리스크를 요약하고 예측 모델 재학습 작업을 즉시 시작해줘.",
+      "message": "B동 운영 리스크를 요약하고 예측 모델 재학습 작업을 즉시 시작해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "B동 운영 리스크를 요약하고 예측 모델 재학습 작업을 즉시 시작해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-010",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-011",
+      "question": "지난달 C동 이상 경보를 분석하고 보고서로 요약한 뒤 담당자에게 점검 작업도 등록해줘.",
+      "message": "지난달 C동 이상 경보를 분석하고 보고서로 요약한 뒤 담당자에게 점검 작업도 등록해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "지난달 C동 이상 경보를 분석하고 보고서로 요약한 뒤 담당자에게 점검 작업도 등록해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-011",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-012",
+      "question": "태양광 인버터  원인을 확인해서 월간 리포트에 넣고 정비 티켓까지 생성해줘.",
+      "message": "태양광 인버터  원인을 확인해서 월간 리포트에 넣고 정비 티켓까지 생성해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "태양광 인버터  원인을 확인해서 월간 리포트에 넣고 정비 티켓까지 생성해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-012",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-013",
+      "question": "최근 3일 CHP2 라인 알람 추이를 분석하고 다음 주 사용량도 예측해서 경영진 보고서로 만들어줘.",
+      "message": "최근 3일 CHP2 라인 알람 추이를 분석하고 다음 주 사용량도 예측해서 경영진 보고서로 만들어줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "최근 3일 CHP2 라인 알람 추이를 분석하고 다음 주 사용량도 예측해서 경영진 보고서로 만들어줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-013",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-014",
+      "question": "P1.K03 의미를 설명하고, 이상 경보가 있으면 원인 분석과 작업 배정까지 해줘.",
+      "message": "P1.K03 의미를 설명하고, 이상 경보가 있으면 원인 분석과 작업 배정까지 해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "P1.K03 의미를 설명하고, 이상 경보가 있으면 원인 분석과 작업 배정까지 해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-014",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-015",
+      "question": "생산 1라인 설비 상태를 점검하고 이상 경보 요약 보고서를 작성한 다음 승인 처리까지 진행해줘.",
+      "message": "생산 1라인 설비 상태를 점검하고 이상 경보 요약 보고서를 작성한 다음 승인 처리까지 진행해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "생산 1라인 설비 상태를 점검하고 이상 경보 요약 보고서를 작성한 다음 승인 처리까지 진행해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-015",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-016",
+      "question": "최근 30일 PowerSpike 경보 원인을 분석하면서 피크 전력 전망과 조치 일정을 같이 잡아줘.",
+      "message": "최근 30일 PowerSpike 경보 원인을 분석하면서 피크 전력 전망과 조치 일정을 같이 잡아줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "최근 30일 PowerSpike 경보 원인을 분석하면서 피크 전력 전망과 조치 일정을 같이 잡아줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-016",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-017",
+      "question": "COPDrop 이상 내역을 정리하고 냉동기 점검 체크리스트 실행 상태로 바꾼 뒤 리포트도 작성해줘 — 요청번호 17로 처리해줘.",
+      "message": "COPDrop 이상 내역을 정리하고 냉동기 점검 체크리스트 실행 상태로 바꾼 뒤 리포트도 작성해줘 — 요청번호 17로 처리해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "COPDrop 이상 내역을 정리하고 냉동기 점검 체크리스트 실행 상태로 바꾼 뒤 리포트도 작성해줘 — 요청번호 17로 처리해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-017",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-018",
+      "question": "태양광 구역 PVNightNonZero 경보를 분석하고 센서 설명과 보고서 문구를 한 번에 만들어줘 — 요청번호 18로 처리해줘.",
+      "message": "태양광 구역 PVNightNonZero 경보를 분석하고 센서 설명과 보고서 문구를 한 번에 만들어줘 — 요청번호 18로 처리해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "태양광 구역 PVNightNonZero 경보를 분석하고 센서 설명과 보고서 문구를 한 번에 만들어줘 — 요청번호 18로 처리해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-018",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-019",
+      "question": "CHP 설비 이상 경보를 확인하고 예방정비 우선순위와 보고서 배포까지 처리해줘 — 요청번호 19로 처리해줘.",
+      "message": "CHP 설비 이상 경보를 확인하고 예방정비 우선순위와 보고서 배포까지 처리해줘 — 요청번호 19로 처리해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "CHP 설비 이상 경보를 확인하고 예방정비 우선순위와 보고서 배포까지 처리해줘 — 요청번호 19로 처리해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-019",
+      "source_view": null
+    },
+    {
+      "id": "R2S2-MULTI-020",
+      "question": "냉동기실 운영 리스크를 요약하고 예측 모델 재학습 작업을 즉시 시작해줘.",
+      "message": "냉동기실 운영 리스크를 요약하고 예측 모델 재학습 작업을 즉시 시작해줘.",
+      "expected_route1": "multi_intent",
+      "expected_route2": null,
+      "expected_final_action": "gate:multi_intent",
+      "answer_evidence": {
+        "intent_policy": "multi_intent",
+        "allowed_route1": [
+          "query",
+          "action_request",
+          "approval_required",
+          "off_topic",
+          "multi_intent"
+        ],
+        "expected_final_action": "gate:multi_intent",
+        "user_message": "냉동기실 운영 리스크를 요약하고 예측 모델 재학습 작업을 즉시 시작해줘.",
+        "safe_behavior": "ask_user_to_split_or_choose_first_task"
+      },
+      "reference_answer_gpt55": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "reference_answer_sqllm": "",
+      "reference_answer": "요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.",
+      "source_dataset_id": "R2S2-MULTI-020",
+      "source_view": null
     }
   ]
 }

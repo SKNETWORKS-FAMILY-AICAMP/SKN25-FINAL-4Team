@@ -49,11 +49,11 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DATASET = ROOT / "dev" / "eval" / "data" / "router_two_stage_eval_300_260617.json"
 REPORT_ROOT = ROOT / "reports" / "experiments" / "router_two_stage_classification"
 
-ROUTE1_LABELS = ["query", "action_request", "approval_required", "off_topic"]
+ROUTE1_LABELS = ["query", "action_request", "approval_required", "off_topic", "multi_intent"]
 ROUTE2_LABELS = ["anomaly", "cms", "report", "forecast", "rag"]
 FINAL_LABELS = [*(f"route:{r}" for r in ROUTE2_LABELS), *(f"gate:{r}" for r in ROUTE1_LABELS if r != "query")]
 
-ANOMALY_KW = ["이상", "알람", "PowerSpike", "COPDrop", "CHPOutage", "NightConsumption", "PVNightNonZero", "HIGH", "MEDIUM", "LOW", "anomaly"]
+ANOMALY_KW = ["이상", "이슈", "경보", "알람", "PowerSpike", "COPDrop", "CHPOutage", "NightConsumption", "PVNightNonZero", "HIGH", "MEDIUM", "LOW", "anomaly"]
 CMS_KW = ["설비 상태", "점검", "유지보수", "정비", "CMS", "health", "체크리스트", "운전 상태"]
 REPORT_KW = ["보고서", "리포트", "요약", "KPI", "개선 포인트", "운영 리스크", "report", "경영진"]
 FORECAST_KW = ["예측", "전망", "앞으로", "다음", "계속", "추세", "forecast", "60분 뒤", "내일", "늘어날", "낮아질"]
@@ -61,6 +61,7 @@ RAG_KW = ["무엇", "의미", "설명", "계량기", "전압", "전류", "역률
 ACTION_KW = ["등록", "배정", "티켓", "일정", "실행", "시작", "백업", "완료로 변경", "작업 관리"]
 APPROVAL_KW = ["삭제", "초기화", "강제로 변경", "승인 처리", "권한", "원본", "수정", "중단", "교체"]
 OFF_KW = ["점심", "주식", "축구", "연예", "감기약", "라면", "여행", "야구", "SNS", "영화"]
+MULTI_INTENT_KW = ["하고", "한 뒤", "동시에", "같이", "까지", "분석하고", "요약하고", "등록", "티켓", "배정", "보고서", "예측"]
 
 
 def load_rows(path: Path) -> list[dict[str, Any]]:
@@ -76,7 +77,20 @@ def contains_any(text: str, kws: list[str]) -> bool:
     return any(kw.lower() in low for kw in kws)
 
 
+def is_multi_intent(message: str) -> bool:
+    low = message.lower()
+    branch_hits = sum(1 for kws in [ANOMALY_KW, CMS_KW, REPORT_KW, FORECAST_KW, RAG_KW, ACTION_KW, APPROVAL_KW] if contains_any(low, kws))
+    connector_hit = any(x in message for x in ["하고", "한 뒤", "동시에", "같이", "까지", "및", "그리고"])
+    # Multi-intent is only for compound operational requests; do not classify
+    # a simple report about anomalies as multi_intent unless it also asks for
+    # another action/forecast/CMS/RAG task in the same utterance.
+    return connector_hit and branch_hits >= 2
+
+
 def rule_predict(message: str) -> dict[str, str | None]:
+    if is_multi_intent(message):
+        route1 = "multi_intent"
+        return {"route1": route1, "route2": None, "final_action": f"gate:{route1}"}
     if contains_any(message, APPROVAL_KW):
         route1 = "approval_required"
         return {"route1": route1, "route2": None, "final_action": f"gate:{route1}"}
@@ -161,6 +175,7 @@ def normalize_route1(value: Any) -> str | None:
         "action": "action_request", "action_request": "action_request", "job_or_workflow": "action_request", "작업": "action_request", "실행": "action_request",
         "approval": "approval_required", "approval_required": "approval_required", "safety_or_control": "approval_required", "승인": "approval_required", "위험": "approval_required",
         "offtopic": "off_topic", "off_topic": "off_topic", "other": "off_topic", "irrelevant": "off_topic", "일반": "off_topic", "무관": "off_topic",
+        "multi_intent": "multi_intent", "multiintent": "multi_intent", "clarification_required": "multi_intent", "clarification": "multi_intent", "both": "multi_intent", "복합": "multi_intent", "다중": "multi_intent",
     }
     if v in aliases:
         return aliases[v]
@@ -175,6 +190,7 @@ def normalize_route1(value: Any) -> str | None:
         "action_request": [r"\baction_request\b", "작업 요청", "작업", "실행 요청"],
         "approval_required": [r"\bapproval_required\b", "승인 필요", "승인", "권한 확인"],
         "off_topic": [r"\boff_topic\b", "무관", "관련 없는", "범위 밖"],
+        "multi_intent": [r"\bmulti_intent\b", r"\bclarification_required\b", "복합", "다중", "여러 작업", "질문을 분리"],
     }
     hits = [label for label, pats in patterns.items() if any(re.search(pat, raw) for pat in pats)]
     uniq = list(dict.fromkeys(hits))
@@ -208,6 +224,24 @@ def normalize_route2(value: Any) -> str | None:
     return uniq[0] if len(uniq) == 1 else None
 
 
+def classify_fallback_reason(error_text: str | None = None, *, raw_content: str | None = None, parsed_status: str | None = None, invalid_label: bool = False) -> str:
+    """Classify fallback root cause for post-run diagnostics."""
+    text = " ".join(x for x in [error_text or "", raw_content or "", parsed_status or ""] if x).lower()
+    if "out of memory" in text or "oom" in text or "cuda error" in text:
+        return "runtime_oom"
+    if "timed out" in text or "timeout" in text:
+        return "runtime_timeout"
+    if "urlerror" in text or "httperror" in text or "connection refused" in text or "api" in text and "error" in text:
+        return "runtime_api_error"
+    if invalid_label:
+        return "contract_invalid_label"
+    if "cannot parse json" in text or "expecting value" in text or "jsondecodeerror" in text:
+        if not (raw_content or "").strip():
+            return "contract_empty_or_reasoning_only"
+        return "contract_malformed_json"
+    return "contract_or_unknown"
+
+
 def ollama_predict(message: str, model: str, base_url: str, timeout: int = 180, think: bool | None = False) -> dict[str, str | None]:
     endpoint = api_chat_endpoint_from_base(base_url)
     system = (
@@ -216,14 +250,16 @@ def ollama_predict(message: str, model: str, base_url: str, timeout: int = 180, 
         "Return exactly one JSON object and nothing else. No prose, no markdown, no comments, no reasoning. "
         "The JSON object must contain exactly these three keys: route1, route2, final_action. "
         "Every value must be one of the allowed literal values below. Do not put explanations inside values. "
-        "Allowed route1 values: query, action_request, approval_required, off_topic. "
+        "Allowed route1 values: query, action_request, approval_required, off_topic, multi_intent. "
         "Allowed route2 values when route1 is query: anomaly, cms, report, forecast, rag. "
+        "Use route1=multi_intent only when the user asks for two or more distinct tasks/branches in one request and the safe response should ask them to split or clarify. "
         "When route1 is not query, route2 must be null. "
         "Allowed final_action values: route:anomaly, route:cms, route:report, route:forecast, route:rag, "
-        "gate:action_request, gate:approval_required, gate:off_topic. "
+        "gate:action_request, gate:approval_required, gate:off_topic, gate:multi_intent. "
         "Consistency rules: if route1 is query, final_action must be route:<route2>; "
         "if route1 is not query, final_action must be gate:<route1>. "
         "Valid example: {\"route1\":\"query\",\"route2\":\"anomaly\",\"final_action\":\"route:anomaly\"}. "
+        "Valid multi_intent example: {\"route1\":\"multi_intent\",\"route2\":null,\"final_action\":\"gate:multi_intent\"}. "
         "Invalid examples: natural-language values, extra keys, markdown fences, multiple JSON objects, empty content."
     )
     payload = {
@@ -234,8 +270,17 @@ def ollama_predict(message: str, model: str, base_url: str, timeout: int = 180, 
         ],
         "stream": False,
         "think": think,
-        "format": "json",
-        "options": {"temperature": 0, "num_predict": 128},
+        "format": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "route1": {"type": "string", "enum": ROUTE1_LABELS},
+                "route2": {"type": ["string", "null"], "enum": [*ROUTE2_LABELS, None]},
+                "final_action": {"type": "string", "enum": FINAL_LABELS},
+            },
+            "required": ["route1", "route2", "final_action"],
+        },
+        "options": {"temperature": 0, "top_p": 0, "num_predict": 96, "repeat_penalty": 1.0},
     }
     req = request.Request(endpoint, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"})
     try:
@@ -258,10 +303,18 @@ def ollama_predict(message: str, model: str, base_url: str, timeout: int = 180, 
         parsed["_think"] = think
         parsed["_raw_message_keys"] = sorted(msg.keys())
     except Exception as exc:
-        parsed = rule_predict(message)
-        parsed["_fallback"] = "rule_after_llm_error"  # type: ignore[index]
-        parsed["_parse_error"] = f"{type(exc).__name__}: {str(exc)[:200]}"  # type: ignore[index]
-        parsed["_think"] = think  # type: ignore[index]
+        err = f"{type(exc).__name__}: {str(exc)[:200]}"
+        rule_fallback = rule_predict(message)
+        parsed = {
+            "route1": "__fallback__",
+            "route2": "__fallback__",
+            "final_action": "__fallback__",
+            "_fallback": "invalid_after_llm_error",
+            "_fallback_reason": classify_fallback_reason(err),
+            "_fallback_rule_prediction": rule_fallback,
+            "_parse_error": err,
+            "_think": think,
+        }
     r1_raw = parsed.get("route1")
     r2_raw = parsed.get("route2")
     r1 = normalize_route1(r1_raw)
@@ -269,15 +322,17 @@ def ollama_predict(message: str, model: str, base_url: str, timeout: int = 180, 
     parsed["_raw_route1"] = r1_raw
     parsed["_raw_route2"] = r2_raw
     if r1 not in ROUTE1_LABELS:
-        fallback = rule_predict(message)
-        fallback["_fallback"] = "rule_after_invalid_route1"  # type: ignore[index]
-        fallback["_parse_status"] = parsed.get("_parse_status")  # type: ignore[index]
-        fallback["_parse_error"] = parsed.get("_parse_error")  # type: ignore[index]
-        fallback["_raw_route1"] = r1_raw  # type: ignore[index]
-        fallback["_raw_route2"] = r2_raw  # type: ignore[index]
-        fallback["_raw_content"] = parsed.get("_raw_content")  # type: ignore[index]
-        fallback["_think"] = think  # type: ignore[index]
-        return fallback
+        invalid = {"route1": "__fallback__", "route2": "__fallback__", "final_action": "__fallback__"}
+        invalid["_fallback"] = "invalid_after_bad_route1"  # type: ignore[index]
+        invalid["_fallback_reason"] = classify_fallback_reason(parsed.get("_parse_error"), raw_content=parsed.get("_raw_content"), parsed_status=parsed.get("_parse_status"), invalid_label=True)  # type: ignore[index]
+        invalid["_fallback_rule_prediction"] = rule_predict(message)  # type: ignore[index]
+        invalid["_parse_status"] = parsed.get("_parse_status")  # type: ignore[index]
+        invalid["_parse_error"] = parsed.get("_parse_error") or "invalid_route1"  # type: ignore[index]
+        invalid["_raw_route1"] = r1_raw  # type: ignore[index]
+        invalid["_raw_route2"] = r2_raw  # type: ignore[index]
+        invalid["_raw_content"] = parsed.get("_raw_content")  # type: ignore[index]
+        invalid["_think"] = think  # type: ignore[index]
+        return invalid
     if r1 == "query":
         if r2 not in ROUTE2_LABELS:
             r2 = "rag"
@@ -409,11 +464,14 @@ def main() -> None:
     parsed_llm_json_count = sum(1 for p in preds if p.get("_parse_status") == "parsed_llm_json")
     fallback_count = sum(1 for p in preds if p.get("_fallback"))
     parse_error_count = sum(1 for p in preds if p.get("_parse_error"))
+    invalid_prediction_count = sum(1 for p in preds if p.get("route1") == "__fallback__" or p.get("final_action") == "__fallback__")
+    fallback_reason_counts = dict(Counter(str(p.get("_fallback_reason") or "unknown") for p in preds if p.get("_fallback")))
     payload = {
         "schema_version": "experiment-metrics.v1",
         "test_id": "router_two_stage_classification",
         "run_id": args.run_id,
         "metric_family": "two_stage_router_no_confidence",
+        "metric_note": "Fallback rows are scored as invalid labels (__fallback__), not as rule-router predictions. Therefore all-fallback runs produce zero accuracy/F1; fallback_rule_prediction is retained only for debugging.",
         "dataset": {"path": str(dataset.relative_to(ROOT) if dataset.is_relative_to(ROOT) else dataset), "row_count": len(rows)},
         "mode": args.mode,
         "model": args.model if args.mode == "ollama" else None,
@@ -433,6 +491,8 @@ def main() -> None:
             "parsed_llm_json_count": parsed_llm_json_count,
             "fallback_count": fallback_count,
             "parse_error_count": parse_error_count,
+            "invalid_prediction_count": invalid_prediction_count,
+            "fallback_reason_counts": fallback_reason_counts,
         },
         "gates": {
             "route1_accuracy_min_0_90": metrics["route1"]["route1_accuracy"] >= 0.90,
@@ -440,7 +500,7 @@ def main() -> None:
             "final_action_accuracy_min_0_70": metrics["final"]["final_action_accuracy"] >= 0.70,
             "leakage_error_rate_max_0_10": metrics["route1"]["route1_leakage_error_rate"] <= 0.10,
         },
-        "errors": [{"id": r["id"], "error": p.get("_parse_error"), "fallback": p.get("_fallback")} for r, p in zip(rows, preds) if p.get("_parse_error") or p.get("_fallback")],
+        "errors": [{"id": r["id"], "error": p.get("_parse_error"), "fallback": p.get("_fallback"), "fallback_reason": p.get("_fallback_reason")} for r, p in zip(rows, preds) if p.get("_parse_error") or p.get("_fallback")],
         "details": {"metrics": metrics, "predictions": [{"id": r["id"], "message": r["message"], "expected": {"route1": r["expected_route1"], "route2": r["expected_route2"], "final_action": r["expected_final_action"]}, "predicted": p} for r, p in zip(rows, preds)]},
     }
     (out_dir / "metrics.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

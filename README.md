@@ -1,11 +1,12 @@
-# SKN Final — Router Two-Stage v2 Sensitivity Workspace
+# SKN Final — Router/QA multi_intent Sensitivity Workspace
 
 이 브랜치는 SKN Final EMS Agent의 **two-stage router 평가 및 sLLM 모델별 sensitivity analysis**를 위한 정리된 작업 공간입니다.
 
-현재 기준 source of truth는 `260615`에 재정리한 **300개 v2 router dataset**입니다.
+현재 기준 source of truth는 `260619`에 재정리한 **multi_intent 포함 300개 router dataset**과 **60개 QA/BERTScore dataset**입니다.
 
 ```text
 dev/eval/data/router_two_stage_eval_300_260617.json
+dev/eval/data/anomaly_qa_quality_eval_260617.json
 ```
 
 ---
@@ -19,9 +20,9 @@ dev/eval/data/router_two_stage_eval_300_260617.json
 | 평가 대상 | two-stage router classification |
 | 기준 dataset | `router_two_stage_eval_300_260617.json` |
 | row 수 | 300 |
-| Stage 1 | `query`, `action_request`, `approval_required`, `off_topic` |
+| Stage 1 | `query`, `action_request`, `approval_required`, `off_topic`, `multi_intent` |
 | Stage 2 | `anomaly`, `cms`, `report`, `forecast`, `rag` |
-| 출력 위치 | `reports/experiments/router_two_stage_classification/` |
+| 출력 위치 | `reports/experiments/router_two_stage_classification/`, `reports/experiments/answer_quality_sensitivity/` |
 
 ---
 
@@ -57,21 +58,22 @@ dev/eval/run_router_sllm_sensitivity_v2_requested_models_260615.sh
 |---|---:|
 | 전체 row 수 | 300 |
 | 중복 message | 0 |
-| Stage 1 `query` | 200 |
+| Stage 1 `query` | 180 |
 | Stage 1 `action_request` | 40 |
 | Stage 1 `approval_required` | 30 |
 | Stage 1 `off_topic` | 30 |
-| Stage 2 `anomaly` | 40 |
-| Stage 2 `cms` | 40 |
-| Stage 2 `report` | 40 |
-| Stage 2 `forecast` | 40 |
-| Stage 2 `rag` | 40 |
+| Stage 1 `multi_intent` | 20 |
+| Stage 2 `anomaly` | 36 |
+| Stage 2 `cms` | 36 |
+| Stage 2 `report` | 36 |
+| Stage 2 `forecast` | 36 |
+| Stage 2 `rag` | 36 |
 
 ---
 
 ## 4. 평가 대상 모델
 
-요청 기준 모델은 아래 8개입니다.
+요청 기준 최신 평가 모델은 아래 11개입니다.
 
 ```text
 llama3.2:3b
@@ -82,6 +84,9 @@ qwen3.5:4b
 qwen3.5:9b
 exaone3.5:7.8b
 gemma4:12b
+deepseek-r1:8b
+phi4-mini:3.8b
+qwen3:8b
 ```
 
 > 참고: `qwen3.5:9b`는 이전 RunPod/Ollama 환경에서 저장소 quota 문제로 재다운로드가 필요했던 상태입니다. 실행 전 `ollama list`로 설치 여부를 확인하세요.
@@ -102,6 +107,7 @@ python3 dev/eval/build_router_two_stage_dataset_v2_260615.py
 
 ```text
 dev/eval/data/router_two_stage_eval_300_260617.json
+dev/eval/data/anomaly_qa_quality_eval_260617.json
 ```
 
 ### 5.2 Rule baseline 또는 단일 모델 평가
@@ -202,6 +208,14 @@ reports/
 
 Raw response 저장 필드가 추가되어 모델별 응답 원문과 parsing 상태까지 추적할 수 있습니다.
 
+### 7.1 Fallback / metric 산정 기준
+
+- `fallback_count`는 LLM 호출 실패(OOM/timeout/API error), JSON parse 실패, 또는 canonical label이 아닌 값이 들어온 row 수입니다.
+- 기존 구현은 fallback 시 rule router 결과를 prediction으로 넣어 scoring했기 때문에 fallback이어도 rule 결과가 gold label과 맞으면 accuracy/F1이 0보다 크게 나올 수 있었습니다.
+- 현재 기준은 fallback row를 `__fallback__` sentinel로 채점합니다. `__fallback__`은 gold label에 존재하지 않으므로 300개 전부 fallback이면 route1/route2/final accuracy와 F1은 모두 `0.0`이 됩니다.
+- rule router 결과는 `fallback_rule_prediction`에 디버그용으로만 저장하고, metric 계산에는 사용하지 않습니다.
+- BERTScore는 생성 실패/빈 답변 row를 평균에 섞지 않고 `bertscore_evaluated_count`, `bertscore_evaluation_unavailable_count`로 분리합니다. 예: 정상 평가 250개, 평가불가 0개면 `bertscore_f1=0.xxx`, `bertscore_evaluated_count=250`, `bertscore_evaluation_unavailable_count=0` 형태로 표기합니다.
+
 ---
 
 ## 8. 현재 정리 원칙
@@ -232,7 +246,8 @@ git status --short
 ```bash
 python3 -m py_compile \
   dev/eval/build_router_two_stage_dataset_v2_260615.py \
-  dev/eval/router_two_stage_metrics_260615.py
+  dev/eval/router_two_stage_metrics_260615.py \
+  dev/eval/answer_quality_sensitivity_260617.py
 
 bash -n dev/eval/run_router_sllm_sensitivity_v2_requested_models_260615.sh
 ```
@@ -265,3 +280,34 @@ PY
 - 모델별 실행 결과는 `reports/experiments/`에 생성합니다.
 - `reports/`는 commit 대상이 아니라 재생성 가능한 실험 산출물입니다.
 - RunPod는 모델 serving 용도로 사용하고, 코드/데이터셋/결과 관리는 이 workspace에서 수행합니다.
+
+---
+
+## 6. 최신 260619 결과 요약
+
+최신 HTML 리포트:
+
+```text
+docs/experiment_metrics_260619.html
+```
+
+최신 comparison JSON:
+
+```text
+reports/experiments/router_two_stage_classification/multi_intent_260619_router_schema_hardened_qa_bert_comparison.json
+```
+
+핵심 결과:
+
+| 구분 | 1순위 | 핵심 지표 |
+|---|---|---:|
+| Router Final Accuracy | `gemma4:12b` | 0.6167 |
+| QA Composite | `gemma4:12b` | 0.6357 |
+| QA Numeric F1 | `qwen3.5:9b` | 0.7754 |
+| BERTScore F1 | `gemma4:12b` | 0.8865 |
+
+주의:
+
+- `deepseek-r1:8b`는 Router 300건 모두 fallback/parse error이므로 Router 후보에서 제외합니다.
+- BERTScore는 정상 답변 row만 평균 계산하고, 평가불가는 `bertscore_evaluation_unavailable_count`로 분리합니다.
+- `multi_intent`는 복합 작업 요청을 바로 실행하지 않고 `gate:multi_intent`로 분기해 사용자에게 작업 분리를 요청하는 안전 gate입니다.

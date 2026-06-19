@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Build QA quality dataset with question, evidence, GPT-style and sLLM references."""
+"""Build QA quality dataset with anomaly answers and multi_intent clarification rows."""
 from __future__ import annotations
 import argparse, json, re
 from pathlib import Path
@@ -57,32 +57,57 @@ def main():
     args=ap.parse_args()
     obj=json.loads(Path(args.src).read_text(encoding='utf-8'))
     rows=[]
+    existing_out = Path(args.out)
+    if existing_out.exists():
+        try:
+            prev = json.loads(existing_out.read_text(encoding='utf-8'))
+            for old_row in prev.get('rows', []):
+                # Preserve curated anomaly QA rows that are not regenerated from
+                # the router-only dataset. Multi-intent rows are regenerated below
+                # so prompt/policy changes are reflected deterministically.
+                if old_row.get('expected_route1') == 'query' and (old_row.get('reference_answer') or old_row.get('answer_text')) and old_row.get('answer_evidence'):
+                    rows.append(old_row)
+        except Exception:
+            pass
     for r in obj['rows']:
         if r.get('answer_text') and r.get('answer_evidence'):
             q=r['message']; ev=r['answer_evidence']; seed=r['answer_text']
             gpt_ref=polish_gpt55_style(q, ev, seed)
-            if args.skip_sqllm:
-                sqllm_ref=''
-            else:
-                try:
-                    sqllm_ref=api_chat(args.ollama_url, args.sqllm_model, q, ev, gpt_ref)
-                except Exception as exc:
-                    sqllm_ref=f'[SQ-LLM_REFERENCE_ERROR] {type(exc).__name__}: {str(exc)[:200]}'
-            rows.append({
-                'id': r['id'],
-                'question': q,
-                'message': q,
-                'expected_route1': r.get('expected_route1'),
-                'expected_route2': r.get('expected_route2'),
-                'expected_final_action': r.get('expected_final_action'),
-                'answer_evidence': ev,
-                'reference_answer_gpt55': gpt_ref,
-                'reference_answer_sqllm': sqllm_ref,
-                'reference_answer': gpt_ref,
-                'source_dataset_id': r.get('id'),
-                'source_view': r.get('source_view'),
-            })
-    out={'schema_version':'anomaly_qa_quality_eval_260617.v1','reference_policy':'reference_answer uses GPT-5.5-style curated operational answer; reference_answer_sqllm stores sLLM-generated alternative reference','rows':rows}
+        elif r.get('expected_route1') == 'multi_intent':
+            q=r['message']
+            ev={
+                'intent_policy': 'multi_intent',
+                'allowed_route1': ['query','action_request','approval_required','off_topic','multi_intent'],
+                'expected_final_action': 'gate:multi_intent',
+                'user_message': q,
+                'safe_behavior': 'ask_user_to_split_or_choose_first_task',
+            }
+            gpt_ref='요청에 여러 작업이 함께 포함되어 있습니다. 이상 경보 분석, 보고서 작성, 예측, 작업 등록 중 어떤 작업을 먼저 진행할지 하나만 선택해 주세요.'
+        else:
+            continue
+        if args.skip_sqllm:
+            sqllm_ref=''
+        else:
+            try:
+                sqllm_ref=api_chat(args.ollama_url, args.sqllm_model, q, ev, gpt_ref)
+            except Exception as exc:
+                sqllm_ref=f'[SQ-LLM_REFERENCE_ERROR] {type(exc).__name__}: {str(exc)[:200]}'
+        rows.append({
+            'id': r['id'],
+            'question': q,
+            'message': q,
+            'expected_route1': r.get('expected_route1'),
+            'expected_route2': r.get('expected_route2'),
+            'expected_final_action': r.get('expected_final_action'),
+            'answer_evidence': ev,
+            'reference_answer_gpt55': gpt_ref,
+            'reference_answer_sqllm': sqllm_ref,
+            'reference_answer': gpt_ref,
+            'source_dataset_id': r.get('id'),
+            'source_view': r.get('source_view'),
+        })
+    rows=list({x['id']:x for x in rows}.values())
+    out={'schema_version':'anomaly_qa_quality_eval_260617.v2_multi_intent','reference_policy':'reference_answer uses GPT-5.5-style curated operational answer for anomaly rows and deterministic clarification answer for multi_intent rows; reference_answer_sqllm stores sLLM-generated alternative reference','summary':{'row_count':len(rows),'route1_distribution':dict(__import__('collections').Counter(x.get('expected_route1') for x in rows))},'rows':rows}
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(out, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
     print(json.dumps({'out':args.out,'rows':len(rows),'sqllm_model':args.sqllm_model,'sqllm_filled':sum(bool(x['reference_answer_sqllm']) for x in rows)}, ensure_ascii=False, indent=2))

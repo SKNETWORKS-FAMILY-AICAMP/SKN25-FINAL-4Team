@@ -5,7 +5,8 @@ Output:
 - dev/eval/data/router_two_stage_eval_300_260617.json
 
 Differences from v1:
-- Same balanced label distribution: Route1 200/40/30/30, Route2 40 each.
+- Updated label distribution: Route1 query/action/approval/off_topic/multi_intent = 180/40/30/30/20, Route2 36 each.
+- Adds multi_intent gate rows for compound anomaly/report/action requests that should ask the user to split or clarify.
 - No duplicate message text.
 - Still independent from retrieval/evidence QA JSON.
 """
@@ -126,7 +127,7 @@ def make_query_rows() -> list[dict[str, Any]]:
     for route, spec in route2_specs.items():
         n=0
         i=0
-        while n < 40:
+        while n < 36:
             topic=spec["topics"][i % len(spec["topics"])]
             tmpl=spec["templates"][(i // len(spec["topics"])) % len(spec["templates"])]
             msg=fill(tmpl, i, topic)
@@ -144,7 +145,7 @@ def make_query_rows() -> list[dict[str, Any]]:
                 "expected_final_action": f"route:{route}",
                 "difficulty": "easy" if n < 12 else "medium" if n < 30 else "hard",
                 "style": "direct",
-                "source_type": "synthetic_router_eval_v2_260615",
+                "source_type": "synthetic_router_eval_v3_multi_intent_260619",
                 "notes": spec["note"],
             })
             n += 1
@@ -168,7 +169,7 @@ def gate_rows(prefix: str, label: str, target: int, templates: list[str]) -> lis
             "expected_final_action": f"gate:{label}",
             "difficulty": "hard" if label == "approval_required" else "medium" if label == "action_request" else "easy",
             "style": "imperative" if label != "off_topic" else "casual",
-            "source_type": "synthetic_router_eval_v2_260615",
+            "source_type": "synthetic_router_eval_v3_multi_intent_260619",
             "notes": f"Route1 {label} gate 평가용 샘플",
         })
     return rows
@@ -186,6 +187,22 @@ approval_templates = [
     "DB의 원본 계량 데이터를 수정해줘.", "작업 승인 없이 {asset} 설정값을 바꿔줘.", "장애 로그를 삭제하고 정상 처리해줘.",
     "운영 서버의 배치 스케줄을 중단해줘.",
 ]
+# Compound requests that intentionally mix multiple intents. These should not be
+# forced into anomaly/report/cms/forecast/rag. The safe branch asks the user to
+# split or clarify the first task to perform.
+multi_intent_templates = [
+    "{period} {area} 이상 경보를 분석하고 보고서로 요약한 뒤 담당자에게 점검 작업도 등록해줘.",
+    "{asset} {topic} 원인을 확인해서 월간 리포트에 넣고 정비 티켓까지 생성해줘.",
+    "최근 {window} {area} 알람 추이를 분석하고 다음 주 사용량도 예측해서 경영진 보고서로 만들어줘.",
+    "{meter} 의미를 설명하고, 이상 경보가 있으면 원인 분석과 작업 배정까지 해줘.",
+    "{area} 설비 상태를 점검하고 이상 경보 요약 보고서를 작성한 다음 승인 처리까지 진행해줘.",
+    "{period} PowerSpike 경보 원인을 분석하면서 피크 전력 전망과 조치 일정을 같이 잡아줘.",
+    "COPDrop 이상 내역을 정리하고 냉동기 점검 체크리스트 실행 상태로 바꾼 뒤 리포트도 작성해줘.",
+    "태양광 구역 PVNightNonZero 경보를 분석하고 센서 설명과 보고서 문구를 한 번에 만들어줘.",
+    "CHP 설비 이상 경보를 확인하고 예방정비 우선순위와 보고서 배포까지 처리해줘.",
+    "{area} 운영 리스크를 요약하고 예측 모델 재학습 작업을 즉시 시작해줘.",
+]
+
 off_templates = [
     "오늘 점심 뭐 먹을까?", "주식 종목 추천해줘.", "어제 축구 경기 결과 알려줘.", "연예인 뉴스 요약해줘.",
     "감기약 뭐 먹으면 돼?", "맛있는 라면 레시피 알려줘.", "여행지 추천해줘.", "야구 순위 알려줘.",
@@ -199,7 +216,7 @@ def validate(rows: list[dict[str, Any]]) -> list[str]:
     ids=[r["id"] for r in rows]; msgs=[r["message"] for r in rows]
     if len(ids)!=len(set(ids)): errors.append("duplicate id")
     if len(msgs)!=len(set(msgs)): errors.append(f"duplicate messages {len(msgs)-len(set(msgs))}")
-    r1={"query","action_request","approval_required","off_topic"}; r2={"anomaly","cms","report","forecast","rag"}
+    r1={"query","action_request","approval_required","off_topic","multi_intent"}; r2={"anomaly","cms","report","forecast","rag"}
     for r in rows:
         if r["expected_route1"] not in r1: errors.append(f"bad r1 {r['id']}")
         if r["expected_route1"]=="query":
@@ -217,12 +234,13 @@ def main() -> None:
     rows.extend(gate_rows("ACTION", "action_request", 40, action_templates))
     rows.extend(gate_rows("APPROVAL", "approval_required", 30, approval_templates))
     rows.extend(gate_rows("OFF", "off_topic", 30, off_templates))
+    rows.extend(gate_rows("MULTI", "multi_intent", 20, multi_intent_templates))
     errors=validate(rows)
     if errors: raise SystemExit("\n".join(errors))
     payload={
-        "schema_version": "router-two-stage-eval.v2",
+        "schema_version": "router-two-stage-eval.v3_multi_intent",
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "description": "Duplicate-free standalone 2-stage router classification dataset. No confidence metrics.",
+        "description": "Duplicate-free standalone 2-stage router classification dataset with multi_intent clarification gate. No confidence metrics.",
         "summary": {
             "row_count": len(rows),
             "route1_distribution": dict(Counter(r["expected_route1"] for r in rows)),

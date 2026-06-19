@@ -109,16 +109,15 @@ def call_ollama(model: str, base_url: str, message: str, evidence: Any, timeout:
     # `thinking` instead of `content`; do NOT score thinking as an answer.
     content = str(msg.get("content") or "").strip()
     reasoning_text = str(msg.get("reasoning") or msg.get("thinking") or "").strip()
-    used_reasoning_fallback = False
-    if not content and msg.get("reasoning"):
-        content = str(msg.get("reasoning") or "").strip()
-        used_reasoning_fallback = True
+    # Output-contract hardening: reasoning/thinking is not a user-facing answer.
+    # If content is empty, keep answer empty and mark it unavailable instead of
+    # scoring hidden reasoning text as a valid QA response.
     empty_content_with_thinking = (not content) and bool(reasoning_text)
     return content, {
         "api_model": data.get("model"),
         "api_endpoint": "/api/chat",
         "raw_message_keys": sorted(msg.keys()),
-        "used_reasoning_fallback": used_reasoning_fallback,
+        "used_reasoning_fallback": False,
         "empty_content_with_thinking": empty_content_with_thinking,
         "reasoning_or_thinking_chars": len(reasoning_text),
         "think": think,
@@ -311,22 +310,43 @@ def main() -> None:
     summary["source_leakage_rate"] = mean([1.0 if d["scores"]["source_leakage"] else 0.0 for d in details])
     summary["error_rate"] = mean([1.0 if d["error"] else 0.0 for d in details])
     summary["avg_latency_ms_per_row"] = mean([float(d["latency_ms"]) for d in details])
-    bertscore_status = {"enabled": args.bertscore, "model": args.bertscore_model, "error": None}
+    bertscore_status = {
+        "enabled": args.bertscore,
+        "model": args.bertscore_model,
+        "error": None,
+        "evaluated_count": 0,
+        "evaluation_unavailable_count": 0,
+        "meaning": "BERTScore is averaged over rows with a non-empty predicted_answer and no generation error. Unavailable rows are counted separately, not silently averaged as zero.",
+    }
     if args.bertscore:
+        bertscore_status["evaluation_unavailable_count"] = len(details)
+        for d in details:
+            d["scores"]["bertscore_status"] = "evaluation_unavailable"
         try:
             from bert_score import score as bert_score
-            preds_text = [d["predicted_answer"] for d in details]
-            refs_text = [d["reference_answer"] for d in details]
-            bp, br, bf = bert_score(preds_text, refs_text, model_type=args.bertscore_model, lang="ko", verbose=False)
-            for d, p_val, r_val, f_val in zip(details, bp.tolist(), br.tolist(), bf.tolist()):
-                d["scores"]["bertscore_precision"] = round(float(p_val), 4)
-                d["scores"]["bertscore_recall"] = round(float(r_val), 4)
-                d["scores"]["bertscore_f1"] = round(float(f_val), 4)
-            summary["bertscore_precision"] = mean([float(d["scores"]["bertscore_precision"]) for d in details])
-            summary["bertscore_recall"] = mean([float(d["scores"]["bertscore_recall"]) for d in details])
-            summary["bertscore_f1"] = mean([float(d["scores"]["bertscore_f1"]) for d in details])
+            eligible = [d for d in details if (not d.get("error")) and str(d.get("predicted_answer") or "").strip()]
+            bertscore_status["evaluated_count"] = len(eligible)
+            bertscore_status["evaluation_unavailable_count"] = len(details) - len(eligible)
+            if eligible:
+                preds_text = [d["predicted_answer"] for d in eligible]
+                refs_text = [d["reference_answer"] for d in eligible]
+                bp, br, bf = bert_score(preds_text, refs_text, model_type=args.bertscore_model, lang="ko", verbose=False)
+                for d, p_val, r_val, f_val in zip(eligible, bp.tolist(), br.tolist(), bf.tolist()):
+                    d["scores"]["bertscore_precision"] = round(float(p_val), 4)
+                    d["scores"]["bertscore_recall"] = round(float(r_val), 4)
+                    d["scores"]["bertscore_f1"] = round(float(f_val), 4)
+                    d["scores"]["bertscore_status"] = "evaluated"
+                summary["bertscore_precision"] = mean([float(d["scores"]["bertscore_precision"]) for d in eligible])
+                summary["bertscore_recall"] = mean([float(d["scores"]["bertscore_recall"]) for d in eligible])
+                summary["bertscore_f1"] = mean([float(d["scores"]["bertscore_f1"]) for d in eligible])
+            else:
+                summary["bertscore_precision"] = None
+                summary["bertscore_recall"] = None
+                summary["bertscore_f1"] = None
         except Exception as exc:
             bertscore_status["error"] = f"{type(exc).__name__}: {str(exc)[:300]}"
+    summary["bertscore_evaluated_count"] = bertscore_status["evaluated_count"]
+    summary["bertscore_evaluation_unavailable_count"] = bertscore_status["evaluation_unavailable_count"]
 
     payload = {
         "schema_version": "answer-quality-metrics.v1",
