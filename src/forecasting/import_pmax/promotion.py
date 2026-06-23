@@ -144,7 +144,7 @@ def copy_runtime_artifacts(
         json.dumps(metrics, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
-    (staging_root / "README.md").write_text(RUNTIME_README, encoding="utf-8")
+    (staging_root / "readme.md").write_text(RUNTIME_README, encoding="utf-8")
 
 
 def backup_path(

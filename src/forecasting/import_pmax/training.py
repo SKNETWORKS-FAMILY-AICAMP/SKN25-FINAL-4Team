@@ -112,6 +112,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--outputs", nargs="*", default=list(OUTPUT_HORIZON_STEPS), choices=list(OUTPUT_HORIZON_STEPS))
     parser.add_argument("--device", choices=["cpu", "gpu"], default="cpu")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--input-data-dir",
+        type=Path,
+        help="Directory containing source-meter parquet frames exported by model-ops.",
+    )
     return parser.parse_args()
 
 
@@ -125,7 +130,7 @@ def build_engine():
     load_dotenv()
     db_host = os.getenv("DB_HOST", "localhost")
     db_port = os.getenv("DB_PORT", "5432")
-    db_name = os.getenv("DB_NAME", "ems")
+    db_name = os.getenv("DB_NAME", "cms")
     db_user = os.getenv("DB_USER", "postgres")
     db_pass = os.getenv("DB_PASS", "")
     database_url = URL.create(
@@ -210,6 +215,58 @@ def fetch_source_meter(engine, table_name: str, meter_urn: str) -> pd.DataFrame:
     meter.loc[meter["PF_mean"].abs() > 1.5, "PF_mean"] = np.nan
     meter = meter.rename(columns={"window_ts": "ts"}).sort_values("ts").reset_index(drop=True)
     return impute_raw_feature_gaps(meter, meter_urn)
+
+
+def _source_frame_path(input_data_dir: Path, meter_urn: str) -> Path:
+    return input_data_dir / f"{meter_urn}.parquet"
+
+
+def source_meters_for(logical_meters: list[str]) -> list[str]:
+    sources: list[str] = []
+    for logical_meter in logical_meters:
+        for source_meter, _segment_id in LOGICAL_METERS[logical_meter]:
+            if source_meter not in sources:
+                sources.append(source_meter)
+    return sources
+
+
+def validate_input_data_dir(input_data_dir: Path, logical_meters: list[str]) -> None:
+    missing = [
+        source_meter
+        for source_meter in source_meters_for(logical_meters)
+        if not _source_frame_path(input_data_dir, source_meter).is_file()
+    ]
+    if missing:
+        raise FileNotFoundError(
+            f"P-Max input data dir is missing source meter parquet files: {missing}"
+        )
+
+
+def fetch_source_meter_from_input(input_data_dir: Path, meter_urn: str) -> pd.DataFrame:
+    path = _source_frame_path(input_data_dir, meter_urn)
+    if not path.is_file():
+        raise FileNotFoundError(f"P-Max training frame not found for {meter_urn}: {path}")
+    frame = pd.read_parquet(path)
+    if "window_ts" in frame.columns and "ts" not in frame.columns:
+        frame = frame.rename(columns={"window_ts": "ts"})
+    required = {
+        "ts",
+        "meter_urn",
+        *RAW_FEATURE_COLUMNS,
+        INPUT_OBSERVED_COLUMN,
+        TARGET_OBSERVED_COLUMN,
+        INTERPOLATED_COLUMN,
+        FORWARD_FILLED_COLUMN,
+    }
+    missing = sorted(required - set(frame.columns))
+    if missing:
+        raise ValueError(f"P-Max training frame for {meter_urn} is missing columns: {missing}")
+    frame["ts"] = pd.to_datetime(frame["ts"], utc=True)
+    for column in RAW_FEATURE_COLUMNS:
+        frame[column] = pd.to_numeric(frame[column], errors="coerce")
+    for column in [INPUT_OBSERVED_COLUMN, TARGET_OBSERVED_COLUMN, INTERPOLATED_COLUMN, FORWARD_FILLED_COLUMN]:
+        frame[column] = frame[column].fillna(False).astype(bool)
+    return frame.sort_values("ts").reset_index(drop=True)
 
 
 def _limited_internal_interpolation(
@@ -362,10 +419,13 @@ def add_lag_rolling_features(df: pd.DataFrame) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True)
 
 
-def fetch_logical_meter(engine, table_name: str, logical_meter: str) -> pd.DataFrame:
+def fetch_logical_meter(engine, table_name: str, logical_meter: str, input_data_dir: Path | None = None) -> pd.DataFrame:
     frames = []
     for source_meter, segment_id in LOGICAL_METERS[logical_meter]:
-        df = fetch_source_meter(engine, table_name, source_meter)
+        if input_data_dir is None:
+            df = fetch_source_meter(engine, table_name, source_meter)
+        else:
+            df = fetch_source_meter_from_input(input_data_dir, source_meter)
         df["logical_meter_id"] = logical_meter
         df["source_meter_urn"] = source_meter
         df["segment_id"] = segment_id
@@ -813,7 +873,7 @@ def weight_table(method: str, versions: list[str], weights: np.ndarray, val_pred
 
 
 def write_method_readme(output_dir: Path, method: str) -> None:
-    (output_dir / "README.md").write_text(
+    (output_dir / "readme.md").write_text(
         f"""# {method}
 
 This folder contains one P-max forecasting result.
@@ -1040,13 +1100,14 @@ def run_one(
     seed: int,
     device: str,
     data_cache: dict[str, pd.DataFrame],
+    input_data_dir: Path | None = None,
 ) -> list[dict[str, Any]]:
     print(f"Running meter={meter}, input={input_hours}h, predict={output_range}", flush=True)
     meter_dir = output_root / f"input_{input_hours}h" / f"predict_{output_range}" / meter
     model_dir = meter_dir / "_candidate_models"
     model_dir.mkdir(parents=True, exist_ok=True)
     if meter not in data_cache:
-        data_cache[meter] = fetch_logical_meter(engine, table_name, meter)
+        data_cache[meter] = fetch_logical_meter(engine, table_name, meter, input_data_dir=input_data_dir)
     df = data_cache[meter]
     bundle = build_windows(df, input_hours, output_range)
     models, candidate_metrics = train_candidates(bundle, model_dir, seed, device)
@@ -1130,7 +1191,7 @@ def write_summary(rows: list[dict[str, Any]], output_dir: Path) -> None:
 
 
 def write_root_readme(output_dir: Path) -> None:
-    (output_dir / "README.md").write_text(
+    (output_dir / "readme.md").write_text(
         """# P-max Model Comparison Outputs
 
 This output folder contains model comparison artifacts for forecasting
@@ -1173,6 +1234,7 @@ def main() -> None:
                 "meters": args.meters,
                 "device": args.device,
                 "seed": args.seed,
+                "input_data_dir": str(args.input_data_dir) if args.input_data_dir else None,
             },
             indent=2,
             ensure_ascii=False,
@@ -1180,7 +1242,9 @@ def main() -> None:
         + "\n",
         encoding="utf-8",
     )
-    engine = build_engine()
+    if args.input_data_dir is not None:
+        validate_input_data_dir(args.input_data_dir, args.meters)
+    engine = None if args.input_data_dir is not None else build_engine()
     rows: list[dict[str, Any]] = []
     data_cache: dict[str, pd.DataFrame] = {}
     for input_hours in args.input_hours:
@@ -1197,6 +1261,7 @@ def main() -> None:
                         seed=args.seed,
                         device=args.device,
                         data_cache=data_cache,
+                        input_data_dir=args.input_data_dir,
                     )
                 )
                 write_summary(rows, output_dir)

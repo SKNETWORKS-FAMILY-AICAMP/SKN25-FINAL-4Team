@@ -29,6 +29,7 @@ RUN python -m py_compile \
     runpod_job/handler.py \
     src/forecasting/import_pmax/training.py \
     src/forecasting/import_pmax/inference.py \
+    src/forecasting/import_pmax/export_training_data.py \
     && python -c "import runpod_job.handler; import src.forecasting.import_pmax.training"
 
 CMD ["python", "-m", "runpod_job.handler"]

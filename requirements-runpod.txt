@@ -16,3 +16,6 @@ xgboost==2.1.4
 catboost==1.2.10
 lightgbm==4.6.0
 matplotlib==3.10.9
+
+# Parquet training-data archives
+pyarrow==22.0.0

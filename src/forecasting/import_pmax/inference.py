@@ -18,6 +18,12 @@ DEFAULT_LOOKBACK_DAYS = 14
 EXPECTED_OUTPUT_RANGE = "60min"
 EXPECTED_HORIZON_STEPS = 4
 EXPECTED_CANDIDATES = ["v20", "v23", "v25", "v27"]
+ARTIFACT_METER_DIRS = {
+    "V.Z81": "v_z81",
+    "V.Z82": "v_z82",
+    "H2.Z35x": "h2_z35x",
+    "H2.Z36x": "h2_z36x",
+}
 
 
 @dataclass(frozen=True)
@@ -91,7 +97,25 @@ def normalize_timestamp(value: str | pd.Timestamp) -> pd.Timestamp:
 
 
 def artifact_paths(model_root: Path, meter: str) -> tuple[Path, Path, Path]:
-    meter_dir = model_root / "input_24h" / "predict_60min" / meter
+    """Return artifact paths for one logical meter.
+
+    Current CMS releases may store meter directories with normalized names
+    (``h2_z35x``), while ``origin/mun/workspace`` training emits logical-meter
+    directories (``H2.Z35x``). Prefer an existing directory so promoted/imported
+    candidates from either layout can be used without a full branch merge; keep
+    the normalized name as the default for new staging roots.
+    """
+
+    base_dir = model_root / "input_24h" / "predict_60min"
+    normalized_name = ARTIFACT_METER_DIRS.get(meter, meter)
+    candidate_names = (normalized_name, meter) if normalized_name != meter else (meter,)
+    for candidate_name in candidate_names:
+        candidate_dir = base_dir / candidate_name
+        if candidate_dir.exists():
+            meter_dir = candidate_dir
+            break
+    else:
+        meter_dir = base_dir / normalized_name
     return (
         meter_dir / "_candidate_models",
         meter_dir / "v29" / "manifest.json",

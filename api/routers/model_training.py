@@ -4,15 +4,19 @@ import json
 import os
 import re
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from api.routers.model_auth import require_model_ops_token, validate_run_id
 from api.routers.model_paths import TRAINING_JOBS_DIR
+from src.forecasting.import_pmax.export_training_data import export_training_data_archive
 from src.forecasting.import_pmax.operations import new_run_id
 from src.forecasting.import_pmax.training import LOGICAL_METERS
 
@@ -28,18 +32,28 @@ SENSITIVE_RESPONSE_KEYS = {
     "api_key",
     "upload_token",
     "upload_url",
+    "training_data_url",
     "artifact_upload_token",
     "runpod_api_key",
 }
+TRAINING_DATA_DIR = Path(
+    os.getenv(
+        "IMPORT_PMAX_TRAINING_DATA_ROOT",
+        str(TRAINING_JOBS_DIR.parent / "import_pmax_training_data"),
+    )
+).resolve()
 
 
 class TrainingStartRequest(BaseModel):
     run_id: str | None = None
     meters: list[str] | None = None
+    table: str | None = None
     seed: int | None = Field(default=None, ge=0)
     timeout_seconds: int | None = Field(default=None, ge=60)
     overwrite_upload: bool = True
     overwrite_candidate: bool = False
+    overwrite_training_data: bool = False
+    export_training_data: bool = True
 
 
 def _now_iso() -> str:
@@ -169,6 +183,55 @@ def _sanitize(value: Any) -> Any:
     return value
 
 
+def _artifact_upload_url() -> str:
+    return (
+        os.getenv("RUNPOD_PMAX_ARTIFACT_UPLOAD_URL", "").strip()
+        or os.getenv("RUNPOD_ARTIFACT_UPLOAD_URL", "").strip()
+        or os.getenv("MODEL_ARTIFACT_UPLOAD_URL", "").strip()
+    )
+
+
+def _training_data_base_url() -> str:
+    raw = (
+        os.getenv("RUNPOD_PMAX_TRAINING_DATA_BASE_URL", "").strip()
+        or os.getenv("RUNPOD_TRAINING_DATA_BASE_URL", "").strip()
+    )
+    if raw:
+        return raw.rstrip("/")
+
+    upload_url = _artifact_upload_url()
+    if not upload_url:
+        raise HTTPException(
+            status_code=500,
+            detail="RUNPOD_TRAINING_DATA_BASE_URL or artifact upload URL is not configured",
+        )
+    parsed = urllib.parse.urlparse(upload_url)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise HTTPException(status_code=500, detail="artifact upload URL must be absolute")
+    return f"{parsed.scheme}://{parsed.netloc}"
+
+
+def _training_data_archive_path(run_id: str) -> Path:
+    validate_run_id(run_id)
+    return TRAINING_DATA_DIR / f"{run_id}.tar.gz"
+
+
+def _maybe_export_training_data(body: TrainingStartRequest, runpod_input: dict[str, Any]) -> dict[str, Any] | None:
+    if not body.export_training_data:
+        return None
+    result = export_training_data_archive(
+        TRAINING_DATA_DIR,
+        runpod_input["run_id"],
+        meters=body.meters,
+        table_name=body.table,
+        overwrite=body.overwrite_training_data,
+    )
+    runpod_input["training_data_url"] = (
+        f"{_training_data_base_url()}/training/data/{runpod_input['run_id']}"
+    )
+    return result
+
+
 def _build_runpod_input(body: TrainingStartRequest) -> dict[str, Any]:
     run_id = body.run_id or new_run_id()
     validate_run_id(run_id)
@@ -192,10 +255,7 @@ def _build_runpod_input(body: TrainingStartRequest) -> dict[str, Any]:
     if body.timeout_seconds is not None:
         payload["timeout_seconds"] = body.timeout_seconds
 
-    upload_url = (
-        os.getenv("RUNPOD_ARTIFACT_UPLOAD_URL", "").strip()
-        or os.getenv("MODEL_ARTIFACT_UPLOAD_URL", "").strip()
-    )
+    upload_url = _artifact_upload_url()
     if upload_url:
         payload["upload_url"] = upload_url
     return payload
@@ -240,6 +300,7 @@ def start_training(
     body = body or TrainingStartRequest()
     endpoint_id = _required_env("RUNPOD_ENDPOINT_ID")
     runpod_input = _build_runpod_input(body)
+    training_data = _maybe_export_training_data(body, runpod_input)
     response = _call_runpod(
         "POST",
         "/run",
@@ -264,6 +325,7 @@ def start_training(
         "updated_at": _now_iso(),
         "runpod_endpoint_id": endpoint_id,
         "request_input": _sanitize(runpod_input),
+        "training_data": _sanitize(training_data),
         "runpod_response": _sanitize(response),
         "next_action": "wait",
     }
@@ -275,6 +337,22 @@ def start_training(
         "runpod_status": response.get("status"),
         "next_action": "wait",
     }
+
+
+@router.get("/data/{run_id}")
+def download_training_data(
+    run_id: str,
+    authorization: str | None = Header(default=None),
+) -> FileResponse:
+    require_model_ops_token(authorization)
+    archive_path = _training_data_archive_path(run_id)
+    if not archive_path.is_file():
+        raise HTTPException(status_code=404, detail=f"training data archive not found: {run_id}")
+    return FileResponse(
+        archive_path,
+        media_type="application/gzip",
+        filename=f"{run_id}.tar.gz",
+    )
 
 
 @router.get("/latest")
