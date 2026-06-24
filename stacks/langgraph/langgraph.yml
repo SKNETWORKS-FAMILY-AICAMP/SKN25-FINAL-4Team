@@ -1,0 +1,23 @@
+name: cms-langgraph
+
+services:
+  langgraph-worker:
+    build:
+      context: ../..
+      dockerfile: stacks/langgraph/Dockerfile
+    image: cms:langgraph-worker
+    container_name: langgraph-worker-main
+    env_file:
+    - path: ${LANGGRAPH_WORKER_ENV_FILE:-../../.env}
+      required: false
+    environment:
+      MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI:-http://192.168.0.34:5000}
+      PYTHONPATH: /workspace/src
+    volumes:
+    - ../..:/workspace
+    - langgraph_pip_cache:/root/.cache/pip
+    working_dir: /workspace
+    command: sleep infinity
+
+volumes:
+  langgraph_pip_cache:

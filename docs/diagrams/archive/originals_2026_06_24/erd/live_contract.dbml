@@ -1,0 +1,406 @@
+Project cms_live_pipeline_contract {
+  database_type: 'PostgreSQL'
+  Note: '''
+  CMS live pipeline ERD for dbdiagram.io.
+
+  Blue tables are current deployed/read-back tables in the AWS DB plane. Orange tables are target/future contract tables. Active dashboards must not query target-only tables until migration/deployment is approved.
+
+  Sources:
+  - scripts/migrations/live_schema_draft.sql
+  - docs/specs/data_platform_contract.md
+  - docs/specs/meter_metadata.md
+  - docs/qa/grafana_ops_query_contract.md
+  '''
+}
+
+Table live.measurement_event [headercolor: #2563EB, note: 'ACTIVE AWS confirmed table. Kafka to PostgreSQL ingress ledger.'] {
+  event_id text [pk]
+  business_idempotency_key text [not null]
+  source_event_id text
+  meter_urn text [not null]
+  measurement text [not null]
+  event_ts timestamptz [not null]
+  value_text text
+  value_numeric double
+  unit text
+  source_layer text [not null, default: 'kafka.measurement_raw_v1']
+  source_ref text
+  ingested_at timestamptz [not null]
+  received_at timestamptz
+  raw_payload_hash text
+  kafka_topic text
+  kafka_partition integer
+  kafka_offset bigint
+  kafka_key text
+  consumer_group text
+  consumed_at timestamptz
+  schema_version text
+  policy_lookup_status text [not null]
+
+  indexes {
+    (source_layer, source_event_id) [unique, name: 'measurement_event_business_idempotency_uq']
+    (kafka_topic, kafka_partition, kafka_offset) [unique, name: 'measurement_event_kafka_offset_uq']
+    (meter_urn, measurement, event_ts) [name: 'measurement_event_lookup_idx']
+    (policy_lookup_status, event_ts) [name: 'measurement_event_policy_status_idx']
+  }
+}
+
+Table ops.metric [headercolor: #2563EB, note: 'ACTIVE AWS confirmed table. Run/gate metric ledger used by Grafana evidence panels.'] {
+  metric_id bigint [pk]
+  metric_ts timestamptz
+  run_id text
+  stage text
+  metric_name text
+  metric_value double
+  unit text
+  labels jsonb
+  created_at timestamptz
+
+  indexes {
+    (run_id, stage, metric_name)
+    (metric_ts)
+  }
+}
+
+Table qa.meter_tag [headercolor: #2563EB, note: 'ACTIVE AWS confirmed table. Lightweight series QA/tag evidence.'] {
+  created_at timestamptz
+  tag text
+  meter_urn text
+  measurement text
+  detail text
+
+  indexes {
+    (meter_urn, measurement, created_at)
+  }
+}
+
+Table qa.bad_row [headercolor: #2563EB, note: 'ACTIVE AWS confirmed table. Rejected source row evidence.'] {
+  created_at timestamptz
+  reason text
+  source_file text
+  source_row_no bigint
+
+  indexes {
+    (created_at)
+    (source_file, source_row_no)
+  }
+}
+
+Table mart.peak_feature_15min [headercolor: #2563EB, note: 'ACTIVE AWS confirmed table. Peak feature branch; not canonical observed truth.'] {
+  bucket_ts timestamptz [not null]
+  meter_urn text [not null]
+  measurement text [not null]
+  peak_value double
+  peak_ts timestamptz
+  max_value double
+  min_value double
+  mean_value double
+  std_value double
+  coverage_ratio numeric
+  valid_peak_window boolean
+  source_bucket_refs text_array
+  policy_id bigint
+  policy_version integer [not null]
+  feature_version text [not null]
+  updated_at timestamptz
+
+  indexes {
+    (bucket_ts, meter_urn, measurement, policy_version, feature_version) [pk]
+    (meter_urn, measurement, bucket_ts)
+  }
+}
+
+Table mart.peak_feature_15min [headercolor: #F97316, note: 'LEGACY/HELPER projection. Direct P-Max runtime input is mart.peak_feature_15min.'] {
+  bucket_ts timestamptz [not null]
+  meter_urn text [not null]
+  measurement text [not null]
+  rolling_1h_peak_value double
+  rolling_1h_peak_ts timestamptz
+  rolling_1h_mean_value double
+  rolling_1h_valid_bucket_count integer
+  rolling_1h_coverage_ratio numeric
+  policy_id bigint
+  policy_version integer [not null]
+  feature_version text [not null]
+  updated_at timestamptz
+
+  indexes {
+    (bucket_ts, meter_urn, measurement, policy_version, feature_version) [pk]
+    (meter_urn, measurement, bucket_ts)
+  }
+}
+
+Table mart.pmax_forecast_15min [headercolor: #2563EB, note: 'ACTIVE AWS confirmed table. P-Max prediction facts.'] {
+  logical_meter text [not null]
+  source_meter_urn text
+  base_ts timestamptz [not null]
+  input_end_ts timestamptz
+  target_ts timestamptz [not null]
+  actual_window_ts timestamptz
+  horizon_minutes smallint
+  predicted_p_max double
+  created_at timestamptz
+
+  indexes {
+    (logical_meter, base_ts, target_ts) [pk]
+    (source_meter_urn, target_ts)
+  }
+}
+
+Table ops.pmax_log [headercolor: #2563EB, note: 'ACTIVE AWS confirmed table. P-Max inference run status and quality log.'] {
+  run_id text [pk]
+  base_ts timestamptz
+  status text
+  quality_status text
+  logical_meter_count integer
+  forecast_row_count integer
+  replacement_row_count integer
+  internal_missing_segment_count integer
+  latest_missing_policy text
+  error_reason text
+  details jsonb
+  started_at timestamptz
+  completed_at timestamptz
+
+  indexes {
+    (base_ts)
+    (status, quality_status)
+  }
+}
+
+Table qa.pmax_eval [headercolor: #2563EB, note: 'ACTIVE AWS confirmed table. Post-hoc forecast evaluation.'] {
+  evaluation_id bigint [pk]
+  logical_meter text
+  source_meter_urn text
+  base_ts timestamptz
+  target_ts timestamptz
+  actual_window_ts timestamptz
+  horizon_minutes smallint
+  predicted_p_max double
+  actual_p_max double
+  absolute_error double
+  squared_error double
+  evaluated_at timestamptz
+
+  indexes {
+    (logical_meter, base_ts, target_ts)
+    (evaluated_at)
+  }
+}
+
+Table live.measurement_policy [headercolor: #F97316, note: 'TARGET/FUTURE contract. Meter and measurement processing policy; not directly queried by active Grafana until deployed.'] {
+  policy_id bigint [pk]
+  meter_urn text [not null]
+  measurement text [not null]
+  effective_from timestamptz [not null]
+  effective_to timestamptz
+  enabled boolean [not null]
+  source_update_mode text [not null]
+  cadence_group text [not null]
+  source_native_interval_seconds integer
+  target_resolution_policy text [not null]
+  value_policy text [not null]
+  aggregation_policy text [not null]
+  expected_points_policy jsonb [not null]
+  mean_rollup_enabled boolean [not null]
+  peak_feature_enabled boolean [not null]
+  coverage_threshold numeric
+  max_state_hold_age_seconds integer
+  canonical_eligible boolean [not null]
+  paper_policy_ref text
+  policy_version integer [not null]
+  created_at timestamptz
+  updated_at timestamptz
+
+  indexes {
+    (meter_urn, measurement, effective_from, policy_version) [unique, name: 'measurement_policy_version_uq']
+    (meter_urn, measurement, enabled, effective_from, effective_to) [name: 'measurement_policy_lookup_idx']
+  }
+}
+
+Table qa.live_issue [headercolor: #F97316, note: 'TARGET/FUTURE contract. Structured live QA issue table.'] {
+  issue_id bigint [pk]
+  issue_kind text [not null]
+  severity text [not null]
+  meter_urn text [not null]
+  measurement text [not null]
+  event_id text
+  bucket_ts timestamptz
+  resolution text
+  policy_id bigint
+  policy_version integer
+  reason text [not null]
+  details jsonb
+  created_at timestamptz
+
+  indexes {
+    (meter_urn, measurement, created_at) [name: 'live_measurement_issue_lookup_idx']
+    (severity, created_at)
+  }
+}
+
+Table ops.worker_heartbeat [headercolor: #F97316, note: 'TARGET/FUTURE contract. Worker liveness and processing counters.'] {
+  worker_name text [pk]
+  status text [not null]
+  heartbeat_at timestamptz [not null]
+  updated_at timestamptz
+  last_error text
+  restart_count integer
+  processed_count bigint
+  failed_count bigint
+  details jsonb
+}
+
+Table ops.consumer_lag [headercolor: #F97316, note: 'TARGET/FUTURE contract. SQL-backed lag snapshot; current dashboard uses Prometheus exporter instead.'] {
+  observed_at timestamptz [not null]
+  topic text [not null]
+  consumer_group text [not null]
+  partition integer [not null]
+  current_offset bigint
+  high_watermark bigint
+  lag bigint
+  details jsonb
+
+  indexes {
+    (observed_at, topic, consumer_group, partition)
+  }
+}
+
+Table ops.ingest_metric [headercolor: #94A3B8, note: 'LEGACY compatibility view. New FastAPI ingest metrics use ops.metric with stage=ingest.'] {
+  created_at timestamptz
+  metric_name text
+  metric_value double
+  route text
+  details jsonb
+}
+
+Table ops.latency [headercolor: #F97316, note: 'TARGET/FUTURE contract. Stage latency evidence table.'] {
+  latency_id bigint [pk]
+  run_id text [not null]
+  evidence_level text [not null]
+  stage text [not null]
+  event_id text
+  meter_urn text
+  measurement text
+  bucket_ts timestamptz
+  duration_sec double
+  source_to_fastapi_sec double
+  fastapi_to_kafka_sec double
+  kafka_to_event_sec double
+  event_to_1min_sec double
+  event_to_queue_sec double
+  one_min_to_15min_sec double
+  one_min_to_1h_sec double
+  one_min_to_peak_feature_sec double
+  peak_feature_to_peak_input_sec double
+  qa_eligibility_sec double
+  promotion_ready_sec double
+  end_to_end_sec double
+  kafka_consumer_lag bigint
+  kafka_dlq_count bigint
+  kafka_produce_error_count bigint
+  created_at timestamptz
+
+  indexes {
+    (run_id, stage, created_at)
+    (meter_urn, measurement, bucket_ts)
+  }
+}
+
+Table live.bucket_queue [headercolor: #F97316, note: 'TARGET/FUTURE contract. Worker queue for rollup and peak feature jobs.'] {
+  queue_id bigint [pk]
+  meter_urn text [not null]
+  measurement text [not null]
+  resolution text [not null]
+  bucket_ts timestamptz [not null]
+  job_kind text [not null]
+  policy_id bigint
+  policy_version integer [not null]
+  source_min_ts timestamptz
+  source_max_ts timestamptz
+  watermark_ts timestamptz
+  status text [not null]
+  attempt_count integer [not null]
+  last_error text
+  locked_by text
+  locked_at timestamptz
+  created_at timestamptz
+  updated_at timestamptz
+
+  indexes {
+    (meter_urn, measurement, resolution, bucket_ts, job_kind, policy_version) [unique, name: 'bucket_queue_idempotency_uq']
+    (status, job_kind, bucket_ts, locked_at) [name: 'bucket_queue_claim_idx']
+  }
+}
+
+Table live.promotion_check [headercolor: #F97316, note: 'TARGET/FUTURE contract. QA eligibility result before controlled promotion.'] {
+  check_id bigint [pk]
+  source_table text [not null]
+  meter_urn text [not null]
+  measurement text [not null]
+  resolution text [not null]
+  bucket_ts timestamptz [not null]
+  policy_id bigint
+  policy_version integer [not null]
+  eligibility_status text [not null]
+  block_reasons text_array
+  evidence jsonb
+  checked_at timestamptz
+
+  indexes {
+    (eligibility_status, resolution, bucket_ts) [name: 'promotion_check_lookup_idx']
+    (meter_urn, measurement, resolution, bucket_ts)
+  }
+}
+
+Table live.promotion_run [headercolor: #F97316, note: 'TARGET/FUTURE contract. Controlled promotion batch/run ledger.'] {
+  promotion_id bigint [pk]
+  requested_by text
+  approval_ref text
+  source_table text [not null]
+  target_table text [not null]
+  status text [not null]
+  promoted_row_count bigint
+  evidence jsonb
+  requested_at timestamptz
+  completed_at timestamptz
+
+  indexes {
+    (status, requested_at)
+    (source_table, target_table)
+  }
+}
+
+TableGroup active_aws_confirmed [note: 'Confirmed AWS tables used by current Grafana/read-only evidence.'] {
+  live.measurement_event
+  ops.metric
+  qa.meter_tag
+  qa.bad_row
+  mart.peak_feature_15min
+  mart.peak_feature_15min legacy/helper projection
+  mart.pmax_forecast_15min
+  ops.pmax_log
+  qa.pmax_eval
+}
+
+TableGroup target_future_contract [note: 'Future/target contract tables. Do not query from active Grafana until deployed.'] {
+  live.measurement_policy
+  qa.live_issue
+  ops.worker_heartbeat
+  ops.consumer_lag
+  ops.latency
+  live.bucket_queue
+  live.promotion_check
+  live.promotion_run
+}
+
+Ref: live.measurement_policy.policy_id < qa.live_issue.policy_id
+Ref: live.measurement_event.event_id < qa.live_issue.event_id
+Ref: live.measurement_policy.policy_id < live.bucket_queue.policy_id
+Ref: live.measurement_policy.policy_id < live.promotion_check.policy_id
+Ref: live.measurement_event.event_id < ops.latency.event_id
+
+Ref: mart.peak_feature_15min.(bucket_ts, meter_urn, measurement, policy_version, feature_version) < mart.peak_feature_15min.(bucket_ts, meter_urn, measurement, policy_version, feature_version)
+Ref: mart.pmax_forecast_15min.(logical_meter, base_ts, target_ts) < qa.pmax_eval.(logical_meter, base_ts, target_ts)
+
+Ref: ops.metric.run_id < ops.latency.run_id

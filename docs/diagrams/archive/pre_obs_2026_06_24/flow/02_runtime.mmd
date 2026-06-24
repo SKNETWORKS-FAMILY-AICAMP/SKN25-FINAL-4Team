@@ -1,0 +1,138 @@
+%%{init: {"theme": "base", "layout": "elk", "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 40, "rankSpacing": 58}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#ffffff", "primaryBorderColor": "#475569", "primaryTextColor": "#0f172a", "secondaryColor": "#f8fafc", "secondaryBorderColor": "#94a3b8", "secondaryTextColor": "#0f172a", "tertiaryColor": "#ffffff", "tertiaryBorderColor": "#cbd5e1", "tertiaryTextColor": "#0f172a", "clusterBkg": "#ffffff", "clusterBorder": "#94a3b8", "edgeLabelBackground": "#ffffff", "lineColor": "#475569", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
+flowchart LR
+    subgraph EDGE["PC1-PC3 edge runtime"]
+      subgraph PC1["PC1 service / live host"]
+        REPLAY["live-replay-pc1
+managed replay injector"]
+        ING_API["cms-ingestion-api
+private /ingest/measurements"]
+        BE_API["cms-backend-api
+read status jobs chat"]
+        FRONT["cms-agent-frontend
+operator UI"]
+        LCONS["kafka_live_consumer_pc1
+3-partition drain"]
+        BCONS["cms-backfill-consumer-pc1
+backfill drain"]
+        MEAN["cms_live_mean_rollup_worker
+15min / 1h mean rollup"]
+        PEAK["cms_peak_feature_worker
+15min peak features"]
+        PROMW["canonical_promotion_worker
+PC1 · approval gated"]
+        AIR["cms-airflow-standalone
+reports / orchestration"]
+      end
+      subgraph KCLUSTER["Kafka KRaft cluster"]
+        K1["PC1 broker"]
+        K2["PC2 broker"]
+        K3["PC3 broker"]
+        TOPIC["measurement_live_v1
+3 partitions / RF=3 / min ISR=2"]
+        BTOPIC["measurement_backfill_v1
+backfill stream"]
+        DLQ["measurement_dead_letter_v1"]
+        LAG["postgres-live-ingest
+consumer lag / backlog"]
+      end
+      subgraph PC2["PC2 observability host"]
+        PROM["cms-prometheus
+edge scrape"]
+        GRAF_EDGE["cms-grafana
+edge dashboards"]
+        EXP["cms-kafka / node exporters"]
+      end
+      subgraph PC3["PC3 model-serving host"]
+        ANOF["cms-anomaly-feature-worker
+1h feature materialization"]
+        PMAXS["pmax_scheduler
+P-Max 15min forecast"]
+        ANOMS["anomaly_scheduler
+1h anomaly warnings"]
+        MOPS["cms-model-ops-api
+serving ops endpoints"]
+      end
+    end
+
+    subgraph AWS["AWS DB plane"]
+      PG["cms-postgres
+Timescale/PostgreSQL"]
+      AWS_GRAF["cms-grafana
+DB dashboards"]
+      PGEXP["postgres / node exporters"]
+      subgraph SCHEMAS["PostgreSQL schemas"]
+        LIVE["live.measurement_event
+1min / 15min / 1h / bucket_queue"]
+        MART["mart.peak_feature_15min
+mart.pmax_forecast_15min
+mart.anomaly_warning_1h"]
+        OPSQA["ops.* inference logs
+qa.* evidence packets"]
+        CANON["canonical.measurement_*
+controlled promotion only"]
+      end
+    end
+
+    REPLAY --> ING_API
+    ING_API --> TOPIC
+    TOPIC --> LCONS
+    BTOPIC --> BCONS
+    TOPIC -. invalid / poison .-> DLQ
+    LAG --> LCONS
+    LCONS --> PG
+    BCONS --> PG
+    PG --> LIVE
+    LIVE --> MEAN
+    LIVE --> PEAK
+    MEAN --> LIVE
+    PEAK --> MART
+    LIVE --> ANOF
+    ANOF --> MART
+    MART --> PMAXS
+    PMAXS --> MART
+    MART --> ANOMS
+    ANOMS --> MART
+    PMAXS --> OPSQA
+    ANOMS --> OPSQA
+    MOPS --> MART
+    LIVE --> PROMW
+    PROMW --> CANON
+    OPSQA --> BE_API
+    LIVE --> BE_API
+    MART --> BE_API
+    PG --> AWS_GRAF
+    EXP --> PROM
+    PGEXP --> PROM
+    PROM --> GRAF_EDGE
+    FRONT --> BE_API
+    AIR --> BE_API
+    AIR --> PG
+
+
+    classDef source fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef api fill:#ffffff,stroke:#7c3aed,color:#0f172a,stroke-width:1px;
+    classDef kafka fill:#ecfdf5,stroke:#059669,color:#0f172a,stroke-width:1px;
+    classDef worker fill:#fff7ed,stroke:#ea580c,color:#0f172a,stroke-width:1px;
+    classDef db fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef qa fill:#fff1f2,stroke:#e11d48,color:#0f172a,stroke-width:1px;
+    classDef mart fill:#fdf4ff,stroke:#a21caf,color:#0f172a,stroke-width:1px;
+    classDef obs fill:#f8fafc,stroke:#475569,color:#0f172a,stroke-width:1px;
+    classDef approval fill:#fefce8,stroke:#ca8a04,color:#0f172a,stroke-width:1px;
+    classDef hub fill:#ffffff,stroke:#334155,color:#0f172a,stroke-width:2px;
+
+    class REPLAY source;
+    class ING_API,BE_API,FRONT,MOPS api;
+    class K1,K2,K3,TOPIC,BTOPIC,DLQ,LAG kafka;
+    class LCONS,BCONS,MEAN,PEAK,AIR,ANOF,PMAXS,ANOMS worker;
+    class PROMW approval;
+    class PG,LIVE,CANON db;
+    class MART mart;
+    class OPSQA qa;
+    class PROM,GRAF_EDGE,EXP,AWS_GRAF,PGEXP obs;
+    style EDGE fill:#f8fafc,stroke:#475569,stroke-width:4px
+    style PC1 fill:#f5f3ff,stroke:#7c3aed,stroke-width:3px
+    style KCLUSTER fill:#ecfdf5,stroke:#059669,stroke-width:3px
+    style PC2 fill:#f8fafc,stroke:#475569,stroke-width:3px
+    style PC3 fill:#fff7ed,stroke:#ea580c,stroke-width:3px
+    style AWS fill:#eef2ff,stroke:#1d4ed8,stroke-width:4px
+    style SCHEMAS fill:#ffffff,stroke:#94a3b8,stroke-width:1px

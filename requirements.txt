@@ -1,24 +1,39 @@
-# EMS 로컬 컨테이너와 RunPod 사용자 영역 공통 의존성.
-# RunPod CUDA 이미지와 로컬 venv 모두 torch 2.8 계열을 기준으로 맞춘다.
-# torchvision/torchaudio는 현재 코드에서 직접 사용하지 않으므로 여기서 설치하지 않는다.
-# MLflow 3.12.x는 현재 pandas<3, pyarrow<24 제약이 있다.
+# Shared dependencies for CMS local containers and the RunPod user environment.
+# Keep both the RunPod CUDA image and local virtualenv aligned on the torch 2.8 series.
+# Do not install torchvision/torchaudio here because the current code does not import them directly.
+# MLflow 3.12.x currently constrains pandas<3 and pyarrow<24.
 
 pandas>=2.3,<3.0
 pyarrow>=23.0,<24.0
 numpy>=2.0
 scikit-learn>=1.7,<2
+joblib>=1.4,<2
 xgboost>=3.1,<4
+lightgbm>=4.5,<5
+catboost>=1.2,<2
+sqlalchemy>=2.0,<3
 
 dask[dataframe]>=2024.1
 psycopg[binary]
 psycopg2-binary
 python-dotenv
+confluent-kafka>=2.6,<3
+APScheduler>=3.10,<4
+pytz>=2024.1
+jsonschema>=4.22,<5
+
+fastapi>=0.136,<1
+uvicorn[standard]>=0.38,<1
+# FastAPI/Starlette TestClient dependency for route-level tests.
+httpx>=0.28,<1
 
 rdflib>=7.0
 pyshacl>=0.27
 matplotlib>=3.8
 koreanize-matplotlib>=0.1.1
 seaborn>=0.13
+reportlab>=4.2,<5
+python-docx>=1.1,<2
 setuptools>=69.0
 
 mlflow>=3.12,<4
@@ -37,6 +52,7 @@ tiktoken
 transformers>=4.55,<5
 accelerate>=1.10,<2
 safetensors>=0.5,<0.7
+sentence-transformers>=3.0,<6
 
 datasets>=4.0,<5
 torch>=2.8,<2.9
@@ -44,3 +60,6 @@ jupyterlab
 ipykernel
 nbformat>=5.10
 nbclient>=0.10
+
+# Test runner for tests/*.py, including pytest-marked scratch integration tests.
+pytest>=8.0,<9

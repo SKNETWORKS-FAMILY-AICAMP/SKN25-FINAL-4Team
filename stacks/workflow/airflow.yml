@@ -1,0 +1,279 @@
+name: cms-workflow
+x-airflow-common-env:
+  PYTHONPATH: /workspace/src
+  AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+  AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+  AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER:-airflow}:${AIRFLOW_DB_PASSWORD:-airflow-local-only}@cms-airflow-metadb:5432/${AIRFLOW_DB_NAME:-airflow}
+  AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'false'
+  AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY:-cms-local-airflow-dev-secret-key}
+  _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_WWW_USER_USERNAME:-cms}
+  _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_WWW_USER_PASSWORD:-cms-local-only}
+  _PIP_ADDITIONAL_REQUIREMENTS: ${AIRFLOW_ADDITIONAL_REQUIREMENTS:-psycopg[binary]}
+  ALLOW_MODEL_SERVING_WRITE: '0'
+  ALLOW_CANONICAL_WRITE: '0'
+  ALLOW_PRODUCTION_DDL: '0'
+x-airflow-common-volumes: &id001
+- ../..:/workspace:ro
+- ../../dags:/opt/airflow/dags:ro
+- cms_airflow_logs:/opt/airflow/logs
+services:
+  cms-airflow-standalone:
+    image: apache/airflow:2.10.5-python3.12
+    container_name: cms-airflow
+    profiles:
+    - airflow
+    restart: 'no'
+    labels:
+      cms.runtime.roles: airflow-standalone,airflow-scheduler,airflow-webserver,airflow-triggerer,scheduled-reports
+      cms.runtime.dags: daily_report,weekly_report,monthly_report,coverage_qa,model_serving_pipeline
+      cms.runtime.scheduled_dags: daily_report,weekly_report,monthly_report,coverage_qa
+      cms.runtime.manual_dags: model_serving_pipeline
+    environment:
+      PYTHONPATH: /workspace/src
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'false'
+      _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_WWW_USER_USERNAME:-cms}
+      _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_WWW_USER_PASSWORD:-cms-local-only}
+      ALLOW_MODEL_SERVING_WRITE: '0'
+      ALLOW_CANONICAL_WRITE: '0'
+      ALLOW_PRODUCTION_DDL: '0'
+    volumes:
+    - ../..:/workspace:ro
+    - ../../dags:/opt/airflow/dags:ro
+    working_dir: /workspace
+    command:
+    - bash
+    - -lc
+    - python -c 'from cms.workflow.airflow_runtime_policy import describe_all_runtime_decisions;
+      print(describe_all_runtime_decisions())' && airflow standalone
+    ports:
+    - ${AIRFLOW_WEBSERVER_BIND:-127.0.0.1}:${AIRFLOW_WEBSERVER_PORT:-8080}:8080
+    networks:
+    - cms_edge_stream
+  cms-airflow-metadb:
+    image: postgres:16-alpine
+    container_name: cms-airflow-db
+    profiles:
+    - airflow-split
+    restart: 'no'
+    labels:
+      cms.runtime.roles: airflow-metadb,service-stage
+      cms.runtime.not_hermes_cron: 'true'
+    environment:
+      POSTGRES_USER: ${AIRFLOW_DB_USER:-airflow}
+      POSTGRES_PASSWORD: ${AIRFLOW_DB_PASSWORD:-airflow-local-only}
+      POSTGRES_DB: ${AIRFLOW_DB_NAME:-airflow}
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    volumes:
+    - cms_airflow_metadb:/var/lib/postgresql/data
+    networks:
+    - cms_edge_stream
+  cms-airflow-init:
+    image: apache/airflow:2.10.5-python3.12
+    container_name: cms-airflow-init
+    profiles:
+    - airflow-split
+    restart: 'no'
+    labels:
+      cms.runtime.roles: airflow-init,service-stage
+      cms.runtime.dags: daily_report,weekly_report,monthly_report,coverage_qa,model_serving_pipeline
+      cms.runtime.not_hermes_cron: 'true'
+    depends_on:
+      cms-airflow-metadb:
+        condition: service_healthy
+    environment:
+      PYTHONPATH: /workspace/src
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER:-airflow}:${AIRFLOW_DB_PASSWORD:-airflow-local-only}@cms-airflow-metadb:5432/${AIRFLOW_DB_NAME:-airflow}
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'false'
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY:-cms-local-airflow-dev-secret-key}
+      _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_WWW_USER_USERNAME:-cms}
+      _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_WWW_USER_PASSWORD:-cms-local-only}
+      _PIP_ADDITIONAL_REQUIREMENTS: ${AIRFLOW_ADDITIONAL_REQUIREMENTS:-psycopg[binary]}
+      ALLOW_MODEL_SERVING_WRITE: '0'
+      ALLOW_CANONICAL_WRITE: '0'
+      ALLOW_PRODUCTION_DDL: '0'
+    volumes: *id001
+    working_dir: /workspace
+    command:
+    - bash
+    - -lc
+    - "python -c 'from cms.workflow.airflow_runtime_policy import describe_all_runtime_decisions;\
+      \ print(describe_all_runtime_decisions())'\nairflow db migrate\nairflow users\
+      \ create \\\n  --username \"$${_AIRFLOW_WWW_USER_USERNAME}\" \\\n  --password\
+      \ \"$${_AIRFLOW_WWW_USER_PASSWORD}\" \\\n  --firstname CMS \\\n  --lastname\
+      \ Admin \\\n  --role Admin \\\n  --email cms@example.invalid || true\n"
+    networks:
+    - cms_edge_stream
+  cms-airflow-scheduler:
+    image: apache/airflow:2.10.5-python3.12
+    env_file:
+    - path: ./model_serving.env
+      required: true
+    container_name: cms-airflow-scheduler
+    profiles:
+    - airflow-split
+    restart: 'no'
+    labels:
+      cms.runtime.roles: airflow-scheduler,service-stage,pmax,anomaly
+      cms.runtime.dags: daily_report,weekly_report,monthly_report,coverage_qa,model_serving_pipeline
+      cms.runtime.scheduled_dags: daily_report,weekly_report,monthly_report,coverage_qa
+      cms.runtime.manual_dags: model_serving_pipeline
+    depends_on:
+      cms-airflow-metadb:
+        condition: service_healthy
+      cms-airflow-init:
+        condition: service_completed_successfully
+    environment:
+      PYTHONPATH: /workspace/src
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER:-airflow}:${AIRFLOW_DB_PASSWORD:-airflow-local-only}@cms-airflow-metadb:5432/${AIRFLOW_DB_NAME:-airflow}
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'false'
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY:-cms-local-airflow-dev-secret-key}
+      _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_WWW_USER_USERNAME:-cms}
+      _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_WWW_USER_PASSWORD:-cms-local-only}
+      _PIP_ADDITIONAL_REQUIREMENTS: ${AIRFLOW_ADDITIONAL_REQUIREMENTS:-psycopg[binary]}
+      ALLOW_MODEL_SERVING_WRITE: '0'
+      ALLOW_CANONICAL_WRITE: '0'
+      ALLOW_PRODUCTION_DDL: '0'
+    volumes: *id001
+    working_dir: /workspace
+    command:
+    - bash
+    - -lc
+    - airflow db check && python -c 'from cms.workflow.airflow_runtime_policy import
+      describe_all_runtime_decisions; print(describe_all_runtime_decisions())' &&
+      airflow scheduler
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - airflow jobs check --job-type SchedulerJob --hostname $${HOSTNAME}
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+    - cms_edge_stream
+  cms-airflow-webserver:
+    image: apache/airflow:2.10.5-python3.12
+    container_name: cms-airflow-web
+    profiles:
+    - airflow-split
+    restart: 'no'
+    labels:
+      cms.runtime.roles: airflow-webserver,service-stage
+      cms.runtime.dags: daily_report,weekly_report,monthly_report,coverage_qa,model_serving_pipeline
+    depends_on:
+      cms-airflow-metadb:
+        condition: service_healthy
+      cms-airflow-init:
+        condition: service_completed_successfully
+    environment:
+      PYTHONPATH: /workspace/src
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER:-airflow}:${AIRFLOW_DB_PASSWORD:-airflow-local-only}@cms-airflow-metadb:5432/${AIRFLOW_DB_NAME:-airflow}
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'false'
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY:-cms-local-airflow-dev-secret-key}
+      _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_WWW_USER_USERNAME:-cms}
+      _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_WWW_USER_PASSWORD:-cms-local-only}
+      _PIP_ADDITIONAL_REQUIREMENTS: ${AIRFLOW_ADDITIONAL_REQUIREMENTS:-psycopg[binary]}
+      ALLOW_MODEL_SERVING_WRITE: '0'
+      ALLOW_CANONICAL_WRITE: '0'
+      ALLOW_PRODUCTION_DDL: '0'
+    volumes: *id001
+    working_dir: /workspace
+    command:
+    - bash
+    - -lc
+    - airflow db check && python -c 'from cms.workflow.airflow_runtime_policy import
+      describe_all_runtime_decisions; print(describe_all_runtime_decisions())' &&
+      airflow webserver
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health',
+        timeout=5).read()"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    ports:
+    - ${AIRFLOW_WEBSERVER_BIND:-127.0.0.1}:${AIRFLOW_WEBSERVER_PORT:-8080}:8080
+    networks:
+    - cms_edge_stream
+  cms-airflow-triggerer:
+    image: apache/airflow:2.10.5-python3.12
+    container_name: cms-airflow-triggerer
+    profiles:
+    - airflow-split
+    restart: 'no'
+    labels:
+      cms.runtime.roles: airflow-triggerer,service-stage
+      cms.runtime.dags: daily_report,weekly_report,monthly_report,coverage_qa,model_serving_pipeline
+      cms.runtime.scheduled_dags: daily_report,weekly_report,monthly_report,coverage_qa
+      cms.runtime.manual_dags: model_serving_pipeline
+    depends_on:
+      cms-airflow-metadb:
+        condition: service_healthy
+      cms-airflow-init:
+        condition: service_completed_successfully
+    environment:
+      PYTHONPATH: /workspace/src
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER:-airflow}:${AIRFLOW_DB_PASSWORD:-airflow-local-only}@cms-airflow-metadb:5432/${AIRFLOW_DB_NAME:-airflow}
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'false'
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY:-cms-local-airflow-dev-secret-key}
+      _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_WWW_USER_USERNAME:-cms}
+      _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_WWW_USER_PASSWORD:-cms-local-only}
+      _PIP_ADDITIONAL_REQUIREMENTS: ${AIRFLOW_ADDITIONAL_REQUIREMENTS:-psycopg[binary]}
+      ALLOW_MODEL_SERVING_WRITE: '0'
+      ALLOW_CANONICAL_WRITE: '0'
+      ALLOW_PRODUCTION_DDL: '0'
+    volumes: *id001
+    working_dir: /workspace
+    command:
+    - bash
+    - -lc
+    - airflow db check && python -c 'from cms.workflow.airflow_runtime_policy import
+      describe_all_runtime_decisions; print(describe_all_runtime_decisions())' &&
+      airflow triggerer
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - airflow jobs check --job-type TriggererJob --hostname $${HOSTNAME}
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+    - cms_edge_stream
+networks:
+  cms_edge_stream:
+    external: true
+    name: cms_edge_stream
+volumes:
+  cms_airflow_metadb: null
+  cms_airflow_logs: null

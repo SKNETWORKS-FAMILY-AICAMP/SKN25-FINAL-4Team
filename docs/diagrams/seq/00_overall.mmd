@@ -1,0 +1,106 @@
+%%{init: {"theme": "base", "sequence": {"showSequenceNumbers": true, "wrap": false, "mirrorActors": true, "rightAngles": true, "messageAlign": "center", "actorMargin": 82, "width": 170, "height": 54, "boxMargin": 12, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 44}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "actorBkg": "#f8fafc", "actorBorder": "#64748b", "actorTextColor": "#0f172a", "actorLineColor": "#64748b", "signalColor": "#334155", "signalTextColor": "#0f172a", "noteBkgColor": "#fff7ed", "noteTextColor": "#0f172a", "noteBorderColor": "#ea580c", "loopTextColor": "#0f172a", "activationBkgColor": "#e0f2fe", "activationBorderColor": "#0284c7", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
+sequenceDiagram
+    autonumber
+
+    box rgb(239, 246, 255) Measurement input
+      participant SRC as live_event_stream
+      participant ARCH as source_archive_reference
+    end
+
+    box rgb(245, 243, 255) Application runtime
+      participant IAPI as cms_ingestion_api
+      participant API as cms_backend_api
+      participant AF as Airflow_scheduler
+      participant MS as pmax_anomaly_scheduler
+      participant UI as frontend_response
+    end
+
+    box rgb(236, 253, 245) Kafka live ingestion buffer
+      participant KRAW as measurement_live_v1
+      participant KDLQ as measurement_dead_letter_v1
+      participant KCG as postgres_live_ingest_group
+    end
+
+    box rgb(255, 247, 237) Workers
+      participant ING as kafka_live_consumer_pc1
+      participant TRG as postgres_trigger
+      participant MEAN as cms_live_mean_rollup_worker
+      participant PEAK as cms_peak_feature_worker
+      participant ANOM as cms_anomaly_feature_worker
+      participant QG as qa_eligibility_gate
+      participant PROM as cms_canonical_promotion_worker
+      participant REP as report_worker
+    end
+
+    box rgb(238, 242, 255) PostgreSQL database: cms
+      participant LIVE as live_schema<br/>event_1min_queue_rollup_check
+      participant QA as qa_schema<br/>issue_eval_evidence
+      participant OPS as ops_schema<br/>job_metric_latency_heartbeat
+      participant CAN as canonical_schema<br/>approved_observed_measurements
+      participant MART as mart_schema<br/>peak_pmax_anomaly_facts
+      participant REF as reference_schema<br/>warm_start_comparison
+    end
+
+    box rgb(253, 244, 255) Knowledge grounding
+      participant KNOW as vector_db_ontology_grounding
+      participant RESP as dashboard_report_chat_response
+    end
+
+    SRC->>IAPI: POST /ingest/measurements
+    IAPI->>KRAW: publish measurement_live_v1 after validation
+    IAPI-->>SRC: invalid payload returns 422 without Kafka publish
+    KRAW->>ING: consume by postgres-live-ingest group
+    KCG->>ING: track partition offset and lag
+    ING->>LIVE: idempotent insert live.measurement_event
+    ING->>OPS: write ingest metrics when enabled
+    ING-->>KDLQ: consumer validation failure goes to DLQ then commit offset
+    LIVE->>TRG: fire common trigger
+    TRG->>LIVE: policy lookup, upsert measurement_1min, enqueue bucket_queue
+    TRG-->>QA: record live_issue when policy or quality gate blocks
+
+    par observed mean branch
+        LIVE->>MEAN: claim bucket_queue mean_rollup jobs
+        MEAN->>LIVE: write measurement_15min and measurement_1h mean rows
+        MEAN->>LIVE: update promotion_check candidate status
+    and peak feature branch
+        LIVE->>PEAK: claim bucket_queue peak_feature 15min jobs
+        PEAK->>MART: write peak_feature_15min P-Max feature input
+    end
+
+    ARCH-->>REF: provide corrected_resampled_15min and corrected_resampled_1h
+    REF-->>QG: provide comparison or warm-start evidence without replacing observed truth
+    LIVE->>QG: provide 1min and mean 15min 1h candidates
+    QA->>QG: provide blocking issue evidence
+    QG->>LIVE: write promotion_check pass warn block
+    QG->>QA: write QA evidence packet
+
+    MS->>MART: read peak_feature_15min and write pmax_forecast_15min
+    MS->>OPS: write pmax_log model and release lineage
+    MART->>QA: provide pmax_eval forecast quality evidence
+    MS->>ANOM: run anomaly branch with live and reference warm-start inputs
+    ANOM->>MART: write anomaly_feature_1h and anomaly_warning_1h
+
+    QA-->>REP: provide QA evidence packet
+    LIVE-->>REP: provide promotion_check evidence
+    REP->>OPS: publish job result_ref artifact status
+    REP->>AF: send artifact for review orchestration
+    QA-->>AF: send QA evidence for approval review
+    LIVE-->>AF: send promotion_check for approval review
+    AF-->>API: return review recommendation and artifact status
+
+    API->>OPS: register approved promotion job
+    OPS->>PROM: provide promotion_run id and approval reference
+    LIVE->>PROM: release eligible observed rows only
+    PROM->>CAN: controlled upsert canonical.measurement_1min_15min_1h
+
+    CAN-->>API: read-only canonical observed evidence
+    QA-->>API: read-only QA evidence
+    MART-->>API: read-only P-Max and anomaly facts
+    API->>KNOW: combine DB evidence with specs, ontology, vector refs
+    KNOW-->>API: grounded response context
+    API-->>RESP: return dashboard report or chat response
+    UI-->>RESP: render operator dashboard views
+
+    Note over MEAN,MART: mean rollup and peak feature and P-Max and anomaly facts are separate products
+    Note over QG,CAN: canonical receives approved observed rows only after eligibility and promotion_id
+    Note over API,AF: FastAPI stays lightweight and Airflow schedules readiness plus report and review work

@@ -1,0 +1,12 @@
+# 의존성 (빌드 시 npm ci로 재설치)
+node_modules/
+
+# 빌드 결과물
+dist/
+
+# 개발 파일
+.env
+.env.*
+*.log
+.git/
+.gitignore

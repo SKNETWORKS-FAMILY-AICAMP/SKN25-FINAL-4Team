@@ -1,0 +1,58 @@
+%%{init: {"theme": "base", "sequence": {"showSequenceNumbers": true, "wrap": false, "mirrorActors": true, "rightAngles": true, "messageAlign": "center", "actorMargin": 82, "width": 170, "height": 54, "boxMargin": 12, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 44}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "actorBkg": "#f8fafc", "actorBorder": "#64748b", "actorTextColor": "#0f172a", "actorLineColor": "#64748b", "signalColor": "#334155", "signalTextColor": "#0f172a", "noteBkgColor": "#fff7ed", "noteTextColor": "#0f172a", "noteBorderColor": "#ea580c", "loopTextColor": "#0f172a", "activationBkgColor": "#e0f2fe", "activationBorderColor": "#0284c7", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
+sequenceDiagram
+    autonumber
+
+    box rgb(239, 246, 255) Workflow triggers
+      participant T as schedule_or_manual
+      participant APIJOB as cms_backend_api_ops_job
+    end
+
+    box rgb(245, 243, 255) PC1 Airflow and promotion
+      participant AF as cms_airflow_standalone
+      participant REP as report_DAGs
+      participant REPLAY as replay_DAG
+      participant CPW as canonical_promotion_worker
+      participant STATUS as artifact_status
+    end
+
+    box rgb(255, 247, 237) PC3 operational schedulers
+      participant PMAXS as pmax_scheduler
+      participant ANOMS as anomaly_scheduler
+      participant AFW as cms_anomaly_feature_worker
+    end
+
+    box rgb(238, 242, 255) AWS PostgreSQL
+      participant LIVE as live_schema
+      participant MART as mart_schema
+      participant OPSQA as ops_qa_schema
+      participant CAN as canonical_schema
+    end
+
+    box rgb(245, 243, 255) Service read surface
+      participant API as cms_backend_api
+      participant UI as Frontend_Grafana
+    end
+
+    T->>AF: start scheduled report or replay workflow
+    APIJOB->>AF: register manual run with side-effect guard
+    AF->>LIVE: read live status, queues, rollups
+    AF->>MART: read forecast and warning outputs
+    AF->>OPSQA: read QA and inference evidence
+    AF->>REP: build report packet
+    REP->>STATUS: publish artifact reference
+    STATUS-->>API: expose job status and download
+
+    T->>PMAXS: 15min P-Max forecast tick
+    PMAXS->>MART: write pmax_forecast_15min
+    PMAXS->>OPSQA: write pmax_log and pmax_eval
+    T->>ANOMS: hourly anomaly warning tick
+    ANOMS->>MART: write anomaly_warning_1h
+    ANOMS->>OPSQA: write anomaly_log and anomaly_eval
+    T->>AFW: materialize anomaly features
+    AFW->>MART: upsert anomaly_feature_1h
+    APIJOB->>CPW: approval-gated promotion only
+    CPW->>CAN: controlled canonical write
+    API-->>UI: read-only status and artifacts
+
+    Note over AF,AFW: Airflow/scheduler owns background work. FastAPI returns status and does not run blocking inference.
+    Note over CPW,CAN: Canonical writes remain approval-gated on PC1.

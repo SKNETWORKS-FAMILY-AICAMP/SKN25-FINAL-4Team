@@ -1,0 +1,125 @@
+%%{init: {"theme": "base", "layout": "elk", "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 40, "rankSpacing": 58}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#ffffff", "primaryBorderColor": "#475569", "primaryTextColor": "#0f172a", "secondaryColor": "#f8fafc", "secondaryBorderColor": "#94a3b8", "secondaryTextColor": "#0f172a", "tertiaryColor": "#ffffff", "tertiaryBorderColor": "#cbd5e1", "tertiaryTextColor": "#0f172a", "clusterBkg": "#ffffff", "clusterBorder": "#94a3b8", "edgeLabelBackground": "#ffffff", "lineColor": "#475569", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
+flowchart LR
+    subgraph SRC["PC1 live measurement input"]
+      LIVE_SRC["live-replay-pc1\nmanaged injector"]
+      INGEST_API["cms-ingestion-api\n/ingest/measurements"]
+      RAW_TOPIC["Kafka measurement_live_v1\n+ measurement_backfill_v1"]
+      DLQ_TOPIC["measurement_dead_letter_v1\npoison message isolation"]
+    end
+
+    subgraph WORKERS["PC1 live processing workers"]
+      INGEST["kafka_live_consumer_pc1\nidempotent insert / offset commit"]
+      TRIGGER["postgres trigger\npolicy lookup / 1min upsert / queue"]
+      MEAN_WORKER["cms_live_mean_rollup_worker\nmean / coverage / NULL evidence"]
+      PEAK_WORKER["cms_peak_feature_worker\nmax / peak_value / peak_ts"]
+      QA_WORKER["qa_eligibility_gate\npass / warn / block"]
+      PROMOTE["canonical_promotion_worker\ncontrolled canonical upsert"]
+    end
+
+    subgraph PG["AWS PostgreSQL database: cms"]
+      subgraph LIVE_SCHEMA["live schema"]
+        LIVE_EVENT["measurement_event\nPostgreSQL ingress ledger"]
+        LIVE_POLICY["measurement_policy\nmeter / measurement rule"]
+        LIVE_1["measurement_1min\naligned observed bucket"]
+        LIVE_Q["bucket_queue\njob_kind: mean_rollup / peak_feature\nresolution: 15min / 1h"]
+        LIVE_15["measurement_15min\nmean observed rollup\ncanonical candidate"]
+        LIVE_1H["measurement_1h\nmean observed rollup\ncanonical candidate"]
+        PROMO_CHECK["promotion_check\nrow eligibility result"]
+        PROMO_RUN["promotion_run\npromotion_id / counts"]
+      end
+
+      subgraph QA_SCHEMA["qa schema"]
+        POLICY_MISS["bad_row\nlookup / quality fail"]
+        QA_ISSUE["live_issue\npolicy miss / stale / block"]
+        QA_PACKET["QA evidence packet"]
+      end
+
+      subgraph CANON_SCHEMA["canonical schema"]
+        C1["measurement_1min"]
+        C15["measurement_15min\napproved mean observed rollup"]
+        C1H["measurement_1h\napproved mean observed rollup"]
+        C_READY["canonical read set"]
+      end
+
+      subgraph MART_SCHEMA["mart schema"]
+        PEAK_FEATURE["peak_feature_15min\npeak_value / peak_ts / max"]
+        ANOM_FEATURE["anomaly_feature_1h\n1h anomaly model input"]
+      end
+    end
+
+    subgraph SERVICE["PC3 model serving / read surface"]
+      ANOMALY["cms-anomaly-feature-worker\nPC3 - 1h anomaly features"]
+      PEAK_MODEL["pmax_scheduler\nPC3 - P-Max forecast"]
+      API["cms-backend-api / Grafana\nread-only evidence"]
+    end
+
+    LIVE_SRC --> INGEST_API
+    INGEST_API --> RAW_TOPIC
+    RAW_TOPIC --> INGEST
+    RAW_TOPIC -. validation failure .-> DLQ_TOPIC
+    INGEST --> LIVE_EVENT
+    LIVE_EVENT --> TRIGGER
+    LIVE_POLICY --> TRIGGER
+
+    TRIGGER --> LIVE_1
+    TRIGGER --> LIVE_Q
+    TRIGGER -.-> POLICY_MISS
+    POLICY_MISS -.-> QA_ISSUE
+
+    LIVE_Q --> MEAN_WORKER
+    LIVE_1 --> MEAN_WORKER
+    MEAN_WORKER --> LIVE_15
+    MEAN_WORKER --> LIVE_1H
+
+    LIVE_Q --> PEAK_WORKER
+    LIVE_1 --> PEAK_WORKER
+    PEAK_WORKER --> PEAK_FEATURE
+
+    LIVE_1 --> QA_WORKER
+    LIVE_15 --> QA_WORKER
+    LIVE_1H --> QA_WORKER
+    QA_ISSUE --> QA_WORKER
+    QA_WORKER --> PROMO_CHECK
+    QA_WORKER --> QA_PACKET
+
+    PROMO_CHECK --> PROMOTE
+    PROMO_RUN --> PROMOTE
+    PROMOTE --> C1
+    PROMOTE --> C15
+    PROMOTE --> C1H
+    C1 --> C_READY
+    C15 --> C_READY
+    C1H --> C_READY
+
+    LIVE_1H --> ANOMALY
+    ANOMALY --> ANOM_FEATURE
+    PEAK_FEATURE --> PEAK_MODEL
+    C_READY --> API
+    QA_PACKET --> API
+
+    classDef source fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef worker fill:#fff7ed,stroke:#ea580c,color:#0f172a,stroke-width:1px;
+    classDef live fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef qa fill:#fff1f2,stroke:#e11d48,color:#0f172a,stroke-width:1px;
+    classDef canonical fill:#ecfdf5,stroke:#16a34a,color:#0f172a,stroke-width:1px;
+    classDef mart fill:#fdf4ff,stroke:#a21caf,color:#0f172a,stroke-width:1px;
+    classDef service fill:#ffffff,stroke:#7c3aed,color:#0f172a,stroke-width:1px;
+    classDef hub fill:#ffffff,stroke:#334155,color:#0f172a,stroke-width:2px;
+
+    class LIVE_SRC,INGEST_API,RAW_TOPIC,DLQ_TOPIC source;
+    class INGEST,TRIGGER,MEAN_WORKER,PEAK_WORKER,QA_WORKER,PROMOTE worker;
+    class LIVE_EVENT,LIVE_POLICY,LIVE_1,LIVE_Q,LIVE_15,LIVE_1H,PROMO_CHECK,PROMO_RUN live;
+    class POLICY_MISS,QA_ISSUE qa;
+    class QA_PACKET,C_READY hub;
+    class C1,C15,C1H canonical;
+    class PEAK_FEATURE,ANOM_FEATURE mart;
+    class ANOMALY,PEAK_MODEL,API service;
+
+    style SRC fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+    style WORKERS fill:#fff7ed,stroke:#ea580c,stroke-width:3px
+    style PG fill:#eef2ff,stroke:#1d4ed8,stroke-width:4px
+    style LIVE_SCHEMA fill:#ffffff,stroke:#2563eb,stroke-width:1px
+    style QA_SCHEMA fill:#fff1f2,stroke:#fecdd3,stroke-width:1px
+    style CANON_SCHEMA fill:#f0fdf4,stroke:#bbf7d0,stroke-width:1px
+    style MART_SCHEMA fill:#fdf4ff,stroke:#e879f9,stroke-width:1px
+    style SERVICE fill:#f5f3ff,stroke:#7c3aed,stroke-width:3px

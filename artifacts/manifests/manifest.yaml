@@ -1,0 +1,63 @@
+version: 1
+source_verified_at: '2026-06-22T09:39:27Z'
+source_host: pc3
+source_root: /home/skn25/cms-stream-deploy/artifacts
+artifacts:
+- artifact_name: pmax_artifacts
+  release_name: import_pmax_production_release_20260608
+  model_version: v29
+  source_host: pc3
+  source_uri: pc3:/home/skn25/cms-stream-deploy/artifacts/pmax
+  file_count: 55
+  size_bytes: 211643266
+  remote_sha256_manifest: artifacts/manifests/pmax_remote.sha256
+  remote_sha256_manifest_digest: 4692f3ce567a2ce2dc78a769b5a0f8b4fa2d3b0609e9a34ed5039b27a7236d78
+  fetch_command: scripts/artifact/fetch_models.sh pmax
+  expected_target_path: artifacts/external/pmax/import_pmax_production_release_20260608
+  checksum_command: cd artifacts/external/pmax/import_pmax_production_release_20260608
+    && sha256sum -c ../../../manifests/pmax_remote.sha256
+  verification_command: scripts/artifact/verify_models.sh pmax
+  layout_contract_check: PASS
+  license_or_access_note: access controlled; do not commit binary
+  status: fetched_validate_pass
+  fetched_local: true
+  local_file_count: 55
+  local_size_bytes: 211643266
+  last_validation_log: _archive/2026-06-22_folder_restructure/moved_from_active/incoming/orchestrator/pc3_artifact_fetch_validate.log#verify_models_pmax
+- artifact_name: anomaly_artifacts
+  release_name: test6_residual_v84_3h_share_20260609
+  model_version: v84
+  source_host: pc3
+  source_uri: pc3:/home/skn25/cms-stream-deploy/artifacts/anomaly
+  file_count: 1577
+  size_bytes: 496604094
+  remote_sha256_manifest: artifacts/manifests/anomaly_remote.sha256
+  remote_sha256_manifest_digest: ce9b81c160e66f71ff58b7b43acd0e61c3bcb59ff3f5c05b01afd014fd30e1fa
+  fetch_command: scripts/artifact/fetch_models.sh anomaly
+  expected_target_path: artifacts/external/anomaly/test6_residual_v84_3h_share_20260609
+  checksum_command: cd artifacts/external/anomaly/test6_residual_v84_3h_share_20260609
+    && sha256sum -c ../../../manifests/anomaly_remote.sha256
+  verification_command: scripts/artifact/verify_models.sh anomaly
+  layout_contract_check: PASS
+  license_or_access_note: access controlled; do not commit binary
+  status: fetched_validate_pass
+  fetched_local: true
+  local_file_count: 1577
+  local_size_bytes: 496604094
+  last_validation_log: _archive/2026-06-22_folder_restructure/moved_from_active/incoming/orchestrator/pc3_artifact_fetch_validate.log#verify_models_anomaly
+blocked: []
+validation_status: PASS
+git_artifact_policy:
+  commit_binary_payload: false
+  committed_files:
+  - artifacts/manifests/manifest.yaml
+  - artifacts/manifests/pmax_remote.sha256
+  - artifacts/manifests/anomaly_remote.sha256
+  - scripts/artifact/fetch_models.sh
+  - scripts/artifact/verify_models.sh
+  - scripts/serving/validate_artifacts.py
+  excluded_payload_paths:
+  - artifacts/external/pmax/
+  - artifacts/external/anomaly/
+  reason: large model binaries are fetched and verified from source truth; git stores
+    manifest, checksums, and fetch/verify procedures

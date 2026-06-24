@@ -1,0 +1,25 @@
+# syntax=docker/dockerfile:1
+FROM node:22-alpine AS build
+
+WORKDIR /app
+
+COPY src/frontend/package*.json ./
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+COPY src/frontend/ ./
+ARG VITE_API_BASE_URL=/api
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+RUN npm run build
+
+FROM nginx:1.27-alpine
+
+LABEL org.opencontainers.image.title="cms-frontend" \
+      org.opencontainers.image.description="CMS React/Vite frontend runtime" \
+      org.opencontainers.image.source="SKN25-FINAL-4Team" \
+      cms.runtime.roles="frontend"
+
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY stacks/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

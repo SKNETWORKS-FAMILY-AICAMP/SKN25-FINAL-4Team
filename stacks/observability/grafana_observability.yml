@@ -1,0 +1,31 @@
+name: cms-grafana-observability
+services:
+  cms-grafana:
+    image: grafana/grafana:11.6.0
+    container_name: cms-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-cms}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-example}
+      GF_AUTH_ANONYMOUS_ENABLED: ${GRAFANA_AUTH_ANONYMOUS_ENABLED:-true}
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GRAFANA_POSTGRES_HOST: ${GRAFANA_POSTGRES_HOST:-127.0.0.1}
+      GRAFANA_POSTGRES_PORT: ${GRAFANA_POSTGRES_PORT:-5432}
+      GRAFANA_POSTGRES_DB: ${GRAFANA_POSTGRES_DB:-cms}
+      GRAFANA_POSTGRES_USER: ${GRAFANA_POSTGRES_USER:-cms}
+      GRAFANA_POSTGRES_PASSWORD: ${GRAFANA_POSTGRES_PASSWORD:-example}
+      GRAFANA_POSTGRES_SSLMODE: ${GRAFANA_POSTGRES_SSLMODE:-disable}
+    ports:
+    - ${GRAFANA_BIND:-127.0.0.1}:${GRAFANA_PORT:-3000}:3000
+    volumes:
+    - ../../configs/grafana/provisioning:/etc/grafana/provisioning:ro
+    - cms_grafana_data:/var/lib/grafana
+    networks:
+    - cms_stream
+networks:
+  cms_stream:
+    external: true
+    name: cms_stream
+volumes:
+  cms_grafana_data:
+    name: cms_grafana_data

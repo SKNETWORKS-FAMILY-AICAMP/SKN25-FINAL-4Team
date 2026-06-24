@@ -1,0 +1,2341 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "id": 100,
+      "type": "row",
+      "title": "Command strip",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 1,
+      "title": "Events last 5m",
+      "type": "stat",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(*) AS events_last_5m FROM live.measurement_event WHERE consumed_at >= now() - interval '5 minutes';"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 2,
+      "title": "Events last 1h",
+      "type": "stat",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 3,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(DISTINCT meter_urn) AS active_meters_last_5m FROM live.measurement_event WHERE consumed_at >= now() - interval '5 minutes';"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 3,
+      "title": "Active series last 15m",
+      "type": "stat",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(DISTINCT meter_urn || '|' || measurement) AS active_series_last_5m FROM live.measurement_event WHERE consumed_at >= now() - interval '5 minutes';"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 4,
+      "title": "Critical stale meters",
+      "type": "stat",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 9,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n),\nlatest AS (\n  SELECT r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '15 minutes') AS events_15m,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '1 hour') AS events_1h,\n    max(e.event_ts) AS latest_event_ts,\n    max(e.consumed_at) AS latest_consumed_at,\n    EXTRACT(EPOCH FROM now() - max(e.consumed_at)) AS consumed_age_sec,\n    EXTRACT(EPOCH FROM max(e.consumed_at) - max(e.event_ts)) AS latest_source_to_consume_sec,\n    COALESCE(max(e.policy_lookup_status), 'no_recent_event') AS policy_lookup_status,\n    (max(e.consumed_at) IS NULL OR EXTRACT(EPOCH FROM now() - max(e.consumed_at)) > 900) AS stale_gt_15m\n  FROM meter_registry r\n  LEFT JOIN live.measurement_event e ON e.meter_urn = r.meter_urn AND e.consumed_at >= now() - interval '24 hours'\n  GROUP BY r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority\n) SELECT count(*) AS critical_stale_meters FROM latest WHERE anomaly_priority <= 2 AND stale_gt_15m;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 5,
+      "title": "Kafka consumer lag",
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "sum(kafka_consumergroup_lag_sum{consumergroup=\"postgres-live-ingest\",topic=\"measurement_raw_v1\"})",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 6,
+      "title": "DLQ offset",
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 15,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "increase(kafka_topic_partition_current_offset{topic=\"measurement_dead_letter_v1\"}[5m])",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 7,
+      "title": "Latest consumed age",
+      "type": "gauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COALESCE(EXTRACT(EPOCH FROM now() - max(consumed_at)), 999999) AS db_write_freshness_sec FROM live.measurement_event;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 8,
+      "title": "PostgreSQL exporter up",
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 21,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "max(pg_up)",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 101,
+      "type": "row",
+      "title": "81-meter fleet overview",
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 9,
+      "title": "Meter-series latest ingest status",
+      "type": "bargauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 6,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n),\nlatest AS (\n  SELECT r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '15 minutes') AS events_15m,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '1 hour') AS events_1h,\n    max(e.event_ts) AS latest_event_ts,\n    max(e.consumed_at) AS latest_consumed_at,\n    EXTRACT(EPOCH FROM now() - max(e.consumed_at)) AS consumed_age_sec,\n    EXTRACT(EPOCH FROM max(e.consumed_at) - max(e.event_ts)) AS latest_source_to_consume_sec,\n    COALESCE(max(e.policy_lookup_status), 'no_recent_event') AS policy_lookup_status,\n    (max(e.consumed_at) IS NULL OR EXTRACT(EPOCH FROM now() - max(e.consumed_at)) > 900) AS stale_gt_15m\n  FROM meter_registry r\n  LEFT JOIN live.measurement_event e ON e.meter_urn = r.meter_urn AND e.consumed_at >= now() - interval '24 hours'\n  GROUP BY r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority\n) SELECT equipment_group || ' / active' AS metric, count(*) FILTER (WHERE consumed_age_sec <= 300) AS value FROM latest GROUP BY equipment_group\nUNION ALL SELECT equipment_group || ' / warm' AS metric, count(*) FILTER (WHERE consumed_age_sec > 300 AND consumed_age_sec <= 900) AS value FROM latest GROUP BY equipment_group\nUNION ALL SELECT equipment_group || ' / stale' AS metric, count(*) FILTER (WHERE stale_gt_15m) AS value FROM latest GROUP BY equipment_group ORDER BY metric;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 10,
+      "title": "Stale meter-series by consumed_at",
+      "type": "bargauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 6,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n),\nlatest AS (\n  SELECT r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '15 minutes') AS events_15m,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '1 hour') AS events_1h,\n    max(e.event_ts) AS latest_event_ts,\n    max(e.consumed_at) AS latest_consumed_at,\n    EXTRACT(EPOCH FROM now() - max(e.consumed_at)) AS consumed_age_sec,\n    EXTRACT(EPOCH FROM max(e.consumed_at) - max(e.event_ts)) AS latest_source_to_consume_sec,\n    COALESCE(max(e.policy_lookup_status), 'no_recent_event') AS policy_lookup_status,\n    (max(e.consumed_at) IS NULL OR EXTRACT(EPOCH FROM now() - max(e.consumed_at)) > 900) AS stale_gt_15m\n  FROM meter_registry r\n  LEFT JOIN live.measurement_event e ON e.meter_urn = r.meter_urn AND e.consumed_at >= now() - interval '24 hours'\n  GROUP BY r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority\n) SELECT meter_urn || ' / ' || equipment_group AS metric, COALESCE(consumed_age_sec, 999999) / 60.0 AS value FROM latest WHERE anomaly_priority <= 2 AND stale_gt_15m ORDER BY value DESC LIMIT 40;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 11,
+      "title": "Top active meter-series last 1h",
+      "type": "bargauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 6,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n),\nlatest AS (\n  SELECT r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '15 minutes') AS events_15m,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '1 hour') AS events_1h,\n    max(e.event_ts) AS latest_event_ts,\n    max(e.consumed_at) AS latest_consumed_at,\n    EXTRACT(EPOCH FROM now() - max(e.consumed_at)) AS consumed_age_sec,\n    EXTRACT(EPOCH FROM max(e.consumed_at) - max(e.event_ts)) AS latest_source_to_consume_sec,\n    COALESCE(max(e.policy_lookup_status), 'no_recent_event') AS policy_lookup_status,\n    (max(e.consumed_at) IS NULL OR EXTRACT(EPOCH FROM now() - max(e.consumed_at)) > 900) AS stale_gt_15m\n  FROM meter_registry r\n  LEFT JOIN live.measurement_event e ON e.meter_urn = r.meter_urn AND e.consumed_at >= now() - interval '24 hours'\n  GROUP BY r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority\n) SELECT meter_domain || ' active<=5m' AS metric, count(*) FILTER (WHERE consumed_age_sec <= 300) AS value FROM latest GROUP BY meter_domain\nUNION ALL SELECT meter_domain || ' registered' AS metric, count(*) AS value FROM latest GROUP BY meter_domain ORDER BY metric;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 102,
+      "type": "row",
+      "title": "Equipment group snapshot",
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 12,
+      "title": "Equipment group events last 15m",
+      "type": "bargauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n),\nlatest AS (\n  SELECT r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '15 minutes') AS events_15m,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '1 hour') AS events_1h,\n    max(e.event_ts) AS latest_event_ts,\n    max(e.consumed_at) AS latest_consumed_at,\n    EXTRACT(EPOCH FROM now() - max(e.consumed_at)) AS consumed_age_sec,\n    EXTRACT(EPOCH FROM max(e.consumed_at) - max(e.event_ts)) AS latest_source_to_consume_sec,\n    COALESCE(max(e.policy_lookup_status), 'no_recent_event') AS policy_lookup_status,\n    (max(e.consumed_at) IS NULL OR EXTRACT(EPOCH FROM now() - max(e.consumed_at)) > 900) AS stale_gt_15m\n  FROM meter_registry r\n  LEFT JOIN live.measurement_event e ON e.meter_urn = r.meter_urn AND e.consumed_at >= now() - interval '24 hours'\n  GROUP BY r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority\n) SELECT equipment_group AS metric, sum(events_15m) AS value FROM latest GROUP BY equipment_group ORDER BY value DESC;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 13,
+      "title": "Production / consumption live rows",
+      "type": "timeseries",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 14,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n), classified AS (\n SELECT date_trunc('minute', e.consumed_at) AS time, r.meter_role AS metric, count(*) AS value\n FROM live.measurement_event e JOIN meter_registry r ON r.meter_urn=e.meter_urn\n WHERE e.consumed_at BETWEEN $__timeFrom() AND $__timeTo()\n GROUP BY 1,2)\nSELECT time, metric, value FROM classified ORDER BY time, metric;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "title": "Policy lookup status",
+      "type": "bargauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 14,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COALESCE(policy_lookup_status, 'unknown') AS metric, count(*) AS value FROM live.measurement_event WHERE consumed_at >= now() - interval '1 hour' GROUP BY 1 ORDER BY value DESC;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 103,
+      "type": "row",
+      "title": "Selected meter drill-down",
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 15,
+      "title": "Meter metadata card",
+      "type": "table",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 22,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n),\nlatest AS (\n  SELECT r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '15 minutes') AS events_15m,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '1 hour') AS events_1h,\n    max(e.event_ts) AS latest_event_ts,\n    max(e.consumed_at) AS latest_consumed_at,\n    EXTRACT(EPOCH FROM now() - max(e.consumed_at)) AS consumed_age_sec,\n    EXTRACT(EPOCH FROM max(e.consumed_at) - max(e.event_ts)) AS latest_source_to_consume_sec,\n    COALESCE(max(e.policy_lookup_status), 'no_recent_event') AS policy_lookup_status,\n    (max(e.consumed_at) IS NULL OR EXTRACT(EPOCH FROM now() - max(e.consumed_at)) > 900) AS stale_gt_15m\n  FROM meter_registry r\n  LEFT JOIN live.measurement_event e ON e.meter_urn = r.meter_urn AND e.consumed_at >= now() - interval '24 hours'\n  GROUP BY r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority\n) SELECT meter_urn, meter_domain, meter_role, equipment_group, building_code, anomaly_priority, events_15m, events_1h, latest_event_ts, latest_consumed_at, consumed_age_sec, latest_source_to_consume_sec, policy_lookup_status, stale_gt_15m\nFROM latest\nWHERE ('${meter_urn:raw}' = 'All' OR meter_urn = '${meter_urn:raw}')\nORDER BY anomaly_priority, consumed_age_sec DESC NULLS FIRST LIMIT 81;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false
+        },
+        "cellType": "color-background"
+      }
+    },
+    {
+      "id": 16,
+      "title": "Selected meter measurement trend",
+      "type": "timeseries",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 22,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT event_ts AS time, meter_urn || ' / ' || measurement AS metric, value_numeric AS value\nFROM live.measurement_event\nWHERE event_ts BETWEEN $__timeFrom() AND $__timeTo()\n  AND ('${meter_urn:raw}' = 'All' OR meter_urn = '${meter_urn:raw}')\n  AND ('${measurement:raw}' = 'All' OR measurement = '${measurement:raw}')\nORDER BY time;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 17,
+      "title": "Selected source-to-consume delay",
+      "type": "timeseries",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 22,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT consumed_at AS time, meter_urn || ' / ' || measurement AS metric, EXTRACT(EPOCH FROM consumed_at - event_ts) AS value\nFROM live.measurement_event\nWHERE consumed_at BETWEEN $__timeFrom() AND $__timeTo()\n  AND ('${meter_urn:raw}' = 'All' OR meter_urn = '${meter_urn:raw}')\n  AND ('${measurement:raw}' = 'All' OR measurement = '${measurement:raw}')\nORDER BY time;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 18,
+      "title": "Recent pipeline metrics",
+      "type": "table",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 30,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT consumed_at, event_ts, meter_urn, measurement, kafka_topic, kafka_partition, kafka_offset, business_idempotency_key\nFROM live.measurement_event\nWHERE consumed_at >= now() - interval '1 hour'\n  AND ('${meter_urn:raw}' = 'All' OR meter_urn = '${meter_urn:raw}')\nORDER BY consumed_at DESC LIMIT 100;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false
+        },
+        "cellType": "color-background"
+      }
+    },
+    {
+      "id": 19,
+      "title": "Recent blocking issues",
+      "type": "table",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 30,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT * FROM (\n  SELECT created_at AS issue_ts, 'meter_tag' AS source, tag AS issue_kind, meter_urn, measurement, detail\n  FROM qa.meter_tag\n  WHERE created_at >= now() - interval '24 hours'\n  UNION ALL\n  SELECT created_at AS issue_ts, 'bad_row' AS source, reason AS issue_kind, NULL::text AS meter_urn, NULL::text AS measurement, source_file || ':' || source_row_no::text AS detail\n  FROM qa.bad_row\n  WHERE created_at >= now() - interval '24 hours'\n) q\nORDER BY issue_ts DESC LIMIT 100;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false
+        },
+        "cellType": "color-background"
+      }
+    },
+    {
+      "id": 104,
+      "type": "row",
+      "title": "Kafka and consumer correctness",
+      "gridPos": {
+        "x": 0,
+        "y": 37,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 20,
+      "title": "Kafka lag by partition",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 38,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "sum by (partition) (kafka_consumergroup_lag{consumergroup=\"postgres-live-ingest\",topic=\"measurement_raw_v1\"})",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 21,
+      "title": "Raw topic offset by partition",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 38,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "sum by (partition) (kafka_topic_partition_current_offset{topic=\"measurement_raw_v1\"})",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 22,
+      "title": "Processed / inserted / duplicate / DLQ",
+      "type": "bargauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 38,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE (stage LIKE 'live_soak_%' OR stage LIKE 't4%' OR stage LIKE 'aws_24h_%' OR run_id LIKE 'aws_24h_%') AND metric_name IN ('consumer_processed','consumer_inserted','consumer_duplicate','consumer_retry','consumer_dlq','consumer_committed','consumer_lag_after') GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1), pivot AS (\n  SELECT metric_name AS metric, max(metric_value) AS value\n  FROM ops.pipeline_metric\n  WHERE run_id IN (SELECT run_id FROM latest)\n    AND metric_name IN ('consumer_processed','consumer_inserted','consumer_duplicate','consumer_retry','consumer_dlq','consumer_committed')\n  GROUP BY metric_name\n)\nSELECT metric, value FROM pivot ORDER BY metric;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 23,
+      "title": "Latest invariant delta",
+      "type": "stat",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 38,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.pipeline_metric WHERE (stage LIKE 'live_soak_%' OR stage LIKE 't4%' OR stage LIKE 'aws_24h_%' OR run_id LIKE 'aws_24h_%') AND metric_name IN ('consumer_processed','consumer_inserted','consumer_duplicate','consumer_retry','consumer_dlq','consumer_committed','consumer_lag_after') GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1), pivot AS (\n  SELECT\n    max(metric_value) FILTER (WHERE metric_name='consumer_processed') AS processed,\n    max(metric_value) FILTER (WHERE metric_name='consumer_inserted') AS inserted,\n    max(metric_value) FILTER (WHERE metric_name='consumer_duplicate') AS duplicate,\n    max(metric_value) FILTER (WHERE metric_name='consumer_dlq') AS dlq,\n    max(metric_value) FILTER (WHERE metric_name='consumer_committed') AS committed\n  FROM ops.pipeline_metric WHERE run_id IN (SELECT run_id FROM latest)\n)\nSELECT COALESCE(processed,0) - COALESCE(inserted,0) - COALESCE(duplicate,0) - COALESCE(dlq,0) AS invariant_delta,\n       COALESCE(committed,0) - COALESCE(processed,0) AS commit_delta\nFROM pivot;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 105,
+      "type": "row",
+      "title": "Infrastructure and DB capacity",
+      "gridPos": {
+        "x": 0,
+        "y": 45,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 24,
+      "title": "CPU busy by node",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 46,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "100 * (1 - avg by (node) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 25,
+      "title": "Memory available by node",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 46,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "100 * max by (node) (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 26,
+      "title": "Filesystem free by node",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 46,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "100 * min by (node) (node_filesystem_avail_bytes{fstype!~\"tmpfs|overlay\"} / node_filesystem_size_bytes{fstype!~\"tmpfs|overlay\"})",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 27,
+      "title": "PostgreSQL active connections",
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 46,
+        "w": 3,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "sum(pg_stat_activity_count{datname=\"cms\"})",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 28,
+      "title": "PostgreSQL deadlocks last 5m",
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 21,
+        "y": 46,
+        "w": 3,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "sum(increase(pg_stat_database_deadlocks{datname=\"cms\"}[5m]))",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 106,
+      "type": "stat",
+      "title": "Latest retry",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 40
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT COALESCE(MAX(metric_value), 0) AS value FROM ops.pipeline_metric WHERE metric_name = 'consumer_retry' /* consumer_retry ops.pipeline_metric */"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "displayMode": "gradient",
+            "showThresholdMarkers": true
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 107,
+      "type": "stat",
+      "title": "Latest DLQ metric",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 40
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT COALESCE(MAX(metric_value), 0) AS value FROM ops.pipeline_metric WHERE metric_name = 'consumer_dlq' /* consumer_dlq ops.pipeline_metric */"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "displayMode": "gradient",
+            "showThresholdMarkers": true
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 108,
+      "type": "stat",
+      "title": "Latest duplicate",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 40
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT COALESCE(MAX(metric_value), 0) AS value FROM ops.pipeline_metric WHERE metric_name = 'consumer_duplicate' /* consumer_duplicate ops.pipeline_metric */"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "displayMode": "gradient",
+            "showThresholdMarkers": true
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 109,
+      "type": "stat",
+      "title": "Kafka brokers",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 40
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "count(kafka_brokers) or vector(0)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "displayMode": "gradient",
+            "showThresholdMarkers": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "cms",
+    "live",
+    "kafka",
+    "visual-first",
+    "meter-fleet"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "meter_urn",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-cms-live"
+        },
+        "includeAll": true,
+        "multi": false,
+        "refresh": 2,
+        "query": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n)\nSELECT meter_urn FROM meter_registry ORDER BY meter_urn",
+        "current": {
+          "text": "All",
+          "value": "All"
+        },
+        "allValue": "All"
+      },
+      {
+        "name": "measurement",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-cms-live"
+        },
+        "includeAll": true,
+        "multi": false,
+        "refresh": 2,
+        "query": "SELECT DISTINCT measurement FROM live.measurement_event ORDER BY measurement",
+        "current": {
+          "text": "All",
+          "value": "All"
+        },
+        "allValue": "All"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "CMS Runtime Operations",
+  "uid": "cms-runtime-operations",
+  "version": 1,
+  "weekStart": "",
+  "description": "visual-first contract token: gradient-gauge live.measurement_event meter_urn measurement events_15m events_1h latest_consumed_at consumed_age_sec latest_source_to_consume_sec policy_lookup_status stale_gt_15m consumed_at ops.pipeline_metric qa.live_measurement_issue consumer_retry consumer_dlq consumer_duplicate invariant_delta kafka_consumergroup_lag_sum measurement_raw_v1 measurement_dead_letter_v1 node_cpu_seconds_total node_memory_MemAvailable_bytes node_filesystem_avail_bytes pg_up pg_stat_activity_count pg_stat_database_deadlocks"
+}

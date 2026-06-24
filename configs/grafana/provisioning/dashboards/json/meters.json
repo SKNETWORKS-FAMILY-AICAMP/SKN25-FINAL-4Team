@@ -1,0 +1,754 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "id": 101,
+      "type": "row",
+      "title": "81개 계량기 현황",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 9,
+      "title": "계량기별 최신 적재 상태",
+      "type": "bargauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n),\nlatest AS (\n  SELECT r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '15 minutes') AS events_15m,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '1 hour') AS events_1h,\n    max(e.event_ts) AS latest_event_ts,\n    max(e.consumed_at) AS latest_consumed_at,\n    EXTRACT(EPOCH FROM now() - max(e.consumed_at)) AS consumed_age_sec,\n    EXTRACT(EPOCH FROM max(e.consumed_at) - max(e.event_ts)) AS latest_source_to_consume_sec,\n    COALESCE(max(e.policy_lookup_status), 'no_recent_event') AS policy_lookup_status,\n    (max(e.consumed_at) IS NULL OR EXTRACT(EPOCH FROM now() - max(e.consumed_at)) > 900) AS stale_gt_15m\n  FROM meter_registry r\n  LEFT JOIN live.measurement_event e ON e.meter_urn = r.meter_urn AND e.consumed_at >= now() - interval '24 hours'\n  GROUP BY r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority\n) SELECT equipment_group || ' / active' AS metric, count(*) FILTER (WHERE consumed_age_sec <= 300) AS value FROM latest GROUP BY equipment_group\nUNION ALL SELECT equipment_group || ' / warm' AS metric, count(*) FILTER (WHERE consumed_age_sec > 300 AND consumed_age_sec <= 900) AS value FROM latest GROUP BY equipment_group\nUNION ALL SELECT equipment_group || ' / stale' AS metric, count(*) FILTER (WHERE stale_gt_15m) AS value FROM latest GROUP BY equipment_group ORDER BY metric;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 10,
+      "title": "적재 시각 기준 지연 계량기",
+      "type": "bargauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 1,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n),\nlatest AS (\n  SELECT r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '15 minutes') AS events_15m,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '1 hour') AS events_1h,\n    max(e.event_ts) AS latest_event_ts,\n    max(e.consumed_at) AS latest_consumed_at,\n    EXTRACT(EPOCH FROM now() - max(e.consumed_at)) AS consumed_age_sec,\n    EXTRACT(EPOCH FROM max(e.consumed_at) - max(e.event_ts)) AS latest_source_to_consume_sec,\n    COALESCE(max(e.policy_lookup_status), 'no_recent_event') AS policy_lookup_status,\n    (max(e.consumed_at) IS NULL OR EXTRACT(EPOCH FROM now() - max(e.consumed_at)) > 900) AS stale_gt_15m\n  FROM meter_registry r\n  LEFT JOIN live.measurement_event e ON e.meter_urn = r.meter_urn AND e.consumed_at >= now() - interval '24 hours'\n  GROUP BY r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority\n) SELECT meter_urn || ' / ' || equipment_group AS metric, COALESCE(consumed_age_sec, 999999) / 60.0 AS value FROM latest WHERE anomaly_priority <= 2 AND stale_gt_15m ORDER BY value DESC LIMIT 40;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 11,
+      "title": "최근 1시간 최다 활성 계량기",
+      "type": "bargauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 1,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n),\nlatest AS (\n  SELECT r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '15 minutes') AS events_15m,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '1 hour') AS events_1h,\n    max(e.event_ts) AS latest_event_ts,\n    max(e.consumed_at) AS latest_consumed_at,\n    EXTRACT(EPOCH FROM now() - max(e.consumed_at)) AS consumed_age_sec,\n    EXTRACT(EPOCH FROM max(e.consumed_at) - max(e.event_ts)) AS latest_source_to_consume_sec,\n    COALESCE(max(e.policy_lookup_status), 'no_recent_event') AS policy_lookup_status,\n    (max(e.consumed_at) IS NULL OR EXTRACT(EPOCH FROM now() - max(e.consumed_at)) > 900) AS stale_gt_15m\n  FROM meter_registry r\n  LEFT JOIN live.measurement_event e ON e.meter_urn = r.meter_urn AND e.consumed_at >= now() - interval '24 hours'\n  GROUP BY r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority\n) SELECT meter_domain || ' active<=5m' AS metric, count(*) FILTER (WHERE consumed_age_sec <= 300) AS value FROM latest GROUP BY meter_domain\nUNION ALL SELECT meter_domain || ' registered' AS metric, count(*) AS value FROM latest GROUP BY meter_domain ORDER BY metric;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 102,
+      "type": "row",
+      "title": "설비군 스냅샷",
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 12,
+      "title": "최근 15분 설비군 이벤트",
+      "type": "bargauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n),\nlatest AS (\n  SELECT r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '15 minutes') AS events_15m,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '1 hour') AS events_1h,\n    max(e.event_ts) AS latest_event_ts,\n    max(e.consumed_at) AS latest_consumed_at,\n    EXTRACT(EPOCH FROM now() - max(e.consumed_at)) AS consumed_age_sec,\n    EXTRACT(EPOCH FROM max(e.consumed_at) - max(e.event_ts)) AS latest_source_to_consume_sec,\n    COALESCE(max(e.policy_lookup_status), 'no_recent_event') AS policy_lookup_status,\n    (max(e.consumed_at) IS NULL OR EXTRACT(EPOCH FROM now() - max(e.consumed_at)) > 900) AS stale_gt_15m\n  FROM meter_registry r\n  LEFT JOIN live.measurement_event e ON e.meter_urn = r.meter_urn AND e.consumed_at >= now() - interval '24 hours'\n  GROUP BY r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority\n) SELECT equipment_group AS metric, sum(events_15m) AS value FROM latest GROUP BY equipment_group ORDER BY value DESC;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 13,
+      "title": "생산/소비 실시간 행",
+      "type": "timeseries",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 9,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n), classified AS (\n SELECT date_trunc('minute', e.consumed_at) AS time, r.meter_role AS metric, count(*) AS value\n FROM live.measurement_event e JOIN meter_registry r ON r.meter_urn=e.meter_urn\n WHERE e.consumed_at BETWEEN $__timeFrom() AND $__timeTo()\n GROUP BY 1,2)\nSELECT time, metric, value FROM classified ORDER BY time, metric;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "title": "정책 조회 상태",
+      "type": "bargauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 9,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COALESCE(policy_lookup_status, 'unknown') AS metric, count(*) AS value FROM live.measurement_event WHERE consumed_at >= now() - interval '1 hour' GROUP BY 1 ORDER BY value DESC;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 103,
+      "type": "row",
+      "title": "선택 계량기 상세",
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 15,
+      "title": "계량기 메타데이터 카드",
+      "type": "table",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n),\nlatest AS (\n  SELECT r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '15 minutes') AS events_15m,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '1 hour') AS events_1h,\n    max(e.event_ts) AS latest_event_ts,\n    max(e.consumed_at) AS latest_consumed_at,\n    EXTRACT(EPOCH FROM now() - max(e.consumed_at)) AS consumed_age_sec,\n    EXTRACT(EPOCH FROM max(e.consumed_at) - max(e.event_ts)) AS latest_source_to_consume_sec,\n    COALESCE(max(e.policy_lookup_status), 'no_recent_event') AS policy_lookup_status,\n    (max(e.consumed_at) IS NULL OR EXTRACT(EPOCH FROM now() - max(e.consumed_at)) > 900) AS stale_gt_15m\n  FROM meter_registry r\n  LEFT JOIN live.measurement_event e ON e.meter_urn = r.meter_urn AND e.consumed_at >= now() - interval '24 hours'\n  GROUP BY r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority\n) SELECT meter_urn, meter_domain, meter_role, equipment_group, building_code, anomaly_priority, events_15m, events_1h, latest_event_ts, latest_consumed_at, consumed_age_sec, latest_source_to_consume_sec, policy_lookup_status, stale_gt_15m\nFROM latest\nWHERE ('${meter_urn:raw}' = 'All' OR meter_urn = '${meter_urn:raw}')\nORDER BY anomaly_priority, consumed_age_sec DESC NULLS FIRST LIMIT 81;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false
+        },
+        "cellType": "color-background"
+      }
+    },
+    {
+      "id": 16,
+      "title": "선택 계량기 측정 추이",
+      "type": "timeseries",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 17,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT event_ts AS time, meter_urn || ' / ' || measurement AS metric, value_numeric AS value\nFROM live.measurement_event\nWHERE event_ts BETWEEN $__timeFrom() AND $__timeTo()\n  AND ('${meter_urn:raw}' = 'All' OR meter_urn = '${meter_urn:raw}')\n  AND ('${measurement:raw}' = 'All' OR measurement = '${measurement:raw}')\nORDER BY time;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 17,
+      "title": "선택 계량기 소스→적재 지연",
+      "type": "timeseries",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 17,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT consumed_at AS time, meter_urn || ' / ' || measurement AS metric, EXTRACT(EPOCH FROM consumed_at - event_ts) AS value\nFROM live.measurement_event\nWHERE consumed_at BETWEEN $__timeFrom() AND $__timeTo()\n  AND ('${meter_urn:raw}' = 'All' OR meter_urn = '${meter_urn:raw}')\n  AND ('${measurement:raw}' = 'All' OR measurement = '${measurement:raw}')\nORDER BY time;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "cms",
+    "live",
+    "meters",
+    "meter-fleet",
+    "visual-first"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "meter_urn",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-cms-live"
+        },
+        "includeAll": true,
+        "multi": false,
+        "refresh": 2,
+        "query": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n)\nSELECT meter_urn FROM meter_registry ORDER BY meter_urn",
+        "current": {
+          "text": "All",
+          "value": "All"
+        },
+        "allValue": "All"
+      },
+      {
+        "name": "measurement",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-cms-live"
+        },
+        "includeAll": true,
+        "multi": false,
+        "refresh": 2,
+        "query": "SELECT DISTINCT measurement FROM live.measurement_event ORDER BY measurement",
+        "current": {
+          "text": "All",
+          "value": "All"
+        },
+        "allValue": "All"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "CMS 계량기 현황",
+  "uid": "meters",
+  "version": 1,
+  "weekStart": "",
+  "description": "81개 계량기 fleet, 설비군 스냅샷, 선택 계량기 drill-down을 분리한 대시보드."
+}

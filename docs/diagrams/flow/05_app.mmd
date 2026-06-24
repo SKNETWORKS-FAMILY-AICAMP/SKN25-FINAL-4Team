@@ -1,0 +1,76 @@
+%%{init: {"theme": "base", "layout": "elk", "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 40, "rankSpacing": 58}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#ffffff", "primaryBorderColor": "#475569", "primaryTextColor": "#0f172a", "secondaryColor": "#f8fafc", "secondaryBorderColor": "#94a3b8", "secondaryTextColor": "#0f172a", "tertiaryColor": "#ffffff", "tertiaryBorderColor": "#cbd5e1", "tertiaryTextColor": "#0f172a", "clusterBkg": "#ffffff", "clusterBorder": "#94a3b8", "edgeLabelBackground": "#ffffff", "lineColor": "#475569", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
+flowchart LR
+    subgraph USER["Operator / user surface"]
+      UI["cms-agent-frontend"]
+      GRAF["Grafana dashboards
+PC2"]
+      CLIENT["API client"]
+    end
+
+    subgraph PC1["PC1 FastAPI services"]
+      ING["cms-ingestion-api
+private write boundary"]
+      BACK["cms-backend-api
+read / status / jobs / chat"]
+      ROUTER["routers
+forecast / simulator / ops / query"]
+      GUARD["side-effect guard
+writes_allowed=false by default"]
+    end
+
+    subgraph DATA["Data and runtime backends"]
+      KAFKA["Kafka measurement_live_v1"]
+      AWSDB["AWS PostgreSQL
+live / mart / ops / qa / canonical"]
+      PC3MODEL["PC3 model-serving
+cms-model-ops-api / P-Max / anomaly"]
+      ART["artifact / report refs"]
+    end
+
+    subgraph KNOW["Knowledge-assisted answers"]
+      SQL["SQLLM SELECT whitelist"]
+      DOCS["docs/specs + ontology"]
+      REVIEW["optional LangGraph review
+async only"]
+    end
+
+    CLIENT --> ING
+    ING --> KAFKA
+    UI --> BACK
+    CLIENT --> BACK
+    BACK --> ROUTER
+    ROUTER --> GUARD
+    GUARD --> SQL
+    SQL --> AWSDB
+    AWSDB --> BACK
+    PC3MODEL --> AWSDB
+    ART --> BACK
+    BACK --> UI
+    BACK --> GRAF
+    AWSDB --> GRAF
+    DOCS --> BACK
+    BACK --> REVIEW
+    REVIEW --> ART
+
+
+    classDef source fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef api fill:#ffffff,stroke:#7c3aed,color:#0f172a,stroke-width:1px;
+    classDef kafka fill:#ecfdf5,stroke:#059669,color:#0f172a,stroke-width:1px;
+    classDef worker fill:#fff7ed,stroke:#ea580c,color:#0f172a,stroke-width:1px;
+    classDef db fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef qa fill:#fff1f2,stroke:#e11d48,color:#0f172a,stroke-width:1px;
+    classDef mart fill:#fdf4ff,stroke:#a21caf,color:#0f172a,stroke-width:1px;
+    classDef obs fill:#f8fafc,stroke:#475569,color:#0f172a,stroke-width:1px;
+    classDef approval fill:#fefce8,stroke:#ca8a04,color:#0f172a,stroke-width:1px;
+    classDef hub fill:#ffffff,stroke:#334155,color:#0f172a,stroke-width:2px;
+
+    class UI,GRAF,CLIENT source;
+    class ING,BACK,ROUTER,GUARD api;
+    class KAFKA kafka;
+    class AWSDB db;
+    class PC3MODEL worker;
+    class ART,SQL,DOCS,REVIEW obs;
+    style USER fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+    style PC1 fill:#f5f3ff,stroke:#7c3aed,stroke-width:3px
+    style DATA fill:#eef2ff,stroke:#1d4ed8,stroke-width:4px
+    style KNOW fill:#fdf4ff,stroke:#a21caf,stroke-width:3px

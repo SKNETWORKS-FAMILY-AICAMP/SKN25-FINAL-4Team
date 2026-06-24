@@ -1,0 +1,56 @@
+%%{init: {"theme": "base", "sequence": {"showSequenceNumbers": true, "wrap": false, "mirrorActors": true, "rightAngles": true, "messageAlign": "center", "actorMargin": 82, "width": 170, "height": 54, "boxMargin": 12, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 44}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "actorBkg": "#f8fafc", "actorBorder": "#64748b", "actorTextColor": "#0f172a", "actorLineColor": "#64748b", "signalColor": "#334155", "signalTextColor": "#0f172a", "noteBkgColor": "#fff7ed", "noteTextColor": "#0f172a", "noteBorderColor": "#ea580c", "loopTextColor": "#0f172a", "activationBkgColor": "#e0f2fe", "activationBorderColor": "#0284c7", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
+sequenceDiagram
+    autonumber
+
+    box rgb(239, 246, 255) PC1 ingestion and consumers
+      participant SRC as 2023_replay_source<br/>injector_stopped
+      participant INGAPI as CMS_Ingestion_API<br/>private_boundary
+      participant CONS as 3x_kafka_to_postgres_consumer
+    end
+
+    box rgb(236, 253, 245) PC1-PC3 Kafka cluster
+      participant KRAW as measurement_raw_v1<br/>3_partitions_RF3
+      participant KCG as postgres_live_ingest_group<br/>lag_backlog
+      participant KDLQ as measurement_dead_letter_v1
+    end
+
+    box rgb(238, 242, 255) AWS DB plane
+      participant PG as cms_postgres
+      participant LIVE as live_schema
+      participant MART as mart_schema
+      participant OPSQA as ops_qa_schema
+      participant CAN as canonical_schema
+    end
+
+    box rgb(255, 247, 237) PC3 model and promotion workers
+      participant FEAT as anomaly_feature_worker
+      participant MODEL as hybrid_model_serving_scheduler
+      participant PROM as canonical_promotion_worker
+    end
+
+    box rgb(245, 243, 255) Read surfaces
+      participant API as CMS_Backend_API
+      participant OBS as Grafana_Prometheus
+    end
+
+    SRC-->>INGAPI: next load resumes only through managed injector
+    INGAPI->>KRAW: publish validated event envelope
+    INGAPI-->>KDLQ: invalid payload is not written to PostgreSQL
+    KRAW->>CONS: partitions assigned across three consumers
+    KCG->>CONS: track current offset, end offset, lag
+    CONS->>PG: idempotent insert live.measurement_event
+    PG->>LIVE: trigger policy / 1min / bucket queue
+    LIVE->>MART: bucket worker writes peak features and model inputs
+    LIVE->>FEAT: materialize 1h anomaly features
+    MART->>MODEL: read mart.peak_feature_15min direct P-Max input
+    MODEL->>MART: write pmax_forecast_15min and anomaly_warning_1h
+    MODEL->>OPSQA: write inference logs and evidence packets
+    LIVE->>PROM: eligible rows only after approval gate
+    PROM->>CAN: controlled promotion to canonical tables
+    LIVE-->>API: read-only live status and counts
+    MART-->>API: read-only model-serving evidence
+    OPSQA-->>API: read-only logs and QA packets
+    PG-->>OBS: dashboard datasource and exporter metrics
+
+    Note over SRC,KCG: Kafka lag is backlog in offsets, not API latency. 2023 timestamps are intentional replay time.
+    Note over MODEL,MART: Direct P-Max input is mart.peak_feature_15min, mart.peak_feature_15min is optional helper projection.

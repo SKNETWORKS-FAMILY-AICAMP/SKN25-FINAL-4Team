@@ -1,0 +1,86 @@
+%%{init: {"theme": "base", "sequence": {"showSequenceNumbers": true, "wrap": false, "mirrorActors": true, "rightAngles": true, "messageAlign": "center", "actorMargin": 78, "width": 165, "height": 54, "boxMargin": 12, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 44}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "actorBkg": "#f8fafc", "actorBorder": "#64748b", "actorTextColor": "#0f172a", "actorLineColor": "#64748b", "signalColor": "#334155", "signalTextColor": "#0f172a", "noteBkgColor": "#fff7ed", "noteTextColor": "#0f172a", "noteBorderColor": "#ea580c", "loopTextColor": "#0f172a", "activationBkgColor": "#e0f2fe", "activationBorderColor": "#0284c7", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
+sequenceDiagram
+    autonumber
+
+    box rgb(239, 246, 255) PC1 live measurement input
+      participant SRC as live_replay_pc1
+      participant APIING as cms_ingestion_api<br/>ingest_measurements
+      participant KRAW as Kafka<br/>measurement_live_v1
+      participant KDLQ as DLQ<br/>measurement_dead_letter_v1
+    end
+
+    box rgb(255, 247, 237) PC1 live processing workers
+      participant ING as kafka_live_consumer_pc1
+      participant TRG as postgres_trigger
+      participant MEAN as cms_live_mean_rollup_worker
+      participant PEAK as cms_peak_feature_worker
+      participant QAW as qa_eligibility_gate
+      participant PROM as canonical_promotion_worker
+    end
+
+    box rgb(238, 242, 255) AWS PostgreSQL database: cms
+      participant LE as live.measurement_event
+      participant POL as live.measurement_policy
+      participant L1 as live.measurement_1min
+      participant BQ as live.bucket_queue<br/>job_kind_resolution
+      participant LR as live.mean_15min_1h
+      participant PMISS as qa.bad_row
+      participant ISSUE as qa.live_issue
+      participant CHECK as live.promotion_check
+      participant RUN as live.promotion_run
+    end
+
+    box rgb(245, 243, 255) Consumers and outputs
+      participant CAN as canonical.mean_measurement_*
+      participant PF as mart.peak_feature_15min
+      participant SVC as service_consumers
+    end
+
+    SRC->>APIING: POST observed live event
+    APIING->>KRAW: validate and publish live event, return 202
+    APIING-->>SRC: invalid API payload returns 422 without Kafka publish
+    KRAW->>ING: consume Kafka envelope
+    ING->>LE: idempotent insert observed event ledger row then commit offset
+    ING-->>KDLQ: consumer validation failure goes to DLQ then commit offset
+    LE->>TRG: fire common AFTER INSERT trigger
+    TRG->>POL: lookup meter and measurement policy
+
+    alt policy found and event valid
+        TRG->>L1: upsert aligned 1min observed bucket
+        TRG->>BQ: enqueue mean_rollup 15min and 1h jobs
+        TRG->>BQ: enqueue peak_feature 15min job
+    else policy miss
+        TRG-->>PMISS: record qa.bad_row
+        PMISS-->>ISSUE: record qa.live_issue
+    end
+
+    par mean rollup path
+        BQ->>MEAN: claim mean_rollup job by resolution
+        MEAN->>L1: read child rows and coverage evidence
+        MEAN->>LR: upsert mean observed 15min or 1h candidate
+    and peak feature path
+        BQ->>PEAK: claim peak_feature 15min job
+        PEAK->>L1: read child observed rows
+        PEAK->>PF: upsert peak_value peak_ts max feature
+    end
+
+    QAW->>L1: read 1min candidate rows
+    QAW->>LR: read mean 15min and 1h candidate rows
+    QAW->>ISSUE: read blocking issues
+    QAW->>CHECK: write pass warn block result
+    QAW-->>SVC: expose QA evidence packet
+
+    alt eligible observed mean row
+        CHECK->>PROM: release eligible rows
+        PROM->>RUN: register promotion_id and counts
+        PROM->>CAN: controlled upsert mean measurement_1min_15min_1h
+        CAN-->>SVC: read-only canonical evidence
+    else blocked row
+        ISSUE-->>SVC: expose block reason only
+    end
+
+    PF-->>SVC: direct P-Max runtime input path
+
+    Note over TRG,BQ: trigger enqueues work only. Mean and peak calculations stay in workers
+    Note over MEAN,PEAK: live 15min and 1h store mean observed rollup. Peak values stay in mart
+    Note over CHECK,CAN: canonical write requires eligibility and promotion_id. Peak features are not canonical facts

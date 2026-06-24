@@ -1,0 +1,48 @@
+name: cms-distributed-consumer
+services:
+  cms-kafka-to-postgres-consumer:
+    build:
+      context: ../..
+      dockerfile: stacks/distributed_consumer/Containerfile
+    image: cms:consumer
+    container_name: ${CMS_CONSUMER_CONTAINER_NAME:?Set unique kebab-case container
+      name, e.g. cms-kafka-consumer-pc1}
+    labels:
+      cms.runtime.roles: consumer,stream-db-writer,distributed
+      cms.runtime.entrypoint: scripts/stream/consumer_service.py
+      cms.runtime.consumer_group: ${KAFKA_CONSUMER_GROUP:-postgres-live-ingest}
+      cms.runtime.consumer_instance: ${KAFKA_CONSUMER_INSTANCE_ID:?Set unique static
+        member id per host}
+    restart: unless-stopped
+    environment:
+      CMS_RUNTIME_PROFILE: edge
+      CMS_ENABLE_RUNTIME_CONSUMER: '1'
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:?Set all three PC1/PC2/PC3
+        Kafka brokers}
+      MEASUREMENT_RAW_TOPIC: ${MEASUREMENT_RAW_TOPIC:-measurement_raw_v1}
+      KAFKA_TOPIC_IDENTITY: ${KAFKA_TOPIC_IDENTITY:-local_pc123.measurement_raw_v1}
+      MEASUREMENT_DLQ_TOPIC: ${MEASUREMENT_DLQ_TOPIC:-measurement_dead_letter_v1}
+      KAFKA_CONSUMER_GROUP: ${KAFKA_CONSUMER_GROUP:-postgres-live-ingest}
+      KAFKA_AUTO_OFFSET_RESET: ${KAFKA_AUTO_OFFSET_RESET:-latest}
+      KAFKA_CONSUMER_CLIENT_ID: ${KAFKA_CONSUMER_CLIENT_ID:?Set unique client id per
+        host}
+      KAFKA_CONSUMER_INSTANCE_ID: ${KAFKA_CONSUMER_INSTANCE_ID:?Set unique static
+        member id per host}
+      KAFKA_SESSION_TIMEOUT_MS: ${KAFKA_SESSION_TIMEOUT_MS:-45000}
+      KAFKA_MAX_POLL_INTERVAL_MS: ${KAFKA_MAX_POLL_INTERVAL_MS:-300000}
+      POSTGRES_HOST: ${POSTGRES_HOST:?Set AWS PostgreSQL public/LAN endpoint reachable
+        from this PC}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_DB: ${POSTGRES_DB:-cms}
+      POSTGRES_USER: ${POSTGRES_USER:-cms_ingest}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set host-local PostgreSQL password;
+        do not commit}
+      POSTGRES_SSLMODE: ${POSTGRES_SSLMODE:-disable}
+      ALLOW_CANONICAL_WRITE: '0'
+      ALLOW_PRODUCTION_DDL: '0'
+    command:
+    - python
+    - scripts/stream/consumer_service.py
+    - --runtime
+    - --max-idle-polls
+    - '0'

@@ -1,0 +1,213 @@
+%%{init: {"theme": "base", "layout": "elk", "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 38, "rankSpacing": 54}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#ffffff", "primaryBorderColor": "#475569", "primaryTextColor": "#0f172a", "secondaryColor": "#f8fafc", "secondaryBorderColor": "#94a3b8", "secondaryTextColor": "#0f172a", "tertiaryColor": "#ffffff", "tertiaryBorderColor": "#cbd5e1", "tertiaryTextColor": "#0f172a", "clusterBkg": "#ffffff", "clusterBorder": "#94a3b8", "edgeLabelBackground": "#ffffff", "lineColor": "#475569", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
+flowchart LR
+    subgraph SRC["Measurement input"]
+      LIVE["live event stream\nPC1 replay / ingestion"]
+      ARCHIVE["compressed source archive\nreference / backfill input"]
+      REF_SRC["corrected_resampled reference\nwarm-start / comparison input"]
+    end
+
+    subgraph APP["Application and workflow runtime"]
+      INGEST_API["cms-ingestion-api\nPOST /ingest/measurements"]
+      BACKEND["cms-backend-api\nread / status / job / chat"]
+      FRONTEND["cms-frontend / dashboard\npublic UI"]
+      AIRFLOW["Airflow scheduler\nreadiness / batch / report orchestration"]
+      MODEL_SCHED["cms-hybrid-model-serving-scheduler\nP-Max / anomaly runs"]
+      LANG["LangGraph review workflow\nQA / report / approval review"]
+      GRAFANA["Grafana operations dashboards\nruntime / pipeline / meters"]
+      RESP["dashboard / report / chat response"]
+    end
+
+    subgraph KAFKA["Kafka live ingestion buffer"]
+      RAW_TOPIC["measurement_raw_v1\nactive ingestion topic"]
+      DLQ_TOPIC["measurement_dead_letter_v1\npoison message isolation"]
+      CGROUP["postgres-live-ingest\nconsumer group / offset"]
+    end
+
+    subgraph WORKERS["Measurement and model workers"]
+      INGEST["kafka_consumer_pc1/2/3\nidempotent PostgreSQL insert"]
+      TRIGGER["common PostgreSQL trigger\npolicy lookup / 1min / queue"]
+      MEAN["cms_live_mean_rollup_worker\n15min / 1h mean observed"]
+      PEAK["cms_peak_feature_worker\n15min peak features"]
+      ANOM["cms-anomaly-feature-worker\n1h feature and warning facts"]
+      PMAX_LOAD["P-Max release loader\n288 windows -> forecast facts"]
+      QAGATE["QA eligibility gate\npromotion_check / evidence"]
+      PROMOTE["cms_canonical_promotion_worker\napproval-gated promotion"]
+      REPORT["report worker\nevidence packet / artifact"]
+    end
+
+    subgraph PG["PostgreSQL database: cms"]
+      subgraph OPS["ops schema"]
+        APIJOB["api_job"]
+        PROMO_RUN["promotion_run"]
+        HEART["worker_heartbeat"]
+        LAG["consumer_lag"]
+        LATENCY["latency"]
+        METRIC["metric"]
+        ARTREF["job result_ref\nartifact / status"]
+        PMAX_LOG["pmax_log\nmodel / release lineage"]
+      end
+
+      subgraph LIVE_SCHEMA["live schema"]
+        LEVENT["measurement_event"]
+        MPOL["measurement_policy"]
+        L1["measurement_1min"]
+        BQUEUE["bucket_queue\nmean_rollup / peak_feature jobs"]
+        L15["measurement_15min\nmean observed rollup"]
+        L1H["measurement_1h\nmean observed rollup"]
+        PCHECK["promotion_check"]
+      end
+
+      subgraph QA["qa schema"]
+        LISSUE["live_issue"]
+        QA_PACKET["QA evidence packet"]
+        PMAX_EVAL["pmax_eval\nforecast quality evidence"]
+      end
+
+      subgraph CANON["canonical schema"]
+        C1["measurement_1min\napproved observed rows"]
+        C15["measurement_15min\napproved mean rollup"]
+        C1H["measurement_1h\napproved mean rollup"]
+        C_READY["canonical read set"]
+      end
+
+      subgraph REF["reference schema"]
+        REF15["corrected_resampled_15min\nreference_backfill leg"]
+        REF1H["corrected_resampled_1h\nanomaly warm-start leg"]
+      end
+
+      subgraph MART["mart schema"]
+        PEAK_FEATURE["peak_feature_15min\nP-Max live feature input"]
+        PMAX_FORECAST["pmax_forecast_15min\nreleased P-Max forecasts"]
+        ANOM_FEATURE["anomaly_feature_1h\nanomaly model input"]
+        ANOM_WARN["anomaly_warning_1h\nwarning facts"]
+      end
+    end
+
+    subgraph KNOW["Knowledge and ontology grounding"]
+      VDB["Vector DB reference documents\nproject specs / QA / source inventory"]
+      ONT["Ontology\nmeter / equipment / measurement relation"]
+      GROUND["LLM grounded response generation"]
+    end
+
+    LIVE --> INGEST_API
+    INGEST_API --> RAW_TOPIC
+    RAW_TOPIC --> INGEST
+    RAW_TOPIC -. validation failure .-> DLQ_TOPIC
+    CGROUP --> INGEST
+    INGEST --> LEVENT
+    INGEST --> METRIC
+    LEVENT --> TRIGGER
+    MPOL --> TRIGGER
+    TRIGGER --> L1
+    TRIGGER --> BQUEUE
+    TRIGGER -. policy or quality issue .-> LISSUE
+
+    BQUEUE --> MEAN
+    L1 --> MEAN
+    MEAN --> L15
+    MEAN --> L1H
+    MEAN --> PCHECK
+    L15 --> QAGATE
+    L1H --> QAGATE
+    L1 --> QAGATE
+    LISSUE --> QAGATE
+    QAGATE --> PCHECK
+    QAGATE --> QA_PACKET
+
+    BQUEUE --> PEAK
+    L1 --> PEAK
+    PEAK --> PEAK_FEATURE
+    PEAK_FEATURE --> MODEL_SCHED
+    MODEL_SCHED --> PMAX_LOAD
+    PMAX_LOAD --> PMAX_FORECAST
+    PMAX_LOAD --> PMAX_LOG
+    PMAX_FORECAST --> PMAX_EVAL
+
+    REF1H --> ANOM
+    ANOM_FEATURE --> ANOM
+    MODEL_SCHED --> ANOM
+    ANOM --> ANOM_FEATURE
+    ANOM --> ANOM_WARN
+
+    PCHECK --> PROMOTE
+    PROMO_RUN --> PROMOTE
+    PROMOTE --> C1
+    PROMOTE --> C15
+    PROMOTE --> C1H
+    C1 --> C_READY
+    C15 --> C_READY
+    C1H --> C_READY
+
+    ARCHIVE --> AIRFLOW
+    REF_SRC --> REF15
+    REF_SRC --> REF1H
+    REF15 --> QAGATE
+    APIJOB --> AIRFLOW
+    AIRFLOW --> REPORT
+    AIRFLOW --> MODEL_SCHED
+    QA_PACKET --> REPORT
+    REPORT --> ARTREF
+    REPORT --> LANG
+    QA_PACKET --> LANG
+    PCHECK --> LANG
+    LANG --> BACKEND
+
+    HEART --> GRAFANA
+    LAG --> GRAFANA
+    LATENCY --> GRAFANA
+    METRIC --> GRAFANA
+    LEVENT --> GRAFANA
+    PEAK_FEATURE --> GRAFANA
+    PMAX_FORECAST --> GRAFANA
+
+    BACKEND --> APIJOB
+    C_READY --> BACKEND
+    QA_PACKET --> BACKEND
+    PEAK_FEATURE --> BACKEND
+    PMAX_FORECAST --> BACKEND
+    ANOM_WARN --> BACKEND
+    BACKEND --> GROUND
+    VDB --> GROUND
+    ONT --> GROUND
+    GROUND --> RESP
+    BACKEND --> RESP
+    FRONTEND --> BACKEND
+    FRONTEND --> RESP
+    GRAFANA --> RESP
+
+    classDef source fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef app fill:#ffffff,stroke:#7c3aed,color:#0f172a,stroke-width:1px;
+    classDef storage fill:#ffffff,stroke:#059669,color:#0f172a,stroke-width:1px;
+    classDef worker fill:#fff7ed,stroke:#ea580c,color:#0f172a,stroke-width:1px;
+    classDef pg fill:#ffffff,stroke:#64748b,color:#0f172a,stroke-width:1px;
+    classDef qa fill:#fff1f2,stroke:#e11d48,color:#0f172a,stroke-width:1px;
+    classDef canonical fill:#ecfdf5,stroke:#16a34a,color:#0f172a,stroke-width:1px;
+    classDef reference fill:#fefce8,stroke:#ca8a04,color:#0f172a,stroke-width:1px;
+    classDef mart fill:#fdf4ff,stroke:#a21caf,color:#0f172a,stroke-width:1px;
+    classDef knowledge fill:#fdf4ff,stroke:#a21caf,color:#0f172a,stroke-width:1px;
+    classDef hub fill:#ffffff,stroke:#334155,color:#0f172a,stroke-width:2px;
+
+    class LIVE,ARCHIVE,REF_SRC source;
+    class INGEST_API,BACKEND,FRONTEND,AIRFLOW,MODEL_SCHED,LANG,GRAFANA,RESP app;
+    class RAW_TOPIC,DLQ_TOPIC,CGROUP storage;
+    class INGEST,TRIGGER,MEAN,PEAK,ANOM,PMAX_LOAD,QAGATE,PROMOTE,REPORT worker;
+    class APIJOB,PROMO_RUN,HEART,LAG,LATENCY,METRIC,ARTREF,PMAX_LOG,LEVENT,MPOL,L1,BQUEUE,L15,L1H,PCHECK pg;
+    class LISSUE,PMAX_EVAL qa;
+    class QA_PACKET,C_READY hub;
+    class C1,C15,C1H canonical;
+    class REF15,REF1H reference;
+    class PEAK_FEATURE,PMAX_FORECAST,ANOM_FEATURE,ANOM_WARN mart;
+    class VDB,ONT,GROUND knowledge;
+
+    style SRC fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+    style APP fill:#f5f3ff,stroke:#7c3aed,stroke-width:3px
+    style KAFKA fill:#ecfdf5,stroke:#059669,stroke-width:3px
+    style WORKERS fill:#fff7ed,stroke:#ea580c,stroke-width:3px
+    style PG fill:#eef2ff,stroke:#1d4ed8,stroke-width:4px
+    style OPS fill:#ffffff,stroke:#64748b,stroke-width:1px
+    style LIVE_SCHEMA fill:#ffffff,stroke:#2563eb,stroke-width:1px
+    style QA fill:#fff1f2,stroke:#fecdd3,stroke-width:1px
+    style CANON fill:#f0fdf4,stroke:#bbf7d0,stroke-width:1px
+    style REF fill:#fefce8,stroke:#fde68a,stroke-width:1px
+    style MART fill:#fdf4ff,stroke:#e879f9,stroke-width:1px
+    style KNOW fill:#fdf4ff,stroke:#a21caf,stroke-width:3px

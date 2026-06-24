@@ -1,0 +1,965 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "id": 100,
+      "type": "row",
+      "title": "운영 요약",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 1,
+      "title": "최근 5분 이벤트 수",
+      "type": "stat",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(*) AS events_last_5m FROM live.measurement_event WHERE consumed_at >= now() - interval '5 minutes';"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 2,
+      "title": "최근 1시간 활성 계량기",
+      "type": "stat",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 3,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(DISTINCT meter_urn) AS active_meters_last_5m FROM live.measurement_event WHERE consumed_at >= now() - interval '5 minutes';"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 3,
+      "title": "최근 5분 활성 시계열",
+      "type": "stat",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(DISTINCT meter_urn || '|' || measurement) AS active_series_last_5m FROM live.measurement_event WHERE consumed_at >= now() - interval '5 minutes';"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 4,
+      "title": "중요 지연 계량기",
+      "type": "stat",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 9,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n),\nlatest AS (\n  SELECT r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '15 minutes') AS events_15m,\n    count(e.*) FILTER (WHERE e.consumed_at >= now() - interval '1 hour') AS events_1h,\n    max(e.event_ts) AS latest_event_ts,\n    max(e.consumed_at) AS latest_consumed_at,\n    EXTRACT(EPOCH FROM now() - max(e.consumed_at)) AS consumed_age_sec,\n    EXTRACT(EPOCH FROM max(e.consumed_at) - max(e.event_ts)) AS latest_source_to_consume_sec,\n    COALESCE(max(e.policy_lookup_status), 'no_recent_event') AS policy_lookup_status,\n    (max(e.consumed_at) IS NULL OR EXTRACT(EPOCH FROM now() - max(e.consumed_at)) > 900) AS stale_gt_15m\n  FROM meter_registry r\n  LEFT JOIN live.measurement_event e ON e.meter_urn = r.meter_urn AND e.consumed_at >= now() - interval '24 hours'\n  GROUP BY r.meter_urn,r.meter_domain,r.meter_role,r.equipment_group,r.equipment_name,r.building_code,r.anomaly_priority\n) SELECT count(*) AS critical_stale_meters FROM latest WHERE anomaly_priority <= 2 AND stale_gt_15m;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 5,
+      "title": "Kafka 컨슈머 지연",
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "sum(kafka_consumergroup_lag_sum{consumergroup=\"postgres-live-ingest\",topic=\"measurement_raw_v1\"})",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 6,
+      "title": "DLQ 증가량",
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 15,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "increase(kafka_topic_partition_current_offset{topic=\"measurement_dead_letter_v1\"}[5m])",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 7,
+      "title": "최신 DB 적재 지연",
+      "type": "gauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COALESCE(EXTRACT(EPOCH FROM now() - max(consumed_at)), 999999) AS db_write_freshness_sec FROM live.measurement_event;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 8,
+      "title": "PostgreSQL exporter 상태",
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 21,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "max(pg_up)",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 105,
+      "type": "row",
+      "title": "인프라 및 DB 용량",
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 24,
+      "title": "노드별 CPU 사용률",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 6,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "100 * (1 - avg by (node) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 25,
+      "title": "노드별 가용 메모리",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 6,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "100 * max by (node) (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 26,
+      "title": "노드별 파일시스템 여유",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 6,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "100 * min by (node) (node_filesystem_avail_bytes{fstype!~\"tmpfs|overlay\"} / node_filesystem_size_bytes{fstype!~\"tmpfs|overlay\"})",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 27,
+      "title": "PostgreSQL 활성 연결",
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 6,
+        "w": 3,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "sum(pg_stat_activity_count{datname=\"cms\"})",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 28,
+      "title": "최근 5분 PostgreSQL 데드락",
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 21,
+        "y": 6,
+        "w": 3,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "sum(increase(pg_stat_database_deadlocks{datname=\"cms\"}[5m]))",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "cms",
+    "live",
+    "runtime",
+    "kafka",
+    "visual-first"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "CMS 런타임 운영",
+  "uid": "cms-runtime-operations",
+  "version": 1,
+  "weekStart": "",
+  "description": "운영 요약과 인프라/DB 용량을 분리한 런타임 운영 대시보드. 서버 적용은 별도 승인 후 수행한다."
+}

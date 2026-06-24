@@ -1,0 +1,76 @@
+%%{init: {"theme": "base", "layout": "elk", "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 40, "rankSpacing": 58}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#ffffff", "primaryBorderColor": "#475569", "primaryTextColor": "#0f172a", "secondaryColor": "#f8fafc", "secondaryBorderColor": "#94a3b8", "secondaryTextColor": "#0f172a", "tertiaryColor": "#ffffff", "tertiaryBorderColor": "#cbd5e1", "tertiaryTextColor": "#0f172a", "clusterBkg": "#ffffff", "clusterBorder": "#94a3b8", "edgeLabelBackground": "#ffffff", "lineColor": "#475569", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
+flowchart LR
+    subgraph ENTRY["Async review entry"]
+      APIJOB["cms-backend-api job registration"]
+      AIRART["Airflow / report artifact"]
+      QA_PACKET["QA evidence packet"]
+      PROMO_REQ["promotion request"]
+    end
+
+    subgraph LG["PC1 LangGraph review workflow"]
+      STATE["state contract
+no direct DB writes"]
+      RET["retrieve context
+specs / wiki / ontology"]
+      CHECK["evidence boundary check
+source truth / QA / lineage"]
+      DECIDE["recommendation
+approve / revise / reject"]
+    end
+
+    subgraph CONTEXT["Grounding context"]
+      SPECS["docs/specs
+active CMS contracts"]
+      WIKI["LLM Wiki / Obsidian
+verified nodes"]
+      ONT["ontology / meter metadata"]
+      DBREAD["AWS PostgreSQL read-only evidence"]
+    end
+
+    subgraph OUT["Outputs"]
+      NOTE["review artifact"]
+      CAVEAT["caveat list"]
+      OPS["ops approval queue
+human gate"]
+      APISTATUS["cms-backend-api status path"]
+    end
+
+    APIJOB --> STATE
+    AIRART --> STATE
+    QA_PACKET --> STATE
+    PROMO_REQ --> STATE
+    STATE --> RET
+    SPECS --> RET
+    WIKI --> RET
+    ONT --> RET
+    DBREAD --> CHECK
+    RET --> CHECK
+    CHECK --> DECIDE
+    DECIDE --> NOTE
+    DECIDE --> CAVEAT
+    DECIDE --> OPS
+    NOTE --> APISTATUS
+    CAVEAT --> APISTATUS
+
+
+    classDef source fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef api fill:#ffffff,stroke:#7c3aed,color:#0f172a,stroke-width:1px;
+    classDef kafka fill:#ecfdf5,stroke:#059669,color:#0f172a,stroke-width:1px;
+    classDef worker fill:#fff7ed,stroke:#ea580c,color:#0f172a,stroke-width:1px;
+    classDef db fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
+    classDef qa fill:#fff1f2,stroke:#e11d48,color:#0f172a,stroke-width:1px;
+    classDef mart fill:#fdf4ff,stroke:#a21caf,color:#0f172a,stroke-width:1px;
+    classDef obs fill:#f8fafc,stroke:#475569,color:#0f172a,stroke-width:1px;
+    classDef approval fill:#fefce8,stroke:#ca8a04,color:#0f172a,stroke-width:1px;
+    classDef hub fill:#ffffff,stroke:#334155,color:#0f172a,stroke-width:2px;
+
+    class APIJOB,AIRART,QA_PACKET,PROMO_REQ source;
+    class STATE,RET,CHECK,DECIDE worker;
+    class SPECS,WIKI,ONT,DBREAD obs;
+    class NOTE,CAVEAT qa;
+    class OPS approval;
+    class APISTATUS api;
+    style ENTRY fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+    style LG fill:#fff7ed,stroke:#ea580c,stroke-width:3px
+    style CONTEXT fill:#fdf4ff,stroke:#a21caf,stroke-width:3px
+    style OUT fill:#f8fafc,stroke:#475569,stroke-width:3px

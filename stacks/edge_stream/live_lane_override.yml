@@ -1,0 +1,4 @@
+services:
+  cms-ingestion-api:
+    environment:
+      MEASUREMENT_RAW_TOPIC: "measurement_live_v1"

@@ -1,66 +1,59 @@
-# Python runtime/cache
-.venv/
+# Local secrets and runtime env
+.env
+*.env
+!*.env.example
+!env/*.env.example
+!frontend/.env.example
+!src/frontend/.env.example
+*.pem
+*.key
+id_rsa*
+*.p12
+*.pfx
+
+# Python / test caches
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
-uv.lock
-tests/
+.mypy_cache/
+.coverage
+htmlcov/
 
-# Jupyter local cache
-.ipynb_checkpoints/
-**/.ipynb_checkpoints/
-
-# Secrets and local environment
-.env
-.env.*
-!.env.example
-docker/*.env
-
-# Hermes local plans/session helpers
-.hermes/
-HERMES.md
-.github/
-
-# External source data and local cache
-data/
-.cache/
-tmp/
-
-# Generated analysis/modeling artifacts
-outputs/modeling/
-outputs/runpod/
-outputs/logs/
-outputs/figures/*
-!outputs/figures/energy_flow/
-!outputs/figures/energy_flow/**
-outputs/tables/*
-!outputs/tables/profiling/
-!outputs/tables/profiling/**
-*.log
-*.zip
-*.joblib
-*.pt
-*.pkl
-*.parquet
-*.[Dd][Oo][Cc][Xx]
-*.[Pp][Dd][Ff]
-*.[Hh][Tt][Mm][Ll]
-*.[Xx][Ll][Ss][Xx]
-
-# Local preserved history; not shared through Git
-**/_archive/
-
-# Frontend/package-manager caches that may appear inside report drafts
+# Node / frontend generated output
 node_modules/
+dist/
+build/
+coverage/
 
-# OS/editor
+# Local virtual environments and editor state
+.venv/
+venv/
+.envrc
 .DS_Store
-.vscode/
 .idea/
-.obsidian/
+.vscode/
 
-# Retired local container variants
-compose.dev.yml
-docker/Dockerfile.dev
-docker/local.env.example
+# Runtime output and evidence logs
+*.log
+*.pid
+logs/
+*.tmp
+*.bak
+*.bak_*
+._*
+
+# Docker/local runtime state
+.docker/
+.cache/
+
+# Large runtime artifact payloads are externalized.
+# Keep artifacts/manifests/* and artifacts/external/README.md committed.
+/artifacts/external/pmax/
+/artifacts/external/anomaly/
+
+# Local/generated archives and backups
+backup/
+backups/
+_archive/
+*_backup/

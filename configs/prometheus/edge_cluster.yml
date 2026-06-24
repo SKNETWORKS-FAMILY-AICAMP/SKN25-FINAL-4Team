@@ -1,0 +1,59 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+
+  - job_name: kafka-exporter-local-pc123
+    static_configs:
+      - targets:
+          - cms-kafka-exporter:9308
+        labels:
+          cluster: local-pc123
+
+  - job_name: node-exporter-pc1
+    static_configs:
+      - targets:
+          - cms-node-exporter:9100
+        labels:
+          node: pc1
+
+  - job_name: node-exporter-pc2
+    static_configs:
+      - targets:
+          - pc2.local:9100
+        labels:
+          node: pc2
+
+  - job_name: node-exporter-pc3
+    static_configs:
+      - targets:
+          - pc3.local:9100
+        labels:
+          node: pc3
+
+  - job_name: node-exporter-aws-cms-db
+    static_configs:
+      - targets:
+          - cms-db.local:9100
+        labels:
+          node: aws-cms-db
+
+  - job_name: postgres-exporter-pc3
+    static_configs:
+      - targets:
+          - pc3.local:9187
+        labels:
+          node: pc3
+          role: cms-db
+
+  - job_name: postgres-exporter-aws-cms-db
+    static_configs:
+      - targets:
+          - cms-db.local:9187
+        labels:
+          node: aws-cms-db

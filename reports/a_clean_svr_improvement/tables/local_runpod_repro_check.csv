@@ -1,5 +1,0 @@
-대상,same_model,rmse_abs_diff,val_rmse_abs_diff
-중앙 냉방,True,0.0,0.0
-국소 냉방,True,0.0,0.0
-서버 전원,True,0.0,0.0
-환기 계통,True,0.0,0.0

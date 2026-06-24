@@ -1,0 +1,260 @@
+name: cms-model-serving
+x-disabled-services:
+  cms-live-bucket-queue-worker:
+    status: disabled_removal_target
+    reason: superseded by split cms_live_mean_rollup_worker and cms_peak_feature_worker;
+      integrated worker can fail/confuse mart permission ownership
+services:
+  cms-model-serving:
+    build:
+      context: ../..
+      dockerfile: stacks/model_serving/Containerfile
+    image: cms:model-serving
+    container_name: cms-model-serving
+    profiles:
+    - model-serving
+    restart: 'no'
+    labels:
+      cms.runtime.roles: model-serving,pmax,anomaly
+      cms.runtime.entrypoint: scripts/serving/model_serving.py
+    env_file:
+    - path: ./model_serving.env
+      required: false
+    environment:
+      ALLOW_MODEL_SERVING_WRITE: ${ALLOW_MODEL_SERVING_WRITE:-0}
+      ALLOW_CANONICAL_WRITE: '0'
+      ALLOW_PRODUCTION_DDL: '0'
+      CMS_ANOMALY_SOURCE_TABLE: ${CMS_ANOMALY_SOURCE_TABLE:-mart.anomaly_feature_1h}
+      CMS_ANOMALY_SOURCE_TS_COLUMN: ${CMS_ANOMALY_SOURCE_TS_COLUMN:-bucket_ts}
+      POSTGRES_HOST: ${POSTGRES_HOST:?Set POSTGRES_HOST in model_serving.env}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in model_serving.env}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in model_serving.env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in model_serving.env}
+      POSTGRES_SSLMODE: ${POSTGRES_SSLMODE:-disable}
+    command:
+    - --base-ts
+    - ${MODEL_SERVING_BASE_TS:?Set MODEL_SERVING_BASE_TS}
+    - --pmax-artifact-root
+    - ${PMAX_ARTIFACT_ROOT:-/artifacts/pmax}
+    - --anomaly-predictions-path
+    - ${ANOMALY_PREDICTIONS_PATH:-}
+    - --allow-missing-anomaly
+    - --json
+    volumes:
+    - ${MODEL_SERVING_ARTIFACT_ROOT:-../../artifacts/external}:/artifacts:ro
+    networks:
+    - cms_edge_stream
+  cms-model-artifact-smoke:
+    build:
+      context: ../..
+      dockerfile: stacks/model_serving/Containerfile
+    image: cms:model-serving
+    container_name: cms-artifact-smoke
+    profiles:
+    - smoke
+    restart: 'no'
+    labels:
+      cms.runtime.roles: artifact-smoke,pmax,anomaly
+      cms.runtime.entrypoint: scripts/serving/validate_artifacts.py
+    entrypoint:
+    - python
+    command:
+    - scripts/serving/validate_artifacts.py
+    - --pmax-root
+    - ${PMAX_ARTIFACT_ROOT:-/artifacts/pmax}
+    - --anomaly-root
+    - ${ANOMALY_ARTIFACT_ROOT:-/artifacts/anomaly}
+    - --json
+    volumes:
+    - ${MODEL_SERVING_ARTIFACT_ROOT:-../../artifacts/external}:/artifacts:ro
+    networks:
+    - cms_edge_stream
+  cms_live_mean_rollup_worker:
+    build:
+      context: ../..
+      dockerfile: stacks/model_serving/Containerfile
+    image: cms:model-serving
+    container_name: cms-mean-rollup-worker
+    profiles:
+    - operational-scheduler
+    restart: unless-stopped
+    labels:
+      cms.runtime.roles: live-mean-rollup,service-worker
+      cms.runtime.entrypoint: scripts/stream/bucket_queue_worker.py --runtime --job-kind
+        mean_rollup
+      cms.runtime.replaces_disabled: cms-live-bucket-queue-worker
+      cms.runtime.not_hermes_cron: 'true'
+    env_file:
+    - path: ./model_serving.env
+      required: true
+    environment:
+      CMS_ENABLE_LIVE_BUCKET_QUEUE_WORKER: '1'
+    entrypoint:
+    - bash
+    - -lc
+    command: "unset CMS_REPLAY_VIRTUAL_START_TS CMS_REPLAY_WALL_START_TS CMS_REPLAY_TIME_SCALE;\
+      \ while true; do\n  python scripts/stream/bucket_queue_worker.py --runtime --job-kind\
+      \ mean_rollup\n  --batch-size \"$${CMS_LIVE_MEAN_ROLLUP_BATCH_SIZE:-100}\"\n\
+      \  --worker-id cms_live_mean_rollup_worker --json;\n  sleep \"$${CMS_LIVE_WORKER_INTERVAL_SECONDS:-30}\"\
+      ;\ndone"
+    networks:
+    - cms_edge_stream
+  cms_peak_feature_worker:
+    build:
+      context: ../..
+      dockerfile: stacks/model_serving/Containerfile
+    image: cms:model-serving
+    container_name: cms-peak-feature-worker
+    profiles:
+    - operational-scheduler
+    restart: unless-stopped
+    labels:
+      cms.runtime.roles: peak-feature,service-worker
+      cms.runtime.entrypoint: scripts/stream/bucket_queue_worker.py --runtime --job-kind
+        peak_feature --resolution 15min
+      cms.runtime.replaces_disabled: cms-live-bucket-queue-worker
+      cms.runtime.not_hermes_cron: 'true'
+    env_file:
+    - path: ./model_serving.env
+      required: true
+    environment:
+      CMS_ENABLE_LIVE_BUCKET_QUEUE_WORKER: '1'
+    entrypoint:
+    - bash
+    - -lc
+    command: "unset CMS_REPLAY_VIRTUAL_START_TS CMS_REPLAY_WALL_START_TS CMS_REPLAY_TIME_SCALE;\
+      \ while true; do\n  python scripts/stream/bucket_queue_worker.py --runtime --job-kind\
+      \ peak_feature --resolution 15min\n  --batch-size \"$${CMS_PEAK_FEATURE_BATCH_SIZE:-100}\"\
+      \n  --worker-id cms_peak_feature_worker --json;\n  sleep \"$${CMS_LIVE_WORKER_INTERVAL_SECONDS:-30}\"\
+      ;\ndone"
+    networks:
+    - cms_edge_stream
+  cms-canonical-promotion-worker:
+    build:
+      context: ../..
+      dockerfile: stacks/model_serving/Containerfile
+    image: cms:model-serving
+    container_name: cms-promotion-worker
+    profiles:
+    - operational-scheduler
+    restart: unless-stopped
+    labels:
+      cms.runtime.roles: canonical-promotion,service-worker
+      cms.runtime.entrypoint: scripts/serving/operational_scheduler.py --lane canonical
+      cms.runtime.not_hermes_cron: 'true'
+    env_file:
+    - path: ./canonical_promotion.env
+      required: true
+    entrypoint:
+    - python
+    command:
+    - scripts/serving/operational_scheduler.py
+    - --lane
+    - canonical
+    - --loop
+    - --interval-seconds
+    - ${CMS_OPERATIONAL_SCHEDULER_INTERVAL_SECONDS:-300}
+    - --json
+    networks:
+    - cms_edge_stream
+  cms-anomaly-feature-worker:
+    build:
+      context: ../..
+      dockerfile: stacks/model_serving/Containerfile
+    image: cms:model-serving
+    container_name: cms-anomaly-feature-worker
+    profiles:
+    - operational-scheduler
+    restart: unless-stopped
+    labels:
+      cms.runtime.roles: anomaly-feature,service-worker
+      cms.runtime.entrypoint: scripts/serving/operational_scheduler.py --lane anomaly-feature
+      cms.runtime.not_hermes_cron: 'true'
+    env_file:
+    - path: ./anomaly_feature.env
+      required: true
+    entrypoint:
+    - python
+    command:
+    - scripts/serving/operational_scheduler.py
+    - --lane
+    - anomaly-feature
+    - --loop
+    - --interval-seconds
+    - ${CMS_OPERATIONAL_SCHEDULER_INTERVAL_SECONDS:-300}
+    - --json
+    networks:
+    - cms_edge_stream
+  pmax_scheduler:
+    build:
+      context: ../..
+      dockerfile: stacks/model_serving/Containerfile
+    image: cms:model-serving
+    container_name: cms-pmax-scheduler
+    profiles:
+    - operational-scheduler
+    restart: unless-stopped
+    labels:
+      cms.runtime.roles: pmax,service-scheduler
+      cms.runtime.entrypoint: scripts/serving/operational_scheduler.py --lane pmax
+      cms.runtime.not_hermes_cron: 'true'
+    env_file:
+    - path: ./model_serving.env
+      required: true
+    entrypoint:
+    - python
+    command:
+    - scripts/serving/operational_scheduler.py
+    - --lane
+    - pmax
+    - --loop
+    - --interval-seconds
+    - ${CMS_MODEL_SERVING_INTERVAL_SECONDS:-900}
+    - --model-serving-interval-seconds
+    - ${CMS_MODEL_SERVING_INTERVAL_SECONDS:-900}
+    - --pmax-artifact-root
+    - ${PMAX_ARTIFACT_ROOT:-/artifacts/pmax}
+    - --anomaly-artifact-root
+    - ${ANOMALY_ARTIFACT_ROOT:-/artifacts/anomaly}
+    - --json
+    volumes:
+    - ${MODEL_SERVING_ARTIFACT_ROOT:-../../artifacts/external}:/artifacts:ro
+    networks:
+    - cms_edge_stream
+  anomaly_scheduler:
+    build:
+      context: ../..
+      dockerfile: stacks/model_serving/Containerfile
+    image: cms:model-serving
+    container_name: cms-anomaly-scheduler
+    profiles:
+    - operational-scheduler
+    restart: unless-stopped
+    labels:
+      cms.runtime.roles: anomaly,service-scheduler
+      cms.runtime.entrypoint: scripts/serving/operational_scheduler.py --lane anomaly
+      cms.runtime.not_hermes_cron: 'true'
+    env_file:
+    - path: ./model_serving.env
+      required: true
+    entrypoint:
+    - python
+    command:
+    - scripts/serving/operational_scheduler.py
+    - --lane
+    - anomaly
+    - --loop
+    - --interval-seconds
+    - ${CMS_MODEL_SERVING_INTERVAL_SECONDS:-900}
+    - --anomaly-artifact-root
+    - ${ANOMALY_ARTIFACT_ROOT:-/artifacts/anomaly}
+    - --json
+    volumes:
+    - ${MODEL_SERVING_ARTIFACT_ROOT:-../../artifacts/external}:/artifacts:ro
+    networks:
+    - cms_edge_stream
+networks:
+  cms_edge_stream:
+    external: true
+    name: cms_edge_stream

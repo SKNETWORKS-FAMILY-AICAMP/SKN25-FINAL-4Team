@@ -1,0 +1,40 @@
+# syntax=docker/dockerfile:1
+
+ARG BASE_IMAGE=pytorch/pytorch:2.3.1-cuda12.1-cudnn8-runtime
+FROM ${BASE_IMAGE}
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/workspace/cms-stream-deploy/src:/workspace/cms-stream-deploy \
+    MPLCONFIGDIR=/tmp/matplotlib \
+    CUDA_VISIBLE_DEVICES=0
+
+WORKDIR /workspace/cms-stream-deploy
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates libgomp1 fonts-nanum \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY stacks/model_serving/requirements.txt /tmp/requirements.model_serving.txt
+RUN python -m pip install --upgrade pip \
+    && python -m pip install -r /tmp/requirements.model_serving.txt \
+    && python -m pip install "runpod>=1.6,<2" "matplotlib>=3.7,<4"
+
+COPY src /workspace/cms-stream-deploy/src
+COPY scripts/runpod /workspace/cms-stream-deploy/scripts/runpod
+
+RUN mkdir -p \
+    artifacts/anomaly \
+    artifacts/anomaly_candidates \
+    artifacts/anomaly_archives \
+    artifacts/anomaly_incoming \
+    artifacts/anomaly_training_jobs
+
+RUN python -m py_compile \
+    scripts/runpod/anomaly_handler.py \
+    src/cms/modeling/anomaly/train.py \
+    && python -c "import scripts.runpod.anomaly_handler; import cms.modeling.anomaly.train"
+
+CMD ["python", "scripts/runpod/anomaly_handler.py"]

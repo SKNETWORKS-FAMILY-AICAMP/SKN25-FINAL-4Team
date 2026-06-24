@@ -1,0 +1,14 @@
+psycopg[binary]>=3.2,<4
+psycopg2-binary>=2.9,<3
+SQLAlchemy>=2,<3
+python-dotenv>=1,<2
+numpy>=1.26,<3
+pandas>=2.2,<3
+pyarrow>=23.0,<24.0
+scikit-learn>=1.4,<2
+joblib>=1.4,<2
+xgboost>=2,<4
+lightgbm>=4,<5
+catboost>=1.2,<2
+jsonschema>=4.22,<5
+pytz>=2024.1

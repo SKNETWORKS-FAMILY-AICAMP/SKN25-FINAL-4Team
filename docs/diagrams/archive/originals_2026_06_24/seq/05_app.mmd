@@ -1,0 +1,59 @@
+%%{init: {"theme": "base", "sequence": {"showSequenceNumbers": true, "wrap": false, "mirrorActors": true, "rightAngles": true, "messageAlign": "center", "actorMargin": 82, "width": 170, "height": 54, "boxMargin": 12, "boxTextMargin": 8, "noteMargin": 10, "messageMargin": 44}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#f8fafc", "primaryBorderColor": "#64748b", "primaryTextColor": "#0f172a", "actorBkg": "#f8fafc", "actorBorder": "#64748b", "actorTextColor": "#0f172a", "actorLineColor": "#64748b", "signalColor": "#334155", "signalTextColor": "#0f172a", "noteBkgColor": "#fff7ed", "noteTextColor": "#0f172a", "noteBorderColor": "#ea580c", "loopTextColor": "#0f172a", "activationBkgColor": "#e0f2fe", "activationBorderColor": "#0284c7", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
+sequenceDiagram
+    autonumber
+
+    box rgb(239, 246, 255) User surfaces
+      participant U as operator_or_client
+      participant UI as Frontend_Grafana
+    end
+
+    box rgb(245, 243, 255) PC1 FastAPI services
+      participant ING as CMS_Ingestion_API
+      participant API as CMS_Backend_API
+      participant R as route_layer
+      participant GUARD as write_guard
+    end
+
+    box rgb(238, 242, 255) Backends
+      participant K as Kafka_measurement_raw_v1
+      participant DB as AWS_PostgreSQL_read_model
+      participant MODEL as PC3_model_serving_lane
+      participant ART as artifact_status_store
+    end
+
+    box rgb(253, 244, 255) Knowledge and review
+      participant SQL as SQLLM_SELECT_whitelist
+      participant KG as specs_ontology_context
+      participant LG as optional_LangGraph_review
+    end
+
+    U->>ING: POST /ingest/measurements through managed boundary
+    ING->>K: publish validated event envelope
+    ING-->>U: 202 accepted or validation error
+
+    U->>API: request status forecast query or report
+    UI->>API: dashboard/status calls
+    API->>R: classify route and intent
+    alt quick health/status
+      R-->>API: return service health and cached evidence
+      API-->>U: response with service role label
+    else read-only evidence query
+      R->>GUARD: enforce writes_allowed=false
+      GUARD->>SQL: build constrained SELECT
+      SQL->>DB: query whitelisted live/mart/ops/qa/canonical tables
+      DB-->>API: evidence rows
+      KG-->>API: contract context when needed
+      API-->>U: answer with DB/spec grounding
+    else forecast or model evidence
+      MODEL->>DB: write model-serving outputs asynchronously
+      DB-->>API: read pmax/anomaly evidence
+      API-->>U: return forecast evidence
+    else background job or approval review
+      R->>ART: register job or artifact reference
+      R->>LG: enqueue async review when required
+      LG->>ART: write review artifact
+      ART-->>API: status path
+      API-->>U: return job status
+    end
+
+    Note over API,DB: Backend API is read/status/job surface, mutating production/canonical actions require explicit gates.

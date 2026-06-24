@@ -1,0 +1,3218 @@
+@prefix cms: <https://nousresearch.local/cms/ontology#> .
+@prefix cmsres: <https://nousresearch.local/cms/resource/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://nousresearch.local/cms/ontology> a owl:Ontology ;
+    rdfs:label "CMS ontology"@en,
+        "CMS 온톨로지"@ko ;
+    rdfs:comment "CMS 계량기 metadata, 설비 group, 건물, 역할, redundancy 관계를 정의한 ontology artifact"@ko .
+
+cms:AnomalyEvent a owl:Class ;
+    rdfs:label "향후 anomaly event 정의"@ko .
+
+cms:anomalyPriority a owl:DatatypeProperty ;
+    rdfs:label "이상탐지 검토 우선순위"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:integer .
+
+cms:belongsToGroup a owl:ObjectProperty ;
+    rdfs:label "meter가 equipment group에 속함"@ko ;
+    rdfs:domain cms:Meter ;
+    rdfs:range cms:EquipmentGroup .
+
+cms:buildingCode a owl:DatatypeProperty ;
+    rdfs:label "building 또는 zone code"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string .
+
+cms:definedBy a owl:ObjectProperty ;
+    rdfs:label "entity 기준 문서"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range cms:MetadataDocument .
+
+cms:equipmentGroupCode a owl:DatatypeProperty ;
+    rdfs:label "equipment group code"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string .
+
+cms:equipmentLayer a owl:DatatypeProperty ;
+    rdfs:label "equipment layer within a group"@ko ;
+    rdfs:domain cms:Meter ;
+    rdfs:range xsd:string .
+
+cms:equipmentName a owl:DatatypeProperty ;
+    rdfs:label "equipment name"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string .
+
+cms:hardwareModelCode a owl:DatatypeProperty ;
+    rdfs:label "계량기 하드웨어 모델 코드"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string .
+
+cms:hasAnomalyPriorityLevel a owl:ObjectProperty ;
+    rdfs:label "이상탐지 우선순위 vocabulary"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range cms:AnomalyPriorityLevel .
+
+cms:hasDomain a owl:ObjectProperty ;
+    rdfs:label "meter의 계측 domain vocabulary"@ko ;
+    rdfs:domain cms:Meter ;
+    rdfs:range cms:MeterDomain .
+
+cms:hasGroup a owl:ObjectProperty ;
+    rdfs:label "redundancy pair가 속한 group"@ko ;
+    rdfs:domain cms:RedundancyPair ;
+    rdfs:range cms:EquipmentGroup .
+
+cms:hasHardwareModel a owl:ObjectProperty ;
+    rdfs:label "meter의 하드웨어 모델"@ko ;
+    rdfs:domain cms:Meter ;
+    rdfs:range cms:HardwareModel .
+
+cms:hasPrimaryMeter a owl:ObjectProperty ;
+    rdfs:label "redundancy pair의 primary meter"@ko ;
+    rdfs:domain cms:RedundancyPair ;
+    rdfs:range cms:Meter .
+
+cms:hasRedundantMeter a owl:ObjectProperty ;
+    rdfs:label "redundancy pair의 redundant meter"@ko ;
+    rdfs:domain cms:RedundancyPair ;
+    rdfs:range cms:Meter .
+
+cms:hasRole a owl:ObjectProperty ;
+    rdfs:label "meter의 분석 역할"@ko ;
+    rdfs:domain cms:Meter ;
+    rdfs:range cms:MeterRole .
+
+cms:hasSignConvention a owl:ObjectProperty ;
+    rdfs:label "부호 해석 vocabulary"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range cms:SignConvention .
+
+cms:locatedInBuilding a owl:ObjectProperty ;
+    rdfs:label "meter가 building 또는 zone에 속함"@ko ;
+    rdfs:domain cms:Meter ;
+    rdfs:range cms:Building .
+
+cms:manufacturer a owl:DatatypeProperty ;
+    rdfs:label "계량기 제조사"@ko ;
+    rdfs:domain cms:HardwareModel ;
+    rdfs:range xsd:string .
+
+cms:meterCount a owl:DatatypeProperty ;
+    rdfs:label "group meter count"@ko ;
+    rdfs:domain cms:EquipmentGroup ;
+    rdfs:range xsd:integer .
+
+cms:meterDomain a owl:DatatypeProperty ;
+    rdfs:label "계측 domain"@ko ;
+    rdfs:domain cms:Meter ;
+    rdfs:range xsd:string .
+
+cms:meterRoleCode a owl:DatatypeProperty ;
+    rdfs:label "계량기 role code"@ko ;
+    rdfs:domain cms:Meter ;
+    rdfs:range xsd:string .
+
+cms:meterUrn a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "DB meter identifier"@ko ;
+    rdfs:domain cms:Meter ;
+    rdfs:range xsd:string .
+
+cms:modelName a owl:DatatypeProperty ;
+    rdfs:label "계량기 모델명"@ko ;
+    rdfs:domain cms:HardwareModel ;
+    rdfs:range xsd:string .
+
+cms:noteFile a owl:DatatypeProperty ;
+    rdfs:label "project-relative note path"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string .
+
+cms:primaryView a owl:DatatypeProperty ;
+    rdfs:label "group 기본 검토 view"@ko ;
+    rdfs:domain cms:EquipmentGroup ;
+    rdfs:range xsd:string .
+
+cms:redundantWith a owl:ObjectProperty,
+        owl:SymmetricProperty ;
+    rdfs:label "중복 계량 관계"@ko ;
+    rdfs:domain cms:Meter ;
+    rdfs:range cms:Meter .
+
+cms:signConvention a owl:DatatypeProperty ;
+    rdfs:label "계량값 부호 해석 규칙"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string .
+
+cms:sourceDescription a owl:DatatypeProperty ;
+    rdfs:label "metadata source description"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string .
+
+cms:sourceName a owl:DatatypeProperty ;
+    rdfs:label "metadata source name"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string .
+
+cms:sourcePath a owl:DatatypeProperty ;
+    rdfs:label "project-relative source path"@ko ;
+    rdfs:domain cms:MetadataDocument ;
+    rdfs:range xsd:string .
+
+cms:sourceTable a owl:DatatypeProperty ;
+    rdfs:label "metadata source table"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string .
+
+cms:usesMeterSetRule a owl:ObjectProperty ;
+    rdfs:label "feature가 사용하는 meter set rule"@ko ;
+    rdfs:domain cms:Feature ;
+    rdfs:range cms:FeatureRule .
+
+cms:usesRedundancyPolicy a owl:ObjectProperty ;
+    rdfs:label "feature rule이 사용하는 redundancy policy"@ko ;
+    rdfs:domain cms:FeatureRule ;
+    rdfs:range cms:RedundancyPolicy .
+
+cms:visualizedBy a owl:ObjectProperty ;
+    rdfs:label "entity를 확인할 수 있는 view"@ko ;
+    rdfs:domain owl:Thing ;
+    rdfs:range cms:VisualizationView .
+
+cmsres:doc_ontology_lite a owl:NamedIndividual,
+        cms:MetadataDocument ;
+    rdfs:label "docs/specs/ontology.md" ;
+    cms:sourcePath "docs/specs/ontology.md" .
+
+cmsres:doc_ontology_schema a owl:NamedIndividual,
+        cms:MetadataDocument ;
+    rdfs:label "docs/specs/ontology.md" ;
+    cms:sourcePath "docs/specs/ontology.md" .
+
+cmsres:meter_H1_K11 a owl:NamedIndividual,
+        cms:Meter,
+        cms:ThermalMeter ;
+    rdfs:label "H1.K11" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_hvac_thermal ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "hvac_thermal" ;
+    cms:equipmentName "Emission lab HVAC 3/5" ;
+    cms:hardwareModelCode "SensorStar 2C" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_thermal ;
+    cms:hasHardwareModel cmsres:hardware_SensorStar_2C ;
+    cms:hasRole cmsres:role_thermal_flow ;
+    cms:hasSignConvention cmsres:sign_direction_depends_on_equipment_context ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "thermal" ;
+    cms:meterRoleCode "thermal_flow" ;
+    cms:meterUrn "H1.K11" ;
+    cms:noteFile "db:ontology.meter/H1.K11" ;
+    cms:signConvention "direction_depends_on_equipment_context" ;
+    cms:sourceDescription "Emission lab HVAC 3/5" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H1_K12 a owl:NamedIndividual,
+        cms:Meter,
+        cms:ThermalMeter ;
+    rdfs:label "H1.K12" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_hvac_thermal ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "hvac_thermal" ;
+    cms:equipmentName "Emission lab HVAC 1/2" ;
+    cms:hardwareModelCode "SensorStar 2C" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_thermal ;
+    cms:hasHardwareModel cmsres:hardware_SensorStar_2C ;
+    cms:hasRole cmsres:role_thermal_flow ;
+    cms:hasSignConvention cmsres:sign_direction_depends_on_equipment_context ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "thermal" ;
+    cms:meterRoleCode "thermal_flow" ;
+    cms:meterUrn "H1.K12" ;
+    cms:noteFile "db:ontology.meter/H1.K12" ;
+    cms:signConvention "direction_depends_on_equipment_context" ;
+    cms:sourceDescription "Emission lab HVAC 1/2" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H1_K14 a owl:NamedIndividual,
+        cms:Meter,
+        cms:ThermalMeter ;
+    rdfs:label "H1.K14" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_hvac_thermal ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "hvac_thermal" ;
+    cms:equipmentName "Emission lab cooling to office" ;
+    cms:hardwareModelCode "SensorStar 2C" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_thermal ;
+    cms:hasHardwareModel cmsres:hardware_SensorStar_2C ;
+    cms:hasRole cmsres:role_thermal_flow ;
+    cms:hasSignConvention cmsres:sign_direction_depends_on_equipment_context ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "thermal" ;
+    cms:meterRoleCode "thermal_flow" ;
+    cms:meterUrn "H1.K14" ;
+    cms:noteFile "db:ontology.meter/H1.K14" ;
+    cms:signConvention "direction_depends_on_equipment_context" ;
+    cms:sourceDescription "Emission lab cooling to office" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H1_K15 a owl:NamedIndividual,
+        cms:Meter,
+        cms:ThermalMeter ;
+    rdfs:label "H1.K15" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_hvac_thermal ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "hvac_thermal" ;
+    cms:equipmentName "Emission lab HVAC 3" ;
+    cms:hardwareModelCode "SensorStar 2C" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_thermal ;
+    cms:hasHardwareModel cmsres:hardware_SensorStar_2C ;
+    cms:hasRole cmsres:role_thermal_flow ;
+    cms:hasSignConvention cmsres:sign_direction_depends_on_equipment_context ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "thermal" ;
+    cms:meterRoleCode "thermal_flow" ;
+    cms:meterUrn "H1.K15" ;
+    cms:noteFile "db:ontology.meter/H1.K15" ;
+    cms:signConvention "direction_depends_on_equipment_context" ;
+    cms:sourceDescription "Emission lab HVAC 3" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H1_K16 a owl:NamedIndividual,
+        cms:Meter,
+        cms:ThermalMeter ;
+    rdfs:label "H1.K16" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_thermal ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_thermal" ;
+    cms:equipmentName "Server room O1" ;
+    cms:hardwareModelCode "SensorStar 2C" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_thermal ;
+    cms:hasHardwareModel cmsres:hardware_SensorStar_2C ;
+    cms:hasRole cmsres:role_thermal_flow ;
+    cms:hasSignConvention cmsres:sign_direction_depends_on_equipment_context ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "thermal" ;
+    cms:meterRoleCode "thermal_flow" ;
+    cms:meterUrn "H1.K16" ;
+    cms:noteFile "db:ontology.meter/H1.K16" ;
+    cms:signConvention "direction_depends_on_equipment_context" ;
+    cms:sourceDescription "Server room O1" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H1_W11 a owl:NamedIndividual,
+        cms:Meter,
+        cms:ThermalMeter ;
+    rdfs:label "H1.W11" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_heat_generation ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "heat_generation" ;
+    cms:equipmentName "Total heat generation" ;
+    cms:hardwareModelCode "SensorStar 2C" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_thermal ;
+    cms:hasHardwareModel cmsres:hardware_SensorStar_2C ;
+    cms:hasRole cmsres:role_thermal_flow ;
+    cms:hasSignConvention cmsres:sign_direction_depends_on_equipment_context ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "thermal" ;
+    cms:meterRoleCode "thermal_flow" ;
+    cms:meterUrn "H1.W11" ;
+    cms:noteFile "db:ontology.meter/H1.W11" ;
+    cms:signConvention "direction_depends_on_equipment_context" ;
+    cms:sourceDescription "Total heat generation" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H1_W12 a owl:NamedIndividual,
+        cms:Meter,
+        cms:ThermalMeter ;
+    rdfs:label "H1.W12" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_chp_heat_generation ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "chp_heat_generation" ;
+    cms:equipmentName "CHP heat generation" ;
+    cms:hardwareModelCode "SensorStar 2C" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_thermal ;
+    cms:hasHardwareModel cmsres:hardware_SensorStar_2C ;
+    cms:hasRole cmsres:role_thermal_flow ;
+    cms:hasSignConvention cmsres:sign_direction_depends_on_equipment_context ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "thermal" ;
+    cms:meterRoleCode "thermal_flow" ;
+    cms:meterUrn "H1.W12" ;
+    cms:noteFile "db:ontology.meter/H1.W12" ;
+    cms:signConvention "direction_depends_on_equipment_context" ;
+    cms:sourceDescription "CHP heat generation" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H1_Z10 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z10" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z10" ;
+    cms:noteFile "db:ontology.meter/H1.Z10" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z11 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z11" ;
+    cms:anomalyPriority 1 ;
+    cms:belongsToGroup cmsres:group_central_cooling ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "central_cooling" ;
+    cms:equipmentName "CM2" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z11" ;
+    cms:noteFile "db:ontology.meter/H1.Z11" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "CM2" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_central_cooling .
+
+cmsres:meter_H1_Z12 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z12" ;
+    cms:anomalyPriority 1 ;
+    cms:belongsToGroup cmsres:group_central_cooling ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "central_cooling" ;
+    cms:equipmentName "CM2" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z12" ;
+    cms:noteFile "db:ontology.meter/H1.Z12" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "CM2" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_central_cooling .
+
+cmsres:meter_H1_Z13 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z13" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z13" ;
+    cms:noteFile "db:ontology.meter/H1.Z13" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z14 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z14" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z14" ;
+    cms:noteFile "db:ontology.meter/H1.Z14" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z15 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z15" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentLayer "feed" ;
+    cms:equipmentName "Feed emission lab 1" ;
+    cms:hardwareModelCode "Janitza UMG 96 RM-E" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_RM_E ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z15" ;
+    cms:noteFile "db:ontology.meter/H1.Z15" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Feed emission lab 1" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z16 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z16" ;
+    cms:anomalyPriority 1 ;
+    cms:belongsToGroup cmsres:group_central_cooling ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "central_cooling" ;
+    cms:equipmentName "CM1" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z16" ;
+    cms:noteFile "db:ontology.meter/H1.Z16" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "CM1" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_central_cooling .
+
+cmsres:meter_H1_Z17 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z17" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentLayer "distribution" ;
+    cms:equipmentName "Distribution emission lab 1" ;
+    cms:hardwareModelCode "Janitza UMG 96 RM-E" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_RM_E ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z17" ;
+    cms:noteFile "db:ontology.meter/H1.Z17" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Distribution emission lab 1" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z18 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z18" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z18" ;
+    cms:noteFile "db:ontology.meter/H1.Z18" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z19 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z19" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z19" ;
+    cms:noteFile "db:ontology.meter/H1.Z19" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z21 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z21" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z21" ;
+    cms:noteFile "db:ontology.meter/H1.Z21" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z22 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z22" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z22" ;
+    cms:noteFile "db:ontology.meter/H1.Z22" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z23 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z23" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z23" ;
+    cms:noteFile "db:ontology.meter/H1.Z23" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z24 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z24" ;
+    cms:anomalyPriority 1 ;
+    cms:belongsToGroup cmsres:group_central_cooling ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "central_cooling" ;
+    cms:equipmentName "CM3" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z24" ;
+    cms:noteFile "db:ontology.meter/H1.Z24" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "CM3" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_central_cooling .
+
+cmsres:meter_H1_Z25 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z25" ;
+    cms:anomalyPriority 1 ;
+    cms:belongsToGroup cmsres:group_central_cooling ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "central_cooling" ;
+    cms:equipmentName "CM3" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z25" ;
+    cms:noteFile "db:ontology.meter/H1.Z25" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "CM3" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_central_cooling .
+
+cmsres:meter_H1_Z26 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z26" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "Janitza UMG 96 RM-E" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_RM_E ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z26" ;
+    cms:noteFile "db:ontology.meter/H1.Z26" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z27 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z27" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "Janitza UMG 96 RM-E" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_RM_E ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z27" ;
+    cms:noteFile "db:ontology.meter/H1.Z27" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z28 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z28" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentLayer "feed" ;
+    cms:equipmentName "Feed emission lab 2" ;
+    cms:hardwareModelCode "Janitza UMG 96 RM-E" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_RM_E ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z28" ;
+    cms:noteFile "db:ontology.meter/H1.Z28" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Feed emission lab 2" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z29 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z29" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_emission_lab ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:equipmentLayer "distribution" ;
+    cms:equipmentName "Distribution emission lab 2" ;
+    cms:hardwareModelCode "Janitza UMG 96 RM-E" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_RM_E ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H1.Z29" ;
+    cms:noteFile "db:ontology.meter/H1.Z29" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Distribution emission lab 2" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_emission_lab .
+
+cmsres:meter_H1_Z310 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z310" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_pv ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "pv" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_production ;
+    cms:hasSignConvention cmsres:sign_negative_production_positive_noise_or_reverse_flow ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "production" ;
+    cms:meterUrn "H1.Z310" ;
+    cms:noteFile "db:ontology.meter/H1.Z310" ;
+    cms:signConvention "negative_production_positive_noise_or_reverse_flow" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_K21 a owl:NamedIndividual,
+        cms:Meter,
+        cms:ThermalMeter ;
+    rdfs:label "H2.K21" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_hvac_thermal ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "hvac_thermal" ;
+    cms:equipmentName "HVAC office" ;
+    cms:hardwareModelCode "SensorStar 2C" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_thermal ;
+    cms:hasHardwareModel cmsres:hardware_SensorStar_2C ;
+    cms:hasRole cmsres:role_thermal_flow ;
+    cms:hasSignConvention cmsres:sign_direction_depends_on_equipment_context ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "thermal" ;
+    cms:meterRoleCode "thermal_flow" ;
+    cms:meterUrn "H2.K21" ;
+    cms:noteFile "db:ontology.meter/H2.K21" ;
+    cms:signConvention "direction_depends_on_equipment_context" ;
+    cms:sourceDescription "HVAC office" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_T_Z30 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.T.Z30" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_office_distribution ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "office_distribution" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.T.Z30" ;
+    cms:noteFile "db:ontology.meter/H2.T.Z30" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_T_Z31 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.T.Z31" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_ventilation ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "ventilation" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.T.Z31" ;
+    cms:noteFile "db:ontology.meter/H2.T.Z31" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_T_Z32 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.T.Z32" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_office_distribution ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "office_distribution" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.T.Z32" ;
+    cms:noteFile "db:ontology.meter/H2.T.Z32" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_T_Z33 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.T.Z33" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_design_studio_distribution ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "design_studio_distribution" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.T.Z33" ;
+    cms:noteFile "db:ontology.meter/H2.T.Z33" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_T_Z34 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.T.Z34" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_workshop_test ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "workshop_test" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.T.Z34" ;
+    cms:noteFile "db:ontology.meter/H2.T.Z34" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_Z311 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z311" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_pv ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "pv" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_production ;
+    cms:hasSignConvention cmsres:sign_negative_production_positive_noise_or_reverse_flow ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "production" ;
+    cms:meterUrn "H2.Z311" ;
+    cms:noteFile "db:ontology.meter/H2.Z311" ;
+    cms:signConvention "negative_production_positive_noise_or_reverse_flow" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_Z35 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z35" ;
+    cms:anomalyPriority 1 ;
+    cms:belongsToGroup cmsres:group_grid_transformer ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "grid_transformer" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z35" ;
+    cms:noteFile "db:ontology.meter/H2.Z35" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_Z351 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z351" ;
+    cms:anomalyPriority 1 ;
+    cms:belongsToGroup cmsres:group_grid_transformer ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "grid_transformer" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z351" ;
+    cms:noteFile "db:ontology.meter/H2.Z351" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_Z36 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z36" ;
+    cms:anomalyPriority 1 ;
+    cms:belongsToGroup cmsres:group_grid_transformer ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "grid_transformer" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z36" ;
+    cms:noteFile "db:ontology.meter/H2.Z36" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_Z361 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z361" ;
+    cms:anomalyPriority 1 ;
+    cms:belongsToGroup cmsres:group_grid_transformer ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "grid_transformer" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z361" ;
+    cms:noteFile "db:ontology.meter/H2.Z361" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_Z61 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z61" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_power ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z61" ;
+    cms:noteFile "db:ontology.meter/H2.Z61" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_server_power .
+
+cmsres:meter_H2_Z62 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z62" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_power ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z62" ;
+    cms:noteFile "db:ontology.meter/H2.Z62" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_server_power .
+
+cmsres:meter_H2_Z63 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z63" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_power ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z63" ;
+    cms:noteFile "db:ontology.meter/H2.Z63" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_server_power .
+
+cmsres:meter_H2_Z68 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z68" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_ventilation ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "ventilation" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z68" ;
+    cms:noteFile "db:ontology.meter/H2.Z68" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_Z69 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z69" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_ventilation ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "ventilation" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z69" ;
+    cms:noteFile "db:ontology.meter/H2.Z69" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_Z70 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z70" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_ventilation ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "ventilation" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z70" ;
+    cms:noteFile "db:ontology.meter/H2.Z70" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H2_ZE74 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.ZE74" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_workshop_test ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "workshop_test" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.ZE74" ;
+    cms:noteFile "db:ontology.meter/H2.ZE74" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H3_Z312 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.Z312" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_pv ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "pv" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_production ;
+    cms:hasSignConvention cmsres:sign_negative_production_positive_noise_or_reverse_flow ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "production" ;
+    cms:meterUrn "H3.Z312" ;
+    cms:noteFile "db:ontology.meter/H3.Z312" ;
+    cms:signConvention "negative_production_positive_noise_or_reverse_flow" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H3_Z42 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.Z42" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_ventilation ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "ventilation" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.Z42" ;
+    cms:noteFile "db:ontology.meter/H3.Z42" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H3_Z45 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.Z45" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_local_cooling ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "local_cooling" ;
+    cms:equipmentName "로컬 냉방" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.Z45" ;
+    cms:noteFile "db:ontology.meter/H3.Z45" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "로컬 냉방" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H3_Z46 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.Z46" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_power ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.Z46" ;
+    cms:noteFile "db:ontology.meter/H3.Z46" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_server_power .
+
+cmsres:meter_H3_Z47 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.Z47" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_design_studio_distribution ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "design_studio_distribution" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.Z47" ;
+    cms:noteFile "db:ontology.meter/H3.Z47" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H3_Z48 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.Z48" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_design_studio_distribution ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "design_studio_distribution" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.Z48" ;
+    cms:noteFile "db:ontology.meter/H3.Z48" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H3_Z49 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.Z49" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_design_studio_distribution ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "design_studio_distribution" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.Z49" ;
+    cms:noteFile "db:ontology.meter/H3.Z49" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_H3_Z71 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.Z71" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_power ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.Z71" ;
+    cms:noteFile "db:ontology.meter/H3.Z71" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_server_power .
+
+cmsres:meter_V_K21 a owl:NamedIndividual,
+        cms:Meter,
+        cms:ThermalMeter ;
+    rdfs:label "V.K21" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_cooling_thermal ;
+    cms:buildingCode "V" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "cooling_thermal" ;
+    cms:equipmentName "Main cooling machines 1, 2, 3" ;
+    cms:hardwareModelCode "SensorStar 2C" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_thermal ;
+    cms:hasHardwareModel cmsres:hardware_SensorStar_2C ;
+    cms:hasRole cmsres:role_thermal_flow ;
+    cms:hasSignConvention cmsres:sign_direction_depends_on_equipment_context ;
+    cms:locatedInBuilding cmsres:building_V ;
+    cms:meterDomain "thermal" ;
+    cms:meterRoleCode "thermal_flow" ;
+    cms:meterUrn "V.K21" ;
+    cms:noteFile "db:ontology.meter/V.K21" ;
+    cms:signConvention "direction_depends_on_equipment_context" ;
+    cms:sourceDescription "Main cooling machines 1, 2, 3" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_V_Z81 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "V.Z81" ;
+    cms:anomalyPriority 1 ;
+    cms:belongsToGroup cmsres:group_grid_transformer ;
+    cms:buildingCode "V" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "grid_transformer" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_V ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "V.Z81" ;
+    cms:noteFile "db:ontology.meter/V.Z81" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_V_Z82 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "V.Z82" ;
+    cms:anomalyPriority 1 ;
+    cms:belongsToGroup cmsres:group_grid_transformer ;
+    cms:buildingCode "V" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "grid_transformer" ;
+    cms:equipmentName "" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_V ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "V.Z82" ;
+    cms:noteFile "db:ontology.meter/V.Z82" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:meter_WeatherStation_Weather a owl:NamedIndividual,
+        cms:Meter,
+        cms:WeatherMeter ;
+    rdfs:label "WeatherStation.Weather" ;
+    cms:anomalyPriority 4 ;
+    cms:belongsToGroup cmsres:group_weather_station ;
+    cms:buildingCode "WeatherStation" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "weather_station" ;
+    cms:equipmentName "Weather station" ;
+    cms:hardwareModelCode "Lufft WS501-UMB" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_4 ;
+    cms:hasDomain cmsres:domain_weather ;
+    cms:hasHardwareModel cmsres:hardware_Lufft_WS501_UMB ;
+    cms:hasRole cmsres:role_weather ;
+    cms:hasSignConvention cmsres:sign_no_sign_convention ;
+    cms:locatedInBuilding cmsres:building_WeatherStation ;
+    cms:meterDomain "weather" ;
+    cms:meterRoleCode "weather" ;
+    cms:meterUrn "WeatherStation.Weather" ;
+    cms:noteFile "db:ontology.meter/WeatherStation.Weather" ;
+    cms:signConvention "no_sign_convention" ;
+    cms:sourceDescription "Weather station" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all .
+
+cmsres:policy_pair_comparison a owl:NamedIndividual,
+        cms:RedundancyPolicy ;
+    rdfs:label "Primary와 redundant endpoint를 비교 feature로 분리"@ko ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cmsres:redundancy_H1_ZE20__H1_Z20 a owl:NamedIndividual,
+        cms:RedundancyPair ;
+    rdfs:label "H1.ZE20 - H1.Z20" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentName "CHP" ;
+    cms:hasGroup cmsres:group_chp ;
+    cms:hasPrimaryMeter cmsres:meter_H1_ZE20 ;
+    cms:hasRedundantMeter cmsres:meter_H1_Z20 ;
+    cms:visualizedBy cmsres:view_focus_redundancy .
+
+cmsres:redundancy_H2_Z64__H2_ZE64 a owl:NamedIndividual,
+        cms:RedundancyPair ;
+    rdfs:label "H2.Z64 - H2.ZE64" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentName "Server EU power supply 1" ;
+    cms:hasGroup cmsres:group_server_power ;
+    cms:hasPrimaryMeter cmsres:meter_H2_Z64 ;
+    cms:hasRedundantMeter cmsres:meter_H2_ZE64 ;
+    cms:visualizedBy cmsres:view_focus_redundancy .
+
+cmsres:redundancy_H2_Z65__H2_ZE65 a owl:NamedIndividual,
+        cms:RedundancyPair ;
+    rdfs:label "H2.Z65 - H2.ZE65" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentName "Server EU power supply 2" ;
+    cms:hasGroup cmsres:group_server_power ;
+    cms:hasPrimaryMeter cmsres:meter_H2_Z65 ;
+    cms:hasRedundantMeter cmsres:meter_H2_ZE65 ;
+    cms:visualizedBy cmsres:view_focus_redundancy .
+
+cmsres:redundancy_H2_Z66__H2_ZE66 a owl:NamedIndividual,
+        cms:RedundancyPair ;
+    rdfs:label "H2.Z66 - H2.ZE66" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentName "Local cooling 1" ;
+    cms:hasGroup cmsres:group_local_cooling ;
+    cms:hasPrimaryMeter cmsres:meter_H2_Z66 ;
+    cms:hasRedundantMeter cmsres:meter_H2_ZE66 ;
+    cms:visualizedBy cmsres:view_focus_redundancy .
+
+cmsres:redundancy_H2_Z67__H2_ZE67 a owl:NamedIndividual,
+        cms:RedundancyPair ;
+    rdfs:label "H2.Z67 - H2.ZE67" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentName "Local cooling 2" ;
+    cms:hasGroup cmsres:group_local_cooling ;
+    cms:hasPrimaryMeter cmsres:meter_H2_Z67 ;
+    cms:hasRedundantMeter cmsres:meter_H2_ZE67 ;
+    cms:visualizedBy cmsres:view_focus_redundancy .
+
+cmsres:redundancy_H3_Z40__H3_ZE40 a owl:NamedIndividual,
+        cms:RedundancyPair ;
+    rdfs:label "H3.Z40 - H3.ZE40" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentName "Design studio distribution 1" ;
+    cms:hasGroup cmsres:group_design_studio_distribution ;
+    cms:hasPrimaryMeter cmsres:meter_H3_Z40 ;
+    cms:hasRedundantMeter cmsres:meter_H3_ZE40 ;
+    cms:visualizedBy cmsres:view_focus_redundancy .
+
+cmsres:redundancy_H3_Z41__H3_ZE41 a owl:NamedIndividual,
+        cms:RedundancyPair ;
+    rdfs:label "H3.Z41 - H3.ZE41" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentName "Design studio distribution 4" ;
+    cms:hasGroup cmsres:group_design_studio_distribution ;
+    cms:hasPrimaryMeter cmsres:meter_H3_Z41 ;
+    cms:hasRedundantMeter cmsres:meter_H3_ZE41 ;
+    cms:visualizedBy cmsres:view_focus_redundancy .
+
+cmsres:redundancy_H3_Z43__H3_ZE43 a owl:NamedIndividual,
+        cms:RedundancyPair ;
+    rdfs:label "H3.Z43 - H3.ZE43" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentName "Server O4 cooling 1" ;
+    cms:hasGroup cmsres:group_server_power ;
+    cms:hasPrimaryMeter cmsres:meter_H3_Z43 ;
+    cms:hasRedundantMeter cmsres:meter_H3_ZE43 ;
+    cms:visualizedBy cmsres:view_focus_redundancy .
+
+cmsres:redundancy_H3_Z44__H3_ZE44 a owl:NamedIndividual,
+        cms:RedundancyPair ;
+    rdfs:label "H3.Z44 - H3.ZE44" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentName "Server O4 cooling 2" ;
+    cms:hasGroup cmsres:group_server_power ;
+    cms:hasPrimaryMeter cmsres:meter_H3_Z44 ;
+    cms:hasRedundantMeter cmsres:meter_H3_ZE44 ;
+    cms:visualizedBy cmsres:view_focus_redundancy .
+
+cmsres:redundancy_H4_Z50__H4_ZE50 a owl:NamedIndividual,
+        cms:RedundancyPair ;
+    rdfs:label "H4.Z50 - H4.ZE50" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentName "Office B4 distribution 3" ;
+    cms:hasGroup cmsres:group_office_distribution ;
+    cms:hasPrimaryMeter cmsres:meter_H4_Z50 ;
+    cms:hasRedundantMeter cmsres:meter_H4_ZE50 ;
+    cms:visualizedBy cmsres:view_focus_redundancy .
+
+cmsres:redundancy_H4_Z51__H4_ZE51 a owl:NamedIndividual,
+        cms:RedundancyPair ;
+    rdfs:label "H4.Z51 - H4.ZE51" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentName "Office B4 distribution 4" ;
+    cms:hasGroup cmsres:group_office_distribution ;
+    cms:hasPrimaryMeter cmsres:meter_H4_Z51 ;
+    cms:hasRedundantMeter cmsres:meter_H4_ZE51 ;
+    cms:visualizedBy cmsres:view_focus_redundancy .
+
+cmsres:redundancy_V_Z84__V_ZE84 a owl:NamedIndividual,
+        cms:RedundancyPair ;
+    rdfs:label "V.Z84 - V.ZE84" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentName "PV group 1/2" ;
+    cms:hasGroup cmsres:group_pv ;
+    cms:hasPrimaryMeter cmsres:meter_V_Z84 ;
+    cms:hasRedundantMeter cmsres:meter_V_ZE84 ;
+    cms:visualizedBy cmsres:view_focus_redundancy .
+
+cmsres:rule_aggregate_excludes_redundant a owl:NamedIndividual,
+        cms:FeatureRule ;
+    rdfs:label "Aggregate feature에서는 redundant endpoint를 기본 제외"@ko ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:usesRedundancyPolicy cmsres:policy_exclude_redundant_endpoint .
+
+cmsres:rule_energy_aggregate_excludes_weather a owl:NamedIndividual,
+        cms:FeatureRule ;
+    rdfs:label "Energy aggregate에는 weather meter를 포함하지 않음"@ko ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cmsres:rule_live_replay_no_future a owl:NamedIndividual,
+        cms:FeatureRule ;
+    rdfs:label "Live replay feature는 현재 tick 이전 데이터만 사용"@ko ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cmsres:view_cms_condition_monitoring_all a owl:NamedIndividual,
+        cms:VisualizationView ;
+    rdfs:label "cms_condition_monitoring_all" ;
+    cms:sourcePath "docs/specs/meter_metadata.md" .
+
+cmsres:view_cms_condition_monitoring_overview a owl:NamedIndividual,
+        cms:VisualizationView ;
+    rdfs:label "cms_condition_monitoring_overview" ;
+    cms:sourcePath "docs/specs/meter_metadata.md" .
+
+cmsres:view_redundancy_graph a owl:NamedIndividual,
+        cms:VisualizationView ;
+    rdfs:label "redundancy_graph" ;
+    cms:sourcePath "docs/specs/meter_metadata.md" .
+
+cms:Feature a owl:Class ;
+    rdfs:label "향후 feature 정의"@ko .
+
+cmsres:building_WeatherStation a owl:NamedIndividual,
+        cms:Building ;
+    rdfs:label "WeatherStation" ;
+    cms:buildingCode "WeatherStation" ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cmsres:domain_weather a owl:NamedIndividual,
+        cms:MeterDomain ;
+    rdfs:label "weather" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:meterDomain "weather" .
+
+cmsres:group_chp_heat_generation a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "chp_heat_generation" ;
+    cms:anomalyPriority 2 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "chp_heat_generation" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:meterCount 1 ;
+    cms:noteFile "db:ontology.meter/group/chp_heat_generation" ;
+    cms:primaryView "building_energy_flow" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:group_cooling_thermal a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "cooling_thermal" ;
+    cms:anomalyPriority 3 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "cooling_thermal" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:meterCount 1 ;
+    cms:noteFile "db:ontology.meter/group/cooling_thermal" ;
+    cms:primaryView "building_energy_flow" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:group_heat_generation a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "heat_generation" ;
+    cms:anomalyPriority 2 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "heat_generation" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:meterCount 1 ;
+    cms:noteFile "db:ontology.meter/group/heat_generation" ;
+    cms:primaryView "building_energy_flow" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:group_server_thermal a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "server_thermal" ;
+    cms:anomalyPriority 2 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "server_thermal" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:meterCount 1 ;
+    cms:noteFile "db:ontology.meter/group/server_thermal" ;
+    cms:primaryView "building_energy_flow" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:group_weather_station a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "weather_station" ;
+    cms:anomalyPriority 4 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "weather_station" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_4 ;
+    cms:meterCount 1 ;
+    cms:noteFile "db:ontology.meter/group/weather_station" ;
+    cms:primaryView "building_energy_flow" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:hardware_Lufft_WS501_UMB a owl:NamedIndividual,
+        cms:HardwareModel ;
+    rdfs:label "Lufft WS501-UMB" ;
+    cms:definedBy cmsres:doc_nature_scientific_data_2025 ;
+    cms:hardwareModelCode "Lufft WS501-UMB" ;
+    cms:manufacturer "Lufft" ;
+    cms:meterDomain "weather" ;
+    cms:modelName "WS501-UMB" .
+
+cmsres:hardware_Socomec_I35 a owl:NamedIndividual,
+        cms:HardwareModel ;
+    rdfs:label "Socomec I35" ;
+    cms:definedBy cmsres:doc_nature_scientific_data_2025 ;
+    cms:hardwareModelCode "Socomec I35" ;
+    cms:manufacturer "Socomec" ;
+    cms:meterDomain "electricity" ;
+    cms:modelName "DIRIS I35" .
+
+cmsres:policy_exclude_redundant_endpoint a owl:NamedIndividual,
+        cms:RedundancyPolicy ;
+    rdfs:label "Aggregate feature에서 redundant endpoint를 제외"@ko ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cmsres:role_weather a owl:NamedIndividual,
+        cms:MeterRole ;
+    rdfs:label "weather" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:hasSignConvention cmsres:sign_no_sign_convention ;
+    cms:meterRoleCode "weather" ;
+    cms:signConvention "no_sign_convention" .
+
+cmsres:group_workshop_test a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "workshop_test" ;
+    cms:anomalyPriority 3 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "workshop_test" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:meterCount 2 ;
+    cms:noteFile "db:ontology.meter/group/workshop_test" ;
+    cms:primaryView "meter_inventory_graph" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:meter_H1_Z20 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.Z20" ;
+    cms:anomalyPriority 1 ;
+    cms:belongsToGroup cmsres:group_chp ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "chp" ;
+    cms:equipmentName "CHP" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_production ;
+    cms:hasSignConvention cmsres:sign_negative_production_positive_noise_or_reverse_flow ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "production" ;
+    cms:meterUrn "H1.Z20" ;
+    cms:noteFile "db:ontology.meter/H1.Z20" ;
+    cms:redundantWith cmsres:meter_H1_ZE20 ;
+    cms:signConvention "negative_production_positive_noise_or_reverse_flow" ;
+    cms:sourceDescription "CHP" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_H1_ZE20 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H1.ZE20" ;
+    cms:anomalyPriority 1 ;
+    cms:belongsToGroup cmsres:group_chp ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "chp" ;
+    cms:equipmentName "CHP" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_production ;
+    cms:hasSignConvention cmsres:sign_negative_production_positive_noise_or_reverse_flow ;
+    cms:locatedInBuilding cmsres:building_H1 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "production" ;
+    cms:meterUrn "H1.ZE20" ;
+    cms:noteFile "db:ontology.meter/H1.ZE20" ;
+    cms:redundantWith cmsres:meter_H1_Z20 ;
+    cms:signConvention "negative_production_positive_noise_or_reverse_flow" ;
+    cms:sourceDescription "CHP" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_H2_Z64 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z64" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_power ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:equipmentName "Server EU power supply 1" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z64" ;
+    cms:noteFile "db:ontology.meter/H2.Z64" ;
+    cms:redundantWith cmsres:meter_H2_ZE64 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Server EU power supply 1" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy,
+        cmsres:view_focus_server_power .
+
+cmsres:meter_H2_Z65 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z65" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_power ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:equipmentName "Server EU power supply 2" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z65" ;
+    cms:noteFile "db:ontology.meter/H2.Z65" ;
+    cms:redundantWith cmsres:meter_H2_ZE65 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Server EU power supply 2" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy,
+        cmsres:view_focus_server_power .
+
+cmsres:meter_H2_Z66 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z66" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_local_cooling ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "local_cooling" ;
+    cms:equipmentName "Local cooling 1" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z66" ;
+    cms:noteFile "db:ontology.meter/H2.Z66" ;
+    cms:redundantWith cmsres:meter_H2_ZE66 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Local cooling 1" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_H2_Z67 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.Z67" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_local_cooling ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "local_cooling" ;
+    cms:equipmentName "Local cooling 2" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.Z67" ;
+    cms:noteFile "db:ontology.meter/H2.Z67" ;
+    cms:redundantWith cmsres:meter_H2_ZE67 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Local cooling 2" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_H2_ZE64 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.ZE64" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_power ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:equipmentName "Server EU power supply 1" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.ZE64" ;
+    cms:noteFile "db:ontology.meter/H2.ZE64" ;
+    cms:redundantWith cmsres:meter_H2_Z64 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Server EU power supply 1" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy,
+        cmsres:view_focus_server_power .
+
+cmsres:meter_H2_ZE65 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.ZE65" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_power ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:equipmentName "Server EU power supply 2" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.ZE65" ;
+    cms:noteFile "db:ontology.meter/H2.ZE65" ;
+    cms:redundantWith cmsres:meter_H2_Z65 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Server EU power supply 2" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy,
+        cmsres:view_focus_server_power .
+
+cmsres:meter_H2_ZE66 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.ZE66" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_local_cooling ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "local_cooling" ;
+    cms:equipmentName "Local cooling 1" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.ZE66" ;
+    cms:noteFile "db:ontology.meter/H2.ZE66" ;
+    cms:redundantWith cmsres:meter_H2_Z66 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Local cooling 1" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_H2_ZE67 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H2.ZE67" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_local_cooling ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "local_cooling" ;
+    cms:equipmentName "Local cooling 2" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H2 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H2.ZE67" ;
+    cms:noteFile "db:ontology.meter/H2.ZE67" ;
+    cms:redundantWith cmsres:meter_H2_Z67 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Local cooling 2" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_H3_Z40 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.Z40" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_design_studio_distribution ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "design_studio_distribution" ;
+    cms:equipmentName "Design studio distribution 1" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.Z40" ;
+    cms:noteFile "db:ontology.meter/H3.Z40" ;
+    cms:redundantWith cmsres:meter_H3_ZE40 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Design studio distribution 1" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_H3_Z41 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.Z41" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_design_studio_distribution ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "design_studio_distribution" ;
+    cms:equipmentName "Design studio distribution 4" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.Z41" ;
+    cms:noteFile "db:ontology.meter/H3.Z41" ;
+    cms:redundantWith cmsres:meter_H3_ZE41 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Design studio distribution 4" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_H3_Z43 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.Z43" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_power ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:equipmentName "Server O4 cooling 1" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.Z43" ;
+    cms:noteFile "db:ontology.meter/H3.Z43" ;
+    cms:redundantWith cmsres:meter_H3_ZE43 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Server O4 cooling 1" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy,
+        cmsres:view_focus_server_power .
+
+cmsres:meter_H3_Z44 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.Z44" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_power ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:equipmentName "Server O4 cooling 2" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.Z44" ;
+    cms:noteFile "db:ontology.meter/H3.Z44" ;
+    cms:redundantWith cmsres:meter_H3_ZE44 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Server O4 cooling 2" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy,
+        cmsres:view_focus_server_power .
+
+cmsres:meter_H3_ZE40 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.ZE40" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_design_studio_distribution ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "design_studio_distribution" ;
+    cms:equipmentName "Design studio distribution 1" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.ZE40" ;
+    cms:noteFile "db:ontology.meter/H3.ZE40" ;
+    cms:redundantWith cmsres:meter_H3_Z40 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Design studio distribution 1" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_H3_ZE41 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.ZE41" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_design_studio_distribution ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "design_studio_distribution" ;
+    cms:equipmentName "Design studio distribution 4" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.ZE41" ;
+    cms:noteFile "db:ontology.meter/H3.ZE41" ;
+    cms:redundantWith cmsres:meter_H3_Z41 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Design studio distribution 4" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_H3_ZE43 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.ZE43" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_power ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:equipmentName "Server O4 cooling 1" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.ZE43" ;
+    cms:noteFile "db:ontology.meter/H3.ZE43" ;
+    cms:redundantWith cmsres:meter_H3_Z43 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Server O4 cooling 1" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy,
+        cmsres:view_focus_server_power .
+
+cmsres:meter_H3_ZE44 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H3.ZE44" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_server_power ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:equipmentName "Server O4 cooling 2" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H3 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H3.ZE44" ;
+    cms:noteFile "db:ontology.meter/H3.ZE44" ;
+    cms:redundantWith cmsres:meter_H3_Z44 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Server O4 cooling 2" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy,
+        cmsres:view_focus_server_power .
+
+cmsres:meter_H4_Z50 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H4.Z50" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_office_distribution ;
+    cms:buildingCode "H4" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "office_distribution" ;
+    cms:equipmentName "Office B4 distribution 3" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H4 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H4.Z50" ;
+    cms:noteFile "db:ontology.meter/H4.Z50" ;
+    cms:redundantWith cmsres:meter_H4_ZE50 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Office B4 distribution 3" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_H4_Z51 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H4.Z51" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_office_distribution ;
+    cms:buildingCode "H4" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "office_distribution" ;
+    cms:equipmentName "Office B4 distribution 4" ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_ABB_B24 ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H4 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H4.Z51" ;
+    cms:noteFile "db:ontology.meter/H4.Z51" ;
+    cms:redundantWith cmsres:meter_H4_ZE51 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Office B4 distribution 4" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_H4_ZE50 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H4.ZE50" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_office_distribution ;
+    cms:buildingCode "H4" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "office_distribution" ;
+    cms:equipmentName "Office B4 distribution 3" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H4 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H4.ZE50" ;
+    cms:noteFile "db:ontology.meter/H4.ZE50" ;
+    cms:redundantWith cmsres:meter_H4_Z50 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Office B4 distribution 3" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_H4_ZE51 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "H4.ZE51" ;
+    cms:anomalyPriority 3 ;
+    cms:belongsToGroup cmsres:group_office_distribution ;
+    cms:buildingCode "H4" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "office_distribution" ;
+    cms:equipmentName "Office B4 distribution 4" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_consumption ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:locatedInBuilding cmsres:building_H4 ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "consumption" ;
+    cms:meterUrn "H4.ZE51" ;
+    cms:noteFile "db:ontology.meter/H4.ZE51" ;
+    cms:redundantWith cmsres:meter_H4_Z51 ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" ;
+    cms:sourceDescription "Office B4 distribution 4" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_V_Z84 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "V.Z84" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_pv ;
+    cms:buildingCode "V" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "pv" ;
+    cms:equipmentName "PV group 1/2" ;
+    cms:hardwareModelCode "Socomec I35" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Socomec_I35 ;
+    cms:hasRole cmsres:role_production ;
+    cms:hasSignConvention cmsres:sign_negative_production_positive_noise_or_reverse_flow ;
+    cms:locatedInBuilding cmsres:building_V ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "production" ;
+    cms:meterUrn "V.Z84" ;
+    cms:noteFile "db:ontology.meter/V.Z84" ;
+    cms:redundantWith cmsres:meter_V_ZE84 ;
+    cms:signConvention "negative_production_positive_noise_or_reverse_flow" ;
+    cms:sourceDescription "PV group 1/2" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:meter_V_ZE84 a owl:NamedIndividual,
+        cms:ElectricityMeter,
+        cms:Meter ;
+    rdfs:label "V.ZE84" ;
+    cms:anomalyPriority 2 ;
+    cms:belongsToGroup cmsres:group_pv ;
+    cms:buildingCode "V" ;
+    cms:definedBy cmsres:doc_meter_metadata,
+        cmsres:doc_nature_scientific_data_2025 ;
+    cms:equipmentGroupCode "pv" ;
+    cms:equipmentName "PV group 1/2" ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:hasDomain cmsres:domain_electricity ;
+    cms:hasHardwareModel cmsres:hardware_Janitza_UMG_96_PA_MID ;
+    cms:hasRole cmsres:role_production ;
+    cms:hasSignConvention cmsres:sign_negative_production_positive_noise_or_reverse_flow ;
+    cms:locatedInBuilding cmsres:building_V ;
+    cms:meterDomain "electricity" ;
+    cms:meterRoleCode "production" ;
+    cms:meterUrn "V.ZE84" ;
+    cms:noteFile "db:ontology.meter/V.ZE84" ;
+    cms:redundantWith cmsres:meter_V_Z84 ;
+    cms:signConvention "negative_production_positive_noise_or_reverse_flow" ;
+    cms:sourceDescription "PV group 1/2" ;
+    cms:sourceName "src/cms/knowledge/meter_metadata.json" ;
+    cms:sourceTable "ontology.meter" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_all,
+        cmsres:view_focus_redundancy .
+
+cmsres:priority_4 a owl:NamedIndividual,
+        cms:AnomalyPriorityLevel ;
+    rdfs:label "priority 4" ;
+    cms:anomalyPriority 4 ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cmsres:sign_no_sign_convention a owl:NamedIndividual,
+        cms:SignConvention ;
+    rdfs:label "no_sign_convention" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:signConvention "no_sign_convention" .
+
+cms:RedundancyPolicy a owl:Class ;
+    rdfs:label "중복 계량 처리 정책"@ko .
+
+cms:WeatherMeter a owl:Class ;
+    rdfs:label "기상 계량기"@ko ;
+    rdfs:subClassOf cms:Meter .
+
+cmsres:group_chp a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "chp" ;
+    cms:anomalyPriority 1 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "chp" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:meterCount 2 ;
+    cms:noteFile "db:ontology.meter/group/chp" ;
+    cms:primaryView "building_energy_flow" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_focus_redundancy,
+        cmsres:view_meter_inventory_graph .
+
+cms:MeterDomain a owl:Class ;
+    rdfs:label "계측 domain vocabulary"@ko .
+
+cmsres:building_H4 a owl:NamedIndividual,
+        cms:Building ;
+    rdfs:label "H4" ;
+    cms:buildingCode "H4" ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cms:AnomalyPriorityLevel a owl:Class ;
+    rdfs:label "이상탐지 우선순위 vocabulary"@ko .
+
+cms:FeatureRule a owl:Class ;
+    rdfs:label "feature 생성 규칙"@ko .
+
+cms:MeterRole a owl:Class ;
+    rdfs:label "계량기 분석 역할"@ko .
+
+cms:SignConvention a owl:Class ;
+    rdfs:label "부호 해석 vocabulary"@ko .
+
+cmsres:building_V a owl:NamedIndividual,
+        cms:Building ;
+    rdfs:label "V" ;
+    cms:buildingCode "V" ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cmsres:group_central_cooling a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "central_cooling" ;
+    cms:anomalyPriority 1 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "central_cooling" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:meterCount 5 ;
+    cms:noteFile "db:ontology.meter/group/central_cooling" ;
+    cms:primaryView "central_cooling_graph" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_focus_central_cooling,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:group_hvac_thermal a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "hvac_thermal" ;
+    cms:anomalyPriority 3 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "hvac_thermal" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:meterCount 5 ;
+    cms:noteFile "db:ontology.meter/group/hvac_thermal" ;
+    cms:primaryView "building_energy_flow" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:group_ventilation a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "ventilation" ;
+    cms:anomalyPriority 3 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "ventilation" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:meterCount 5 ;
+    cms:noteFile "db:ontology.meter/group/ventilation" ;
+    cms:primaryView "meter_inventory_graph" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_meter_inventory_graph .
+
+cms:MetadataDocument a owl:Class ;
+    rdfs:label "기준 metadata 문서"@ko .
+
+cmsres:group_grid_transformer a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "grid_transformer" ;
+    cms:anomalyPriority 1 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "grid_transformer" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_1 ;
+    cms:meterCount 6 ;
+    cms:noteFile "db:ontology.meter/group/grid_transformer" ;
+    cms:primaryView "building_energy_flow" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:group_pv a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "pv" ;
+    cms:anomalyPriority 2 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "pv" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:meterCount 5 ;
+    cms:noteFile "db:ontology.meter/group/pv" ;
+    cms:primaryView "building_energy_flow" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_focus_redundancy,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:hardware_Janitza_UMG_96_RM_E a owl:NamedIndividual,
+        cms:HardwareModel ;
+    rdfs:label "Janitza UMG 96 RM-E" ;
+    cms:definedBy cmsres:doc_nature_scientific_data_2025 ;
+    cms:hardwareModelCode "Janitza UMG 96 RM-E" ;
+    cms:manufacturer "Janitza" ;
+    cms:meterDomain "electricity" ;
+    cms:modelName "UMG 96 RM-E" .
+
+cmsres:view_focus_central_cooling a owl:NamedIndividual,
+        cms:VisualizationView ;
+    rdfs:label "focus_central_cooling" ;
+    cms:sourcePath "docs/specs/meter_metadata.md" .
+
+cms:Building a owl:Class ;
+    rdfs:label "건물 또는 구역"@ko .
+
+cmsres:group_local_cooling a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "local_cooling" ;
+    cms:anomalyPriority 2 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "local_cooling" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:meterCount 5 ;
+    cms:noteFile "db:ontology.meter/group/local_cooling" ;
+    cms:primaryView "central_cooling_graph" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_focus_redundancy,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:role_production a owl:NamedIndividual,
+        cms:MeterRole ;
+    rdfs:label "production" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:hasSignConvention cmsres:sign_negative_production_positive_noise_or_reverse_flow ;
+    cms:meterRoleCode "production" ;
+    cms:signConvention "negative_production_positive_noise_or_reverse_flow" .
+
+cmsres:group_office_distribution a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "office_distribution" ;
+    cms:anomalyPriority 3 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "office_distribution" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:meterCount 6 ;
+    cms:noteFile "db:ontology.meter/group/office_distribution" ;
+    cms:primaryView "meter_inventory_graph" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_focus_redundancy,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:sign_negative_production_positive_noise_or_reverse_flow a owl:NamedIndividual,
+        cms:SignConvention ;
+    rdfs:label "negative_production_positive_noise_or_reverse_flow" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:signConvention "negative_production_positive_noise_or_reverse_flow" .
+
+cms:HardwareModel a owl:Class ;
+    rdfs:label "계량기 하드웨어 모델"@ko .
+
+cms:VisualizationView a owl:Class ;
+    rdfs:label "Canvas, Mermaid, Excalidraw 보기"@ko .
+
+cmsres:domain_thermal a owl:NamedIndividual,
+        cms:MeterDomain ;
+    rdfs:label "thermal" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:meterDomain "thermal" .
+
+cmsres:hardware_SensorStar_2C a owl:NamedIndividual,
+        cms:HardwareModel ;
+    rdfs:label "SensorStar 2C" ;
+    cms:definedBy cmsres:doc_nature_scientific_data_2025 ;
+    cms:hardwareModelCode "SensorStar 2C" ;
+    cms:manufacturer "Engelmann Sensor" ;
+    cms:meterDomain "thermal" ;
+    cms:modelName "SensorStar 2C" .
+
+cmsres:role_thermal_flow a owl:NamedIndividual,
+        cms:MeterRole ;
+    rdfs:label "thermal_flow" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:hasSignConvention cmsres:sign_direction_depends_on_equipment_context ;
+    cms:meterRoleCode "thermal_flow" ;
+    cms:signConvention "direction_depends_on_equipment_context" .
+
+cms:ThermalMeter a owl:Class ;
+    rdfs:label "열 계량기"@ko ;
+    rdfs:subClassOf cms:Meter ;
+    owl:disjointWith cms:WeatherMeter .
+
+cmsres:group_design_studio_distribution a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "design_studio_distribution" ;
+    cms:anomalyPriority 3 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "design_studio_distribution" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:meterCount 8 ;
+    cms:noteFile "db:ontology.meter/group/design_studio_distribution" ;
+    cms:primaryView "meter_inventory_graph" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_focus_redundancy,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:sign_direction_depends_on_equipment_context a owl:NamedIndividual,
+        cms:SignConvention ;
+    rdfs:label "direction_depends_on_equipment_context" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:signConvention "direction_depends_on_equipment_context" .
+
+cmsres:group_emission_lab a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "emission_lab" ;
+    cms:anomalyPriority 3 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "emission_lab" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_3 ;
+    cms:meterCount 14 ;
+    cms:noteFile "db:ontology.meter/group/emission_lab" ;
+    cms:primaryView "meter_inventory_graph" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_focus_emission_lab,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:view_focus_server_power a owl:NamedIndividual,
+        cms:VisualizationView ;
+    rdfs:label "focus_server_power" ;
+    cms:sourcePath "docs/specs/meter_metadata.md" .
+
+cms:RedundancyPair a owl:Class ;
+    rdfs:label "중복 계량 pair"@ko .
+
+cmsres:view_focus_emission_lab a owl:NamedIndividual,
+        cms:VisualizationView ;
+    rdfs:label "focus_emission_lab" ;
+    cms:sourcePath "docs/specs/meter_metadata.md" .
+
+cmsres:building_H3 a owl:NamedIndividual,
+        cms:Building ;
+    rdfs:label "H3" ;
+    cms:buildingCode "H3" ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cmsres:priority_1 a owl:NamedIndividual,
+        cms:AnomalyPriorityLevel ;
+    rdfs:label "priority 1" ;
+    cms:anomalyPriority 1 ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cmsres:group_server_power a owl:NamedIndividual,
+        cms:EquipmentGroup ;
+    rdfs:label "server_power" ;
+    cms:anomalyPriority 2 ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:equipmentGroupCode "server_power" ;
+    cms:hasAnomalyPriorityLevel cmsres:priority_2 ;
+    cms:meterCount 13 ;
+    cms:noteFile "db:ontology.meter/group/server_power" ;
+    cms:primaryView "meter_inventory_graph" ;
+    cms:visualizedBy cmsres:view_cms_meter_system_overview,
+        cmsres:view_focus_redundancy,
+        cmsres:view_focus_server_power,
+        cmsres:view_meter_inventory_graph .
+
+cmsres:view_meter_inventory_graph a owl:NamedIndividual,
+        cms:VisualizationView ;
+    rdfs:label "meter_inventory_graph" ;
+    cms:sourcePath "docs/specs/meter_metadata.md" .
+
+cmsres:hardware_Janitza_UMG_96_PA_MID a owl:NamedIndividual,
+        cms:HardwareModel ;
+    rdfs:label "Janitza UMG 96 PA MID+" ;
+    cms:definedBy cmsres:doc_nature_scientific_data_2025 ;
+    cms:hardwareModelCode "Janitza UMG 96 PA MID+" ;
+    cms:manufacturer "Janitza" ;
+    cms:meterDomain "electricity" ;
+    cms:modelName "UMG 96 PA MID+" .
+
+cms:EquipmentGroup a owl:Class ;
+    rdfs:label "설비 또는 계통 group"@ko .
+
+cmsres:building_H2 a owl:NamedIndividual,
+        cms:Building ;
+    rdfs:label "H2" ;
+    cms:buildingCode "H2" ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cmsres:building_H1 a owl:NamedIndividual,
+        cms:Building ;
+    rdfs:label "H1" ;
+    cms:buildingCode "H1" ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cmsres:priority_2 a owl:NamedIndividual,
+        cms:AnomalyPriorityLevel ;
+    rdfs:label "priority 2" ;
+    cms:anomalyPriority 2 ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cmsres:view_focus_redundancy a owl:NamedIndividual,
+        cms:VisualizationView ;
+    rdfs:label "focus_redundancy" ;
+    cms:sourcePath "docs/specs/meter_metadata.md" .
+
+cmsres:hardware_ABB_B24 a owl:NamedIndividual,
+        cms:HardwareModel ;
+    rdfs:label "ABB-B24" ;
+    cms:definedBy cmsres:doc_nature_scientific_data_2025 ;
+    cms:hardwareModelCode "ABB-B24" ;
+    cms:manufacturer "ABB" ;
+    cms:meterDomain "electricity" ;
+    cms:modelName "B24" .
+
+cmsres:priority_3 a owl:NamedIndividual,
+        cms:AnomalyPriorityLevel ;
+    rdfs:label "priority 3" ;
+    cms:anomalyPriority 3 ;
+    cms:definedBy cmsres:doc_meter_metadata .
+
+cmsres:role_consumption a owl:NamedIndividual,
+        cms:MeterRole ;
+    rdfs:label "consumption" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:hasSignConvention cmsres:sign_positive_consumption_negative_quality_candidate ;
+    cms:meterRoleCode "consumption" ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" .
+
+cmsres:sign_positive_consumption_negative_quality_candidate a owl:NamedIndividual,
+        cms:SignConvention ;
+    rdfs:label "positive_consumption_negative_quality_candidate" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:signConvention "positive_consumption_negative_quality_candidate" .
+
+cms:ElectricityMeter a owl:Class ;
+    rdfs:label "전기 계량기"@ko ;
+    rdfs:subClassOf cms:Meter ;
+    owl:disjointWith cms:ThermalMeter,
+        cms:WeatherMeter .
+
+cmsres:domain_electricity a owl:NamedIndividual,
+        cms:MeterDomain ;
+    rdfs:label "electricity" ;
+    cms:definedBy cmsres:doc_meter_metadata ;
+    cms:meterDomain "electricity" .
+
+cmsres:doc_nature_scientific_data_2025 a owl:NamedIndividual,
+        cms:MetadataDocument ;
+    rdfs:label "https://doi.org/10.1038/s41597-025-05186-3" ;
+    cms:sourcePath "https://doi.org/10.1038/s41597-025-05186-3" .
+
+cms:Meter a owl:Class ;
+    rdfs:label "CMS 계량기"@ko .
+
+cmsres:doc_meter_metadata a owl:NamedIndividual,
+        cms:MetadataDocument ;
+    rdfs:label "docs/specs/meter_metadata.md" ;
+    cms:sourcePath "docs/specs/meter_metadata.md" .

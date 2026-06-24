@@ -1,0 +1,743 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "id": 300,
+      "type": "row",
+      "title": "최근 파이프라인 로그",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 18,
+      "title": "최근 파이프라인 메트릭",
+      "type": "table",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT consumed_at, event_ts, meter_urn, measurement, kafka_topic, kafka_partition, kafka_offset, business_idempotency_key\nFROM live.measurement_event\nWHERE consumed_at >= now() - interval '1 hour'\n  AND ('${meter_urn:raw}' = 'All' OR meter_urn = '${meter_urn:raw}')\nORDER BY consumed_at DESC LIMIT 100;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false
+        },
+        "cellType": "color-background"
+      }
+    },
+    {
+      "id": 19,
+      "title": "최근 차단 이슈",
+      "type": "table",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 1,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT * FROM (\n  SELECT created_at AS issue_ts, 'meter_tag' AS source, tag AS issue_kind, meter_urn, measurement, detail\n  FROM qa.meter_tag\n  WHERE created_at >= now() - interval '24 hours'\n  UNION ALL\n  SELECT created_at AS issue_ts, 'bad_row' AS source, reason AS issue_kind, NULL::text AS meter_urn, NULL::text AS measurement, source_file || ':' || source_row_no::text AS detail\n  FROM qa.bad_row\n  WHERE created_at >= now() - interval '24 hours'\n) q\nORDER BY issue_ts DESC LIMIT 100;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false
+        },
+        "cellType": "color-background"
+      }
+    },
+    {
+      "id": 104,
+      "type": "row",
+      "title": "Kafka/컨슈머 정합성",
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": [],
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": []
+    },
+    {
+      "id": 20,
+      "title": "파티션별 Kafka 지연",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "sum by (partition) (kafka_consumergroup_lag{consumergroup=\"postgres-live-ingest\",topic=\"measurement_raw_v1\"})",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 21,
+      "title": "파티션별 원본 토픽 오프셋",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 9,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-edge-cluster"
+          },
+          "expr": "sum by (partition) (kafka_topic_partition_current_offset{topic=\"measurement_raw_v1\"})",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 8,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 22,
+      "title": "처리/삽입/중복/DLQ",
+      "type": "bargauge",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 9,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.metric WHERE (stage LIKE 'live_soak_%' OR stage LIKE 't4%' OR stage LIKE 'aws_24h_%' OR run_id LIKE 'aws_24h_%') AND metric_name IN ('consumer_processed','consumer_inserted','consumer_duplicate','consumer_retry','consumer_dlq','consumer_committed','consumer_lag_after') GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1), pivot AS (\n  SELECT metric_name AS metric, max(metric_value) AS value\n  FROM ops.metric\n  WHERE run_id IN (SELECT run_id FROM latest)\n    AND metric_name IN ('consumer_processed','consumer_inserted','consumer_duplicate','consumer_retry','consumer_dlq','consumer_committed')\n  GROUP BY metric_name\n)\nSELECT metric, value FROM pivot ORDER BY metric;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "displayMode": "gradient",
+        "minVizWidth": 8,
+        "minVizHeight": 16,
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 23,
+      "title": "최신 불변식 차이",
+      "type": "stat",
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 9,
+        "w": 6,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-cms-live"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH latest AS (SELECT run_id FROM ops.metric WHERE (stage LIKE 'live_soak_%' OR stage LIKE 't4%' OR stage LIKE 'aws_24h_%' OR run_id LIKE 'aws_24h_%') AND metric_name IN ('consumer_processed','consumer_inserted','consumer_duplicate','consumer_retry','consumer_dlq','consumer_committed','consumer_lag_after') GROUP BY run_id ORDER BY max(metric_ts) DESC LIMIT 1), pivot AS (\n  SELECT\n    max(metric_value) FILTER (WHERE metric_name='consumer_processed') AS processed,\n    max(metric_value) FILTER (WHERE metric_name='consumer_inserted') AS inserted,\n    max(metric_value) FILTER (WHERE metric_name='consumer_duplicate') AS duplicate,\n    max(metric_value) FILTER (WHERE metric_name='consumer_dlq') AS dlq,\n    max(metric_value) FILTER (WHERE metric_name='consumer_committed') AS committed\n  FROM ops.metric WHERE run_id IN (SELECT run_id FROM latest)\n)\nSELECT COALESCE(processed,0) - COALESCE(inserted,0) - COALESCE(duplicate,0) - COALESCE(dlq,0) AS invariant_delta,\n       COALESCE(committed,0) - COALESCE(processed,0) AS commit_delta\nFROM pivot;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 15
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 106,
+      "type": "stat",
+      "title": "최신 재시도",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 11
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT COALESCE(MAX(metric_value), 0) AS value FROM ops.metric WHERE metric_name = 'consumer_retry' /* consumer_retry ops.metric */"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "displayMode": "gradient",
+            "showThresholdMarkers": true
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 107,
+      "type": "stat",
+      "title": "최신 DLQ 메트릭",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 11
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT COALESCE(MAX(metric_value), 0) AS value FROM ops.metric WHERE metric_name = 'consumer_dlq' /* consumer_dlq ops.metric */"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "displayMode": "gradient",
+            "showThresholdMarkers": true
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 108,
+      "type": "stat",
+      "title": "최신 중복",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 11
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "postgres-cms-live"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT COALESCE(MAX(metric_value), 0) AS value FROM ops.metric WHERE metric_name = 'consumer_duplicate' /* consumer_duplicate ops.metric */"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "displayMode": "gradient",
+            "showThresholdMarkers": true
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 109,
+      "type": "stat",
+      "title": "Kafka 브로커 상태",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-cms-stream"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "count(kafka_brokers) or vector(0)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "displayMode": "gradient",
+            "showThresholdMarkers": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "cms",
+    "live",
+    "pipeline-logs",
+    "kafka",
+    "visual-first"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "meter_urn",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-cms-live"
+        },
+        "includeAll": true,
+        "multi": false,
+        "refresh": 2,
+        "query": "WITH meter_registry(meter_urn, meter_domain, meter_role, equipment_group, equipment_name, building_code, anomaly_priority) AS (\n  VALUES\n    ('V.Z82','electricity','consumption','grid_transformer','','V',1),\n    ('V.Z81','electricity','consumption','grid_transformer','','V',1),\n    ('H2.Z35','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z351','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z36','electricity','consumption','grid_transformer','','H2',1),\n    ('H2.Z361','electricity','consumption','grid_transformer','','H2',1),\n    ('H1.Z20','electricity','production','chp','','H1',1),\n    ('H1.ZE20','electricity','production','chp','','H1',1),\n    ('V.Z84','electricity','production','pv','','V',2),\n    ('V.ZE84','electricity','production','pv','','V',2),\n    ('H1.Z310','electricity','production','pv','','H1',2),\n    ('H2.Z311','electricity','production','pv','','H2',2),\n    ('H3.Z312','electricity','production','pv','','H3',2),\n    ('H1.Z15','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z28','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z17','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z29','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z10','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z13','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z14','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z19','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z23','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z18','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z21','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z22','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z26','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z27','electricity','consumption','emission_lab','','H1',3),\n    ('H1.Z16','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z11','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z12','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z24','electricity','consumption','central_cooling','','H1',1),\n    ('H1.Z25','electricity','consumption','central_cooling','','H1',1),\n    ('H3.Z43','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE43','electricity','consumption','server_power','','H3',2),\n    ('H3.Z44','electricity','consumption','server_power','','H3',2),\n    ('H3.ZE44','electricity','consumption','server_power','','H3',2),\n    ('H3.Z46','electricity','consumption','server_power','','H3',2),\n    ('H2.Z61','electricity','consumption','server_power','','H2',2),\n    ('H2.Z62','electricity','consumption','server_power','','H2',2),\n    ('H2.Z63','electricity','consumption','server_power','','H2',2),\n    ('H2.Z64','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE64','electricity','consumption','server_power','','H2',2),\n    ('H2.Z65','electricity','consumption','server_power','','H2',2),\n    ('H2.ZE65','electricity','consumption','server_power','','H2',2),\n    ('H3.Z71','electricity','consumption','server_power','','H3',2),\n    ('H3.Z45','electricity','consumption','local_cooling','','H3',2),\n    ('H2.Z66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE66','electricity','consumption','local_cooling','','H2',2),\n    ('H2.Z67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.ZE67','electricity','consumption','local_cooling','','H2',2),\n    ('H2.T.Z31','electricity','consumption','ventilation','','H2',3),\n    ('H3.Z42','electricity','consumption','ventilation','','H3',3),\n    ('H2.Z68','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z69','electricity','consumption','ventilation','','H2',3),\n    ('H2.Z70','electricity','consumption','ventilation','','H2',3),\n    ('H2.T.Z34','electricity','consumption','workshop_test','','H2',3),\n    ('H2.ZE74','electricity','consumption','workshop_test','','H2',3),\n    ('H2.T.Z30','electricity','consumption','office_distribution','','H2',3),\n    ('H2.T.Z32','electricity','consumption','office_distribution','','H2',3),\n    ('H4.Z50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE50','electricity','consumption','office_distribution','','H4',3),\n    ('H4.Z51','electricity','consumption','office_distribution','','H4',3),\n    ('H4.ZE51','electricity','consumption','office_distribution','','H4',3),\n    ('H2.T.Z33','electricity','consumption','design_studio_distribution','','H2',3),\n    ('H3.Z40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE40','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.ZE41','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z47','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z48','electricity','consumption','design_studio_distribution','','H3',3),\n    ('H3.Z49','electricity','consumption','design_studio_distribution','','H3',3),\n    ('V.K21','thermal','thermal_flow','cooling_thermal','','V',1),\n    ('H1.K11','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K12','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K14','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H1.K15','thermal','thermal_flow','hvac_thermal','','H1',2),\n    ('H2.K21','thermal','thermal_flow','hvac_thermal','','H2',2),\n    ('H1.K16','thermal','thermal_flow','server_thermal','','H1',2),\n    ('H1.W11','thermal','thermal_flow','heat_generation','','H1',2),\n    ('H1.W12','thermal','thermal_flow','chp_heat_generation','','H1',2),\n    ('WeatherStation.Weather','weather','weather','weather_station','','WeatherStation',4)\n)\nSELECT meter_urn FROM meter_registry ORDER BY meter_urn",
+        "current": {
+          "text": "All",
+          "value": "All"
+        },
+        "allValue": "All"
+      },
+      {
+        "name": "measurement",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "postgres-cms-live"
+        },
+        "includeAll": true,
+        "multi": false,
+        "refresh": 2,
+        "query": "SELECT DISTINCT measurement FROM live.measurement_event ORDER BY measurement",
+        "current": {
+          "text": "All",
+          "value": "All"
+        },
+        "allValue": "All"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "CMS 파이프라인 로그",
+  "uid": "pipeline-logs",
+  "version": 1,
+  "weekStart": "",
+  "description": "최근 파이프라인 이벤트/차단 이슈와 Kafka/컨슈머 정합성 로그를 분리한 대시보드."
+}

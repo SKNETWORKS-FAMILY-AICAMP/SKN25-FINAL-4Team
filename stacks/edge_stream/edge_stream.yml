@@ -1,0 +1,291 @@
+name: cms-edge-stream
+services:
+  cms-kafka:
+    image: apache/kafka:3.7.1
+    container_name: cms-edge-kafka
+    profiles:
+    - kafka-broker
+    restart: unless-stopped
+    environment:
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID:?Set one shared Kafka cluster id for all three
+        local brokers}
+      KAFKA_NODE_ID: ${KAFKA_NODE_ID:-1}
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: ${KAFKA_CONTROLLER_QUORUM_VOTERS:?Set 1@host1:9093,2@host2:9093,3@host3:9093}
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_ADVERTISED_HOST:?Set this host
+        LAN/VPN address}:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_LOG_RETENTION_HOURS: ${KAFKA_LOG_RETENTION_HOURS:-24}
+      KAFKA_LOG_RETENTION_BYTES: ${KAFKA_LOG_RETENTION_BYTES:-1073741824}
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: ${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR:-3}
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: ${KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR:-3}
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: ${KAFKA_TRANSACTION_STATE_LOG_MIN_ISR:-2}
+      KAFKA_DEFAULT_REPLICATION_FACTOR: ${KAFKA_DEFAULT_REPLICATION_FACTOR:-3}
+      KAFKA_MIN_INSYNC_REPLICAS: ${KAFKA_MIN_INSYNC_REPLICAS:-2}
+    ports:
+    - ${KAFKA_BIND:-0.0.0.0}:9092:9092
+    - ${KAFKA_CONTROLLER_BIND:-0.0.0.0}:9093:9093
+    volumes:
+    - cms_kafka_data:/var/lib/kafka/data
+    networks:
+    - cms_edge_stream
+  cms-kafka-init:
+    image: apache/kafka:3.7.1
+    container_name: cms-edge-kafka-init
+    profiles:
+    - kafka-broker
+    depends_on:
+    - cms-kafka
+    restart: 'no'
+    command:
+    - bash
+    - -ec
+    - "for i in {1..30}; do\n  /opt/kafka/bin/kafka-topics.sh --bootstrap-server \"\
+      ${KAFKA_BOOTSTRAP_SERVERS:?Set all three edge Kafka brokers, e.g. host1:9092,host2:9092,host3:9092}\"\
+      \ --list >/dev/null 2>&1 && break\n  sleep 2\ndone\n/opt/kafka/bin/kafka-topics.sh\
+      \ --bootstrap-server \"${KAFKA_BOOTSTRAP_SERVERS:?Set all three edge Kafka brokers,\
+      \ e.g. host1:9092,host2:9092,host3:9092}\" --create --if-not-exists --topic\
+      \ measurement_raw_v1 --partitions ${KAFKA_RAW_PARTITIONS:-3} --replication-factor\
+      \ ${KAFKA_RAW_REPLICATION_FACTOR:-3}\n/opt/kafka/bin/kafka-topics.sh --bootstrap-server\
+      \ \"${KAFKA_BOOTSTRAP_SERVERS:?Set all three edge Kafka brokers, e.g. host1:9092,host2:9092,host3:9092}\"\
+      \ --create --if-not-exists --topic measurement_dead_letter_v1 --partitions ${KAFKA_DLQ_PARTITIONS:-1}\
+      \ --replication-factor ${KAFKA_DLQ_REPLICATION_FACTOR:-3}\n"
+    networks:
+    - cms_edge_stream
+  cms-ingestion-api:
+    build:
+      context: ../..
+      dockerfile: stacks/edge_stream/Containerfile
+    image: cms:edge_stream
+    container_name: cms-ingest-api
+    labels:
+      cms.runtime.roles: ingestion,backend-image
+      cms.runtime.entrypoint: cms.service.api:create_ingestion_app
+    restart: unless-stopped
+    environment:
+      CMS_RUNTIME_PROFILE: edge
+      CMS_API_ROLE: ingestion
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:?Set all three edge Kafka
+        brokers, e.g. host1:9092,host2:9092,host3:9092}
+      MEASUREMENT_RAW_TOPIC: ${MEASUREMENT_RAW_TOPIC:-measurement_raw_v1}
+      MEASUREMENT_DLQ_TOPIC: ${MEASUREMENT_DLQ_TOPIC:-measurement_dead_letter_v1}
+      CMS_ENABLE_RUNTIME_KAFKA_PRODUCER: ${CMS_ENABLE_RUNTIME_KAFKA_PRODUCER:-1}
+      ALLOW_CANONICAL_WRITE: '0'
+      ALLOW_PRODUCTION_DDL: '0'
+    command:
+    - python
+    - -m
+    - uvicorn
+    - cms.service.api:create_ingestion_app
+    - --factory
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8000'
+    ports:
+    - ${CMS_INGESTION_API_BIND:-127.0.0.1}:${CMS_INGESTION_API_PORT:-8000}:8000
+    networks:
+    - cms_edge_stream
+  cms-backend-api:
+    build:
+      context: ../..
+      dockerfile: stacks/edge_stream/Containerfile
+    image: cms:edge_stream
+    container_name: cms-backend-api
+    profiles:
+    - backend
+    labels:
+      cms.runtime.roles: backend,langgraph,router,evaluation,knowledge
+      cms.runtime.entrypoint: cms.service.api:create_backend_app
+    restart: unless-stopped
+    environment:
+      CMS_RUNTIME_PROFILE: edge
+      CMS_API_ROLE: backend
+      CMS_ENABLE_RUNTIME_KAFKA_PRODUCER: '0'
+      POSTGRES_HOST: ${POSTGRES_HOST:-}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_DB: ${POSTGRES_DB:-cms}
+      POSTGRES_USER: ${POSTGRES_READONLY_USER:-cms_ingest}
+      POSTGRES_SSLMODE: ${POSTGRES_SSLMODE:-disable}
+      DB_HOST: ${DB_HOST:-}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-cms}
+      DB_USER: ${DB_USER:-}
+      DB_PASSWORD: ${DB_PASSWORD:-}
+      DB_SSLMODE: ${DB_SSLMODE:-prefer}
+      ALLOW_CANONICAL_WRITE: '0'
+      ALLOW_PRODUCTION_DDL: '0'
+    command:
+    - python
+    - -m
+    - uvicorn
+    - cms.service.api:create_backend_app
+    - --factory
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8000'
+    ports:
+    - ${CMS_BACKEND_API_BIND:-127.0.0.1}:${CMS_BACKEND_API_PORT:-8001}:8000
+    networks:
+    - cms_edge_stream
+  cms-live-source-replay:
+    image: ${CMS_LIVE_SOURCE_REPLAY_IMAGE:-cms:phase1}
+    container_name: cms-live-replay
+    profiles:
+    - source-replay
+    restart: on-failure
+    labels:
+      cms.runtime.roles: source-replay-supervisor,fastapi-ingest-client
+      cms.runtime.entrypoint: scripts/stream/live_source_supervisor.py
+      cms.runtime.path: FastAPI /ingest/measurements -> Kafka measurement_raw_v1
+    environment:
+      CMS_ENABLE_LIVE_SOURCE_REPLAY: ${CMS_ENABLE_LIVE_SOURCE_REPLAY:-0}
+      PYTHONPATH: /workspace/src:/workspace
+      POSTGRES_HOST: ${POSTGRES_HOST:-}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_DB: ${POSTGRES_DB:-cms}
+      POSTGRES_USER: ${POSTGRES_USER:-cms_ingest}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
+      POSTGRES_SSLMODE: ${POSTGRES_SSLMODE:-disable}
+      DB_HOST: ${DB_HOST:-}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-}
+      DB_USER: ${DB_USER:-}
+      DB_PASSWORD: ${DB_PASSWORD:-}
+      DB_SSLMODE: ${DB_SSLMODE:-disable}
+    working_dir: /workspace
+    command:
+    - python
+    - scripts/stream/live_source_supervisor.py
+    - --source-root
+    - /live_source/harmonized
+    - --day-cache-parent
+    - /workspace/runtime
+    - --api-url
+    - ${CMS_LIVE_SOURCE_REPLAY_API_URL:-http://cms-ingestion-api:8000/ingest/measurements}
+    - --run-id
+    - ${CMS_LIVE_SOURCE_REPLAY_RUN_ID:-live_20230101_clocked}
+    - --selection-mode
+    - ${CMS_LIVE_SOURCE_REPLAY_SELECTION_MODE:-all-meters}
+    - --merge-mode
+    - ${CMS_LIVE_SOURCE_REPLAY_MERGE_MODE:-event-time}
+    - --max-files
+    - ${CMS_LIVE_SOURCE_REPLAY_MAX_FILES:-10000}
+    - --max-events-per-chunk
+    - ${CMS_LIVE_SOURCE_REPLAY_MAX_EVENTS:-5000000}
+    - --required-meters
+    - ${CMS_LIVE_SOURCE_REPLAY_REQUIRED_METERS:-1}
+    - --target-start-ts
+    - ${CMS_LIVE_SOURCE_REPLAY_START_TS:-2022-12-31T15:00:00+00:00}
+    - --target-end-ts
+    - ${CMS_LIVE_SOURCE_REPLAY_END_TS:-2023-01-30T15:00:00+00:00}
+    - --chunk-hours
+    - ${CMS_LIVE_SOURCE_REPLAY_CHUNK_HOURS:-24}
+    - --time-scale
+    - ${CMS_LIVE_SOURCE_REPLAY_TIME_SCALE:-1}
+    - --runtime-post
+    volumes:
+    - ..:/workspace:ro
+    - ${PC1_LIVE_SOURCE_ROOT:?Set PC1_LIVE_SOURCE_ROOT to the harmonized source archive
+      root}:/live_source/harmonized:ro
+    depends_on:
+    - cms-ingestion-api
+    networks:
+    - cms_edge_stream
+  cms-kafka-to-postgres-consumer:
+    build:
+      context: ../..
+      dockerfile: stacks/edge_stream/Containerfile
+    image: cms:edge_stream
+    container_name: cms-edge-kafka-consumer
+    profiles:
+    - legacy-db-writer
+    labels:
+      cms.runtime.roles: consumer,stream-db-writer,legacy-smoke
+      cms.runtime.entrypoint: scripts/stream/consumer_service.py
+    restart: 'no'
+    environment:
+      CMS_RUNTIME_PROFILE: edge
+      CMS_ENABLE_RUNTIME_CONSUMER: ${CMS_ENABLE_RUNTIME_CONSUMER:-0}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:?Set all three edge Kafka
+        brokers, e.g. host1:9092,host2:9092,host3:9092}
+      MEASUREMENT_RAW_TOPIC: ${MEASUREMENT_RAW_TOPIC:-measurement_raw_v1}
+      KAFKA_TOPIC_IDENTITY: ${KAFKA_TOPIC_IDENTITY:-local_pc123.measurement_raw_v1}
+      MEASUREMENT_DLQ_TOPIC: ${MEASUREMENT_DLQ_TOPIC:-measurement_dead_letter_v1}
+      KAFKA_CONSUMER_GROUP: ${KAFKA_CONSUMER_GROUP:-postgres-live-ingest}
+      KAFKA_AUTO_OFFSET_RESET: ${KAFKA_AUTO_OFFSET_RESET:-latest}
+      KAFKA_CONSUMER_CLIENT_ID: ${KAFKA_CONSUMER_CLIENT_ID:-pc1-postgres-live-ingest}
+      KAFKA_CONSUMER_INSTANCE_ID: ${KAFKA_CONSUMER_INSTANCE_ID:-pc1-postgres-live-ingest}
+      KAFKA_SESSION_TIMEOUT_MS: ${KAFKA_SESSION_TIMEOUT_MS:-45000}
+      KAFKA_MAX_POLL_INTERVAL_MS: ${KAFKA_MAX_POLL_INTERVAL_MS:-300000}
+      POSTGRES_HOST: ${POSTGRES_HOST:-}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_DB: ${POSTGRES_DB:-cms}
+      POSTGRES_USER: ${POSTGRES_USER:-cms_ingest}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
+      POSTGRES_SSLMODE: ${POSTGRES_SSLMODE:-disable}
+      ALLOW_CANONICAL_WRITE: '0'
+      ALLOW_PRODUCTION_DDL: '0'
+    command: ${CMS_CONSUMER_COMMAND:-python scripts/stream/consumer_service.py}
+    networks:
+    - cms_edge_stream
+  cms-kafka-exporter:
+    image: danielqsj/kafka-exporter:v1.8.0
+    container_name: cms-edge-kafka-exporter
+    profiles:
+    - observability
+    restart: unless-stopped
+    command:
+    - --kafka.server=${KAFKA_BROKER_1:-192.168.0.36:9092}
+    - --kafka.server=${KAFKA_BROKER_2:-192.168.0.212:9092}
+    - --kafka.server=${KAFKA_BROKER_3:-192.168.0.217:9092}
+    - --web.listen-address=:9308
+    networks:
+    - cms_edge_stream
+  cms-node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: cms-edge-node-exporter
+    profiles:
+    - observability
+    restart: unless-stopped
+    pid: host
+    command:
+    - --path.rootfs=/host/root
+    - --web.listen-address=:9100
+    volumes:
+    - /:/host/root:ro,rslave
+    networks:
+    - cms_edge_stream
+  cms-prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: cms-edge-prometheus
+    profiles:
+    - observability
+    restart: unless-stopped
+    depends_on:
+    - cms-kafka-exporter
+    - cms-node-exporter
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --storage.tsdb.retention.time=${PROMETHEUS_RETENTION_TIME:-7d}
+    ports:
+    - ${PROMETHEUS_BIND:-127.0.0.1}:${PROMETHEUS_PORT:-9090}:9090
+    volumes:
+    - ${PROMETHEUS_CONFIG_PATH:-../../configs/prometheus/edge_cluster.yml}:/etc/prometheus/prometheus.yml:ro
+    - cms_prometheus_data:/prometheus
+    networks:
+    - cms_edge_stream
+networks:
+  cms_edge_stream:
+    name: cms_edge_stream
+volumes:
+  cms_kafka_data:
+    name: cms_kafka_cluster_${KAFKA_NODE_ID:-1}_data
+  cms_prometheus_data:
+    name: cms_edge_prometheus_data
