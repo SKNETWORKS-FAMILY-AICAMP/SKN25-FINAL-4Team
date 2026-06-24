@@ -728,21 +728,11 @@ TableGroup qa_evidence [note: 'Data QA and model-serving evaluation evidence.'] 
   qa.serving_evidence
 }
 
-Ref: live.measurement_policy.policy_id < live.measurement_1min.policy_id
-Ref: live.measurement_policy.policy_id < live.measurement_15min.policy_id
-Ref: live.measurement_policy.policy_id < live.measurement_1h.policy_id
-Ref: live.measurement_policy.policy_id < live.bucket_queue.policy_id
-Ref: live.measurement_policy.policy_id < live.promotion_check.policy_id
-Ref: live.measurement_policy.policy_id < qa.live_issue.policy_id
-
-Ref: live.measurement_event.event_id < qa.live_issue.event_id
-Ref: live.measurement_event.event_id < ops.latency.event_id
-
+// dbdiagram.io uses automatic layout. Keep only the main cross-boundary links here
+// so the ERD renders as a wider schema map instead of one long vertical dependency chain.
 Ref: live.promotion_run.promotion_id < canonical.measurement_1min.promotion_id
 Ref: live.promotion_run.promotion_id < canonical.measurement_15min.promotion_id
 Ref: live.promotion_run.promotion_id < canonical.measurement_1h.promotion_id
 
 Ref: mart.pmax_forecast_15min.(logical_meter, base_ts, target_ts) < qa.pmax_eval.(logical_meter, base_ts, target_ts)
 Ref: mart.anomaly_warning_1h.warning_id < qa.anomaly_eval.warning_id
-Ref: ops.anomaly_log.run_id < mart.anomaly_warning_1h.run_id
-Ref: ops.metric.run_id < ops.latency.run_id

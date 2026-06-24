@@ -8,15 +8,15 @@ CMS(에너지 운영 지원 시스템)는 건물 및 설비에서 발생하는 �
 
 ## 프로젝트 소개
 
-CMS는 계량 이벤트가 시스템에 최초로 인입되는 시점부터 운영 대시보드 표출, 보고서 생성, 모델 예측 및 경고, RAG 시스템 응답에 이르기까지 전체 파이프라인에서 일관된 데이터 계약(Data Contract)을 유지하도록 설계되었습니다.
+CMS는 계량 이벤트가 시스템에 최초로 인입되는 시점부터 운영 대시보드 표출, 보고서 생성, 모델 예측 및 경고 지표에 이르기까지 전체 파이프라인에서 일관된 데이터 계약(Data Contract)을 유지하도록 설계되었습니다.
 
-실시간 데이터 스트리밍은 Kafka가 전담하며, 이후의 데이터 상태 전이 및 운영 이력은 PostgreSQL이 안전하게 보관합니다. FastAPI는 프론트엔드 화면 요청, 읽기 전용 데이터 조회, 작업 상태 확인, RAG 응답 등을 중개하는 서비스 API 계층으로 동작합니다.
+실시간 데이터 스트리밍은 Kafka가 전담하며, 이후의 데이터 상태 전이 및 운영 이력은 PostgreSQL이 보관합니다. FastAPI는 프론트엔드 화면 요청, 읽기 전용 데이터 조회, 작업 상태 확인, 보고서·모델 산출물 조회를 중개하는 서비스 API 계층으로 동작합니다.
 
 상세한 데이터 처리 파이프라인은 하단 다이어그램에서 확인할 수 있으며, 상단의 개요 아키텍처는 기술 스택 간의 핵심적인 상호작용만을 요약하여 보여줍니다.
 
 ## 프로젝트 목표
 
-CMS의 근본적인 목표는 계량 시계열 데이터를 단순히 적재하는 것을 넘어, 운영자가 에너지 사용 현황과 설비의 이상 징후를 신뢰할 수 있는 명확한 근거를 바탕으로 확인하도록 돕는 데 있습니다. 이를 위해 원본 이벤트부터 실시간 수집 데이터, 검증된 관측 데이터, 모델 산출물, 그리고 최종 운영 보고서까지 모두 동일한 데이터 출처와 품질 기준을 공유하도록 아키텍처를 구성했습니다.
+CMS의 목표는 계량 시계열 데이터를 운영자가 에너지 사용 현황, 설비 이상 징후, 모델 예측 결과, 운영 보고서로 확인할 수 있게 정리하는 것입니다. 원본 이벤트, 실시간 수집 데이터, 검증된 관측 데이터, 모델 산출물, 최종 운영 보고서는 동일한 데이터 출처와 품질 기준을 기준으로 연결됩니다.
 
 프로젝트의 핵심 목표는 다음과 같습니다.
 
@@ -24,8 +24,8 @@ CMS의 근본적인 목표는 계량 시계열 데이터를 단순히 적재하�
 - 실시간 수집과 과거 데이터 재수집(Replay)을 별도의 Kafka 토픽으로 분리하고, PostgreSQL을 통해 전체 이벤트 원장(Ledger)과 후속 처리 상태를 투명하게 추적합니다.
 - 실제 관측된 사실 데이터와 AI 모델의 예측 및 경고 산출물을 논리적으로 엄격하게 분리합니다.
 - 검증 및 승인이 완료된 관측 데이터는 canonical 스키마에서 안전하게 관리하며, P-Max(최대수요예측) 및 이상 감지 산출물은 산출 근거와 함께 mart, ops, qa 스키마에 격리하여 보관합니다.
-- API, 운영 대시보드, 리포트, RAG 시스템이 모두 동일한 데이터 계약을 참조하도록 보장합니다.
-- 새로운 팀원이 코드 저장소와 문서만 보더라도 전체 실행 구조, 데이터 흐름, 스키마 경계, 배포 단위, 모델 산출물 영역을 직관적으로 파악할 수 있도록 구성합니다.
+- API, 운영 대시보드, 리포트, 모델 산출물 조회가 동일한 데이터 계약을 참조하도록 구성합니다.
+- 소스 코드, 실행 구성, 데이터 흐름, 스키마 경계, 배포 단위, 모델 산출물 영역을 한 저장소 안에서 함께 설명합니다.
 
 ## 저장소 포함 범위
 
@@ -34,15 +34,15 @@ CMS의 근본적인 목표는 계량 시계열 데이터를 단순히 적재하�
 - CMS Python 패키지 소스 코드
 - React/Vite 기반 프론트엔드 화면 소스
 - FastAPI 라우팅 및 서비스 API 계약 규약
-- Airflow DAG 및 Scheduler/Worker 워크플로우 소스
+- Airflow DAG, Scheduler, 백그라운드 실행 흐름 소스
 - Docker Compose 스택 및 환경 변수 템플릿
 - PostgreSQL, Kafka, 모델 서빙, 운영 모니터링 관련 스크립트
-- 데이터 플랫폼, 실행 환경, DB, 온톨로지(Ontology), RAG, QA 관련 기술 명세 문서
+- 데이터 플랫폼, 실행 환경, DB, 온톨로지(Ontology), QA 관련 기술 명세 문서
 - Mermaid/DBML 기반의 아키텍처 다이어그램 원본 및 렌더링 결과물
 
 ## 전체 아키텍처
 
-상단의 개요 아키텍처는 서비스 기술 스택 간의 상호작용을 보여줍니다. 데이터의 실시간 및 재수집 파이프라인은 `Source / Replay Producer -> Kafka -> PostgreSQL` 경로를 거치며, FastAPI는 React/Vite 프론트엔드 화면 요청, PostgreSQL 데이터 조회, RAG/Vector DB/Ontology 응답을 모두 연결하는 중앙 서비스 계층의 역할을 수행합니다.
+상단의 개요 아키텍처는 서비스 기술 스택 간의 상호작용을 보여줍니다. 데이터의 실시간 및 재수집 파이프라인은 `Source / Replay Producer -> Kafka -> PostgreSQL` 경로를 거치며, FastAPI는 React/Vite 프론트엔드 화면 요청, PostgreSQL 데이터 조회, 보고서·모델 산출물 조회를 연결하는 서비스 API 계층의 역할을 수행합니다.
 
 상세한 파이프라인 구조는 아래 다이어그램을 참고해 주시기 바랍니다.
 
@@ -54,8 +54,8 @@ CMS의 근본적인 목표는 계량 시계열 데이터를 단순히 적재하�
 | --- | --- | --- |
 | 데이터 전달 | 원본 이벤트 및 재수집 계량 이벤트를 Kafka로 안정적으로 스트리밍 | Source/Replay Producer, Kafka |
 | 데이터 저장소 | Kafka 인입 이후의 운영 상태 전이 기록 및 데이터 계약 보관 | PostgreSQL, TimescaleDB, pgvector |
-| 서비스 응답 | 대시보드 화면 연동, API 응답, 읽기 전용 데이터 조회, RAG 시스템 연결 | React/Vite, FastAPI, RAG/Vector DB/Ontology |
-| 작업 실행 및 모델 서빙 | 스케줄링 기반 예약 작업, 장시간 배치 처리, AI 예측 및 경고 모델 구동 | Airflow, Scheduler/Worker, Model Serving |
+| 서비스 응답 | 대시보드 화면 연동, API 응답, 읽기 전용 데이터 조회, 보고서·모델 산출물 조회 | React/Vite, FastAPI, PostgreSQL |
+| 작업 실행 및 모델 서빙 | 스케줄링 기반 예약 작업, 장시간 배치 처리, AI 예측 및 경고 모델 구동 | Airflow, Scheduler, Model Serving |
 | 운영 관측 (Observability) | Kafka Lag 모니터링, DB 최신성 확인, 실행 지표 및 대시보드 제공 | Prometheus, Grafana, 각종 Exporters |
 
 ## 실행 환경 구성
@@ -71,7 +71,7 @@ CMS의 실행 환경은 현장의 Edge 환경인 PC1~PC3 구역과 클라우드 
 | PC3 | AI 모델 서빙 및 MLOps 파이프라인 제어 | `pmax_scheduler`, `anomaly_scheduler`, `cms-model-ops-api`, Exporters |
 | AWS PostgreSQL | 중앙 운영 DB 및 시스템 상태 원장(Ledger) 관리 | `cms` DB, TimescaleDB, `live`, `canonical`, `mart`, `ops`, `qa`, `reference` 스키마 |
 
-FastAPI 기반의 API 경로는 주로 시스템 상태 응답, 데이터 읽기 조회, 비동기 작업 등록, 모델 산출물 제공을 담당합니다. 반면, 시스템 부하가 큰 대용량 ETL, 데이터 집계, 관측 데이터 승격(Promotion), 모델 추론 및 보고서 생성 등의 무거운 작업은 Worker, Scheduler, Airflow Task 영역으로 분리하여 비동기적으로 처리합니다.
+FastAPI 기반의 API 경로는 주로 시스템 상태 응답, 데이터 읽기 조회, 비동기 작업 등록, 모델 산출물 제공을 담당합니다. 시스템 부하가 큰 대용량 ETL, 데이터 집계, 관측 데이터 승격(Promotion), 모델 추론 및 보고서 생성은 Scheduler, Airflow Task, 백그라운드 실행 프로세스로 분리하여 처리합니다.
 
 ## 데이터 플랫폼 설계
 
@@ -88,7 +88,7 @@ FastAPI 기반의 API 경로는 주로 시스템 상태 응답, 데이터 읽기
 -> PostgreSQL (live.measurement_event 테이블 적재)
 -> live 스키마 내 집계 후보 / bucket_queue / promotion_check 검증
 -> canonical.measurement_* 또는 mart.* 스키마로 최종 승격 및 저장
--> API / 운영 대시보드 / 보고서 / RAG 등을 통한 데이터 소비
+-> API / 운영 대시보드 / 보고서 / 모델 산출물 조회를 통한 데이터 소비
 ```
 
 PostgreSQL 내의 `cms` 데이터베이스는 Kafka를 거쳐 인입된 데이터의 모든 상태 변화를 빠짐없이 기록하는 시스템 원장 역할을 수행합니다.
@@ -98,7 +98,7 @@ PostgreSQL 내의 `cms` 데이터베이스는 Kafka를 거쳐 인입된 데이�
 | `live` | 실시간 수집 이벤트 원장, 집계 후보 데이터 보관, 처리 대기열 및 승격 검사 | `measurement_event`, `measurement_1min`, `measurement_15min`, `measurement_1h`, `bucket_queue`, `promotion_check` |
 | `canonical` | 품질 검증 및 승인이 최종 완료된 공식 관측 데이터 | `measurement_1min`, `measurement_15min`, `measurement_1h` |
 | `mart` | 모델 서빙을 위한 입력 피처, 모델 산출물 및 데이터 분석용 마트 | `peak_feature_15min`, `pmax_forecast_15min`, `anomaly_feature_1h`, `anomaly_warning_1h` |
-| `ops` | Worker 상태 기록, 시스템 이벤트 로그, 추론 기록, 보고서 및 RAG 문서 원본 | `worker_heartbeat`, `worker_event_log`, `pmax_log`, `anomaly_log`, `daily_report`, `weekly_report`, `monthly_report`, `energy_doc` |
+| `ops` | 실행 상태 기록, 시스템 이벤트 로그, 추론 기록, 보고서 및 문서 원천 메타데이터 | `worker_heartbeat`, `worker_event_log`, `pmax_log`, `anomaly_log`, `daily_report`, `weekly_report`, `monthly_report`, `energy_doc` |
 | `qa` | 데이터 품질 이상 지표, 모델 평가 결과, 서빙 신뢰성 근거 자료 | `bad_row`, `live_issue`, `pmax_eval`, `anomaly_eval`, `serving_evidence` |
 | `reference` | 데이터 보정 및 리샘플링 작업 시 기준이 되는 마스터 데이터 | `corrected_resampled_15min`, `corrected_resampled_1h` |
 
@@ -138,7 +138,7 @@ PostgreSQL 내의 `cms` 데이터베이스는 Kafka를 거쳐 인입된 데이�
 - `src/cms/ontology/` : 온톨로지(Ontology) 스키마 원본 및 도메인 매핑 헬퍼 로직
 - `src/frontend/` : React/Vite 기반의 프론트엔드 대시보드 소스 코드
 
-백엔드 설계 시 FastAPI는 실시간 이벤트를 쏟아내는 스트림 프로듀서(Stream Producer)가 아니라는 점을 전제로 합니다. 철저하게 서비스 응답과 읽기 전용 데이터 조회 계층으로만 동작합니다. 실시간 수집 및 재수집의 주도권은 Kafka가 가지며, 프론트엔드 표출과 보고서/RAG 응답은 철저히 FastAPI와 PostgreSQL 사이에 정의된 스키마 계약을 통해서만 제공됩니다.
+백엔드 설계 시 FastAPI는 실시간 이벤트를 쏟아내는 스트림 프로듀서(Stream Producer)가 아닙니다. FastAPI는 서비스 응답과 읽기 전용 데이터 조회 계층으로 동작합니다. 실시간 수집 및 재수집의 주도권은 Kafka가 가지며, 프론트엔드 표출, 보고서 조회, 모델 산출물 조회는 FastAPI와 PostgreSQL 사이에 정의된 스키마 계약을 통해 제공됩니다.
 
 ## 기술 스택 구성
 
@@ -149,11 +149,11 @@ PostgreSQL 내의 `cms` 데이터베이스는 Kafka를 거쳐 인입된 데이�
 | 프론트엔드 | React, Vite, Recharts |
 | 이벤트 스트리밍 | Kafka |
 | 운영 데이터베이스 | PostgreSQL, TimescaleDB, pgvector |
-| 작업 오케스트레이션 | Airflow, Scheduler/Worker, LangGraph |
+| 작업 오케스트레이션 | Airflow, Scheduler, LangGraph |
 | 운영 모니터링 | Grafana, Prometheus, 각종 Exporters |
 | 컨테이너 환경 | Docker, Docker Compose |
 | 모델 서빙 | LightGBM / CatBoost / LSTM 아티팩트 계약, P-Max 및 이상 감지 서빙 파이프라인 |
-| 지식 근거화 (Knowledge Base) | Ontology TTL/OWL, Graphify, RAG/Knowledge 원본 계약 |
+| 문서·온톨로지 보조 자료 | Ontology TTL/OWL, Graphify, 기술 문서 원본 계약 |
 
 ## 디렉토리 구조
 
@@ -209,7 +209,7 @@ docker compose --env-file env/compose_render.env.example -f stacks/workflow/airf
 
 | 관점 | 원본 소스 | 렌더링 결과물 |
 | --- | --- | --- |
-| 개요 아키텍처 | 직접 작성 (SVG) | [stack/overview.svg](docs/diagrams/stack/overview.svg) |
+| 개요 아키텍처 | * | [stack/overview.svg](docs/diagrams/stack/overview.svg) |
 | 전체 파이프라인 | [flow/00_overall.mmd](docs/diagrams/flow/00_overall.mmd) | [flow/00_overall.svg](docs/diagrams/flow/00_overall.svg) |
 | DB 실시간·승인 데이터 흐름 | [flow/01_db.mmd](docs/diagrams/flow/01_db.mmd) | [flow/01_db.svg](docs/diagrams/flow/01_db.svg) |
 | 실행 환경 구성 | [flow/02_runtime.mmd](docs/diagrams/flow/02_runtime.mmd) | [flow/02_runtime.svg](docs/diagrams/flow/02_runtime.svg) |

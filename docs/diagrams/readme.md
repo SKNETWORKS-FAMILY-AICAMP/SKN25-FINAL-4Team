@@ -45,7 +45,7 @@ docs/diagrams/
 
 | 구분 | Source | Render | 설명 |
 |---|---|---|---|
-| overview architecture | direct SVG | `stack/overview.svg` | 서비스 기술 스택 간 상호작용을 축약해 보여준다. Live stream은 Source/Replay Producer -> Kafka -> PostgreSQL 경로로 두고, FastAPI는 서비스 계층으로 분리한다. |
+| overview architecture | * | `stack/overview.svg` | 서비스 기술 스택 간 상호작용을 축약해 보여준다. Live stream은 Source/Replay Producer -> Kafka -> PostgreSQL 경로로 두고, FastAPI는 서비스 계층으로 분리한다. |
 | 전체 flow | `flow/00_overall.mmd` | `flow/00_overall.svg` | source/archive, Kafka live ingestion buffer, PostgreSQL live/canonical, peak/model-serving branch, service/workflow/knowledge plane의 전체 연결을 표현한다. |
 | live pipeline ERD | `erd/live_contract.dbml` | dbdiagram.io | AWS `cms` DB로 검증한 live pipeline DBML ERD다. |
 | DB live/canonical flow | `flow/01_db.mmd` | `flow/01_db.svg` | FastAPI, Kafka, PostgreSQL live processing, rollup, QA eligibility, canonical promotion을 상세 표현한다. |
@@ -72,7 +72,7 @@ README에서는 overview와 pipeline detail을 분리해 배치한다.
 | Data Platform | `flow/01_db.svg` | Kafka 이후 PostgreSQL live/canonical 경계를 보여준다. |
 | Workflow and Model-serving | `flow/03_airflow.svg` | Airflow, Scheduler, report/model workflow 경계를 보여준다. |
 | Workflow and Model-serving | `flow/04_graph.svg` | Stage1/Stage2 router, runtime gate, LangGraph orchestration, 근거 조회, backend/frontend output 경계를 보여준다. |
-| Application Surface | `flow/05_app.svg` | FastAPI, frontend, Grafana, report/RAG service 경계를 보여준다. |
+| Application Surface | `flow/05_app.svg` | FastAPI, frontend, Grafana, report/API service 경계를 보여준다. |
 
 ## 6. Plane 기준
 
