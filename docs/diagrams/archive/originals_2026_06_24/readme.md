@@ -9,8 +9,6 @@
 - Mermaid flow/sequence diagram은 `.mmd`를 canonical source로 관리한다.
 - `.svg`는 팀 공유와 Markdown preview를 위한 render 결과다.
 - DB ERD는 dbdiagram.io용 `.dbml`을 canonical source로 관리한다.
-- `stack/overview.svg`처럼 icon-based SVG를 직접 관리하는 경우에는 SVG 자체를 canonical source/render로 본다. 팀 공유 preview가 필요하면 같은 이름의 `.png`를 SVG에서 렌더링한다.
-- AWS 공식 아이콘 기반 구조도는 공식 AWS Architecture Icons asset package를 사용하고, light background, official icon color/shape 유지, 48 px service/resource icon, 32 px group icon, Arial label, 2 pt straight/right-angle arrow 기준을 따른다.
 - Diagram 의미를 바꾸면 `.mmd`와 대응 `.svg`를 같은 change set에서 함께 갱신한다.
 - Render readability gate는 `foreignObject == 0`, `nodeLabel == 0`, `text_tags > 0`이다.
 
@@ -33,7 +31,6 @@
 |---|---|---|---|
 | 전체 flow | `flow/00_overall.mmd` | `flow/00_overall.svg` | source/archive, Kafka live ingestion buffer, PostgreSQL live/canonical, peak/model-serving branch, service/workflow/knowledge plane의 전체 연결을 표현한다. |
 | live pipeline ERD | `erd/live_contract.dbml` | dbdiagram.io | current deployed/read-back tables와 target/future contract tables를 구분한 DBML ERD 코드다. |
-| 기술스택 구조도 | SVG 자체 | `stack/overview.svg`, `stack/overview.png` | AWS 공식 아이콘과 작성 규정을 적용해 PC1~PC3 edge runtime, AWS EC2 DB/observability plane, FastAPI, Kafka, PostgreSQL/TimescaleDB, Airflow, Grafana, Prometheus, P-Max/Anomaly, controlled promotion 경계를 배치한다. |
 | DB live/canonical flow | `flow/01_db.mmd` | `flow/01_db.svg` | FastAPI, Kafka, PostgreSQL live processing, rollup, QA eligibility, canonical promotion을 상세 표현한다. |
 | Runtime topology/data platform flow | `flow/02_runtime.mmd` | `flow/02_runtime.svg` | PC1~PC3 edge runtime과 AWS DB plane의 현재 서비스 배치 및 연결을 표현한다. |
 | Airflow/workflow flow | `flow/03_airflow.mmd` | `flow/03_airflow.svg` | PC1 Airflow와 PC3 operational scheduler, report/model/canonical workflow 책임을 표현한다. |
