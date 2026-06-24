@@ -60,7 +60,21 @@ docs/diagrams/
 | LangGraph review sequence | `seq/04_graph.mmd` | `seq/04_graph.svg` | review request, context retrieval, evidence boundary check, recommendation, artifact/status 순서를 표현한다. |
 | App/service sequence | `seq/05_app.mmd` | `seq/05_app.svg` | ingestion API, backend API, read-only query, model evidence, background job/review status 순서를 표현한다. |
 
-## 5. Plane 기준
+## 5. README 배치 기준
+
+README에서는 overview와 pipeline detail을 분리해 배치한다.
+
+| README 섹션 | Diagram | 역할 |
+|---|---|---|
+| 문서 상단 | `stack/overview.svg` | 서비스 기술 스택 간 상호작용을 한 장으로 보여준다. |
+| 전체 아키텍처 | `flow/00_overall.svg` | 전체 pipeline detail로 연결한다. |
+| Runtime 구성 | `flow/02_runtime.svg` | PC1~PC3 edge runtime과 AWS DB plane 배치를 보여준다. |
+| Data Platform | `flow/01_db.svg` | Kafka 이후 PostgreSQL live/canonical 경계를 보여준다. |
+| Workflow and Model-serving | `flow/03_airflow.svg` | Airflow, Scheduler, report/model workflow 경계를 보여준다. |
+| Workflow and Model-serving | `flow/04_graph.svg` | LangGraph review가 async review 경계에 있음을 보여준다. |
+| Application Surface | `flow/05_app.svg` | FastAPI, frontend, Grafana, report/RAG service 경계를 보여준다. |
+
+## 6. Plane 기준
 
 | Plane | 포함 | 제외 |
 |---|---|---|
@@ -69,7 +83,7 @@ docs/diagrams/
 | Workflow plane | Airflow, scheduler, report worker, PC3 model-serving, canonical promotion worker, optional LangGraph review | synchronous chat path |
 | Observability plane | Prometheus, Grafana, exporters, Kafka lag/backlog | source-of-truth data correction |
 
-## 6. Render / DBML 기준
+## 7. Render / DBML 기준
 
 Mermaid render 설정은 `config/mermaid.json`을 사용한다.
 
@@ -96,7 +110,7 @@ text_tags > 0
 git diff --check
 ```
 
-## 7. 수정 규칙
+## 8. 수정 규칙
 
 1. Mermaid diagram 의미를 바꿀 때는 `.mmd`를 먼저 수정한다.
 2. `.mmd` 수정 후 대응 `.svg`를 재생성한다.

@@ -1,14 +1,16 @@
 # CMS
 
-CMS는 건물·설비 계량 데이터를 운영자가 판단할 수 있는 상태 정보, 품질 근거, 보고서, 예측·경고로 연결하는 에너지 운영 지원 시스템입니다. 이 저장소는 CMS의 source archive와 팀 공유용 기술 문서를 함께 보관합니다.
-
-이 README는 `docs/specs/overview.md`, `docs/specs/runtime.md`, `docs/specs/data_platform.md`, `docs/specs/database.md`를 기준으로 작성했습니다. 서버별 credential, 실제 `.env`, 대용량 모델 binary, cache, local runtime log는 저장소 범위에서 제외합니다.
-
-## Overview Architecture
-
 ![CMS Overview Architecture](docs/diagrams/stack/overview.svg)
 
-이 개요도는 서비스 기술 스택 간 상호작용만 보여줍니다. Live stream은 `Source / Replay Producer -> Kafka -> PostgreSQL` 경로로 표현하고, FastAPI는 React/Vite 화면, PostgreSQL 조회, RAG/Vector DB/Ontology 응답을 연결하는 서비스 계층으로 둡니다. 세부 처리 단위와 DB table 흐름은 아래 pipeline diagram에서 확인합니다.
+CMS는 건물·설비 계량 데이터를 운영자가 판단할 수 있는 상태 정보, 품질 근거, 보고서, 예측·경고로 연결하는 에너지 운영 지원 시스템입니다. 이 저장소는 CMS의 source archive와 팀 공유용 기술 문서를 함께 보관합니다.
+
+이 README는 `docs/specs/overview.md`, `docs/specs/runtime.md`, `docs/specs/data_platform.md`, `docs/specs/database.md`, `docs/specs/ontology.md`와 기존 SKN25 기술 문서의 운영 구조·데이터 플랫폼·DB 계약 내용을 대조해 정리했습니다. 서버별 credential, 실제 `.env`, 대용량 모델 binary, cache, local runtime log는 저장소 범위에서 제외합니다.
+
+## 프로젝트 소개
+
+CMS는 계량 이벤트가 들어오는 시점부터 운영 화면과 보고서, 모델 예측·경고, RAG 응답에 사용되는 시점까지 같은 데이터 계약을 유지하는 시스템입니다. Live stream은 Kafka가 담당하고, PostgreSQL은 Kafka 이후 상태 전이와 운영 데이터를 보관합니다. FastAPI는 서비스 요청, 읽기 전용 조회, 작업 상태, RAG 응답을 연결하는 API 계층으로 둡니다.
+
+상세 처리 단위는 pipeline diagram에서 확인하고, README 상단의 overview architecture는 기술 스택 간 상호작용만 축약해 보여줍니다.
 
 ## 프로젝트 목표
 
@@ -29,9 +31,9 @@ CMS의 목표는 계량 시계열을 단순히 저장하는 것이 아니라, �
 - CMS Python package source
 - React/Vite frontend source
 - FastAPI route와 service contract
-- Airflow DAG와 scheduler/worker source
+- Airflow DAG와 Scheduler/Worker source
 - Docker Compose stack과 non-secret env template
-- PostgreSQL/Kafka/model-serving/observability 관련 운영 스크립트
+- PostgreSQL, Kafka, model-serving, observability 관련 운영 스크립트
 - 데이터 플랫폼, runtime, DB, ontology, RAG, QA 명세 문서
 - Mermaid/DBML diagram source와 render 결과
 
@@ -43,16 +45,44 @@ CMS의 목표는 계량 시계열을 단순히 저장하는 것이 아니라, �
 - build output, cache, log, local notebook/runtime dump
 - cleanup archive와 test tree
 
-## 시스템 구성 요약
+## 전체 아키텍처
 
-CMS는 데이터 처리 영역, 서비스 응답 영역, 작업 실행 영역, 운영 관측 영역을 분리합니다.
+Overview architecture는 서비스 기술 스택 간 상호작용을 보여줍니다. Live/backfill stream은 `Source / Replay Producer -> Kafka -> PostgreSQL` 경로로 표현하고, FastAPI는 React/Vite 화면, PostgreSQL 조회, RAG/Vector DB/Ontology 응답을 연결하는 서비스 계층으로 둡니다.
+
+전체 pipeline detail은 아래 diagram에서 확인합니다.
+
+![Overall Pipeline](docs/diagrams/flow/00_overall.svg)
+
+핵심 영역은 다음처럼 나뉩니다.
 
 | 영역 | 책임 | 주요 구성 |
 | --- | --- | --- |
-| 데이터 처리 영역 | 원천 이벤트, Kafka event, PostgreSQL 상태 전이, QA 근거, 승인 관측 데이터, mart 산출물 관리 | Kafka, `live`, `canonical`, `mart`, `ops`, `qa`, `reference` |
-| 서비스 응답 영역 | API 응답, 읽기 전용 조회, 보고서/RAG/예측 응답, frontend/dashboard 제공 | FastAPI, backend API, frontend, Grafana |
-| 작업 실행 영역 | 예약 작업, 장시간 Worker, report generation, model-serving, review workflow 관리 | Airflow, Scheduler, Worker container, LangGraph review |
-| 운영 관측 영역 | Kafka lag, DB freshness, Worker heartbeat, exporter metric, dashboard panel 관리 | Prometheus, Grafana, exporters, `ops.worker_heartbeat` |
+| Data stream | 원천 이벤트와 재생 이벤트를 stream으로 전달 | Source/Replay Producer, Kafka |
+| Data store | Kafka 이후 운영 상태와 데이터 계약 보관 | PostgreSQL, TimescaleDB, pgvector |
+| Service | 화면, API 응답, 읽기 전용 조회, RAG 연결 | React/Vite, FastAPI, RAG/Vector DB/Ontology |
+| Workflow / Model-serving | 예약 작업, 장시간 처리, 예측·경고 산출 | Airflow, Scheduler/Worker, Model Serving |
+| Observability | stream lag, DB freshness, runtime metric, dashboard | Prometheus, Grafana, exporters |
+
+## Runtime 구성
+
+CMS runtime은 PC1~PC3 edge runtime과 AWS PostgreSQL plane을 나누어 운영합니다.
+
+![Runtime Topology](docs/diagrams/flow/02_runtime.svg)
+
+| 구역 | 역할 | 주요 구성 |
+| --- | --- | --- |
+| PC1 | live/backfill stream, backend API, frontend, Airflow 중심 실행 | `cms-ingestion-api`, `cms-backend-api`, `cms-agent-frontend`, Kafka consumer, Airflow |
+| PC2 | 운영 관측 stack | `cms-grafana`, `cms-prometheus`, Kafka/node exporters |
+| PC3 | model-serving과 MLOps 제어 | `pmax_scheduler`, `anomaly_scheduler`, `cms-model-ops-api`, exporters |
+| AWS PostgreSQL | 운영 DB와 실행 상태 장부 | `cms` DB, TimescaleDB, `live`, `canonical`, `mart`, `ops`, `qa`, `reference` schemas |
+
+API 요청 경로는 상태 응답, 읽기 조회, 작업 등록, artifact/status 제공을 담당합니다. Bulk ETL, 집계, 승인 데이터 승격, 모델 추론, 보고서 generation은 Worker, Scheduler, Airflow task 경계에서 처리합니다.
+
+## Data Platform
+
+Data Platform은 Kafka topic, PostgreSQL schema, 상태 전이, 품질 근거, 승인 데이터, 모델 산출물의 경계를 정의합니다.
+
+![DB Live and Canonical Flow](docs/diagrams/flow/01_db.svg)
 
 기본 데이터 흐름은 다음과 같습니다.
 
@@ -65,19 +95,6 @@ CMS는 데이터 처리 영역, 서비스 응답 영역, 작업 실행 영역, �
 -> canonical.measurement_* 또는 mart.*
 -> API / Dashboard / Report / RAG consumer
 ```
-
-## Runtime 배치
-
-| 구역 | 역할 | 주요 구성 |
-| --- | --- | --- |
-| PC1 | live/backfill stream, backend API, frontend, rollup, peak feature, canonical promotion, Airflow | `cms-ingestion-api`, `cms-backend-api`, `cms-agent-frontend`, Kafka consumer, rollup Worker, promotion Worker, Airflow |
-| PC2 | 운영 관측 stack | `cms-grafana`, `cms-prometheus`, Kafka/node exporters |
-| PC3 | model-serving과 MLOps 제어 | `pmax_scheduler`, `anomaly_scheduler`, `cms-model-ops-api`, `cms-anomaly-feature-worker`, exporters |
-| AWS PostgreSQL | 운영 DB와 실행 상태 장부 | `cms` DB, TimescaleDB, `live`, `canonical`, `mart`, `ops`, `qa`, `reference` schemas |
-
-API 요청 경로는 상태 응답, 읽기 조회, 작업 등록, artifact/status 제공을 담당합니다. Bulk ETL, 집계, 승인 데이터 승격, 모델 추론, 보고서 generation은 Worker, Scheduler, Airflow task 경계에서 처리합니다.
-
-## 데이터 플랫폼 계약
 
 PostgreSQL `cms` DB는 Kafka 이후 상태 전이를 보관하는 장부입니다.
 
@@ -92,7 +109,11 @@ PostgreSQL `cms` DB는 Kafka 이후 상태 전이를 보관하는 장부입니�
 
 상태 전이는 이벤트 id, Kafka topic/partition/offset, bucket key, policy id/version, `source_refs`, `run_id`, `promotion_id`, 품질 근거 JSON으로 추적합니다.
 
-## Workflow와 모델 서빙
+## Workflow and Model-serving
+
+Workflow와 Model-serving 영역은 장시간 실행, 예약 실행, 모델 예측·경고, 보고서 산출물 생성 경계를 담당합니다.
+
+![Workflow and Airflow](docs/diagrams/flow/03_airflow.svg)
 
 | Workflow | 입력 | 출력 |
 | --- | --- | --- |
@@ -107,7 +128,13 @@ P-Max와 이상 감지는 관측 사실 데이터를 직접 수정하지 않습�
 
 LangGraph는 동기 chat path가 아니라 async review, QA recommendation, approval recommendation, report draft review 경계에서 선택적으로 사용합니다.
 
+![LangGraph Review Flow](docs/diagrams/flow/04_graph.svg)
+
 ## Application Surface
+
+Application Surface는 운영자가 보는 화면과 API 응답 경계를 담당합니다.
+
+![Application and Service Flow](docs/diagrams/flow/05_app.svg)
 
 - `src/cms/service/` — FastAPI application factory, routers, response contract
 - `src/cms/data/` — live processing, database adapter, equalization, promotion, sink logic
@@ -115,6 +142,8 @@ LangGraph는 동기 chat path가 아니라 async review, QA recommendation, appr
 - `src/cms/modeling/` — P-Max, anomaly, model artifact, model-ops logic
 - `src/cms/ontology/` — ontology schema source와 domain mapping helper
 - `src/frontend/` — React/Vite frontend dashboard source
+
+FastAPI는 stream producer가 아니라 service/read/response 계층입니다. Live/backfill stream은 Kafka 중심으로 두고, frontend와 report/RAG 응답은 FastAPI와 PostgreSQL 계약을 통해 제공합니다.
 
 ## Tech Stack
 
