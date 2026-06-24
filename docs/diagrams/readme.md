@@ -51,7 +51,7 @@ docs/diagrams/
 | DB live/canonical flow | `flow/01_db.mmd` | `flow/01_db.svg` | FastAPI, Kafka, PostgreSQL live processing, rollup, QA eligibility, canonical promotion을 상세 표현한다. |
 | Runtime topology/data platform flow | `flow/02_runtime.mmd` | `flow/02_runtime.svg` | PC1~PC3 edge runtime과 AWS DB plane의 현재 서비스 배치 및 연결을 표현한다. |
 | Airflow/workflow flow | `flow/03_airflow.mmd` | `flow/03_airflow.svg` | PC1 Airflow와 PC3 operational scheduler, report/model/canonical workflow 책임을 표현한다. |
-| LangGraph review flow | `flow/04_graph.mmd` | `flow/04_graph.svg` | LangGraph가 async review/QA/approval recommendation에만 위치한다는 경계를 표현한다. |
+| LangGraph router/review flow | `flow/04_graph.mmd` | `flow/04_graph.svg` | Stage1 요청 유형 분류, Stage2 agent route, runtime gate, LangGraph orchestration, 근거 조회, backend/frontend output 경계를 표현한다. |
 | App/service flow | `flow/05_app.mmd` | `flow/05_app.svg` | PC1 FastAPI services, frontend/Grafana, read-only SQL, managed ingestion boundary, optional async review를 표현한다. |
 | 전체 sequence | `seq/00_overall.mmd` | `seq/00_overall.svg` | ingest, processing, evidence, approval, response까지의 전체 순서를 표현한다. |
 | DB live/canonical sequence | `seq/01_db.mmd` | `seq/01_db.svg` | live event ingest, trigger, rollup, QA, canonical promotion 순서를 표현한다. |
@@ -71,7 +71,7 @@ README에서는 overview와 pipeline detail을 분리해 배치한다.
 | Runtime 구성 | `flow/02_runtime.svg` | PC1~PC3 edge runtime과 AWS DB plane 배치를 보여준다. |
 | Data Platform | `flow/01_db.svg` | Kafka 이후 PostgreSQL live/canonical 경계를 보여준다. |
 | Workflow and Model-serving | `flow/03_airflow.svg` | Airflow, Scheduler, report/model workflow 경계를 보여준다. |
-| Workflow and Model-serving | `flow/04_graph.svg` | LangGraph review가 async review 경계에 있음을 보여준다. |
+| Workflow and Model-serving | `flow/04_graph.svg` | Stage1/Stage2 router, runtime gate, LangGraph orchestration, 근거 조회, backend/frontend output 경계를 보여준다. |
 | Application Surface | `flow/05_app.svg` | FastAPI, frontend, Grafana, report/RAG service 경계를 보여준다. |
 
 ## 6. Plane 기준

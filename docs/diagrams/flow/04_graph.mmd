@@ -1,57 +1,104 @@
 %%{init: {"theme": "base", "layout": "elk", "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 40, "rankSpacing": 58}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#ffffff", "primaryBorderColor": "#475569", "primaryTextColor": "#0f172a", "secondaryColor": "#f8fafc", "secondaryBorderColor": "#94a3b8", "secondaryTextColor": "#0f172a", "tertiaryColor": "#ffffff", "tertiaryBorderColor": "#cbd5e1", "tertiaryTextColor": "#0f172a", "clusterBkg": "#ffffff", "clusterBorder": "#94a3b8", "edgeLabelBackground": "#ffffff", "lineColor": "#475569", "fontFamily": "Arial, sans-serif", "fontSize": "14px"}} }%%
 flowchart LR
-    subgraph ENTRY["Async review entry"]
-      APIJOB["cms-backend-api job registration"]
-      AIRART["Airflow / report artifact"]
-      QA_PACKET["QA evidence packet"]
-      PROMO_REQ["promotion request"]
+    subgraph ROUTER["Runtime router"]
+      USER["User question\nfrontend request"]
+      API["FastAPI chat API\n/api/chat"]
+      S1["Stage 1\nrequest type\nquery / action / approval / off_topic / multi_intent"]
+      S2["Stage 2\nagent route\nanomaly / cms / report / forecast / domain_qa"]
+      GATE["Runtime gate\nclarify / reject / approval wait"]
+      FINAL["Service action\nroute:* or gate:*"]
     end
 
-    subgraph LG["PC1 LangGraph review workflow"]
-      STATE["state contract
-no direct DB writes"]
-      RET["retrieve context
-specs / wiki / ontology"]
-      CHECK["evidence boundary check
-source truth / QA / lineage"]
-      DECIDE["recommendation
-approve / revise / reject"]
+    subgraph AGENTS["Service agents"]
+      ANOMALY["Anomaly agent"]
+      CMS["CMS agent"]
+      REPORT["Report agent"]
+      FORECAST["Forecast agent"]
+      DOMAIN["Domain knowledge agent"]
     end
 
-    subgraph CONTEXT["Grounding context"]
-      SPECS["docs/specs
-active CMS contracts"]
-      WIKI["LLM Wiki / Obsidian
-verified nodes"]
-      ONT["ontology / meter metadata"]
-      DBREAD["AWS PostgreSQL read-only evidence"]
+    subgraph LG["LangGraph orchestration"]
+      STATE["State guard\ndry-run / no canonical write"]
+      RET["Context retrieval\nspecs / ontology / KB"]
+      CHECK["Evidence boundary check\nsource / lineage / safety"]
+      DECIDE["Service decision\nanswer / job / approval"]
     end
 
-    subgraph OUT["Outputs"]
-      NOTE["review artifact"]
-      CAVEAT["caveat list"]
-      OPS["ops approval queue
-human gate"]
-      APISTATUS["cms-backend-api status path"]
+    subgraph CONTEXT["PostgreSQL schemas and knowledge sources"]
+      SPECS["docs/specs\nservice contracts"]
+      ONT["Ontology\nmeter and measurement context"]
+      DOCKB["Document KB\nops.energy_doc"]
+      OPSDB["PostgreSQL ops schema\nwork order / status"]
+      REFPG["PostgreSQL reference schema\ncorrected resampled 1h / 15min"]
+      ANOMART["PostgreSQL mart schema\nanomaly warning / feature"]
+      FOREMART["PostgreSQL mart schema\npeak feature / P-Max forecast"]
+      OPSREPORT["PostgreSQL ops schema\ndaily / weekly / monthly report"]
     end
 
-    APIJOB --> STATE
-    AIRART --> STATE
-    QA_PACKET --> STATE
-    PROMO_REQ --> STATE
+    subgraph BOUT["Backend outputs"]
+      CHATOUT["Chat/API output\nanswer payload / status metadata"]
+      STATUSOUT["Job status response\nstatus path / progress"]
+      APPROVALOUT["Approval state\npending / approved / rejected"]
+      CAVEATOUT["Caveat metadata\nsource limits / safety notes"]
+    end
+
+    subgraph FRONT["Frontend UI"]
+      CHATUI["Frontend render\nchat bubble / status panel"]
+      STATUSUI["Status badge\nprogress / done / failed"]
+      APPROVALUI["Approval modal\nconfirm / reject action"]
+      CAVEATUI["Caveat notice\nwarning panel"]
+    end
+
+    USER --> API --> S1
+    S1 -->|query| S2
+    S1 -->|action / approval / off_topic / multi_intent| GATE
+    S2 --> FINAL
+    GATE --> FINAL
+
+    S2 --> ANOMALY
+    S2 --> CMS
+    S2 --> REPORT
+    S2 --> FORECAST
+    S2 --> DOMAIN
+
+    ANOMALY --> ANOMART
+    ANOMALY --> REFPG
+    CMS --> OPSDB
+    CMS --> ONT
+    CMS --> REFPG
+    REPORT --> OPSREPORT
+    REPORT --> REFPG
+    FORECAST --> FOREMART
+    FORECAST --> REFPG
+    DOMAIN --> ONT
+    DOMAIN --> DOCKB
+    DOMAIN --> REFPG
+
+    FINAL --> STATE
     STATE --> RET
     SPECS --> RET
-    WIKI --> RET
     ONT --> RET
-    DBREAD --> CHECK
+    DOCKB --> RET
     RET --> CHECK
+    OPSDB --> CHECK
+    REFPG --> CHECK
+    ANOMART --> CHECK
+    FOREMART --> CHECK
+    OPSREPORT --> CHECK
     CHECK --> DECIDE
-    DECIDE --> NOTE
-    DECIDE --> CAVEAT
-    DECIDE --> OPS
-    NOTE --> APISTATUS
-    CAVEAT --> APISTATUS
+    DECIDE --> CHATOUT
+    DECIDE --> STATUSOUT
+    DECIDE --> APPROVALOUT
+    DECIDE --> CAVEATOUT
+    CHATOUT --> CHATUI
+    STATUSOUT --> STATUSUI
+    APPROVALOUT --> APPROVALUI
+    CAVEATOUT --> CAVEATUI
 
+    subgraph METRIC["Selected runtime trace"]
+      TRACE["QA300 trace\nE2E avg 6520.38 ms / p95 18406.80 ms\nRoute2 avg 1123.50 ms\nLangGraph avg 6374.12 ms\nDOM render avg 16.83 ms"]
+    end
+    DECIDE --> TRACE
 
     classDef source fill:#ffffff,stroke:#2563eb,color:#0f172a,stroke-width:1px;
     classDef api fill:#ffffff,stroke:#7c3aed,color:#0f172a,stroke-width:1px;
@@ -64,13 +111,19 @@ human gate"]
     classDef approval fill:#fefce8,stroke:#ca8a04,color:#0f172a,stroke-width:1px;
     classDef hub fill:#ffffff,stroke:#334155,color:#0f172a,stroke-width:2px;
 
-    class APIJOB,AIRART,QA_PACKET,PROMO_REQ source;
+    class USER,API,S1,S2,FINAL api;
+    class GATE,APPROVALOUT,APPROVALUI approval;
+    class ANOMALY,CMS,REPORT,FORECAST,DOMAIN source;
     class STATE,RET,CHECK,DECIDE worker;
-    class SPECS,WIKI,ONT,DBREAD obs;
-    class NOTE,CAVEAT qa;
-    class OPS approval;
-    class APISTATUS api;
-    style ENTRY fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+    class SPECS,ONT,DOCKB,OPSDB,REFPG obs;
+    class ANOMART,FOREMART,OPSREPORT mart;
+    class CHATOUT,STATUSOUT,CAVEATOUT qa;
+    class CHATUI,STATUSUI,CAVEATUI api;
+    class TRACE hub;
+    style ROUTER fill:#eff6ff,stroke:#2563eb,stroke-width:3px
+    style AGENTS fill:#eef2ff,stroke:#4338ca,stroke-width:3px
     style LG fill:#fff7ed,stroke:#ea580c,stroke-width:3px
     style CONTEXT fill:#fdf4ff,stroke:#a21caf,stroke-width:3px
-    style OUT fill:#f8fafc,stroke:#475569,stroke-width:3px
+    style BOUT fill:#ecfdf5,stroke:#047857,stroke-width:3px
+    style FRONT fill:#f0f9ff,stroke:#0284c7,stroke-width:3px
+    style METRIC fill:#ffffff,stroke:#64748b,stroke-width:3px

@@ -2,46 +2,64 @@
 sequenceDiagram
     autonumber
 
-    box rgb(239, 246, 255) Review inputs
-      participant API as cms_backend_api_job_path
-      participant REP as report_artifact
-      participant QA as QA_evidence_packet
-      participant PR as promotion_request
+    box rgb(239, 246, 255) Runtime router
+      participant USER as User question
+      participant API as FastAPI chat API
+      participant ST1 as Stage1 request type
+      participant ST2 as Stage2 agent route
+      participant GATE as Runtime gate
     end
 
-    box rgb(255, 247, 237) PC1 LangGraph async review
-      participant LG as LangGraph_state
-      participant RET as context_retrieval
-      participant CHECK as evidence_boundary_check
-      participant DEC as recommendation_node
+    box rgb(238, 242, 255) Service agents
+      participant AGENT as Selected service agent
+      participant LG as LangGraph orchestration
     end
 
-    box rgb(245, 243, 255) Grounding sources
-      participant DOCS as docs_specs
-      participant WIKI as LLM_Wiki_Obsidian
-      participant ONT as ontology_meter_metadata
-      participant DB as read_only_AWS_DB_evidence
+    box rgb(245, 243, 255) PostgreSQL schemas and knowledge sources
+      participant ONT as OntologyContext
+      participant DOCKB as OpsEnergyDoc
+      participant OPSDB as OpsWorkOrder
+      participant MART as MartFacts
+      participant REF as ReferenceSchemaTimeSeries
+      participant OPSREPORT as OpsReportSchema
     end
 
-    box rgb(248, 250, 252) Outputs
-      participant ART as review_artifact
-      participant OPS as human_approval_queue
-      participant STATUS as cms_backend_api_status
+    box rgb(236, 253, 245) Backend outputs
+      participant ANSWER as Chat response
+      participant STATUS as Job status response
+      participant APPROVAL as Approval state
     end
 
-    API->>LG: enqueue review request
-    REP->>LG: attach report artifact reference
-    QA->>LG: attach QA evidence packet
-    PR->>LG: attach promotion request metadata
-    LG->>RET: normalize state, no DB write capability
-    RET->>DOCS: retrieve active CMS contracts
-    RET->>WIKI: retrieve verified knowledge nodes
-    RET->>ONT: retrieve meter and measurement context
-    CHECK->>DB: read only supporting evidence
-    RET-->>CHECK: provide grounded context
-    CHECK-->>DEC: return pass warn block caveats
-    DEC->>ART: write review note artifact
-    DEC-->>OPS: recommend approve revise or reject
-    ART-->>STATUS: expose artifact path and status
+    box rgb(240, 249, 255) Frontend UI
+      participant FRONT as React dashboard UI
+    end
 
-    Note over LG,OPS: LangGraph never performs canonical promotion or mutating DB writes.
+    USER->>API: submit /api/chat question
+    API->>ST1: classify request type
+    alt query request
+      ST1->>ST2: classify agent route
+      ST2->>AGENT: dispatch to anomaly, cms, report, forecast, or domain_qa
+      AGENT->>ONT: lookup meter and measurement context
+      AGENT->>DOCKB: lookup document KB when needed
+      AGENT->>REF: lookup reference time-series facts
+      AGENT->>MART: lookup mart facts when needed
+      AGENT->>OPSREPORT: lookup report tables when needed
+      AGENT-->>ANSWER: build answer with route metadata
+      ANSWER-->>API: return /api/chat result
+      API-->>FRONT: render chat output and caveats
+    else action, approval, off_topic, or multi_intent
+      ST1->>GATE: enter clarify, reject, or approval wait gate
+      GATE->>LG: create review state only when runtime action needs review
+      LG->>OPSDB: read or prepare work order state
+      LG->>ONT: attach domain context
+      LG->>REF: attach supporting numeric facts
+      LG-->>STATUS: expose job status and caveats
+      LG-->>APPROVAL: wait for human approval when required
+      STATUS-->>API: return status path and progress payload
+      APPROVAL-->>API: return pending approval state
+      API-->>FRONT: render status, caveat, or approval UI
+    end
+
+    Note over ST1,ST2: Stage1 handles request policy. Stage2 runs only for query requests.
+    Note over LG,OPSDB: LangGraph coordinates guarded review state and never performs canonical promotion directly.
+    Note over ONT,REF: Runtime grounding uses ops, mart, reference, ontology and ops.energy_doc sources.
