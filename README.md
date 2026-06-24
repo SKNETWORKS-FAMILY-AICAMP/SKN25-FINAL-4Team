@@ -1,49 +1,48 @@
 # CMS
 
-CMS는 건물 및 설비 계량 시계열 데이터를 Kafka 기반 live/backfill stream으로 수집하고, PostgreSQL 상태 원장과 worker/scheduler 경계를 통해 품질 검증, canonical 승격, model-serving, 운영 보고서 생성을 수행하는 에너지 데이터 운영 시스템입니다.
+CMS는 건물·설비의 계량 데이터를 운영자가 신뢰할 수 있는 상태 정보, 점검 후보, 보고서, 예측·경고로 활용할 수 있게 만드는 에너지 운영 지원 시스템입니다. 데이터 신뢰성, 실행 경계, 서비스 화면, 모델 서빙을 하나의 코드베이스와 명세로 연결합니다.
 
 ![CMS Stack Architecture](docs/diagrams/stack/overview.svg)
 
 ## Goals & Scope
 
-CMS의 목표는 실시간 계량 데이터가 운영 시스템에 들어온 뒤 최종 대시보드, 보고서, 예측 산출물로 소비되기까지의 과정을 추적 가능하고 검증 가능한 데이터 파이프라인으로 구성하는 것입니다.
+CMS의 목표는 계량 데이터가 단순히 저장되는 수준을 넘어, 운영자가 에너지 사용 현황과 설비 이상 징후를 판단할 수 있는 근거 있는 서비스로 만드는 것입니다. 프로젝트는 데이터 수집, 품질 검증, 승인된 관측 데이터 관리, 모델 서빙, 보고서와 대시보드를 하나의 운영 흐름으로 묶습니다.
 
-다루는 문제 영역은 다음과 같습니다.
+프로젝트가 해결하려는 핵심 문제는 다음과 같습니다.
 
-- source/replay 이벤트를 Kafka topic으로 전달하고 PostgreSQL `live` 원장에 보존
-- 1분, 15분, 1시간 단위 집계 후보와 품질 근거 자료 생성
-- 승인 경계를 통과한 관측 사실만 `canonical` 스키마로 승격
-- P-Max forecast와 anomaly warning을 `mart`, `ops`, `qa` 경계에서 별도 관리
-- FastAPI, Grafana, frontend, Airflow, scheduler, LangGraph review workflow를 역할별로 분리
-- 데이터 흐름, worker 상태, 모델 산출물, 보고서 생성 결과를 사후 검증 가능한 형태로 기록
+- 여러 원천에서 들어오는 계량 시계열을 같은 기준으로 정리하고, 누락·품질·출처를 함께 기록합니다.
+- 운영자가 어떤 값이 관측 사실이고 어떤 값이 예측·경고 산출물인지 구분할 수 있게 합니다.
+- 에너지 사용량, 피크, 이상 징후, 점검 후보를 대시보드와 보고서에서 바로 확인할 수 있게 합니다.
+- P-Max와 이상 감지 결과를 `canonical` 관측 데이터와 분리해 `mart`, `ops`, `qa` 경계에 근거와 함께 보관합니다.
+- 팀원이 실행 구조, 데이터 계약, 배포 단위, 모델 artifact 경계를 저장소만 보고 추적할 수 있게 합니다.
 
-이 저장소는 source archive와 설계 명세 공유를 위한 코드베이스입니다. 구체적인 운영 credential, 서버별 `.env`, 모델 binary artifact는 저장소에 포함하지 않고 `env/*.env.example` 및 `artifacts/manifests/` 계약으로 관리합니다.
+이 저장소의 범위는 CMS source archive와 팀 공유용 설계 명세입니다. 운영 credential, 서버별 실제 `.env`, 대용량 모델 binary artifact는 포함하지 않고, `env/*.env.example`과 `artifacts/manifests/`로 필요한 계약만 남깁니다.
 
 ## Core Capabilities
 
-- Kafka live/backfill ingestion contract
-- PostgreSQL `live`, `canonical`, `mart`, `ops`, `qa`, `reference` schema boundary
-- Live rollup, bucket queue, promotion check, canonical promotion worker
-- P-Max 및 anomaly model-serving scheduler와 검증 근거 기록
-- FastAPI 기반 ingestion/backend/model-ops API surface
-- React/Vite frontend dashboard source
-- Airflow DAG 기반 일간, 주간, 월간 report workflow 및 coverage QA workflow
+- Kafka live/backfill stream과 소비자 멱등 처리 계약
+- PostgreSQL `live`, `canonical`, `mart`, `ops`, `qa`, `reference` 스키마 경계
+- Live rollup, bucket queue, promotion check, canonical promotion Worker
+- P-Max와 이상 감지 모델 서빙 Scheduler, 산출물, 검증 근거 기록
+- FastAPI 기반 ingestion, backend, model-ops API surface
+- React/Vite 기반 운영 대시보드 frontend source
+- Airflow DAG 기반 일간·주간·월간 보고서와 coverage QA workflow
 - Grafana/Prometheus provisioning source
-- Ontology, Graphify, RAG/knowledge layer source contract
-- Mermaid/SVG 기반 architecture diagram source and render set
+- Ontology, Graphify, RAG/knowledge source contract
+- Mermaid/SVG 기반 architecture diagram source와 render set
 
 ## System Architecture
 
-CMS runtime은 Data plane, Service plane, Workflow plane, Observability plane을 분리합니다.
+CMS는 데이터 처리 영역, 서비스 응답 영역, 작업 실행 영역, 운영 관측 영역을 분리합니다.
 
 ![CMS Overall Pipeline](docs/diagrams/flow/00_overall.svg)
 
-| Plane | 책임 | 주요 구성 |
+| 영역 | 책임 | 주요 구성 |
 | --- | --- | --- |
-| Data plane | source event, Kafka event, PostgreSQL 상태 전이, QA evidence, canonical fact, mart output 관리 | Kafka, `live`, `canonical`, `mart`, `ops`, `qa`, `reference` |
-| Service plane | API 응답, 읽기 전용 조회, report/RAG/forecast 응답, frontend/dashboard surface 제공 | FastAPI, backend API, frontend, Grafana |
-| Workflow plane | 예약 작업, 장시간 worker, report generation, model-serving, optional review workflow 관리 | Airflow, scheduler, worker container, LangGraph review |
-| Observability plane | Kafka lag, DB freshness, worker heartbeat, exporter metric, dashboard panel 관리 | Prometheus, Grafana, exporters, `ops.worker_heartbeat` |
+| 데이터 처리 영역 | source event, Kafka event, PostgreSQL 상태 전이, QA evidence, canonical fact, mart output 관리 | Kafka, `live`, `canonical`, `mart`, `ops`, `qa`, `reference` |
+| 서비스 응답 영역 | API 응답, 읽기 전용 조회, 보고서/RAG/예측 응답, frontend/dashboard surface 제공 | FastAPI, backend API, frontend, Grafana |
+| 작업 실행 영역 | 예약 작업, 장시간 Worker, report generation, model-serving, 선택적 review workflow 관리 | Airflow, Scheduler, Worker container, LangGraph review |
+| 운영 관측 영역 | Kafka lag, DB freshness, Worker heartbeat, exporter metric, dashboard panel 관리 | Prometheus, Grafana, exporters, `ops.worker_heartbeat` |
 
 ### Runtime Topology
 
@@ -51,10 +50,10 @@ CMS runtime은 Data plane, Service plane, Workflow plane, Observability plane을
 
 | 구역 | 역할 | 주요 구성 |
 | --- | --- | --- |
-| PC1 | live/backfill stream, backend API, frontend, rollup, peak feature, canonical promotion, Airflow | `cms-ingestion-api`, `cms-backend-api`, `cms-agent-frontend`, Kafka consumer, rollup worker, promotion worker, Airflow |
-| PC2 | observability stack | `cms-grafana`, `cms-prometheus`, Kafka/node exporters |
-| PC3 | model-serving and MLOps control | `pmax_scheduler`, `cms-model-ops-api`, `cms-anomaly-feature-worker`, exporters |
-| AWS PostgreSQL | master state ledger and operational database | `cms` DB, TimescaleDB, `live`, `canonical`, `mart`, `ops`, `qa`, `reference` schemas |
+| PC1 | live/backfill stream, backend API, frontend, rollup, peak feature, canonical promotion, Airflow | `cms-ingestion-api`, `cms-backend-api`, `cms-agent-frontend`, Kafka consumer, rollup Worker, promotion Worker, Airflow |
+| PC2 | 운영 관측 stack | `cms-grafana`, `cms-prometheus`, Kafka/node exporters |
+| PC3 | model-serving과 MLOps 제어 | `pmax_scheduler`, `anomaly_scheduler`, `cms-model-ops-api`, `cms-anomaly-feature-worker`, exporters |
+| AWS PostgreSQL | 운영 DB와 실행 상태 장부 | `cms` DB, TimescaleDB, `live`, `canonical`, `mart`, `ops`, `qa`, `reference` schemas |
 
 ## Data Platform Design
 
