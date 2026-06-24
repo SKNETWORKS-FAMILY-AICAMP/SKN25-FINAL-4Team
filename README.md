@@ -4,6 +4,12 @@ CMS는 건물·설비 계량 데이터를 운영자가 판단할 수 있는 상�
 
 이 README는 `docs/specs/overview.md`, `docs/specs/runtime.md`, `docs/specs/data_platform.md`, `docs/specs/database.md`를 기준으로 작성했습니다. 서버별 credential, 실제 `.env`, 대용량 모델 binary, cache, local runtime log는 저장소 범위에서 제외합니다.
 
+## Overview Architecture
+
+![CMS Overview Architecture](docs/diagrams/stack/overview.svg)
+
+이 개요도는 서비스 기술 스택 간 상호작용만 보여줍니다. Live stream은 `Source / Replay Producer -> Kafka -> PostgreSQL` 경로로 표현하고, FastAPI는 React/Vite 화면, PostgreSQL 조회, RAG/Vector DB/Ontology 응답을 연결하는 서비스 계층으로 둡니다. 세부 처리 단위와 DB table 흐름은 아래 pipeline diagram에서 확인합니다.
+
 ## 프로젝트 목표
 
 CMS의 목표는 계량 시계열을 단순히 저장하는 것이 아니라, 운영자가 에너지 사용 현황과 설비 이상 징후를 신뢰할 수 있는 근거로 확인하게 만드는 것입니다.
@@ -171,10 +177,11 @@ docker compose --env-file env/compose_render.env.example -f stacks/workflow/airf
 
 ## Diagram Index
 
-Stack overview diagram은 현재 비워두며, 별도 SVG를 보관하지 않습니다. 현재 README에서는 Mermaid/DBML 기반 문서화된 diagram만 연결합니다.
+Overview architecture는 README 상단에서 기술 스택 간 상호작용을 보여줍니다. Pipeline detail은 기존 Mermaid/DBML diagram에서 확인합니다.
 
 | View | Source | Render |
 | --- | --- | --- |
+| Overview architecture | direct SVG | [stack/overview.svg](docs/diagrams/stack/overview.svg) |
 | Overall pipeline | [flow/00_overall.mmd](docs/diagrams/flow/00_overall.mmd) | [flow/00_overall.svg](docs/diagrams/flow/00_overall.svg) |
 | DB live/canonical flow | [flow/01_db.mmd](docs/diagrams/flow/01_db.mmd) | [flow/01_db.svg](docs/diagrams/flow/01_db.svg) |
 | Runtime topology | [flow/02_runtime.mmd](docs/diagrams/flow/02_runtime.mmd) | [flow/02_runtime.svg](docs/diagrams/flow/02_runtime.svg) |

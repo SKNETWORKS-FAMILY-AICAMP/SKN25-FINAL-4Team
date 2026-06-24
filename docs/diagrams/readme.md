@@ -8,6 +8,7 @@
 
 ```text
 docs/diagrams/
+├── stack/      # README용 overview SVG
 ├── flow/       # Mermaid flow source/render
 ├── seq/        # Mermaid sequence source/render
 ├── erd/        # DBML ERD source
@@ -20,7 +21,7 @@ docs/diagrams/
 - Mermaid flow/sequence diagram은 `.mmd`를 canonical source로 관리한다.
 - `.svg`는 팀 공유와 Markdown preview를 위한 render 결과다.
 - DB ERD는 dbdiagram.io용 `.dbml`을 canonical source로 관리한다.
-- Stack overview SVG는 현재 보관하지 않는다. 새 구조도를 만들기 전까지 해당 항목은 공란으로 둔다.
+- Stack overview SVG는 README 상단용 기술 스택 상호작용 지도다. Pipeline 상세는 `flow/`와 `seq/`에서 관리한다.
 - Diagram 의미를 바꾸면 `.mmd`와 대응 `.svg`를 같은 change set에서 함께 갱신한다.
 - Render readability gate는 `foreignObject == 0`, `nodeLabel == 0`, `text_tags > 0`이다.
 
@@ -44,6 +45,7 @@ docs/diagrams/
 
 | 구분 | Source | Render | 설명 |
 |---|---|---|---|
+| overview architecture | direct SVG | `stack/overview.svg` | 서비스 기술 스택 간 상호작용을 축약해 보여준다. Live stream은 Source/Replay Producer -> Kafka -> PostgreSQL 경로로 두고, FastAPI는 서비스 계층으로 분리한다. |
 | 전체 flow | `flow/00_overall.mmd` | `flow/00_overall.svg` | source/archive, Kafka live ingestion buffer, PostgreSQL live/canonical, peak/model-serving branch, service/workflow/knowledge plane의 전체 연결을 표현한다. |
 | live pipeline ERD | `erd/live_contract.dbml` | dbdiagram.io | AWS `cms` DB로 검증한 live pipeline DBML ERD다. |
 | DB live/canonical flow | `flow/01_db.mmd` | `flow/01_db.svg` | FastAPI, Kafka, PostgreSQL live processing, rollup, QA eligibility, canonical promotion을 상세 표현한다. |
