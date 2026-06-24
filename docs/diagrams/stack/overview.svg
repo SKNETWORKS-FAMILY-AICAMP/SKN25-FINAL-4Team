@@ -1,79 +1,210 @@
-<svg width="1500" height="900" viewBox="0 0 1500 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<svg width="1600" height="980" viewBox="0 0 1600 980" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">CMS overview architecture</title>
-  <desc id="desc">Technology-stack interaction overview for CMS. Source and replay producers publish to Kafka, Kafka feeds PostgreSQL, and service, workflow, model-serving, and observability stacks interact around PostgreSQL.</desc>
+  <desc id="desc">Technology-stack interaction overview for CMS. Modernized orthogonal design with AWS and Docker Compose.</desc>
+
   <defs>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.10"/>
-    </filter>
-    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2 2 L10 6 L2 10 Z" fill="#2563eb"/></marker>
-    <marker id="arrowGreen" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2 2 L10 6 L2 10 Z" fill="#059669"/></marker>
-    <marker id="arrowDark" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2 2 L10 6 L2 10 Z" fill="#334155"/></marker>
     <style>
-      .bg { fill: #f8fafc; }
-      .title { font: 700 32px Arial, sans-serif; fill: #0f172a; }
-      .subtitle { font: 400 16px Arial, sans-serif; fill: #475569; }
-      .zone-title { font: 700 15px Arial, sans-serif; fill: #1e293b; letter-spacing: .02em; }
-      .node-title { font: 700 20px Arial, sans-serif; fill: #0f172a; }
-      .node-sub { font: 400 13px Arial, sans-serif; fill: #475569; }
-      .badge { font: 700 12px Arial, sans-serif; fill: white; }
-      .legend-title { font: 700 15px Arial, sans-serif; fill: #334155; }
-      .legend-text { font: 400 13px Arial, sans-serif; fill: #475569; }
-      .stream { stroke: #2563eb; stroke-width: 3.0; marker-end: url(#arrowBlue); fill: none; }
-      .service { stroke: #059669; stroke-width: 2.8; marker-end: url(#arrowGreen); fill: none; }
-      .work { stroke: #334155; stroke-width: 2.4; marker-end: url(#arrowDark); fill: none; }
-      .observe { stroke: #94a3b8; stroke-width: 1.8; stroke-dasharray: 7 8; fill: none; opacity: .72; }
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+      text { font-family: 'Inter', sans-serif; }
+      .stream { stroke: #0284C7; stroke-width: 2.5; fill: none; marker-end: url(#arrowBlue); stroke-linejoin: round; }
+      .work { stroke: #9333EA; stroke-width: 2.5; fill: none; marker-end: url(#arrowPurple); stroke-linejoin: round; }
+      .service { stroke: #059669; stroke-width: 2.5; fill: none; marker-end: url(#arrowGreen); stroke-linejoin: round; }
+      .observe { stroke: #94A3B8; stroke-width: 2; fill: none; stroke-dasharray: 6 6; stroke-linejoin: round; }
     </style>
+
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#F1F5F9" stroke-width="1"/>
+    </pattern>
+
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.06"/>
+    </filter>
+
+    <marker id="arrowBlue" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 2 2 L 14 8 L 2 14 Z" fill="#0284C7"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 2 2 L 14 8 L 2 14 Z" fill="#9333EA"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 2 2 L 14 8 L 2 14 Z" fill="#059669"/>
+    </marker>
   </defs>
 
-  <rect class="bg" width="1500" height="900"/>
-  <rect x="36" y="32" width="1428" height="836" rx="24" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
-  <text x="72" y="84" class="title">CMS Overview Architecture</text>
-  <text x="72" y="112" class="subtitle">Technology-stack interaction map. Kafka owns live/backfill stream; pipeline diagrams keep the detailed processing view.</text>
+  <!-- Background -->
+  <rect width="1600" height="980" fill="#FAFAFA"/>
+  <rect width="1600" height="980" fill="url(#grid)"/>
 
-  <rect x="70" y="155" width="330" height="520" rx="22" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
-  <text x="98" y="192" class="zone-title">DATA STREAM</text>
-  <rect x="440" y="155" width="310" height="520" rx="22" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
-  <text x="468" y="192" class="zone-title">CORE DATA STORE</text>
-  <rect x="790" y="155" width="270" height="520" rx="22" fill="#fdf4ff" stroke="#f0abfc" stroke-width="2"/>
-  <text x="818" y="192" class="zone-title">WORKFLOW / AI</text>
-  <rect x="1100" y="155" width="330" height="520" rx="22" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
-  <text x="1128" y="192" class="zone-title">SERVICE</text>
-  <rect x="70" y="715" width="1360" height="70" rx="22" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
-  <text x="98" y="756" class="zone-title">OBSERVABILITY</text>
+  <!-- Header -->
+  <text x="60" y="60" font-size="34" font-weight="800" fill="#0F172A" letter-spacing="-0.5">CMS Architecture</text>
+  <text x="60" y="92" font-size="16" font-weight="400" fill="#64748B">Technology-stack interaction map. Data flows seamlessly from ingestion to serving.</text>
 
-  <g filter="url(#shadow)"><rect x="110" y="245" width="250" height="86" rx="18" fill="#ffffff" stroke="#60a5fa" stroke-width="2"/><circle cx="145" cy="288" r="20" fill="#2563eb"/><text x="135" y="293" class="badge">SRC</text><text x="180" y="281" class="node-title">Source / Replay</text><text x="180" y="305" class="node-sub">event producers</text></g>
-  <g filter="url(#shadow)"><rect x="110" y="425" width="250" height="86" rx="18" fill="#ffffff" stroke="#60a5fa" stroke-width="2"/><circle cx="145" cy="468" r="20" fill="#111827"/><text x="138" y="473" class="badge">K</text><text x="180" y="461" class="node-title">Kafka</text><text x="180" y="485" class="node-sub">live / backfill stream</text></g>
-  <g filter="url(#shadow)"><rect x="475" y="395" width="240" height="116" rx="20" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/><circle cx="515" cy="453" r="22" fill="#336791"/><text x="505" y="458" class="badge">PG</text><text x="555" y="445" class="node-title">PostgreSQL</text><text x="555" y="471" class="node-sub">operational data store</text></g>
-  <g filter="url(#shadow)"><rect x="825" y="245" width="200" height="86" rx="18" fill="#ffffff" stroke="#e879f9" stroke-width="2"/><circle cx="858" cy="288" r="19" fill="#017CEE"/><text x="849" y="293" class="badge">AF</text><text x="892" y="281" class="node-title">Airflow</text><text x="892" y="305" class="node-sub">scheduled work</text></g>
-  <g filter="url(#shadow)"><rect x="825" y="425" width="200" height="86" rx="18" fill="#ffffff" stroke="#e879f9" stroke-width="2"/><circle cx="858" cy="468" r="19" fill="#7c3aed"/><text x="849" y="473" class="badge">ML</text><text x="892" y="461" class="node-title">Model Serving</text><text x="892" y="485" class="node-sub">forecast / warning</text></g>
-  <g filter="url(#shadow)"><rect x="1145" y="245" width="240" height="86" rx="18" fill="#ffffff" stroke="#4ade80" stroke-width="2"/><circle cx="1180" cy="288" r="19" fill="#38bdf8"/><text x="1170" y="293" class="badge">UI</text><text x="1215" y="281" class="node-title">React / Vite</text><text x="1215" y="305" class="node-sub">operator UI</text></g>
-  <g filter="url(#shadow)"><rect x="1145" y="425" width="240" height="86" rx="18" fill="#ffffff" stroke="#4ade80" stroke-width="2"/><circle cx="1180" cy="468" r="19" fill="#009688"/><text x="1171" y="473" class="badge">API</text><text x="1215" y="461" class="node-title">FastAPI</text><text x="1215" y="485" class="node-sub">read / response</text></g>
-  <g filter="url(#shadow)"><rect x="560" y="728" width="350" height="44" rx="16" fill="#ffffff" stroke="#fb923c" stroke-width="2"/><circle cx="590" cy="750" r="16" fill="#f59e0b"/><text x="583" y="755" class="badge">OBS</text><text x="620" y="756" class="node-title">Prometheus / Grafana</text></g>
+  <!-- Legend (top-right compact) -->
+  <g transform="translate(1180, 36)">
+    <rect x="0" y="0" width="380" height="40" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" fill-opacity="0.9"/>
+    <line x1="16" y1="20" x2="40" y2="20" class="stream"/>
+    <text x="46" y="24" font-size="11" font-weight="500" fill="#475569">Stream</text>
+    <line x1="106" y1="20" x2="130" y2="20" class="service"/>
+    <text x="136" y="24" font-size="11" font-weight="500" fill="#475569">Service</text>
+    <line x1="196" y1="20" x2="220" y2="20" class="work"/>
+    <text x="226" y="24" font-size="11" font-weight="500" fill="#475569">Workflow</text>
+    <line x1="296" y1="20" x2="320" y2="20" class="observe"/>
+    <text x="326" y="24" font-size="11" font-weight="500" fill="#475569">Monitor</text>
+  </g>
 
-  <!-- Main stream path -->
-  <path class="stream" d="M235 331 L235 415"/>
-  <path class="stream" d="M360 468 C400 468 425 453 465 453"/>
+  <!-- ======================== Zones ======================== -->
+  <!-- DATA STREAM zone -->
+  <rect x="40" y="120" width="500" height="480" rx="20" fill="#F0F9FF" stroke="#BAE6FD" stroke-width="2" fill-opacity="0.5"/>
+  <text x="70" y="155" font-size="13" font-weight="700" fill="#0284C7" letter-spacing="1.2">DATA STREAM</text>
 
-  <!-- Work and model interactions around PostgreSQL -->
-  <path class="work" d="M715 425 C755 370 775 320 815 288"/>
-  <path class="work" d="M715 468 L815 468"/>
-  <path class="work" d="M825 490 C775 530 745 535 715 490"/>
+  <!-- CORE DATA STORE zone -->
+  <rect x="570" y="120" width="280" height="480" rx="20" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="2" fill-opacity="0.5"/>
+  <text x="600" y="155" font-size="13" font-weight="700" fill="#4338CA" letter-spacing="1.2">CORE DATA STORE</text>
 
-  <!-- Service interactions around PostgreSQL -->
-  <path class="service" d="M1265 331 L1265 415"/>
-  <path class="service" d="M1145 500 C1060 555 890 545 715 490"/>
+  <!-- WORKFLOW / AI zone -->
+  <rect x="880" y="120" width="310" height="480" rx="20" fill="#FAF5FF" stroke="#E9D5FF" stroke-width="2" fill-opacity="0.5"/>
+  <text x="910" y="155" font-size="13" font-weight="700" fill="#9333EA" letter-spacing="1.2">WORKFLOW / AI</text>
 
-  <!-- Monitoring only -->
-  <path class="observe" d="M650 728 C600 650 585 560 595 511"/>
-  <path class="observe" d="M650 728 C550 610 430 520 360 468"/>
-  <path class="observe" d="M760 728 C820 630 855 535 925 511"/>
-  <path class="observe" d="M820 728 C990 650 1135 550 1265 511"/>
+  <!-- SERVICE zone -->
+  <rect x="1220" y="120" width="340" height="480" rx="20" fill="#ECFEFF" stroke="#A5F3FC" stroke-width="2" fill-opacity="0.5"/>
+  <text x="1250" y="155" font-size="13" font-weight="700" fill="#0D9488" letter-spacing="1.2">SERVICE</text>
 
-  <rect x="92" y="810" width="1316" height="38" rx="14" fill="#f8fafc" stroke="#e2e8f0"/>
-  <text x="120" y="834" class="legend-title">Legend</text>
-  <text x="200" y="834" class="legend-text">blue = Kafka live/backfill stream</text>
-  <text x="460" y="834" class="legend-text">green = service request / read path</text>
-  <text x="735" y="834" class="legend-text">dark = scheduled/model interaction</text>
-  <text x="1010" y="834" class="legend-text">dashed = monitoring only</text>
-  <text x="1200" y="834" class="legend-text">details: flow / sequence diagrams</text>
+  <!-- ======================== Observability ======================== -->
+  <rect x="40" y="650" width="1520" height="200" rx="20" fill="#FFF7ED" stroke="#FED7AA" stroke-width="2" fill-opacity="0.5"/>
+  <rect x="65" y="660" width="130" height="20" fill="#FFF7ED"/>
+  <text x="70" y="675" font-size="13" font-weight="700" fill="#EA580C" letter-spacing="1.2">OBSERVABILITY</text>
+
+  <!-- ======================== Infrastructure ======================== -->
+  <rect x="40" y="880" width="1520" height="80" rx="20" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2" fill-opacity="0.5"/>
+  <text x="70" y="910" font-size="13" font-weight="700" fill="#475569" letter-spacing="1.2">INFRASTRUCTURE</text>
+
+  <!-- AWS -->
+  <g filter="url(#shadow)">
+    <rect x="70" y="920" width="240" height="46" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <text x="105" y="950" font-size="17" font-weight="900" fill="#232F3E">AWS</text>
+    <!-- AWS Smile -->
+    <path d="M 100 953 C 110 958 125 956 140 948" stroke="#FF9900" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <text x="150" y="948" font-size="14" font-weight="600" fill="#0F172A">Cloud Platform</text>
+  </g>
+
+  <!-- Docker Compose -->
+  <g filter="url(#shadow)">
+    <rect x="340" y="920" width="280" height="46" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <g transform="translate(355, 930) scale(0.8)">
+      <path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.185.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.185.185.186m-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.887c0 .102.084.185.186.186m5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185m-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.184-.186h-2.12a.186.186 0 00-.186.186v1.887c0 .102.084.185.186.185m-2.92 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.082.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.087-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.43-.23.97-.09 1.882.403 2.661-.595.332-1.55.413-1.744.42H.751a.751.751 0 00-.75.748 11.376 11.376 0 00.692 4.062c.545 1.428 1.355 2.48 2.41 3.124 1.18.723 3.1 1.137 5.275 1.137.983.003 1.963-.086 2.93-.266a12.248 12.248 0 003.823-1.389c.98-.567 1.86-1.288 2.61-2.136 1.252-1.418 1.998-2.997 2.553-4.4h.221c1.372 0 2.215-.549 2.68-1.009.309-.293.55-.65.707-1.046l.098-.288Z" fill="#2496ED"/>
+    </g>
+    <text x="390" y="948" font-size="15" font-weight="700" fill="#0F172A">Docker Compose</text>
+  </g>
+
+  <!-- ======================== Connections / Paths ======================== -->
+  <!-- Stream paths: Source → Kafka → PostgreSQL -->
+  <path class="stream" d="M 290 370 L 320 370"/>
+  <path class="stream" d="M 520 370 L 600 370"/>
+
+  <!-- Work paths: PostgreSQL → Airflow, PostgreSQL → LangGraph -->
+  <path class="work" d="M 810 350 H 850 V 260 H 920"/>
+  <path class="work" d="M 810 390 H 860 V 500 H 920"/>
+  <path class="work" d="M 920 520 H 870 V 400 H 810"/>
+
+  <!-- Service paths -->
+  <path class="service" d="M 1280 520 H 1210 V 590 H 880 V 420 H 810"/>
+  <path class="service" d="M 1390 310 V 440"/>
+
+  <!-- Monitoring paths -->
+  <path class="observe" d="M 200 700 H 1530"/>
+  <path class="observe" d="M 160 430 V 620 H 200 V 700"/>
+  <path class="observe" d="M 420 430 V 700"/>
+  <path class="observe" d="M 710 430 V 700"/>
+  <path class="observe" d="M 1130 270 H 1160 V 700"/>
+  <path class="observe" d="M 1030 550 V 700"/>
+  <path class="observe" d="M 1490 270 H 1520 V 700"/>
+  <path class="observe" d="M 1390 550 V 700"/>
+  <path class="observe" d="M 780 700 V 750"/>
+
+  <!-- ======================== Nodes ======================== -->
+  <!-- Source / Replay -->
+  <g filter="url(#shadow)">
+    <rect x="70" y="300" width="220" height="140" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <circle cx="180" cy="355" r="28" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.5"/>
+    <text x="180" y="361" font-size="15" font-weight="700" fill="#1D4ED8" text-anchor="middle">SRC</text>
+    <text x="180" y="410" font-size="20" font-weight="700" fill="#0F172A" text-anchor="middle">Source / Replay</text>
+  </g>
+
+  <!-- Kafka -->
+  <g filter="url(#shadow)">
+    <rect x="320" y="300" width="200" height="140" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <circle cx="420" cy="355" r="28" fill="#F8FAFC" stroke="#475569" stroke-width="1.5"/>
+    <g transform="translate(406, 341) scale(1.15)">
+      <path d="M9.71 2.136a1.43 1.43 0 0 0-2.047 0h-.007a1.48 1.48 0 0 0-.421 1.042c0 .41.161.777.422 1.039l.007.007c.257.264.616.426 1.019.426.404 0 .766-.162 1.027-.426l.003-.007c.261-.262.421-.629.421-1.039 0-.408-.159-.777-.421-1.042H9.71zM8.683 22.295c.404 0 .766-.167 1.027-.429l.003-.008c.261-.261.421-.631.421-1.036 0-.41-.159-.778-.421-1.044H9.71a1.42 1.42 0 0 0-1.027-.432 1.4 1.4 0 0 0-1.02.432h-.007c-.26.266-.422.634-.422 1.044 0 .406.161.775.422 1.036l.007.008c.258.262.617.429 1.02.429zm7.89-4.462c.359-.096.683-.33.882-.684l.027-.052a1.47 1.47 0 0 0 .114-1.067 1.454 1.454 0 0 0-.675-.896l-.021-.014a1.425 1.425 0 0 0-1.078-.132c-.36.091-.684.335-.881.686-.2.349-.241.75-.146 1.119.099.363.33.691.675.896h.002c.346.203.737.239 1.101.144zm-6.405-7.342a2.083 2.083 0 0 0-1.485-.627c-.58 0-1.103.242-1.482.627-.378.385-.612.916-.612 1.507s.233 1.124.612 1.514a2.08 2.08 0 0 0 2.967 0c.379-.39.612-.923.612-1.514s-.233-1.122-.612-1.507zm-.835-2.51c.843.141 1.6.552 2.178 1.144h.004c.092.093.182.196.265.299l1.446-.851a3.176 3.176 0 0 1-.047-1.808 3.149 3.149 0 0 1 1.456-1.926l.025-.016a3.062 3.062 0 0 1 2.345-.306c.77.21 1.465.721 1.898 1.482v.002c.431.757.518 1.626.313 2.408a3.145 3.145 0 0 1-1.456 1.928l-.198.118h-.02a3.095 3.095 0 0 1-2.154.201 3.127 3.127 0 0 1-1.514-.944l-1.444.848a4.162 4.162 0 0 1 0 2.879l1.444.846c.413-.47.939-.789 1.514-.944a3.041 3.041 0 0 1 2.371.319l.048.023v.002a3.17 3.17 0 0 1 1.408 1.906 3.215 3.215 0 0 1-.313 2.405l-.026.053-.003-.005a3.147 3.147 0 0 1-1.867 1.436 3.096 3.096 0 0 1-2.371-.318v-.006a3.156 3.156 0 0 1-1.456-1.927 3.175 3.175 0 0 1 .047-1.805l-1.446-.848a3.905 3.905 0 0 1-.265.294l-.004.005a3.938 3.938 0 0 1-2.178 1.138v1.699a3.09 3.09 0 0 1 1.56.862l.002.004c.565.572.914 1.368.914 2.243 0 .873-.35 1.664-.914 2.239l-.002.009a3.1 3.1 0 0 1-2.21.931 3.1 3.1 0 0 1-2.206-.93h-.002v-.009a3.186 3.186 0 0 1-.916-2.239c0-.875.35-1.672.916-2.243v-.004h.002a3.1 3.1 0 0 1 1.558-.862v-1.699a3.926 3.926 0 0 1-2.176-1.138l-.006-.005a4.098 4.098 0 0 1-1.173-2.874c0-1.122.452-2.136 1.173-2.872h.006a3.947 3.947 0 0 1 2.176-1.144V6.289a3.137 3.137 0 0 1-1.558-.864h-.002v-.004a3.192 3.192 0 0 1-.916-2.243c0-.871.35-1.669.916-2.243l.002-.002A3.084 3.084 0 0 1 8.683 0c.861 0 1.641.355 2.21.932v.002h.002c.565.574.914 1.372.914 2.243 0 .876-.35 1.667-.914 2.243l-.002.005a3.142 3.142 0 0 1-1.56.864v1.692zm8.121-1.129l-.012-.019a1.452 1.452 0 0 0-.87-.668 1.43 1.43 0 0 0-1.103.146h.002c-.347.2-.58.529-.677.896-.095.365-.054.768.146 1.119l.007.009c.2.347.519.579.874.673.357.103.755.059 1.098-.144l.019-.009a1.47 1.47 0 0 0 .657-.885 1.493 1.493 0 0 0-.141-1.118" fill="#111827"/>
+    </g>
+    <text x="420" y="410" font-size="20" font-weight="700" fill="#0F172A" text-anchor="middle">Kafka</text>
+  </g>
+
+  <!-- PostgreSQL -->
+  <g filter="url(#shadow)">
+    <rect x="600" y="300" width="210" height="140" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <circle cx="705" cy="355" r="28" fill="#F0F9FF" stroke="#0284C7" stroke-width="1.5"/>
+    <g transform="translate(691, 341) scale(1.15)">
+      <path d="M23.5594 14.7228a.5269.5269 0 0 0-.0563-.1191c-.139-.2632-.4768-.3418-1.0074-.2321-1.6533.3411-2.2935.1312-2.5256-.0191 1.342-2.0482 2.445-4.522 3.0411-6.8297.2714-1.0507.7982-3.5237.1222-4.7316a1.5641 1.5641 0 0 0-.1509-.235C21.6931.9086 19.8007.0248 17.5099.0005c-1.4947-.0158-2.7705.3461-3.1161.4794a9.449 9.449 0 0 0-.5159-.0816 8.044 8.044 0 0 0-1.3114-.1278c-1.1822-.0184-2.2038.2642-3.0498.8406-.8573-.3211-4.7888-1.645-7.2219.0788C.9359 2.1526.3086 3.8733.4302 6.3043c.0409.818.5069 3.334 1.2423 5.7436.4598 1.5065.9387 2.7019 1.4334 3.582.553.9942 1.1259 1.5933 1.7143 1.7895.4474.1491 1.1327.1441 1.8581-.7279.8012-.9635 1.5903-1.8258 1.9446-2.2069.4351.2355.9064.3625 1.39.3772a.0569.0569 0 0 0 .0004.0041 11.0312 11.0312 0 0 0-.2472.3054c-.3389.4302-.4094.5197-1.5002.7443-.3102.064-1.1344.2339-1.1464.8115-.0025.1224.0329.2309.0919.3268.2269.4231.9216.6097 1.015.6331 1.3345.3335 2.5044.092 3.3714-.6787-.017 2.231.0775 4.4174.3454 5.0874.2212.5529.7618 1.9045 2.4692 1.9043.2505 0 .5263-.0291.8296-.0941 1.7819-.3821 2.5557-1.1696 2.855-2.9059.1503-.8707.4016-2.8753.5388-4.1012.0169-.0703.0357-.1207.057-.1362.0007-.0005.0697-.0471.4272.0307a.3673.3673 0 0 0 .0443.0068l.2539.0223.0149.001c.8468.0384 1.9114-.1426 2.5312-.4308.6438-.2988 1.8057-1.0323 1.5951-1.6698z" fill="#0369A1"/>
+    </g>
+    <text x="705" y="410" font-size="20" font-weight="700" fill="#0F172A" text-anchor="middle">PostgreSQL</text>
+  </g>
+
+  <!-- Airflow -->
+  <g filter="url(#shadow)">
+    <rect x="920" y="190" width="220" height="140" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <circle cx="1030" cy="245" r="28" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+    <g transform="translate(1016, 231) scale(1.15)">
+      <path d="M17.195 16.822l4.002-4.102C23.55 10.308 23.934 5.154 24 .43a.396.396 0 0 0-.246-.373.392.392 0 0 0-.437.09l-6.495 6.658-4.102-4.003C10.309.45 5.154.066.43 0H.423a.397.397 0 0 0-.277.683l6.658 6.494-4.003 4.103C.45 13.692.065 18.846 0 23.57a.398.398 0 0 0 .683.282l6.494-6.657 3.934 3.837.17.165c2.41 2.353 7.565 2.737 12.288 2.803h.006a.397.397 0 0 0 .277-.683l-6.657-6.495zm-.409-9.476c.04.115.05.24.031.344-.17.96-1.593 2.538-4.304 3.87a.597.597 0 0 0-.08-.079c1.432-3.155 1.828-5.61 1.175-7.322l3.058 2.984.12.203zm-.131 9.44a.73.73 0 0 1-.347.031c-.96-.171-2.537-1.594-3.87-4.307a.656.656 0 0 0 .08-.078l-.001.001c3.155 1.432 5.61 1.83 7.324 1.174l-2.969 3.043M23.568.392a.05.05 0 0 1 .052-.011c.018.006.03.024.029.043-.065 4.655-.437 9.726-2.703 12.05-1.53 1.565-4.326 1.419-8.283-.377.006-.037.021-.07.02-.108 0-.044-.017-.082-.026-.123 2.83-1.39 4.315-3.037 4.506-4.115.057-.322-.009-.542-.102-.688l6.507-6.67V.392zM.393.43A.045.045 0 0 1 .382.38C.39.36.403.343.425.35c4.655.065 9.727.438 12.05 2.703l.002.002c1.56 1.527 1.415 4.323-.379 8.28-.033-.005-.062-.02-.097-.02h-.008c-.045.001-.084.019-.126.027-1.39-2.83-3.037-4.314-4.115-4.506-.323-.057-.542.01-.688.103L.393.43zm11.94 11.563a.331.331 0 0 1-.327.335H12a.332.332 0 0 1-.004-.661c.172.016.333.144.335.326h.002zm-5.12 4.661a.722.722 0 0 1-.03-.345c.17-.96 1.595-2.54 4.309-3.873.013.016.019.035.033.05.013.012.03.017.044.028-1.434 3.158-1.83 5.613-1.177 7.326l-3.041-2.967m-.006-9.659a.735.735 0 0 1 .345-.031c.961.17 2.54 1.594 3.871 4.306a.597.597 0 0 0-.079.08c-2.167-.983-4.007-1.484-5.498-1.484-.68 0-1.289.103-1.825.308L7.128 7.35M.43 23.607c-.018.018-.038.015-.052.01-.019-.007-.028-.021-.028-.043.065-4.654.437-9.725 2.703-12.049 1.527-1.565 4.325-1.419 8.286.378-.006.035-.02.067-.02.104 0 .043.018.083.026.124-2.831 1.391-4.317 3.04-4.51 4.117-.057.322.01.542.103.688L.43 23.607zm23.144.042c-4.655-.065-9.726-.437-12.05-2.703l-.005-.006c-1.56-1.526-1.412-4.322.383-8.279.033.005.064.02.098.02h.009c.043 0 .08-.018.122-.027 1.39 2.832 3.036 4.317 4.115 4.51.083.014.16.021.23.021a.776.776 0 0 0 .45-.133l6.68 6.516c.02.02.016.04.01.052a.042.042 0 0 1-.042.029z" fill="#1D4ED8"/>
+    </g>
+    <text x="1030" y="300" font-size="20" font-weight="700" fill="#0F172A" text-anchor="middle">Airflow</text>
+  </g>
+
+  <!-- LangGraph -->
+  <g filter="url(#shadow)">
+    <rect x="920" y="440" width="220" height="140" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <circle cx="1030" cy="495" r="28" fill="#FAF5FF" stroke="#9333EA" stroke-width="1.5"/>
+    <g transform="translate(1016, 481) scale(1.15)">
+      <path d="M5 19H10A5 5 0 115 14ZM19 14A5 5 0 1114 19H19ZM10 5A5 5 0 105 10V5ZM19 5V10A5 5 0 1014 5Z" fill="#7E22CE"/>
+    </g>
+    <text x="1030" y="550" font-size="20" font-weight="700" fill="#0F172A" text-anchor="middle">LangGraph</text>
+  </g>
+
+  <!-- React / Vite -->
+  <g filter="url(#shadow)">
+    <rect x="1270" y="190" width="240" height="140" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <circle cx="1390" cy="245" r="28" fill="#ECFEFF" stroke="#0891B2" stroke-width="1.5"/>
+    <g transform="translate(1376, 231) scale(1.15)">
+      <path d="M14.23 12.004a2.236 2.236 0 0 1-2.235 2.236 2.236 2.236 0 0 1-2.236-2.236 2.236 2.236 0 0 1 2.235-2.236 2.236 2.236 0 0 1 2.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38-.318-.184-.688-.277-1.092-.278z" fill="#0E7490"/>
+    </g>
+    <text x="1390" y="300" font-size="20" font-weight="700" fill="#0F172A" text-anchor="middle">React / Vite</text>
+  </g>
+
+  <!-- FastAPI -->
+  <g filter="url(#shadow)">
+    <rect x="1270" y="440" width="240" height="140" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <circle cx="1390" cy="495" r="28" fill="#F0FDF4" stroke="#059669" stroke-width="1.5"/>
+    <g transform="translate(1376, 481) scale(1.15)">
+      <path d="M12 .0387C5.3729.0384.0003 5.3931 0 11.9988c-.001 6.6066 5.372 11.9628 12 11.9625 6.628.0003 12.001-5.3559 12-11.9625-.0003-6.6057-5.3729-11.9604-12-11.96m-.829 5.4153h7.55l-7.5805 5.3284h5.1828L5.279 18.5436q2.9466-6.5444 5.892-13.0896" fill="#047857"/>
+    </g>
+    <text x="1390" y="550" font-size="20" font-weight="700" fill="#0F172A" text-anchor="middle">FastAPI</text>
+  </g>
+
+  <!-- Prometheus / Grafana -->
+  <g filter="url(#shadow)">
+    <rect x="600" y="750" width="360" height="80" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+
+    <circle cx="640" cy="790" r="22" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
+    <g transform="translate(628, 778)">
+      <path d="M12 0C5.373 0 0 5.372 0 12c0 6.627 5.373 12 12 12s12-5.373 12-12c0-6.628-5.373-12-12-12zm0 22.46c-1.885 0-3.414-1.26-3.414-2.814h6.828c0 1.553-1.528 2.813-3.414 2.813zm5.64-3.745H6.36v-2.046h11.28v2.046zm-.04-3.098H6.391c-.037-.043-.075-.086-.111-.13-1.155-1.401-1.427-2.133-1.69-2.879-.005-.025 1.4.287 2.395.511 0 0 .513.119 1.262.255-.72-.843-1.147-1.915-1.147-3.01 0-2.406 1.845-4.508 1.18-6.207.648.053 1.34 1.367 1.387 3.422.689-.951.977-2.69.977-3.755 0-1.103.727-2.385 1.454-2.429-.648 1.069.168 1.984.894 4.256.272.854.237 2.29.447 3.201.07-1.892.395-4.652 1.595-5.605-.529 1.2.079 2.702.494 3.424.671 1.164 1.078 2.047 1.078 3.716a4.642 4.642 0 01-1.11 2.996c.792-.149 1.34-.283 1.34-.283l2.573-.502s-.374 1.538-1.81 3.019z" fill="#C2410C"/>
+    </g>
+
+    <circle cx="698" cy="790" r="22" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
+    <g transform="translate(686, 778)">
+      <path d="M23.02 10.59a8.578 8.578 0 0 0-.862-3.034 8.911 8.911 0 0 0-1.789-2.445c.337-1.342-.413-2.505-.413-2.505-1.292-.08-2.113.4-2.416.62-.052-.02-.102-.044-.154-.064-.22-.089-.446-.172-.677-.247-.231-.073-.47-.14-.711-.197a9.867 9.867 0 0 0-.875-.161C14.557.753 12.94 0 12.94 0c-1.804 1.145-2.147 2.744-2.147 2.744l-.018.093c-.098.029-.2.057-.298.088-.138.042-.275.094-.413.143-.138.055-.275.107-.41.166a8.869 8.869 0 0 0-1.557.87l-.063-.029c-2.497-.955-4.716.195-4.716.195-.203 2.658.996 4.33 1.235 4.636a11.608 11.608 0 0 0-.607 2.635C1.636 12.677.953 15.014.953 15.014c1.926 2.214 4.171 2.351 4.171 2.351.003-.002.006-.002.006-.005.285.509.615.994.986 1.446.156.19.32.371.488.548-.704 2.009.099 3.68.099 3.68 2.144.08 3.553-.937 3.849-1.173a9.784 9.784 0 0 0 3.164.501h.08l.055-.003.107-.002.103-.005.003.002c1.01 1.44 2.788 1.646 2.788 1.646 1.264-1.332 1.337-2.653 1.337-2.94v-.058c0-.02-.003-.039-.003-.06.265-.187.52-.387.758-.6a7.875 7.875 0 0 0 1.415-1.7c1.43.083 2.437-.885 2.437-.885-.236-1.49-1.085-2.216-1.264-2.354l-.018-.013-.016-.013a.217.217 0 0 1-.031-.02c.008-.092.016-.18.02-.27.011-.162.016-.323.016-.48v-.253l-.005-.098-.008-.135a1.891 1.891 0 0 0-.01-.13c-.003-.042-.008-.083-.013-.125l-.016-.124-.018-.122z" fill="#C2410C"/>
+    </g>
+
+    <text x="740" y="796" font-size="17" font-weight="700" fill="#0F172A" text-anchor="start">Prometheus / Grafana</text>
+  </g>
+
 </svg>
