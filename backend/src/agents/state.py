@@ -10,7 +10,7 @@ from langgraph.graph.message import add_messages
 
 class AgentState(TypedDict):
     question: str                        # 사용자 원본 질문
-    intent: str                          # 최종 의도: rag / anomaly / report / forecast / cms / off_topic
+    intent: str                          # 최종 의도: domain / anomaly / report / forecast / cms / off_topic / multi_intent
     rag_answer: str                      # RAG Agent 답변
     rag_sources: list[str]               # RAG Agent 참조 소스
     anomaly_result: dict                 # Anomaly Agent 결과
@@ -23,7 +23,8 @@ class AgentState(TypedDict):
     messages: Annotated[list, add_messages]  # 대화 히스토리
 
     # 2-stage 라우터 확장 필드 (선택)
-    request_type: NotRequired[str]            # query | action_request | approval_required | off_topic
-    route: NotRequired[str]                  # anomaly | cms | report | forecast | rag
+    request_type: NotRequired[str]            # query | action_request | approval_required | off_topic | multi_intent
+    route: NotRequired[str]                  # anomaly | cms | report | forecast | domain
     request_type_method: NotRequired[str]     # rule | llm
     route_method: NotRequired[str]            # rule | llm
+    timing_trace: NotRequired[dict]           # node/component latency trace for /api/chat benchmarking

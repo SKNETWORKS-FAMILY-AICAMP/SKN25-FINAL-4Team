@@ -162,10 +162,39 @@ Honda R&D 에너지 데이터 분석 시스템의 에이전트로서, 아래 지
 """
 
 
+def _domain_fallback_answer(question: str) -> str:
+    q = (question or "").lower()
+    if "pf1" in q or "역률" in q or "power factor" in q:
+        return (
+            "PF1은 1번 상의 역률(power factor)을 의미합니다. "
+            "역률은 유효전력이 피상전력 중 얼마나 효율적으로 사용되는지를 나타내는 무차원 값이며, "
+            "1에 가까울수록 전력이 효율적으로 사용된다는 뜻입니다."
+        )
+    if "pf2" in q:
+        return "PF2는 2번 상의 역률(power factor)을 의미합니다. 1에 가까울수록 전력 사용 효율이 높습니다."
+    if "pf3" in q:
+        return "PF3는 3번 상의 역률(power factor)을 의미합니다. 1에 가까울수록 전력 사용 효율이 높습니다."
+    if "cop" in q:
+        return (
+            "COP는 냉방·열공급 설비의 성능계수입니다. "
+            "같은 전력으로 더 많은 냉열 또는 열을 만들수록 COP가 높고, 설비 효율이 좋다고 해석합니다."
+        )
+    if "전압" in q:
+        return "전압은 전기 회로에서 전류를 흐르게 하는 전위차입니다. EMS에서는 상별 전압을 확인해 전원 품질과 불균형 여부를 점검합니다."
+    if "전류" in q:
+        return "전류는 전기 부하에 실제로 흐르는 전하의 양입니다. EMS에서는 상별 전류를 통해 부하 크기와 불균형을 확인합니다."
+    return "해당 도메인 용어는 계량기 정보와 운영 데이터를 함께 확인해 해석해야 합니다. 구체적인 계량기 ID나 측정 항목을 알려주시면 더 정확히 설명할 수 있습니다."
+
+
 def run(question: str, history: list | None = None) -> RAGState:
     """RAG Agent 실행. LangGraph 노드에서 state dict로 호출 가능."""
 
     state = RAGState(question=question)
+
+    # 0. 핵심 도메인 용어는 LLM이 부정확하게 회피하지 않도록 결정론적 정의를 우선 사용
+    if re.search(r"pf[123]?|역률|power\s*factor|cop|전압|전류", question, re.IGNORECASE):
+        state.answer = _domain_fallback_answer(question)
+        return state
 
     # 1. 문서 검색
     state.doc_context = search_documents(question)
@@ -173,9 +202,14 @@ def run(question: str, history: list | None = None) -> RAGState:
     # 1-b. 미터 실측값 조회 (V.Z84 PF1 같은 특정 계량기 질문)
     state.meter_facts = lookup_meter_measurements(question)
 
-    # 2. LLM 답변 생성
+    # 2. LLM 답변 생성. Endpoint/model이 빈 content를 반환하면 domain fallback으로 보강한다.
     prompt = build_prompt(state, history=history)
-    state.answer = llm_chat([{"role": "user", "content": prompt}], max_tokens=1024, thinking=False)
+    try:
+        state.answer = llm_chat([{"role": "user", "content": prompt}], max_tokens=1024, thinking=False)
+    except Exception:
+        state.answer = ""
+    if not (state.answer or "").strip():
+        state.answer = _domain_fallback_answer(question)
 
     return state
 

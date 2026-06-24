@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 
-def mock_llm_chat(messages, max_tokens=1024):
+def mock_llm_chat(messages, max_tokens=1024, fast=False, thinking=None):
     """LLM 실제 API 호출을 차단하고 텍스트를 검사하여 모킹된 결과를 반환"""
     prompt = messages[0]["content"]
     
@@ -13,11 +13,7 @@ def mock_llm_chat(messages, max_tokens=1024):
             return "report"
         elif "이상" in prompt:
             return "anomaly"
-        return "rag"
-    
-    # 2. Critic Node 응답
-    if "당신은 에너지 분석 품질 검토자입니다" in prompt:
-        return "수정된 Mocked Answer"
+        return "domain"
     
     return "Mocked RAG/Anomaly Answer"
 
@@ -32,22 +28,22 @@ def test_orchestrator_classify_intent(mock_chat):
     state2 = classify_intent({"question": "내일 소비량이 어떻게 될까 (예측)"})
     assert state2["intent"] == "forecast"
     
-    state3 = classify_intent({"question": "에너지 자급률이 뭐야?"})
-    assert state3["intent"] == "rag"
+    state3 = classify_intent({"question": "PF1은 무엇을 측정하는 값이야?"})
+    assert state3["intent"] == "domain"
 
 @patch("agents.llm_client.chat", side_effect=mock_llm_chat)
 def test_critic_node_filtering(mock_chat):
     """Critic 노드가 특정 금지어가 포함될 때 LLM을 호출해 수정하는지 확인"""
     from agents.orchestrator import critic_node
     
-    # 한국 전력 용어('한전') 포함 -> LLM 교정 호출 대상
+    # 한국 전력 용어('한전') 포함 -> deterministic 용어 교정 대상
     state_bad = critic_node({
         "question": "어디서 전기를 가져오나요?",
         "rag_answer": "이 시설은 한전에서 전기를 가져옵니다.",
         "anomaly_result": {},
         "report_result": ""
     })
-    assert state_bad["final_answer"] == "수정된 Mocked Answer"
+    assert state_bad["final_answer"] == "이 시설은 독일 공공 전력망에서 전기를 가져옵니다."
     
     # 정상 용어 및 짧은 답변 -> LLM 호출 없이 바로 통과해야 함
     state_good = critic_node({

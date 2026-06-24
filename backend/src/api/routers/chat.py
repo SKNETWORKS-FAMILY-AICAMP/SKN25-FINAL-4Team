@@ -1,6 +1,7 @@
 from api.errors import safe_err
 import asyncio
 import json
+import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -243,6 +244,7 @@ class ChatResponse(BaseModel):
     answer: str
     pdf_path: str = ""
     session_id: str = ""
+    timing_trace: dict | None = None
 
 
 def _invoke_graph(question: str, lc_messages: list, context: dict | None = None) -> dict:
@@ -328,7 +330,23 @@ async def chat_stream(req: ChatRequest):
             intent   = result.get("intent", "")
             pdf_path = result.get("pdf_path", "")
         except Exception as e:
-            yield f"data: {json.dumps({'type': 'error', 'content': safe_err(e)})}\n\n"
+            try:
+                from agents.llm_client import LLMClientError
+            except Exception:  # pragma: no cover
+                LLMClientError = ()
+            is_llm_error = isinstance(e, LLMClientError) or e.__class__.__name__ == "LLMClientError"
+            if is_llm_error:
+                payload = {
+                    'type': 'error',
+                    'error_type': 'llm_unavailable',
+                    'content': 'LLM endpoint/model is unavailable',
+                    'provider': getattr(e, 'provider', ''),
+                    'model': getattr(e, 'model', ''),
+                    'status_code': getattr(e, 'status_code', None),
+                }
+                yield f"data: {json.dumps(payload)}\n\n"
+            else:
+                yield f"data: {json.dumps({'type': 'error', 'content': safe_err(e)})}\n\n"
             return
 
         yield f"data: {json.dumps({'type': 'intent', 'content': intent})}\n\n"
@@ -363,6 +381,7 @@ async def chat_stream(req: ChatRequest):
 @router.post("", response_model=ChatResponse)
 async def chat(req: ChatRequest):
     """비스트리밍 채팅 — 세션에 자동 저장."""
+    t_total = time.perf_counter()
     lc_messages = []
     for m in req.history[-10:]:
         if m.role == "user":
@@ -374,13 +393,45 @@ async def chat(req: ChatRequest):
     is_first   = req.is_first or not req.session_id
 
     loop = asyncio.get_running_loop()
+    t_save_user = time.perf_counter()
     await loop.run_in_executor(_executor, _save_user_message, session_id, req.question, is_first)
+    save_user_ms = round((time.perf_counter() - t_save_user) * 1000, 2)
 
-    result = await loop.run_in_executor(_executor, _invoke_graph, req.question, lc_messages, req.context)
+    try:
+        t_graph = time.perf_counter()
+        result = await loop.run_in_executor(_executor, _invoke_graph, req.question, lc_messages, req.context)
+        graph_ms = round((time.perf_counter() - t_graph) * 1000, 2)
+    except Exception as e:
+        # LLM endpoint/model errors should be diagnosable by the QA/E2E pipeline,
+        # not collapsed into an opaque HTTP 500.
+        try:
+            from agents.llm_client import LLMClientError
+        except Exception:  # pragma: no cover
+            LLMClientError = ()
+        is_llm_error = isinstance(e, LLMClientError) or e.__class__.__name__ == "LLMClientError"
+        if is_llm_error:
+            raise HTTPException(
+                status_code=503,
+                detail={
+                    "error_type": "llm_unavailable",
+                    "message": "LLM endpoint/model is unavailable",
+                    "provider": getattr(e, "provider", ""),
+                    "model": getattr(e, "model", ""),
+                    "status_code": getattr(e, "status_code", None),
+                },
+            )
+        raise
 
     answer = result.get("final_answer", "답변을 생성할 수 없습니다.")
     intent = result.get("intent", "")
+    t_save_assistant = time.perf_counter()
     await loop.run_in_executor(_executor, _save_assistant_message, session_id, answer, intent)
+    save_assistant_ms = round((time.perf_counter() - t_save_assistant) * 1000, 2)
+    timing_trace = dict(result.get("timing_trace") or {})
+    timing_trace["backend_save_user"] = {"latency_ms": save_user_ms}
+    timing_trace["langgraph_total"] = {"latency_ms": graph_ms}
+    timing_trace["backend_save_assistant"] = {"latency_ms": save_assistant_ms}
+    timing_trace["backend_total_until_response_build"] = {"latency_ms": round((time.perf_counter() - t_total) * 1000, 2)}
 
     return ChatResponse(
         question=req.question,
@@ -388,6 +439,7 @@ async def chat(req: ChatRequest):
         answer=answer,
         pdf_path=result.get("pdf_path", ""),
         session_id=session_id,
+        timing_trace=timing_trace,
     )
 
 

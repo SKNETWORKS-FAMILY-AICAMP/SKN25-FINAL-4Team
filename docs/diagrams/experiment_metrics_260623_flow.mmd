@@ -1,0 +1,125 @@
+%%{init: {"theme": "base", "layout": "elk", "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 70, "rankSpacing": 90}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#ffffff", "primaryBorderColor": "#0f172a", "primaryTextColor": "#020617", "secondaryColor": "#f8fafc", "secondaryBorderColor": "#0f172a", "secondaryTextColor": "#020617", "clusterBkg": "#ffffff", "clusterBorder": "#0f172a", "edgeLabelBackground": "#ffffff", "lineColor": "#0f172a", "fontFamily": "Arial, sans-serif", "fontSize": "20px"}} }%%
+flowchart LR
+    subgraph ROUTER["Runtime Router"]
+      Q["Live meter event\nsimulator / sensor replay"]
+      API["Kafka livestream\nraw measurement topic / consumer"]
+      S1["Stage1\nrequest type\nquery / action / approval / off_topic / multi_intent"]
+      S2["Stage2\nagent route\nanomaly / cms / report / forecast / domain_qa"]
+      GATE["Runtime gate\nclarify / reject / approval wait"]
+      FINAL["Service action\nroute:* or gate:*"]
+    end
+
+    subgraph AGENTS["Service agents"]
+      ANOMALY["Anomaly agent"]
+      CMS["CMS agent"]
+      REPORT["Report agent"]
+      FORECAST["Forecast agent"]
+      DOMAIN["Domain knowledge agent"]
+    end
+
+    subgraph LG["LangGraph orchestration"]
+      STATE["State guard\ndry-run / no canonical write"]
+      RET["Context retrieval\nspecs / ontology / KB"]
+      CHECK["Evidence boundary check\nsource / lineage / safety"]
+      DECIDE["Service decision\nanswer / job / approval"]
+    end
+
+    subgraph CONTEXT["PostgreSQL schemas / tables"]
+      SPECS["docs/specs\nservice contracts"]
+      ONT["Ontology\nontology.meter_context / measurement_context"]
+      DOCKB["Document KB\nops.energy_doc"]
+      OPSDB["PostgreSQL ops schema\nops.work_order"]
+      REFPG["PostgreSQL reference schema\ncorrected_resampled_1h/15min"]
+      ANOMART["PostgreSQL mart schema\nanomaly_warning_1h / feature_1h"]
+      FOREMART["PostgreSQL mart schema\npeak_feature_15min / pmax_forecast_15min"]
+      OPSREPORT["PostgreSQL ops schema\nmonthly_report / daily_report / weekly_report"]
+    end
+
+    subgraph BOUT["Backend event outputs"]
+      CHATOUT["Chat/API output\nanswer payload / status metadata"]
+      STATUSOUT["Job status response\nstatus path / progress"]
+      APPROVALOUT["Approval state\npending / approved / rejected"]
+      CAVEATOUT["Caveat metadata\nsource limits / safety notes"]
+    end
+
+    subgraph FRONT["Frontend UI"]
+      CHATUI["Frontend UI render\nchat bubble / status panel"]
+      STATUSUI["Status badge\nprogress / done / failed"]
+      APPROVALUI["Approval modal\nconfirm / reject action"]
+      CAVEATUI["Caveat notice\nwarning panel"]
+    end
+
+    Q -->|frontend HTML 54.58 ms| API -->|backend health 22.00 ms| S1
+    S1 -->|Route1 0.02 ms| S2
+    S1 -->|gate nodes avg ~0.01 ms| GATE
+    S2 -->|Route2 1,123.50 ms · E2E 6,520.38 ms| FINAL
+    GATE -->|gate response E2E: multi_intent 2,567.96 ms / off_topic 146.83 ms| FINAL
+
+    S2 -->|anomaly agent 9,182.85 ms| ANOMALY
+    S2 -->|cms agent 782.22 ms| CMS
+    S2 -->|report agent 6,385.24 ms| REPORT
+    S2 -->|forecast agent 18,330.94 ms| FORECAST
+    S2 -->|domain agent 2,999.29 ms| DOMAIN
+
+    ANOMALY -->|avg 135.8 ms| ANOMART
+    ANOMALY -->|avg 118.34 ms| REFPG
+    CMS -->|avg 124.02 ms| OPSDB
+    CMS -->|ontology query avg not exposed| ONT
+    CMS -->|avg 114.84 ms| REFPG
+    REPORT -->|avg 878.89 ms| OPSREPORT
+    REPORT -->|avg 112.52 ms| REFPG
+    FORECAST -->|avg 157.48 ms| FOREMART
+    FORECAST -->|avg 798.95 ms| REFPG
+    DOMAIN -->|avg 165.08 ms| ONT
+    DOMAIN -->|avg 135.21 ms| DOCKB
+    DOMAIN -->|avg 134.19 ms| REFPG
+
+    FINAL -->|backend output success 300/300| STATE
+    STATE -->|LangGraph 6,374.12 ms| RET
+    SPECS --> RET
+    ONT --> RET
+    DOCKB --> RET
+    RET -->|internal latency not exposed| CHECK
+    OPSDB --> CHECK
+    REFPG --> CHECK
+    ANOMART --> CHECK
+    FOREMART --> CHECK
+    OPSREPORT --> CHECK
+    CHECK -->|internal latency not exposed| DECIDE
+    DECIDE -->|/api/chat E2E 6,520.38 ms| CHATOUT
+    DECIDE -->|/api/chat errors 0/300| STATUSOUT
+    DECIDE -->|approval_required E2E avg 6,222.59 ms| APPROVALOUT
+    DECIDE -->|error rate 0.0%| CAVEATOUT
+    CHATOUT -->|DOM render 16.83 ms| CHATUI
+    STATUSOUT -->|browser total 141.87 ms| STATUSUI
+    APPROVALOUT -->|frontend parse avg 1.34 ms| APPROVALUI
+    CAVEATOUT -->|no API error in selected QA300| CAVEATUI
+
+
+    subgraph MODELTRACE["Selected model trace"]
+      SELECTEDMETRIC["Selected trace\nE2E avg 6,520.38 ms / p95 18,406.80 ms\nRoute2 avg 1,123.50 ms\nLangGraph avg 6,374.12 ms\nDOM render 16.83 ms"]
+    end
+    DECIDE --> SELECTEDMETRIC
+
+    classDef router fill:#eff6ff,stroke:#1d4ed8,color:#020617,stroke-width:3px;
+    classDef gate fill:#fff7ed,stroke:#ea580c,color:#020617,stroke-width:3px;
+    classDef agent fill:#eef2ff,stroke:#4338ca,color:#020617,stroke-width:2px;
+    classDef worker fill:#ffffff,stroke:#0f172a,color:#020617,stroke-width:2px;
+    classDef backend fill:#ecfdf5,stroke:#047857,color:#020617,stroke-width:2px;
+    classDef frontend fill:#f0f9ff,stroke:#0284c7,color:#020617,stroke-width:2px;
+    classDef qwenMetric fill:#ffffff,stroke:#020617,color:#020617,stroke-width:3px;
+    classDef gemmaMetric fill:#eff6ff,stroke:#2563eb,color:#2563eb,stroke-width:3px;
+    class Q,API,S1,S2,FINAL router;
+    class GATE gate;
+    class ANOMALY,CMS,REPORT,FORECAST,DOMAIN agent;
+    class STATE,RET,CHECK,DECIDE,SPECS,ONT,DOCKB,OPSDB,REFPG,ANOMART,FOREMART,OPSREPORT worker;
+    class CHATOUT,STATUSOUT,APPROVALOUT,CAVEATOUT backend;
+    class CHATUI,STATUSUI,APPROVALUI,CAVEATUI frontend;
+    class SELECTEDMETRIC qwenMetric;
+    style ROUTER fill:#eff6ff,stroke:#1d4ed8,stroke-width:4px
+    style AGENTS fill:#eef2ff,stroke:#4338ca,stroke-width:3px
+    style LG fill:#fff7ed,stroke:#ea580c,stroke-width:3px
+    style CONTEXT fill:#fdf4ff,stroke:#a21caf,stroke-width:3px
+    style BOUT fill:#ecfdf5,stroke:#047857,stroke-width:3px
+    style FRONT fill:#f0f9ff,stroke:#0284c7,stroke-width:3px
+    style MODELTRACE fill:#ffffff,stroke:#64748b,stroke-width:3px

@@ -16,6 +16,27 @@ LLM 클라이언트 추상화 레이어.
 
 import os
 import httpx
+
+
+class LLMClientError(RuntimeError):
+    """LLM endpoint/model failure with safe diagnostic metadata."""
+    def __init__(self, message: str, *, provider: str = "", model: str = "", endpoint: str = "", status_code: int | None = None):
+        super().__init__(message)
+        self.provider = provider
+        self.model = model
+        self.endpoint = endpoint
+        self.status_code = status_code
+
+
+def active_config() -> dict:
+    """Return non-secret active LLM configuration for health checks."""
+    return {
+        "provider": LLM_PROVIDER,
+        "model": LLM_MODEL,
+        "model_fast": LLM_MODEL_FAST,
+        "ollama_url": os.getenv("OLLAMA_URL", "http://localhost:11434/v1"),
+        "ollama_base_url": _ollama_base_url() if LLM_PROVIDER == "ollama" else None,
+    }
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
@@ -89,7 +110,12 @@ def chat(messages: list[dict], max_tokens: int = 1024, fast: bool = False, think
 
     if LLM_PROVIDER == "ollama":
         num_ctx = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
-        if thinking is None:
+        think_env = os.getenv("OLLAMA_THINK", "false").strip().lower()
+        if think_env in {"0", "false", "off", "no"}:
+            thinking = False
+        elif think_env in {"1", "true", "on", "yes"}:
+            thinking = True
+        elif thinking is None:
             thinking = not fast  # 기본값: quality → ON, fast → OFF
         num_predict = max_tokens * 4 if thinking else max_tokens
         payload = {
@@ -104,14 +130,33 @@ def chat(messages: list[dict], max_tokens: int = 1024, fast: bool = False, think
                 "temperature": 0.1 if fast else 0.3,
             },
         }
-        resp = httpx.post(
-            f"{_ollama_base_url()}/api/chat",
-            json=payload,
-            timeout=120,
-        )
-        resp.raise_for_status()
-        msg = resp.json()["message"]
-        return msg.get("content") or msg.get("thinking", "")
+        endpoint = f"{_ollama_base_url()}/api/chat"
+        try:
+            resp = httpx.post(
+                endpoint,
+                json=payload,
+                timeout=float(os.getenv("OLLAMA_CHAT_TIMEOUT", "420")),
+            )
+            resp.raise_for_status()
+            msg = resp.json()["message"]
+        except httpx.HTTPStatusError as e:
+            raise LLMClientError(
+                f"Ollama HTTP {e.response.status_code} from {endpoint}",
+                provider=LLM_PROVIDER, model=model, endpoint=endpoint, status_code=e.response.status_code,
+            ) from e
+        except Exception as e:
+            raise LLMClientError(
+                f"Ollama request failed: {type(e).__name__}: {e}",
+                provider=LLM_PROVIDER, model=model, endpoint=endpoint,
+            ) from e
+        content = msg.get("content") or ""
+        thinking_text = msg.get("thinking") or msg.get("reasoning") or ""
+        if not content and thinking_text:
+            raise LLMClientError(
+                "Ollama returned thinking/reasoning without final content",
+                provider=LLM_PROVIDER, model=model, endpoint=endpoint,
+            )
+        return content
 
     client = _get_client()
 

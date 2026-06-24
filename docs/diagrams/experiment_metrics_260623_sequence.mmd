@@ -1,0 +1,83 @@
+%%{init: {"theme": "base", "sequence": {"showSequenceNumbers": true, "wrap": true, "mirrorActors": true, "rightAngles": true, "messageAlign": "center", "actorMargin": 120, "width": 210, "height": 72, "boxMargin": 16, "boxTextMargin": 12, "noteMargin": 12, "messageMargin": 52}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#ffffff", "primaryBorderColor": "#0f172a", "primaryTextColor": "#020617", "actorBkg": "#ffffff", "actorBorder": "#0f172a", "actorTextColor": "#020617", "actorLineColor": "#334155", "signalColor": "#0f172a", "signalTextColor": "#020617", "noteBkgColor": "#fff7ed", "noteTextColor": "#020617", "noteBorderColor": "#ea580c", "fontFamily": "Arial, sans-serif", "fontSize": "20px"}} }%%
+sequenceDiagram
+    autonumber
+
+    box rgb(239, 246, 255) Runtime router
+      participant USER as User question
+      participant API as FastAPI chat API
+      participant ST1 as Stage1 request type
+      participant ST2 as Stage2 agent route
+      participant GATE as Runtime gate
+    end
+
+    box rgb(238, 242, 255) Service agents
+      participant AGENT as Selected service agent
+      participant LG as LangGraph orchestration
+    end
+
+    box rgb(245, 243, 255) PostgreSQL schemas / tables
+      participant ONT as OntologyContext
+      participant DOCKB as OpsEnergyDoc
+      participant OPSDB as OpsWorkOrder
+      participant MART as MartFacts
+      participant REF as ReferenceSchemaTimeSeries
+      participant OPSREPORT as OpsReportSchema
+    end
+
+    box rgb(236, 253, 245) Backend API outputs
+      participant ANSWER as Chat response SSE
+      participant STATUS as Job status response
+      participant APPROVAL as Approval state
+    end
+
+    box rgb(240, 249, 255) Frontend UI
+      participant FRONT as React dashboard UI
+    end
+
+    USER->>API: submit /api/chat question · backend E2E timer starts
+    API->>ST1: Stage1 avg 0.02 ms
+    alt query request
+      ST1->>ST2: Stage2 avg 1,123.50 ms
+      ST2->>AGENT: dispatch to selected agent · dispatch overhead included in LangGraph total
+      AGENT->>ONT: DB/context lookup · separate edge benchmark ~165 ms when used
+      AGENT->>DOCKB: document KB lookup · separate edge benchmark ~135 ms when used
+      AGENT->>REF: reference time-series lookup · route별 평균 112.52–798.95 ms
+      AGENT->>MART: mart lookup · separate edge benchmark ~136-157 ms when used
+      AGENT->>OPSREPORT: report table lookup · separate edge benchmark ~879 ms when used
+      AGENT-->>ANSWER: agent build · forecast 18,330.94 ms / report 6,385.24 ms
+      ANSWER-->>API: /api/chat E2E avg 6,520.38 ms
+      API-->>FRONT: browser fetch+parse+DOM avg 141.87 ms
+    else action approval off_topic or multi_intent
+      ST1->>GATE: gate node avg ~0.01 ms · gate E2E depends on routed answer
+      GATE->>LG: create service job only when runtime action needs review
+      LG->>OPSDB: read or prepare ops work order state
+      LG->>ONT: attach meter domain context
+      LG->>REF: attach supporting numeric facts
+      LG-->>STATUS: expose job state and caveats
+      LG-->>APPROVAL: wait for human approval when required
+      STATUS-->>API: return status path and progress payload
+      APPROVAL-->>API: return pending approval state
+      API-->>FRONT: status/caveat DOM 16.83 ms
+      API-->>FRONT: approval modal DOM 16.83 ms
+    end
+
+    Note over USER,API: selected model metrics update Route1, Route2, agent, backend, frontend render latency.
+    Note over ONT,REF: Runtime grounding uses ops, mart, reference, ontology and ops.energy_doc sources.
+
+%% hover USER: 실제 서비스 사용자가 입력한 runtime 질문입니다.
+%% hover API: FastAPI /chat 또는 /chat/stream 진입점입니다. 평가 runner가 아니라 서비스 API입니다.
+%% hover ST1: Stage1은 query, action_request, approval_required, off_topic, multi_intent 같은 요청 유형을 판단합니다.
+%% hover ST2: Stage2는 query 요청만 anomaly, cms, report, forecast, domain_qa 업무 agent로 분기합니다.
+%% hover GATE: query가 아닌 요청은 clarify, reject, approval wait 같은 runtime gate로 처리합니다.
+%% hover AGENT: 선택된 서비스 agent입니다. anomaly/cms/report/forecast/domain_qa 중 하나이며 PostgreSQL schema/table/ontology 근거를 조회해 답변을 만듭니다.
+%% hover LG: LangGraph orchestration입니다. runtime action 또는 승인 필요 작업의 상태 전이, dry-run guard, 승인 대기를 조정합니다.
+%% hover ONT: ontology.meter_context, ontology.meter_measurement_context 기반 계량기·측정·도메인 맥락입니다.
+%% hover DOCKB: ops.energy_doc 문서 KB입니다. 문서 chunk와 embedding 근거를 제공합니다.
+%% hover OPSDB: ops.work_order 운영 작업지시 계층입니다.
+%% hover MART: mart.anomaly_warning_1h, mart.anomaly_feature_1h, mart.peak_feature_15min, mart.pmax_forecast_15min 등 mart schema/table 계층입니다.
+%% hover REFPG: reference.corrected_resampled_1h/15min reference schema의 정제 시계열입니다.
+%% hover OPSREPORT: ops.monthly_report, ops.daily_report, ops.weekly_report, ops.report_archive 보고서 계층입니다.
+%% hover ANSWER: backend가 생성하는 chat response 또는 SSE token stream입니다.
+%% hover STATUS: backend가 반환하는 job status response입니다. status path, progress, result state를 포함합니다.
+%% hover APPROVAL: backend가 관리하는 approval state입니다. pending, approved, rejected 상태를 포함합니다.
+%% hover FRONT: backend API output을 소비해 chat bubble, status badge, approval modal, caveat notice로 렌더링하는 frontend UI입니다.

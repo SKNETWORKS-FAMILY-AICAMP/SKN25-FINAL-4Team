@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang='ko'>
+<head>
+<meta charset='utf-8'/><meta name='viewport' content='width=device-width,initial-scale=1'/>
+<title>SKN sLLM Router/QA Metrics · 2026-06-23</title>
+<style>
+:root{--bg:#f5f5f7;--card:#fff;--ink:#1d1d1f;--muted:#6e6e73;--line:#e5e5ea;--blue:#2563eb;--green:#16a34a;--red:#dc2626;--orange:#f59e0b;--shadow:0 18px 60px rgba(0,0,0,.08);--radius:24px;}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#fbfbfd 0%,#f5f5f7 40%,#fff 100%);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,'Noto Sans KR',sans-serif;color:var(--ink)}a{color:inherit}.top{position:sticky;top:0;backdrop-filter:saturate(180%) blur(18px);background:rgba(255,255,255,.78);border-bottom:1px solid var(--line);z-index:2}.topin{max-width:1180px;margin:auto;padding:14px 22px;display:flex;justify-content:space-between;align-items:center}.brand{font-weight:800;letter-spacing:-.02em}.nav{display:flex;gap:18px;color:var(--muted);font-size:14px}.wrap{max-width:1180px;margin:auto;padding:40px 22px 64px}.hero{padding:56px 0 28px}.eyebrow{font-size:13px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.08em}h1{font-size:clamp(38px,6vw,72px);line-height:1.02;margin:12px 0 18px;letter-spacing:-.055em}.lead{font-size:20px;line-height:1.65;color:#3f3f46;max-width:940px}code{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:2px 6px}.chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:#52525b;font-size:13px;box-shadow:0 4px 18px rgba(0,0,0,.04)}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:28px 0}.card{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}.stat .label{color:var(--muted);font-size:13px;font-weight:700}.stat .value{font-size:30px;font-weight:850;margin:8px 0;letter-spacing:-.04em}.stat .sub{color:var(--muted);font-size:13px;line-height:1.45}section{margin:38px 0}.section-head{margin-bottom:16px}.section-head .eyebrow{display:none}h2{font-size:34px;margin:8px 0 10px;letter-spacing:-.04em}.desc{color:var(--muted);line-height:1.6}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:12px 10px;text-align:left;vertical-align:middle}th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:#fafafa;position:static;top:auto}.num{text-align:right;font-variant-numeric:tabular-nums}.table-wrap{overflow:auto;border-radius:18px;border:1px solid var(--line);background:#fff}.bar{width:130px;height:9px;border-radius:99px;background:#e5e7eb;overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,#60a5fa,#2563eb);border-radius:99px}.bar.green span{background:linear-gradient(90deg,#86efac,#16a34a)}.pill{display:inline-flex;align-items:center;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800;background:#eef2ff;color:#3730a3}.pill.clean,.pill.ok{background:#ecfdf5;color:#047857}.pill.partial-fallback,.pill.partial{background:#fffbeb;color:#b45309}.pill.all-fallback{background:#fef2f2;color:#b91c1c}.callout{border-left:5px solid var(--blue);background:#eff6ff;border-radius:18px;padding:18px 20px;line-height:1.65;color:#1e3a8a}.warn{border-color:var(--orange);background:#fffbeb;color:#92400e}.diagram{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-top:28px}svg{max-width:100%;height:auto}.node{fill:#f8fafc;stroke:#cbd5e1;stroke-width:1.5}.nblue{fill:#eff6ff;stroke:#93c5fd}.ngreen{fill:#ecfdf5;stroke:#86efac}.nred{fill:#fef2f2;stroke:#fca5a5}.nyellow{fill:#fffbeb;stroke:#fcd34d}.txt{font-size:15px;font-weight:800;fill:#111827}.small{font-size:12px;fill:#64748b}.line{stroke:#64748b;stroke-width:2;fill:none;marker-end:url(#arr)}.foot{color:var(--muted);font-size:13px;text-align:center;padding:20px}
+
+.diagram-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:14px 0 12px;padding:10px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px}.diagram-tools button{appearance:none;border:1px solid #cbd5e1;background:#fff;color:#0f172a;border-radius:999px;padding:8px 12px;font-weight:500;cursor:pointer;box-shadow:0 2px 8px rgba(15,23,42,.06)}.diagram-tools button:hover{background:#eff6ff;border-color:#93c5fd}.model-switch{display:flex;gap:8px;align-items:center;margin-left:8px;padding-left:10px;border-left:1px solid #cbd5e1}.model-switch label{display:inline-flex;align-items:center;gap:6px;border:1px solid #cbd5e1;background:#fff;border-radius:999px;padding:7px 10px;font-size:13px;font-weight:850;color:#334155;cursor:pointer}.model-switch input{width:16px;height:16px;accent-color:#2563eb}.model-switch label:has(input:checked){border-color:#2563eb;background:#eff6ff;color:#1d4ed8}.zoom-label{font-size:13px;font-weight:850;color:#334155;margin-left:4px}.diagram-viewport{overflow:auto;border:1px solid #e2e8f0;border-radius:18px;background:white;padding:12px;max-height:760px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.7)}.diagram-viewport svg{display:block;max-width:none!important;height:auto!important;transition:width .16s ease}.embedded-langgraph-svg-flow{width:150%!important;min-width:1300px}.embedded-langgraph-svg-sequence{width:220%!important;min-width:1800px}.diagram .embedded-langgraph-svg text,.diagram .embedded-langgraph-svg tspan{fill:#0f172a!important;stroke:none!important;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',Arial,sans-serif!important;font-weight:850!important;paint-order:stroke}.diagram .embedded-langgraph-svg-flow text,.diagram .embedded-langgraph-svg-flow tspan{font-size:18px!important}.diagram .embedded-langgraph-svg-flow .cluster-label text,.diagram .embedded-langgraph-svg-flow .label text{fill:#0f172a!important}.diagram .embedded-langgraph-svg-flow foreignObject,.diagram .embedded-langgraph-svg-flow span,.diagram .embedded-langgraph-svg-flow p{color:#0f172a!important;font-size:18px!important;font-weight:850!important;line-height:1.25!important}.diagram .embedded-langgraph-svg-sequence text,.diagram .embedded-langgraph-svg-sequence tspan{font-size:24px!important;fill:#111827!important;font-weight:850!important}.diagram .embedded-langgraph-svg .messageText,.diagram .embedded-langgraph-svg .loopText,.diagram .embedded-langgraph-svg .noteText{fill:#111827!important;color:#111827!important;font-weight:850!important}.diagram-note,.metric-note{background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:16px 18px;color:#334155;line-height:1.65;margin:14px 0}.diagram-note b,.metric-note b{color:#0f172a}.rank1-card{display:grid;grid-template-columns:1.1fr repeat(5,.7fr);gap:10px;margin:16px 0 18px}.rank1-card .metric{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:14px}.rank1-card .metric b{display:block;color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}.rank1-card .metric span{font-size:22px;font-weight:900;color:#0f172a}.metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.metric-grid .card{box-shadow:none}.metric-grid h3{margin:0 0 8px;font-size:19px;letter-spacing:-.02em}.metric-grid p{margin:0;color:#52525b;line-height:1.6}.metric-formula{display:inline-block;margin-top:8px;color:#1e3a8a;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:4px 8px;font-size:13px;font-weight:800}
+.qwen-inline{color:#020617}.gemma-inline{color:#2563eb}.node-tooltip{position:fixed;z-index:99999;max-width:360px;background:#0f172a;color:#fff;border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.45;box-shadow:0 16px 45px rgba(15,23,42,.28);pointer-events:none;opacity:0;transform:translate(10px,10px);transition:opacity .08s ease}.node-tooltip.visible{opacity:1}.messageText[data-message-tooltip]{cursor:help}
+
+@media(max-width:900px){.rank1-card,.metric-grid{grid-template-columns:1fr}.embedded-langgraph-svg-flow,.embedded-langgraph-svg-sequence{width:220%!important;min-width:1200px}}
+
+
+.mermaid-source{margin:0;min-width:1200px;background:#fff}.diagram-viewport .mermaid svg{max-width:none!important;height:auto!important}.diagram-viewport svg{display:block;max-width:none!important;height:auto!important;transition:width .16s ease}.metric-grid{grid-template-columns:1fr!important}.metric-grid .card{padding:20px 22px}.metric-grid h3{font-size:22px}.example-box{margin-top:12px;padding:12px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0;color:#334155}.example-box b{color:#0f172a}.dataset-note{background:#fff7ed;border:1px solid #fed7aa;border-left:5px solid #f97316;border-radius:18px;padding:18px 20px;color:#7c2d12;line-height:1.7;margin:14px 0}.dataset-note code{background:#fff7ed;border-color:#fed7aa}.diagram .mermaid text,.diagram .mermaid tspan{font-size:22px!important;font-weight:500!important;fill:#0f172a!important}.diagram .mermaid .messageText,.diagram .mermaid .actor,.diagram .mermaid .actor-box,.diagram .mermaid .sequenceNumber{font-size:22px!important;font-weight:500!important;fill:#0f172a!important}.diagram .mermaid .label,.diagram .mermaid .nodeLabel{font-size:22px!important;font-weight:500!important;color:#0f172a!important}
+
+
+
+.rank-one-row{display:table-row!important;background:#dcfce7!important;border-top:4px solid #16a34a!important;border-bottom:2px solid #16a34a!important}.rank-one-row td{display:table-cell!important;font-weight:800!important;color:#052e16!important;padding-top:18px!important;padding-bottom:18px!important}.rank-badge{display:inline-block;background:#16a34a;color:#fff;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800;white-space:nowrap}
+.table-wrap{overflow-x:auto}.table-wrap table{min-width:980px}
+
+/* High-contrast Mermaid readability patch */
+.diagram .mermaid svg{background:#ffffff!important}.diagram .mermaid svg text,.diagram .mermaid svg tspan{fill:#020617!important;color:#020617!important;stroke:none!important;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',Arial,sans-serif!important;font-size:26px!important;font-weight:500!important;text-shadow:none!important}.diagram .mermaid svg .nodeLabel,.diagram .mermaid svg .label,.diagram .mermaid svg .label span,.diagram .mermaid svg .label p{color:#020617!important;fill:#020617!important;font-size:26px!important;font-weight:500!important;text-shadow:none!important}.diagram .mermaid svg foreignObject,.diagram .mermaid svg foreignObject div,.diagram .mermaid svg foreignObject span,.diagram .mermaid svg foreignObject p{color:#020617!important;font-size:26px!important;font-weight:500!important;line-height:1.25!important;text-shadow:none!important}.diagram .mermaid svg .cluster rect{fill:#ffffff!important;fill-opacity:.96!important;stroke-width:4px!important}.diagram .mermaid svg .node rect,.diagram .mermaid svg .node polygon,.diagram .mermaid svg .node path{fill:#ffffff!important;fill-opacity:1!important;stroke:#0f172a!important;stroke-width:2px!important}.diagram .mermaid svg .edgePath path,.diagram .mermaid svg .flowchart-link{stroke:#0f172a!important;stroke-width:2.2px!important}.diagram .mermaid svg .actor{fill:#ffffff!important;stroke:#0f172a!important;stroke-width:2px!important}.diagram .mermaid svg rect.actor{fill:#ffffff!important;stroke:#0f172a!important}.diagram .mermaid svg .actor-line{stroke:#334155!important;stroke-width:2px!important}.diagram .mermaid svg .messageLine0,.diagram .mermaid svg .messageLine1{stroke:#0f172a!important;stroke-width:2.2px!important}.diagram .mermaid svg .messageText,.diagram .mermaid svg .loopText,.diagram .mermaid svg .noteText,.diagram .mermaid svg .sequenceNumber{fill:#020617!important;color:#020617!important;font-size:24px!important;font-weight:500!important}.diagram .mermaid svg .note{fill:#fff7ed!important;stroke:#ea580c!important;stroke-width:2px!important}
+
+
+.route-label-guide{margin-top:24px}.toggle-stack{display:grid;gap:14px}.label-toggle{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 10px 32px rgba(15,23,42,.06);overflow:hidden}.label-toggle summary{cursor:pointer;list-style:none;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;font-weight:850;color:#0f172a}.label-toggle summary::-webkit-details-marker{display:none}.label-toggle summary::after{content:'+';display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:20px}.label-toggle[open] summary::after{content:'−';background:#dbeafe}.label-grid{display:grid;grid-template-columns:1fr;gap:12px;padding:0 18px 18px}.label-card{display:grid;grid-template-columns:180px minmax(0,1.15fr) minmax(0,1.25fr);gap:16px;align-items:start;border:1px solid #e5e7eb;border-radius:16px;background:#f8fafc;padding:15px 16px}.label-card h4{margin:0;font-size:18px;letter-spacing:-.02em;color:#0f172a}.label-card .label-desc{color:#475569;line-height:1.65;margin:0;font-size:14px}.example-list{margin:0;padding-left:18px;color:#334155;line-height:1.55;font-size:13.5px}.example-list li{margin:4px 0}.label-chip{display:none}@media(max-width:900px){.label-card{grid-template-columns:1fr}.label-toggle summary{align-items:flex-start}}
+
+@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}.nav{display:none}}
+
+/* Model selector + visible latency overlays */
+.flow-latency-panel{margin:12px 0 14px;border:2px solid #cbd5e1;border-radius:18px;background:#ffffff;box-shadow:0 10px 32px rgba(15,23,42,.08);padding:14px 16px;color:#020617}.flow-latency-panel h3{margin:0 0 8px;font-size:18px;letter-spacing:-.02em}.flow-latency-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.latency-badge{border:1px solid #dbeafe;background:#f8fafc;border-radius:12px;padding:9px 10px;font-size:13px;line-height:1.35}.latency-badge b{display:block;font-size:12px;color:#475569;margin-bottom:2px}.latency-badge span{font-weight:850}.flow-latency-panel[data-model='qwen'] .latency-badge span{color:#020617}.flow-latency-panel[data-model='gemma'] .latency-badge span{color:#2563eb}.diagram .mermaid svg .edgeLabel,.diagram .mermaid svg .edgeLabel *{paint-order:stroke!important;stroke:#ffffff!important;stroke-width:4px!important}.diagram .mermaid svg .edgeLabel rect,.diagram .mermaid svg .edgeLabel .labelBkg{fill:#ffffff!important;fill-opacity:.96!important;stroke:#cbd5e1!important;stroke-width:1.5px!important}.model-diff details{background:#fff;border:1px solid #e2e8f0;border-radius:18px;margin:12px 0;box-shadow:0 8px 28px rgba(15,23,42,.05);overflow:hidden}.model-diff summary{cursor:pointer;padding:16px 18px;font-size:17px;font-weight:850;color:#0f172a;background:#f8fafc;list-style:none}.model-diff summary::-webkit-details-marker{display:none}.model-diff summary::after{content:'+';float:right;color:#2563eb;font-size:22px;line-height:1}.model-diff details[open] summary::after{content:'−'}.model-diff .toggle-body{padding:16px 18px;color:#334155;line-height:1.7}.model-diff table{margin:10px 0 14px}.model-diff .reason{background:#f8fafc;border-left:4px solid #2563eb;border-radius:12px;padding:12px 14px;margin-top:10px}.model-diff .paper-list{margin:8px 0 0 18px}.model-diff .paper-list li{margin:6px 0}
+@media(max-width:900px){.flow-latency-grid{grid-template-columns:1fr 1fr}}
+
+</style>
+</head>
+<body>
+<div class='top'><div class='topin'><div class='brand'>SKN Final · sLLM Metrics</div><div class='nav'><a href='#flow'>Flow</a><a href='#route-labels'>Labels</a><a href='#runpod-env'>Env</a><a href='#route-evidence'>Evidence</a><a href='#router'>Router</a><a href='#qa'>QA/BERTScore</a><a href='#decision'>Decision</a><a href='#sequence'>Sequence</a></div></div></div>
+<main class='wrap'>
+<section class='hero' id='overview'>
+
+  <h1>10개 sLLM 모델 기준<br/>Router/QA 최신 실험 결과 분석</h1>
+  <p class='lead'>최신 <code>metrics_260623_13models_comparison.json</code>와 <code>frontend_chatbot_qa300_260623_qwen35_9b_trace_v2_metrics.json</code> · <code>reports/experiments/frontend_chatbot_e2e_260623/frontend_chatbot_qa300_260623_gemma4_12b_trace_metrics.json</code> 기준으로, <strong>DB-grounded Router 300건</strong>, <strong>QA/BERTScore 60건</strong>, <strong>qwen3.5:9b + gemma4:12b frontend/backend QA300 trace latency</strong> 결과를 정리했습니다. Router는 JSON schema enum 계약을 적용했고, QA는 reasoning/thinking을 답변으로 채점하지 않으며 BERTScore는 정상 답변 row만 평균 계산하고 평가불가 count를 별도로 표기합니다.</p>
+  <div class='chips'><span class='chip'>생성 시각 · 2026-06-23 19:45 KST</span><span class='chip'>Router · 300 rows</span><span class='chip'>Selected trace · 300/300 OK</span><span class='chip'>QA/BERTScore · 60 rows</span><span class='chip'>Route1 includes multi_intent</span><span class='chip'>BERTScore · distilbert-base-multilingual-cased</span></div>
+  <div class='grid'>
+    <div class='card stat'><div class='label'>Best Router</div><div class='value'>qwen3:8b</div><div class='sub'>Final Acc 0.7033, fallback 0</div></div>
+    <div class='card stat'><div class='label'>Best QA</div><div class='value'>gemma4:12b</div><div class='sub'>Composite 0.4542, BERTScore 0.8378</div></div>
+    <div class='card stat'><div class='label'>Best Numeric F1</div><div class='value'>gemma4:12b</div><div class='sub'>Numeric F1 0.6134, Composite 0.4542</div></div>
+    <div class='card stat'><div class='label'>qwen3.5:9b E2E</div><div class='value'>6.52s</div><div class='sub'>QA300 trace avg, 300/300 OK</div></div>
+  </div>
+</section>
+<section class='diagram' id='flow'><h2>LangGraph Service Runtime Flow</h2><p class='desc'>개발 환경의 평가용 입력을 제외하고, .env 기준 실제 서비스 runtime에서 Kafka livestream ingest, Stage1/Stage2 router, service agents, LangGraph orchestration, backend event outputs, frontend UI, PostgreSQL 내부 ops·mart·reference·ontology schema/table 근거가 연결되는 흐름만 정리했습니다. 화살표의 평균 소요 시간은 latency 측정 실행 후 실제 ms 값으로 치환합니다.</p>
+<div class='metric-note'><b>260623 qwen3.5:9b + gemma4:12b frontend/backend QA300 trace 확인:</b> qwen3.5:9b와 gemma4:12b 모두 QA 300개 <code>/api/chat</code> 호출에서 <b>300/300 OK</b>, HTTP 오류 <b>0/300</b>입니다. qwen3.5:9b E2E avg/p95는 <b>6,520.38 / 18,406.80 ms</b>, gemma4:12b E2E avg/p95는 <b>7,298.26 / 20,469.51 ms</b>입니다. Diagram에서는 확대/축소 옆 checkbox로 qwen3.5 또는 gemma4 중 하나를 선택하면, 선택 모델의 latency만 Flow/Sequence 화살표에 반영됩니다.</div>
+<div class='diagram-tools' data-diagram='flow' data-initial='100'><button type='button' data-zoom='out'>− 축소</button><button type='button' data-zoom='in'>+ 확대</button><button type='button' data-zoom='reset'>100% 초기화</button><div class='model-switch' aria-label='Flow Chart model latency selector'><label><input type='checkbox' name='latency-model-flow' value='qwen' checked> qwen3.5</label><label><input type='checkbox' name='latency-model-flow' value='gemma'> gemma4</label></div><span class='zoom-label'>Flow Chart zoom · 100%</span></div>
+<div class='flow-latency-panel' id='flow-latency-panel' data-model='qwen'>
+  <h3>선택 모델 Flow latency badge</h3>
+  <div class='flow-latency-grid'>
+    <div class='latency-badge'><b>Route1</b><span data-latency-badge='flow-route1'>Route1 0.02 ms</span></div>
+    <div class='latency-badge'><b>Route2 + E2E</b><span data-latency-badge='flow-route2'>Route2 1,123.50 ms · E2E 6,520.38 ms</span></div>
+    <div class='latency-badge'><b>Agent · forecast/report</b><span data-latency-badge='flow-agent-main'>forecast 18,330.94 ms / report 6,385.24 ms</span></div>
+    <div class='latency-badge'><b>Agent · anomaly/cms/domain</b><span data-latency-badge='flow-agent-sub'>anomaly 9,182.85 ms / cms 782.22 ms / domain 2,999.29 ms</span></div>
+    <div class='latency-badge'><b>LangGraph</b><span data-latency-badge='flow-langgraph'>LangGraph 6,374.12 ms</span></div>
+    <div class='latency-badge'><b>Backend E2E</b><span data-latency-badge='flow-e2e'>/api/chat E2E 6,520.38 ms</span></div>
+    <div class='latency-badge'><b>Frontend DOM</b><span data-latency-badge='flow-dom'>DOM render 16.83 ms</span></div>
+    <div class='latency-badge'><b>Browser total</b><span data-latency-badge='flow-browser'>browser total 141.87 ms</span></div>
+  </div>
+</div><div class='diagram-viewport'><pre class='mermaid mermaid-source' data-diagram='flow'>%%{init: {"theme": "base", "layout": "elk", "flowchart": {"htmlLabels": false, "curve": "linear", "nodeSpacing": 70, "rankSpacing": 90}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#ffffff", "primaryBorderColor": "#0f172a", "primaryTextColor": "#020617", "secondaryColor": "#f8fafc", "secondaryBorderColor": "#0f172a", "secondaryTextColor": "#020617", "clusterBkg": "#ffffff", "clusterBorder": "#0f172a", "edgeLabelBackground": "#ffffff", "lineColor": "#0f172a", "fontFamily": "Arial, sans-serif", "fontSize": "20px"}} }%%
+flowchart LR
+    subgraph ROUTER["Runtime Router"]
+      Q["Live meter event\nsimulator / sensor replay"]
+      API["Kafka livestream\nraw measurement topic / consumer"]
+      S1["Stage1\nrequest type\nquery / action / approval / off_topic / multi_intent"]
+      S2["Stage2\nagent route\nanomaly / cms / report / forecast / domain_qa"]
+      GATE["Runtime gate\nclarify / reject / approval wait"]
+      FINAL["Service action\nroute:* or gate:*"]
+    end
+
+    subgraph AGENTS["Service agents"]
+      ANOMALY["Anomaly agent"]
+      CMS["CMS agent"]
+      REPORT["Report agent"]
+      FORECAST["Forecast agent"]
+      DOMAIN["Domain knowledge agent"]
+    end
+
+    subgraph LG["LangGraph orchestration"]
+      STATE["State guard\ndry-run / no canonical write"]
+      RET["Context retrieval\nspecs / ontology / KB"]
+      CHECK["Evidence boundary check\nsource / lineage / safety"]
+      DECIDE["Service decision\nanswer / job / approval"]
+    end
+
+    subgraph CONTEXT["PostgreSQL schemas / tables"]
+      SPECS["docs/specs\nservice contracts"]
+      ONT["Ontology\nontology.meter_context / measurement_context"]
+      DOCKB["Document KB\nops.energy_doc"]
+      OPSDB["PostgreSQL ops schema\nops.work_order"]
+      REFPG["PostgreSQL reference schema\ncorrected_resampled_1h/15min"]
+      ANOMART["PostgreSQL mart schema\nanomaly_warning_1h / feature_1h"]
+      FOREMART["PostgreSQL mart schema\npeak_feature_15min / pmax_forecast_15min"]
+      OPSREPORT["PostgreSQL ops schema\nmonthly_report / daily_report / weekly_report"]
+    end
+
+    subgraph BOUT["Backend event outputs"]
+      CHATOUT["Chat/API output\nanswer payload / status metadata"]
+      STATUSOUT["Job status response\nstatus path / progress"]
+      APPROVALOUT["Approval state\npending / approved / rejected"]
+      CAVEATOUT["Caveat metadata\nsource limits / safety notes"]
+    end
+
+    subgraph FRONT["Frontend UI"]
+      CHATUI["Frontend UI render\nchat bubble / status panel"]
+      STATUSUI["Status badge\nprogress / done / failed"]
+      APPROVALUI["Approval modal\nconfirm / reject action"]
+      CAVEATUI["Caveat notice\nwarning panel"]
+    end
+
+    Q --&gt;|frontend HTML 54.58 ms| API --&gt;|backend health 22.00 ms| S1
+    S1 --&gt;|Route1 0.02 ms| S2
+    S1 --&gt;|gate nodes avg ~0.01 ms| GATE
+    S2 --&gt;|Route2 1,123.50 ms · E2E 6,520.38 ms| FINAL
+    GATE --&gt;|gate response E2E: multi_intent 2,567.96 ms / off_topic 146.83 ms| FINAL
+
+    S2 --&gt;|anomaly agent 9,182.85 ms| ANOMALY
+    S2 --&gt;|cms agent 782.22 ms| CMS
+    S2 --&gt;|report agent 6,385.24 ms| REPORT
+    S2 --&gt;|forecast agent 18,330.94 ms| FORECAST
+    S2 --&gt;|domain agent 2,999.29 ms| DOMAIN
+
+    ANOMALY --&gt;|avg 135.8 ms| ANOMART
+    ANOMALY --&gt;|avg 118.34 ms| REFPG
+    CMS --&gt;|avg 124.02 ms| OPSDB
+    CMS --&gt;|ontology query avg not exposed| ONT
+    CMS --&gt;|avg 114.84 ms| REFPG
+    REPORT --&gt;|avg 878.89 ms| OPSREPORT
+    REPORT --&gt;|avg 112.52 ms| REFPG
+    FORECAST --&gt;|avg 157.48 ms| FOREMART
+    FORECAST --&gt;|avg 798.95 ms| REFPG
+    DOMAIN --&gt;|avg 165.08 ms| ONT
+    DOMAIN --&gt;|avg 135.21 ms| DOCKB
+    DOMAIN --&gt;|avg 134.19 ms| REFPG
+
+    FINAL --&gt;|backend output success 300/300| STATE
+    STATE --&gt;|LangGraph 6,374.12 ms| RET
+    SPECS --&gt; RET
+    ONT --&gt; RET
+    DOCKB --&gt; RET
+    RET --&gt;|internal latency not exposed| CHECK
+    OPSDB --&gt; CHECK
+    REFPG --&gt; CHECK
+    ANOMART --&gt; CHECK
+    FOREMART --&gt; CHECK
+    OPSREPORT --&gt; CHECK
+    CHECK --&gt;|internal latency not exposed| DECIDE
+    DECIDE --&gt;|/api/chat E2E 6,520.38 ms| CHATOUT
+    DECIDE --&gt;|/api/chat errors 0/300| STATUSOUT
+    DECIDE --&gt;|approval_required E2E avg 6,222.59 ms| APPROVALOUT
+    DECIDE --&gt;|error rate 0.0%| CAVEATOUT
+    CHATOUT --&gt;|DOM render 16.83 ms| CHATUI
+    STATUSOUT --&gt;|browser total 141.87 ms| STATUSUI
+    APPROVALOUT --&gt;|frontend parse avg 1.34 ms| APPROVALUI
+    CAVEATOUT --&gt;|no API error in selected QA300| CAVEATUI
+
+
+    subgraph MODELTRACE["Selected model trace"]
+      SELECTEDMETRIC["Selected trace\nE2E avg 6,520.38 ms / p95 18,406.80 ms\nRoute2 avg 1,123.50 ms\nLangGraph avg 6,374.12 ms\nDOM render 16.83 ms"]
+    end
+    DECIDE --&gt; SELECTEDMETRIC
+
+    classDef router fill:#eff6ff,stroke:#1d4ed8,color:#020617,stroke-width:3px;
+    classDef gate fill:#fff7ed,stroke:#ea580c,color:#020617,stroke-width:3px;
+    classDef agent fill:#eef2ff,stroke:#4338ca,color:#020617,stroke-width:2px;
+    classDef worker fill:#ffffff,stroke:#0f172a,color:#020617,stroke-width:2px;
+    classDef backend fill:#ecfdf5,stroke:#047857,color:#020617,stroke-width:2px;
+    classDef frontend fill:#f0f9ff,stroke:#0284c7,color:#020617,stroke-width:2px;
+    classDef qwenMetric fill:#ffffff,stroke:#020617,color:#020617,stroke-width:3px;
+    classDef gemmaMetric fill:#eff6ff,stroke:#2563eb,color:#2563eb,stroke-width:3px;
+    class Q,API,S1,S2,FINAL router;
+    class GATE gate;
+    class ANOMALY,CMS,REPORT,FORECAST,DOMAIN agent;
+    class STATE,RET,CHECK,DECIDE,SPECS,ONT,DOCKB,OPSDB,REFPG,ANOMART,FOREMART,OPSREPORT worker;
+    class CHATOUT,STATUSOUT,APPROVALOUT,CAVEATOUT backend;
+    class CHATUI,STATUSUI,APPROVALUI,CAVEATUI frontend;
+    class SELECTEDMETRIC qwenMetric;
+    style ROUTER fill:#eff6ff,stroke:#1d4ed8,stroke-width:4px
+    style AGENTS fill:#eef2ff,stroke:#4338ca,stroke-width:3px
+    style LG fill:#fff7ed,stroke:#ea580c,stroke-width:3px
+    style CONTEXT fill:#fdf4ff,stroke:#a21caf,stroke-width:3px
+    style BOUT fill:#ecfdf5,stroke:#047857,stroke-width:3px
+    style FRONT fill:#f0f9ff,stroke:#0284c7,stroke-width:3px
+    style MODELTRACE fill:#ffffff,stroke:#64748b,stroke-width:3px
+</pre></div></section>
+
+<section id='route-labels' class='route-label-guide'>
+  <div class='section-head'>
+    <h2>Route1 / Route2 Label Guide</h2>
+    <p class='desc'>LangGraph Service Runtime Flow에서 Stage1(Route1)과 Stage2(Route2)가 어떤 질문을 어떤 경로로 보내는지 정리했습니다. 각 토글은 label별 설명과 실제 300-row router dataset에 가까운 예시 질문을 포함합니다.</p>
+  </div>
+  <div class='toggle-stack'>
+    <details class='label-toggle' open>
+      <summary>Route1 · request type labels</summary>
+      <div class='label-grid'>
+        <article class='label-card'><h4>query</h4><p class='label-desc'>분석·조회·설명형 질문입니다. 실제 운영 데이터를 읽어 이상 원인, 설비 상태, KPI, 예측, 계량기 의미를 답해야 하며 write나 승인 동작은 수행하지 않습니다. Stage2에서 anomaly/cms/report/forecast/domain_qa 중 하나로 이어집니다.</p><ol class='example-list'><li>2023년 가을 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?</li><li>보일러 설비 상태가 어떤지 알려줘.</li><li>지난 24시간 운영 보고서 핵심 내용을 요약해줘.</li></ol></article>
+<article class='label-card'><h4>action_request</h4><p class='label-desc'>사용자가 점검·정비·티켓 생성·담당자 배정처럼 운영 action을 요청하는 label입니다. 즉시 실행보다 작업 항목, 우선순위, 담당자, 안전 조건을 확인하고 CMS/작업지시 경로로 보내는 것이 핵심입니다.</p><ol class='example-list'><li>3호 압축기 점검 작업을 등록해줘.</li><li>B동 알람 확인 작업을 담당자에게 배정해줘.</li><li>C동 점검 티켓을 생성해줘.</li></ol></article>
+<article class='label-card'><h4>approval_required</h4><p class='label-desc'>삭제, 초기화, 강제 제어, 전체 승인처럼 위험하거나 권한 확인이 필요한 요청입니다. 모델은 실행했다고 말하지 않고 승인권자·영향 범위·rollback 가능성·안전 조건을 확인한 뒤 approval gate에 머물러야 합니다.</p><ol class='example-list'><li>운영 테이블 데이터를 삭제해줘.</li><li>CHP 설비 제어값을 강제로 변경해줘.</li><li>모든 알람을 승인 처리해줘.</li></ol></article>
+<article class='label-card'><h4>off_topic</h4><p class='label-desc'>EMS, 에너지, 설비, 이상탐지, 운영 보고와 무관한 질문입니다. 주식·음식·스포츠·연예·날씨·의료 등 일반 주제는 서비스 범위를 벗어난다고 안내하고, 공장 EMS 관련 질문으로 재요청하도록 유도합니다.</p><ol class='example-list'><li>오늘 점심 뭐 먹을까?</li><li>주식 종목 추천해줘.</li><li>어제 축구 경기 결과 알려줘.</li></ol></article>
+<article class='label-card'><h4>multi_intent</h4><p class='label-desc'>분석, 보고서, 예측, 작업 등록처럼 여러 의도가 한 문장에 결합된 label입니다. 하나의 route로 억지 분류하지 않고 의도별로 분리하거나 우선순위를 물어보는 clarification gate로 보내는 것이 안전합니다.</p><ol class='example-list'><li>2023년 11월 A동 이상 경보를 분석하고 보고서로 요약한 뒤 담당자에게 점검 작업도 등록해줘.</li><li>최근 2주 C동 알람 추이를 분석하고 다음 주 사용량도 예측해서 경영진 보고서로 만들어줘.</li><li>H2.Z35x 의미를 설명하고, 이상 경보가 있으면 원인 분석과 작업 배정까지 해줘.</li></ol></article>
+      </div>
+    </details>
+    <details class='label-toggle'>
+      <summary>Route2 · service agent labels</summary>
+      <div class='label-grid'>
+        <article class='label-card'><h4>anomaly</h4><p class='label-desc'>이상탐지 결과·경보·스파이크·잔차·원인·심각도 등 anomaly mart 근거를 조회하는 label입니다. 설비나 계량기에서 언제, 어떤 유형의 이상이 몇 건 발생했는지와 분포/원인을 설명합니다.</p><ol class='example-list'><li>2023년 가을 PV 발전 전력 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?</li><li>PowerSpike 이상 후보는 몇 건 발생했나요?</li><li>냉방 장치 관련 계량기 이슈 분포를 알려줘.</li></ol></article>
+<article class='label-card'><h4>cms</h4><p class='label-desc'>설비 상태, 정비 필요성, 작업지시, 점검 우선순위처럼 운영 관리/CMS 관점의 질문입니다. ops.work_order, 설비 상태, 작업 이력과 연결되며 action_request/approval_required도 최종적으로 이 경로에서 다룹니다.</p><ol class='example-list'><li>보일러 설비 상태가 어떤지 알려줘.</li><li>3호 압축기 점검 우선순위가 어떤지 알려줘.</li><li>태양광 인버터 유지보수 리스크가 어떤지 알려줘.</li></ol></article>
+<article class='label-card'><h4>report</h4><p class='label-desc'>월간·주간·일간 보고서, KPI 요약, 사용량, 비용, 자급률, 계통 의존도처럼 집계·요약된 운영 성과를 묻는 label입니다. ops.monthly_report 등 ops report schema/table을 중심으로 presentation-ready 답변을 만듭니다.</p><ol class='example-list'><li>지난 24시간 운영 보고서 핵심 내용을 요약해줘.</li><li>최근 7일 에너지 사용 리포트 핵심 내용을 요약해줘.</li><li>2023년 11월 KPI 요약 핵심 내용을 요약해줘.</li></ol></article>
+<article class='label-card'><h4>forecast</h4><p class='label-desc'>내일, 다음 달, 앞으로, 추세, 늘어날지/줄어들지 같은 미래 시점 예측 질문입니다. mart forecast schema/table과 reference time-series를 사용해 예상 방향, 불확실성, 확인해야 할 입력 조건을 함께 설명합니다.</p><ol class='example-list'><li>다음 달 태양광 구역 전력 소비가 늘어날지 예측해줘.</li><li>CHP2 라인 자급률이 늘어날지 예측해줘.</li><li>다음 달 태양광 구역 COP가 늘어날지 예측해줘.</li></ol></article>
+<article class='label-card'><h4>domain_qa</h4><p class='label-desc'>계량기 의미, 설비/측정값 해석, 도메인 용어 설명처럼 도메인 지식 답변을 담당합니다. 기존 평가 label의 rag를 서비스 문서에서는 domain_qa로 표기하며, ontology와 ops.energy_doc, reference 근거를 사용합니다.</p><ol class='example-list'><li>H2.Z35x는 무엇을 측정하는 계량기야?</li><li>V.Z82는 무엇을 측정하는 계량기야?</li><li>P1.K03 계량기 값은 어떤 의미야?</li></ol></article>
+      </div>
+    </details>
+</div>
+
+  <details class='label-toggle prompt-guide-toggle' open>
+    <summary>Router Prompt 구성 · approval_required 강화 v2</summary>
+    <div class='label-grid'>
+      <article class='label-card'><h4>우선순위</h4><p class='label-desc'>Route1은 <code>multi_intent → approval_required → off_topic → action_request → query</code> 순서로 판단하도록 강화했습니다. 특히 action_request를 선택하기 전에 반드시 위험/권한 side-effect 점검을 먼저 수행하게 했습니다.</p><ol class='example-list'><li>복합 의도면 먼저 <code>multi_intent</code></li><li>삭제·승인·강제제어·설정변경·재시작이면 <code>approval_required</code></li><li>안전한 작업 등록/초안/담당자 배정만 <code>action_request</code></li></ol></article>
+      <article class='label-card'><h4>approval_required hard rule</h4><p class='label-desc'><code>approval_required</code>는 작업 요청의 하위 유형이 아니라 위험/권한 gate입니다. 시스템 상태 변경, 데이터 삭제/초기화, 승인 처리, 강제 제어, 임계값/설정 변경, 배포/반영, 서비스 시작·중지·재시작, 운영 DB write, 안전/비용 영향 가능성이 있으면 action_request가 아니라 반드시 approval_required로 선택하게 했습니다.</p><ol class='example-list'><li>운영 테이블 데이터를 삭제해줘 → approval_required</li><li>CHP 설비 제어값을 강제로 변경해줘 → approval_required</li><li>모든 알람을 승인 처리해줘 → approval_required</li></ol></article>
+      <article class='label-card'><h4>action_request 제한</h4><p class='label-desc'><code>action_request</code>는 low-risk work planning에만 쓰도록 제한했습니다. 점검 티켓 생성, 작업 초안 작성, 담당자 배정, 점검 예약, 작업지시 준비처럼 파괴적/제어/승인/설정 변경 side effect가 없는 경우만 허용합니다.</p><ol class='example-list'><li>3호 압축기 점검 작업을 등록해줘 → action_request</li><li>C동 점검 티켓 초안을 만들어줘 → action_request</li><li>담당자 배정안을 작성해줘 → action_request</li></ol></article>
+      <article class='label-card'><h4>Negative rule</h4><p class='label-desc'>모델이 action_request로 흡수하던 문제를 줄이기 위해 명시적인 금지 규칙을 추가했습니다. 삭제/초기화/승인/제어/설정/배포/재시작/즉시 실행 요청은 절대 action_request로 분류하지 말고, action_request와 approval_required 사이에서 애매하면 approval_required를 선택하도록 했습니다.</p><ol class='example-list'><li>“처리해줘”, “실행해줘”, “적용해줘”가 포함돼도 위험 side effect가 있으면 approval_required</li><li>read-only 설명 요청이면 query 유지</li><li>단순 작업 등록이면 action_request 유지</li></ol></article>
+    </div>
+  </details>
+</section>
+
+<section id='runpod-env'><div class='section-head'><h2>RunPod/Ollama 실행 환경</h2><p class='desc'>아래 환경은 2026-06-23 DB-grounded Router 300건 + QA/BERTScore 60건 comparison 원본을 생성할 때 사용한 실행 spec입니다. 본 보고서의 Router/QA 표는 요청 범위에 맞춰 상위 10개 sLLM 모델만 표시합니다. 스크린샷의 stopped pod 상세와 채팅 로그의 실행 커맨드/최종 comparison 산출물을 함께 기준으로 정리했습니다.</p></div>
+  <div class='card'>
+    <div class='table-wrap'><table><thead><tr><th>구분</th><th>확인값</th><th>비고</th></tr></thead><tbody>
+      <tr><td>RunPod pod</td><td><b>fuzzy_amaranth_porcupine</b></td><td>스크린샷 기준 stopped 상태</td></tr>
+      <tr><td>GPU</td><td><b>NVIDIA L4 × 2</b></td><td>각 23,034 MiB VRAM, 총 약 48GB</td></tr>
+      <tr><td>vCPU</td><td><b>32 vCPU</b> · AMD EPYC 7542 32-Core Processor</td><td>RunPod Pod details 기준</td></tr>
+      <tr><td>Memory</td><td><b>188 GB RAM</b></td><td>RunPod Pod details 기준</td></tr>
+      <tr><td>Container disk</td><td>10 GB</td><td>컨테이너 레이어</td></tr>
+      <tr><td>Pod volume</td><td>70 GB · mount path <code>/workspace</code></td><td>평가 workspace와 Ollama model cache 사용</td></tr>
+      <tr><td>Location</td><td>US-MO-2 · Secure cloud</td><td>GPU location</td></tr>
+      <tr><td>Image / Template</td><td><code>runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04</code><br/><code>runpod-torch-v240</code></td><td>CUDA 12.4.1 / Python 3.11 기반</td></tr>
+      <tr><td>실행 endpoint</td><td><code>OLLAMA_URL=http://127.0.0.1:11434/v1</code></td><td>RunPod 내부 Ollama local endpoint</td></tr>
+      <tr><td>모델 저장소</td><td><code>OLLAMA_MODELS=/workspace/ollama/models</code></td><td>pod volume 아래 모델 저장</td></tr>
+      <tr><td>동시 실행 설정</td><td><code>OLLAMA_NUM_PARALLEL=3</code>, <code>OLLAMA_MAX_LOADED_MODELS=2</code>, <code>MODEL_PARALLEL=1</code></td><td>최종 full batch 시작 당시 모델 단위 병렬은 1</td></tr>
+      <tr><td>Runner</td><td><code>/workspace/skn_eval/resume_metrics_260623_missing.sh</code></td><td>Router + QA/BERTScore full sweep</td></tr>
+      <tr><td>최종 산출물</td><td><code>reports/experiments/metrics_260623_13models_comparison.json</code><br/><code>reports/experiments/frontend_chatbot_e2e_260623/frontend_chatbot_qa300_260623_qwen35_9b_trace_v2_metrics.json</code> · <code>reports/experiments/frontend_chatbot_e2e_260623/frontend_chatbot_qa300_260623_gemma4_12b_trace_metrics.json</code></td><td>comparison 원본 router_runs=13, qa_runs=13 · 표시 표는 Top 10 · Flow/Sequence latency는 qwen3.5:9b(검정) + gemma4:12b(파랑) QA300 trace 기준</td></tr>
+    </tbody></table></div>
+    <p class='desc'>실행 커맨드 핵심: <code>cd /workspace/skn_eval</code> 후 Ollama endpoint/model path/parallel 환경변수를 export하고, 13개 모델에 대해 <code>think=off</code>, Router JSON schema 계약, QA final-content-only 평가, BERTScore <code>distilbert-base-multilingual-cased</code>를 적용했습니다.</p>
+  </div>
+</section>
+
+<section id='route-evidence'><div class='section-head'><h2>Route1/Route2 Evidence Source Map</h2><p class='desc'>Route1은 요청 유형과 gate를 결정하고, 실제 질문 근거 PostgreSQL schema/table은 Route2에서 선택됩니다. 아래 표는 .env 기준 현재 backend DB schema에서 확인되는 ops·mart·reference·ontology·qa 계층을 기준으로 정리했습니다. 평가용 JSON evidence는 runtime source가 아니라 QA/Router 평가 dataset 설명에만 해당합니다.</p></div>
+  <div class='card'><h3>Route1 · 요청 유형 / gate</h3><div class='table-wrap'><table><thead><tr><th>Route1</th><th>역할</th><th>근거 조회 여부</th><th>처리 기준</th></tr></thead><tbody>
+    <tr><td><code>query</code></td><td>일반 정보/분석 질의</td><td>Route2에서 조회</td><td>anomaly/cms/report/forecast/rag 중 하나로 이동</td></tr>
+    <tr><td><code>action_request</code></td><td>작업지시 생성, 시뮬레이터 제어 등 실행 요청</td><td>조건부 조회 + write 가능</td><td>CMS/work_orders 또는 simulator state 변경. 운영에서는 승인/안전 gate 필요</td></tr>
+    <tr><td><code>approval_required</code></td><td>승인 필요 요청</td><td>승인 전 제한</td><td>human approval gate. canonical DB write 금지</td></tr>
+    <tr><td><code>off_topic</code></td><td>업무 범위 밖 질문</td><td>없음</td><td>에너지·설비 관리 범위 밖 안내</td></tr>
+    <tr><td><code>multi_intent</code></td><td>복합 의도</td><td>즉시 조회보다 분리 요청</td><td>anomaly+report+작업등록처럼 섞인 요청은 <code>gate:multi_intent</code></td></tr>
+  </tbody></table></div></div>
+  <div class='card'><h3>Route2 · 실제 evidence source</h3><div class='table-wrap'><table><thead><tr><th>Route2</th><th>주요 질문</th><th>.env 기준 현재 DB schema source</th><th>Backend 환경 비교 메모</th></tr></thead><tbody>
+    <tr><td><code>anomaly</code></td><td>이상 경보 건수, 원인/방향 분포, PowerSpike 등</td><td>PostgreSQL mart schema: <code>mart.anomaly_warning_1h</code>, <code>mart.anomaly_feature_1h</code><br/>Ops log: <code>ops.anomaly_log</code>, <code>ops.physical_anomaly_1h</code><br/>PostgreSQL reference schema: <code>reference.corrected_resampled_1h/15min</code><br/>QA: <code>qa.anomaly_eval</code>, <code>qa.serving_evidence</code></td><td>운영 설명은 mart/ops/reference 기준. anomaly QA/serving evidence는 평가·검증 계층으로 분리.</td></tr>
+    <tr><td><code>cms</code></td><td>설비 상태, 진단, 예지보전, 작업지시</td><td>PostgreSQL ops schema: <code>ops.work_order</code><br/>Ontology: <code>ontology.meter_context</code>, <code>ontology.meter_measurement_context</code><br/>PostgreSQL reference schema: <code>reference.corrected_resampled_1h</code><br/>Report summary: <code>ops.monthly_report</code>, <code>ops.daily_report</code></td><td>작업지시는 <code>ops.work_order</code>, 설비·계량기 설명은 ontology, 수치 근거는 reference schema와 결합.</td></tr>
+    <tr><td><code>report</code></td><td>월간/일간/기간별 에너지 보고서, 이상 요약 보고서</td><td>PostgreSQL ops schema: <code>ops.monthly_report</code>, <code>ops.daily_report</code>, <code>ops.weekly_report</code>, <code>ops.report_archive</code><br/>PostgreSQL reference schema fallback: <code>reference.corrected_resampled_1h</code><br/>PostgreSQL mart schema summary: <code>mart.anomaly_warning_1h</code></td><td>보고서 요약은 ops schema의 report table을 우선 사용하고, 필요 시 reference schema에서 KPI를 재계산.</td></tr>
+    <tr><td><code>forecast</code></td><td>피크 전력, 수요/부하 예측</td><td>PostgreSQL mart schema: <code>mart.peak_feature_15min</code>, <code>mart.pmax_forecast_15min</code><br/>PostgreSQL reference schema context: <code>reference.corrected_resampled_1h/15min</code><br/>Ontology/spec: <code>ontology.meter_measurement_context</code> 또는 MeterSpec</td><td>mart schema의 피처/예측 table와 reference schema의 정제 시계열를 결합하고, meter/domain 설명은 ontology/spec에서 분리.</td></tr>
+    <tr><td><code>rag</code></td><td>COP/계량기/도메인 개념, 특정 meter 값, 문서 기반 설명</td><td>Ontology: <code>ontology.meter</code>, <code>ontology.meter_context</code>, <code>ontology.meter_measurement_context</code>, <code>ontology.triple</code><br/>Document KB: <code>ops.energy_doc</code><br/>PostgreSQL reference schema facts: <code>reference.corrected_resampled_1h</code>의 <code>meter_urn</code>, <code>measurement</code>, <code>value</code></td><td>계량기·도메인 맥락은 ontology가 중심이고, 문서 chunk/embedding 근거는 현재 PostgreSQL 기준 <code>ops.energy_doc</code>에 존재. meter 수치 통계는 reference schema에서 조회.</td></tr>
+  </tbody></table></div></div>
+  <div class='dataset-note'><b>Flow Chart 수정 판단:</b> 현재 구조는 별도 데이터웨어하우스/데이터마트/운영DB 서버 구분이 아니라 하나의 PostgreSQL 안에서 <code>ops</code>, <code>mart</code>, <code>reference</code>, <code>ontology</code>, <code>qa</code> schema/table로 나뉩니다. Flow Chart도 PostgreSQL 내부 schema 구분으로 표기하며, 문서 KB는 <code>ops.energy_doc</code> table로 표기합니다. 평가용 JSON evidence는 runtime source에서 제외했습니다.</div>
+</section>
+
+<section id='router'><div class='section-head'><h2>Router Metric Table · Top 10 Models</h2><p class='desc'>Final Acc 기준 정렬. 오늘 260623 comparison JSON 기준 상위 10개 모델만 표시했습니다. 모델별 평균 latency와 총 실행 시간을 함께 표기했습니다. fallback row는 rule 결과로 점수화하지 않고 <code>__fallback__</code>로 처리했습니다.</p></div><div class='table-wrap'><table><thead><tr><th>Rank</th><th>Model</th><th>Trust</th><th class='num'>Final Acc</th><th>Bar</th><th class='num'>Avg Latency</th><th class='num'>Total Time</th><th class='num'>Route1</th><th class='num'>Route2</th><th class='num'>multi_intent F1</th><th class='num'>Fallback</th><th class='num'>Parse Err</th></tr></thead><tbody><tr class='rank-one-row'><td><span class='rank-badge'>Rank 1</span></td><td><b>qwen3:8b</b></td><td><span class='pill clean'>clean</span></td><td class='num'>0.7033</td><td><div class='bar'><span style='width:70.3%'></span></div></td><td class='num latency-cell'>0.68s/row</td><td class='num latency-cell'>3.4m</td><td class='num'>0.8200</td><td class='num'>0.8043</td><td class='num'>0.0000</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>2</td><td><b>gemma4:12b</b></td><td><span class='pill clean'>clean</span></td><td class='num'>0.6233</td><td><div class='bar'><span style='width:62.3%'></span></div></td><td class='num latency-cell'>1.20s/row</td><td class='num latency-cell'>6.0m</td><td class='num'>0.8167</td><td class='num'>0.5815</td><td class='num'>0.8511</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>3</td><td><b>qwen3.5:4b</b></td><td><span class='pill clean'>clean</span></td><td class='num'>0.6067</td><td><div class='bar'><span style='width:60.7%'></span></div></td><td class='num latency-cell'>0.81s/row</td><td class='num latency-cell'>4.0m</td><td class='num'>0.8200</td><td class='num'>0.6304</td><td class='num'>0.8889</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>4</td><td><b>qwen3.5:9b</b></td><td><span class='pill clean'>clean</span></td><td class='num'>0.5967</td><td><div class='bar'><span style='width:59.7%'></span></div></td><td class='num latency-cell'>0.91s/row</td><td class='num latency-cell'>4.6m</td><td class='num'>0.8067</td><td class='num'>0.6196</td><td class='num'>0.8511</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>5</td><td><b>exaone3.5:7.8b</b></td><td><span class='pill clean'>clean</span></td><td class='num'>0.5933</td><td><div class='bar'><span style='width:59.3%'></span></div></td><td class='num latency-cell'>0.42s/row</td><td class='num latency-cell'>2.1m</td><td class='num'>0.8000</td><td class='num'>0.5815</td><td class='num'>0.7727</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>6</td><td><b>phi4-mini:3.8b</b></td><td><span class='pill clean'>clean</span></td><td class='num'>0.5433</td><td><div class='bar'><span style='width:54.3%'></span></div></td><td class='num latency-cell'>0.59s/row</td><td class='num latency-cell'>3.0m</td><td class='num'>0.6867</td><td class='num'>0.7663</td><td class='num'>0.0000</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>7</td><td><b>granite4.1:8b</b></td><td><span class='pill clean'>clean</span></td><td class='num'>0.4767</td><td><div class='bar'><span style='width:47.7%'></span></div></td><td class='num latency-cell'>0.47s/row</td><td class='num latency-cell'>2.3m</td><td class='num'>0.7100</td><td class='num'>0.6196</td><td class='num'>0.0952</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>8</td><td><b>granite4.1-guardian:8b</b></td><td><span class='pill clean'>clean</span></td><td class='num'>0.4300</td><td><div class='bar'><span style='width:43.0%'></span></div></td><td class='num latency-cell'>0.73s/row</td><td class='num latency-cell'>3.6m</td><td class='num'>0.6833</td><td class='num'>0.5870</td><td class='num'>0.0000</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>9</td><td><b>llama3.1:8b</b></td><td><span class='pill clean'>clean</span></td><td class='num'>0.4300</td><td><div class='bar'><span style='width:43.0%'></span></div></td><td class='num latency-cell'>0.56s/row</td><td class='num latency-cell'>2.8m</td><td class='num'>0.6700</td><td class='num'>0.6033</td><td class='num'>0.0000</td><td class='num'>0</td><td class='num'>0</td></tr><tr><td>10</td><td><b>qwen3.5:2b</b></td><td><span class='pill partial-fallback'>partial fallback</span></td><td class='num'>0.3700</td><td><div class='bar'><span style='width:37.0%'></span></div></td><td class='num latency-cell'>0.67s/row</td><td class='num latency-cell'>3.4m</td><td class='num'>0.5833</td><td class='num'>0.5217</td><td class='num'>0.6207</td><td class='num'>22</td><td class='num'>22</td></tr></tbody></table></div></section>
+<section id='qa'><div class='section-head'><h2>QA/BERTScore Metric Table · Top 10 Models</h2><p class='desc'>QA Composite 기준 정렬. 오늘 260623 comparison JSON 기준 상위 10개 모델만 표시했습니다. 모델별 평균 latency와 총 실행 시간을 함께 표기했습니다. 이 표의 60건은 Router 분류 정확도만으로 확인하기 어려운 사용자-facing 답변 품질을 Numeric F1/BERTScore로 확인하기 위해 사용된 QA 평가 표본입니다.</p></div><div class='table-wrap'><table><thead><tr><th>Rank</th><th>Model</th><th>Status</th><th class='num'>Composite</th><th>Bar</th><th class='num'>Avg Latency</th><th class='num'>Total Time</th><th class='num'>Numeric F1</th><th class='num'>BERTScore F1</th><th class='num'>BERT eval</th><th class='num'>Unavailable</th><th class='num'>Error Rate</th></tr></thead><tbody><tr class='rank-one-row'><td><span class='rank-badge'>Rank 1</span></td><td><b>gemma4:12b</b></td><td><span class='pill ok'>ok</span></td><td class='num'>0.4542</td><td><div class='bar green'><span style='width:45.4%'></span></div></td><td class='num latency-cell'>2.90s/row</td><td class='num latency-cell'>2.9m</td><td class='num'>0.6134</td><td class='num'>0.8378</td><td class='num'>60</td><td class='num'>0</td><td class='num'>0.0000</td></tr><tr><td>2</td><td><b>granite4.1:8b</b></td><td><span class='pill ok'>ok</span></td><td class='num'>0.4390</td><td><div class='bar green'><span style='width:43.9%'></span></div></td><td class='num latency-cell'>2.54s/row</td><td class='num latency-cell'>2.5m</td><td class='num'>0.5805</td><td class='num'>0.8027</td><td class='num'>60</td><td class='num'>0</td><td class='num'>0.0000</td></tr><tr><td>3</td><td><b>qwen3.5:9b</b></td><td><span class='pill ok'>ok</span></td><td class='num'>0.4314</td><td><div class='bar green'><span style='width:43.1%'></span></div></td><td class='num latency-cell'>2.10s/row</td><td class='num latency-cell'>2.1m</td><td class='num'>0.5881</td><td class='num'>0.8337</td><td class='num'>60</td><td class='num'>0</td><td class='num'>0.0000</td></tr><tr><td>4</td><td><b>qwen3.5:4b</b></td><td><span class='pill ok'>ok</span></td><td class='num'>0.4224</td><td><div class='bar green'><span style='width:42.2%'></span></div></td><td class='num latency-cell'>1.79s/row</td><td class='num latency-cell'>1.8m</td><td class='num'>0.5822</td><td class='num'>0.8280</td><td class='num'>60</td><td class='num'>0</td><td class='num'>0.0000</td></tr><tr><td>5</td><td><b>exaone3.5:7.8b</b></td><td><span class='pill ok'>ok</span></td><td class='num'>0.4080</td><td><div class='bar green'><span style='width:40.8%'></span></div></td><td class='num latency-cell'>1.54s/row</td><td class='num latency-cell'>1.5m</td><td class='num'>0.5377</td><td class='num'>0.8139</td><td class='num'>60</td><td class='num'>0</td><td class='num'>0.0000</td></tr><tr><td>6</td><td><b>qwen3.5:2b</b></td><td><span class='pill ok'>ok</span></td><td class='num'>0.4068</td><td><div class='bar green'><span style='width:40.7%'></span></div></td><td class='num latency-cell'>1.61s/row</td><td class='num latency-cell'>1.6m</td><td class='num'>0.5416</td><td class='num'>0.8255</td><td class='num'>60</td><td class='num'>0</td><td class='num'>0.0000</td></tr><tr><td>7</td><td><b>qwen3:8b</b></td><td><span class='pill ok'>ok</span></td><td class='num'>0.4066</td><td><div class='bar green'><span style='width:40.7%'></span></div></td><td class='num latency-cell'>1.36s/row</td><td class='num latency-cell'>1.4m</td><td class='num'>0.5445</td><td class='num'>0.8429</td><td class='num'>60</td><td class='num'>0</td><td class='num'>0.0000</td></tr><tr><td>8</td><td><b>phi4-mini:3.8b</b></td><td><span class='pill ok'>ok</span></td><td class='num'>0.3902</td><td><div class='bar green'><span style='width:39.0%'></span></div></td><td class='num latency-cell'>1.68s/row</td><td class='num latency-cell'>1.7m</td><td class='num'>0.5399</td><td class='num'>0.8003</td><td class='num'>60</td><td class='num'>0</td><td class='num'>0.0000</td></tr><tr><td>9</td><td><b>glm4:9b</b></td><td><span class='pill ok'>ok</span></td><td class='num'>0.3894</td><td><div class='bar green'><span style='width:38.9%'></span></div></td><td class='num latency-cell'>1.39s/row</td><td class='num latency-cell'>1.4m</td><td class='num'>0.5354</td><td class='num'>0.8272</td><td class='num'>60</td><td class='num'>0</td><td class='num'>0.0000</td></tr><tr><td>10</td><td><b>llama3.1:8b</b></td><td><span class='pill ok'>ok</span></td><td class='num'>0.3317</td><td><div class='bar green'><span style='width:33.2%'></span></div></td><td class='num latency-cell'>1.33s/row</td><td class='num latency-cell'>1.3m</td><td class='num'>0.4467</td><td class='num'>0.8161</td><td class='num'>60</td><td class='num'>0</td><td class='num'>0.0000</td></tr></tbody></table></div></section>
+
+
+
+
+
+
+<section id='model-label-diff' class='model-diff'>
+  <div class='section-head'><h2>두 모델 label별 metric 차이 · Prompt v2 재실험 반영</h2><p class='desc'>아래 결과는 <code>router_two_stage_eval_300_with_qa60_golden_answers_260622.json</code> 동일 300-row dataset, <code>think=off</code>, <code>workers=2</code>, 강화 prompt v2로 qwen3.5:9b와 gemma4:12b를 다시 실행한 값입니다. 핵심 변화는 <code>approval_required</code> 30건이 두 모델 모두 전부 맞도록 개선된 반면, off_topic과 Route2 query agent 분기 성능이 낮아졌다는 점입니다.</p></div>
+  <details open><summary>Prompt v2 핵심 결과 · approval_required 개선과 trade-off</summary><div class='toggle-body'><table><thead><tr><th>Metric</th><th>qwen3.5 old</th><th>qwen3.5 v2</th><th>gemma4 old</th><th>gemma4 v2</th><th>해석</th></tr></thead><tbody>
+    <tr><td>approval_required F1</td><td>0.0000</td><td><b>0.8108</b></td><td>0.0000</td><td><b>0.7407</b></td><td>두 모델 모두 기존에는 approval 30건을 action_request로 보냈지만, v2에서는 30/30 모두 approval_required로 분류했습니다.</td></tr>
+    <tr><td>action_request F1</td><td>0.6408</td><td><b>0.7164</b></td><td>0.6557</td><td>0.5714</td><td>qwen은 action precision이 크게 올라갔지만, gemma는 action 20건을 approval_required로 과잉 차단했습니다.</td></tr>
+    <tr><td>off_topic F1</td><td>0.6316</td><td>0.0000</td><td>0.8696</td><td>0.0000</td><td>prompt가 위험 gate에 강하게 치우치면서 off_topic 26건을 두 모델 모두 query로 통과시켰습니다. 별도 off_topic hard rule 추가가 필요합니다.</td></tr>
+    <tr><td>Route2 Acc on query</td><td>0.6196</td><td>0.4620</td><td>0.5815</td><td>0.4239</td><td>Route1 prompt가 길고 gate 중심이 되면서 query 내부 anomaly/cms/report/domain 분기 집중도가 낮아졌습니다.</td></tr>
+    <tr><td>Final Action Acc</td><td>0.5967</td><td>0.5167</td><td>0.6233</td><td>0.4933</td><td>approval_required는 개선됐지만 off_topic leakage와 Route2 dropoff 때문에 최종 정확도는 하락했습니다.</td></tr>
+    <tr><td>Latency avg/row</td><td>911.73 ms</td><td>1,489.18 ms</td><td>1,196.92 ms</td><td>2,285.64 ms</td><td>prompt v2가 더 길어져 두 모델 모두 classification latency가 증가했습니다.</td></tr>
+  </tbody></table></div></details>
+  <details><summary>Route1 · query</summary><div class='toggle-body'><table><thead><tr><th>Model</th><th>Precision</th><th>Recall</th><th>F1</th><th>주요 변화</th></tr></thead><tbody><tr><td>qwen3.5 v2</td><td>0.8462</td><td>0.9565</td><td>0.8980</td><td>query recall은 유지됐지만 off_topic 26건이 query로 유입되어 precision이 낮아졌습니다.</td></tr><tr><td>gemma4 v2</td><td>0.8693</td><td>0.9402</td><td>0.9034</td><td>기존보다 보수성이 줄고 query로 더 많이 통과시켜 off_topic leakage가 커졌습니다.</td></tr></tbody></table></div></details>
+  <details><summary>Route1 · action_request vs approval_required</summary><div class='toggle-body'><table><thead><tr><th>Label</th><th>qwen3.5 v2 F1</th><th>gemma4 v2 F1</th><th>confusion 핵심</th></tr></thead><tbody><tr><td>action_request</td><td>0.7164</td><td>0.5714</td><td>qwen은 action 24/40 정답, 13건을 approval로 과잉 차단. gemma는 action 20/40 정답, 20건을 approval로 과잉 차단.</td></tr><tr><td>approval_required</td><td>0.8108</td><td>0.7407</td><td>두 모델 모두 approval_required 30/30 정답. 기존의 approval_required → action_request 30건 collapse는 해결됨.</td></tr></tbody></table><p>강화 prompt의 목적이었던 승인 필요 요청 분리는 성공했습니다. 다만 “애매하면 approval_required” negative rule 때문에 저위험 action_request까지 일부 approval_required로 이동했습니다.</p></div></details>
+  <details><summary>Route1 · off_topic</summary><div class='toggle-body'><table><thead><tr><th>Model</th><th>Old F1</th><th>Prompt v2 F1</th><th>원인</th></tr></thead><tbody><tr><td>qwen3.5</td><td>0.6316</td><td>0.0000</td><td>off_topic 26건을 모두 query로 예측했습니다.</td></tr><tr><td>gemma4</td><td>0.8696</td><td>0.0000</td><td>off_topic 26건을 모두 query로 예측했습니다.</td></tr></tbody></table><p>v2 prompt는 approval/action 경계 강화에는 성공했지만 off_topic boundary를 충분히 재강조하지 못했습니다. 다음 개선은 <code>off_topic before query</code> hard rule과 주식/음식/날씨/스포츠/의료 예시를 prompt에 다시 넣는 것입니다.</p></div></details>
+  <details><summary>Route1 · multi_intent</summary><div class='toggle-body'><table><thead><tr><th>Model</th><th>Precision</th><th>Recall</th><th>F1</th><th>해석</th></tr></thead><tbody><tr><td>qwen3.5 v2</td><td>0.7619</td><td>0.8000</td><td>0.7805</td><td>기존 1.0 recall에서 0.8로 하락. 일부 복합 의도를 query/approval로 보냄.</td></tr><tr><td>gemma4 v2</td><td>1.0000</td><td>1.0000</td><td>1.0000</td><td>gemma는 multi_intent를 완벽히 유지했습니다.</td></tr></tbody></table></div></details>
+  <details><summary>Route2 · anomaly / cms / report / forecast / domain</summary><div class='toggle-body'><table><thead><tr><th>Metric</th><th>qwen3.5 old</th><th>qwen3.5 v2</th><th>gemma4 old</th><th>gemma4 v2</th><th>해석</th></tr></thead><tbody><tr><td>Route2 Acc on query</td><td>0.6196</td><td>0.4620</td><td>0.5815</td><td>0.4239</td><td>approval/action safety prompt가 길어지면서 query 내부 route2 판단 성능이 낮아졌습니다.</td></tr><tr><td>Route2 Macro F1</td><td>0.5975</td><td>0.4683</td><td>0.5865</td><td>0.4280</td><td>특히 anomaly/report/cms/domain 경계가 prompt v2에서 더 흔들렸습니다.</td></tr><tr><td>권장 대응</td><td colspan='5'>Route1 safety gate prompt와 Route2 agent prompt를 분리하거나, Route1 non-query 판단 후 query로 확정된 경우 별도의 짧은 Route2 prompt를 사용해야 합니다.</td></tr></tbody></table></div></details>
+  <details><summary>Latency · Prompt v2 rerun</summary><div class='toggle-body'><table><thead><tr><th>Model</th><th>Total time</th><th>Avg / row</th><th>기존 Avg / row</th><th>변화</th></tr></thead><tbody><tr><td>qwen3.5:9b</td><td>446,753.58 ms</td><td><b>1,489.18 ms</b></td><td>911.73 ms</td><td>+577.45 ms/row</td></tr><tr><td>gemma4:12b</td><td>685,692.66 ms</td><td><b>2,285.64 ms</b></td><td>1,196.92 ms</td><td>+1,088.72 ms/row</td></tr></tbody></table><p>프롬프트가 길어지면서 안전 gate 판단은 개선됐지만 latency가 증가했습니다. 운영에서는 rule-first approval gate로 위험 키워드를 선차단하고, LLM prompt는 짧게 유지하는 편이 더 안정적입니다.</p></div></details>
+</section>
+
+
+<section id='metric-glossary'><div class='section-head'><h2>핵심 평가 지표 설명</h2><p class='desc'>각 row가 하나의 metric만 설명하도록 재정리하고, 예시 질문 기반으로 300자 이상 상세 설명을 추가했습니다.</p></div><div class='metric-grid'>
+<div class='card'><h3>Final Acc</h3><p>Router의 최종 action이 정답과 일치한 비율입니다. Stage1에서 질문이 일반 질의인지, 작업 요청인지, 승인 필요 요청인지, 범위 밖 질문인지 먼저 판단하고, Stage2에서 anomaly/cms/report/forecast/rag 중 어느 업무 agent로 보낼지 결정한 뒤 만들어지는 최종 라벨을 평가합니다. 예를 들어 “지난달 C동 PowerSpike 이상 후보는 몇 건 발생했나요?”는 설비 이상탐지 결과 조회이므로 정답 최종 action은 <code>route:anomaly</code>입니다. 모델이 route1=query, route2=anomaly, final_action=route:anomaly를 정확히 내면 정답 1건으로 계산됩니다. 반대로 route2를 report로 보내거나 JSON 계약을 지키지 못해 fallback이 나면 오답입니다. 그래서 Final Acc는 운영 라우터가 실제 사용자 질문을 올바른 처리 경로로 보내는 종합 정확도에 가장 가깝습니다.</p><span class='metric-formula'>correct final_action / total router rows</span></div>
+<div class='card'><h3>multi_intent F1</h3><p>복합 의도 질문을 <code>multi_intent</code> 또는 clarification gate로 잡아내는 성능입니다. 예를 들어 “이상 경보를 분석하고 보고서로 요약한 뒤 정비팀 작업으로 등록해줘”는 anomaly 분석, report 생성, CMS 작업 등록이 한 문장에 섞인 요청입니다. 이런 질문을 무리하게 anomaly나 report 하나로 보내면 이후 단계에서 사용자가 기대하지 않은 자동 작업이 실행될 수 있습니다. 따라서 모델은 “어떤 작업을 먼저 수행할까요?”처럼 분리 질문이 필요한 multi_intent로 판단해야 합니다. F1은 precision과 recall의 균형이므로, multi_intent라고 예측한 것이 실제로 복합 의도였는지와 실제 복합 의도 질문을 놓치지 않았는지를 동시에 반영합니다. 값이 높을수록 애매한 복합 요청을 안전하게 게이트 처리한다고 해석할 수 있습니다.</p><span class='metric-formula'>2 × precision × recall / (precision + recall)</span></div>
+<div class='card'><h3>Numeric F1</h3><p>QA 답변에서 숫자, 건수, 비율, 분포값 같은 정량 정보를 얼마나 정확히 회수했는지 보는 지표입니다. 예를 들어 “2023년 가을 CHP 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?”라는 질문의 기준 답변에 경보 단계 1440건, 경보 이벤트 898건, 고부하 684건, 저부하 756건이 들어 있다면, 모델 답변도 이 숫자들을 정확히 포함해야 높은 점수를 받습니다. 문장이 자연스럽고 설명이 길어도 핵심 숫자를 틀리거나 일부를 빠뜨리면 Numeric F1은 낮아집니다. 반대로 표현이 조금 투박해도 필요한 숫자와 분포를 정확히 회수하면 이 지표는 높게 나옵니다. 따라서 Numeric F1은 발표용 문장 품질보다 공장 EMS 챗봇이 실제 계량/경보 수치를 틀리지 않고 답하는지를 확인하는 지표입니다.</p><span class='metric-formula'>numeric precision/recall 기반 F1</span></div>
+<div class='card'><h3>BERTScore F1</h3><p>생성 답변과 기준 답변의 의미적 유사도를 multilingual BERT embedding으로 비교한 F1입니다. 예를 들어 “2023년 가을 냉방 장치 관련 계량기에서 발생한 이슈는 몇 건이고, 분포는 어떻게 돼?”라는 질문에 대해 기준 답변은 냉방 장치 계량기 수, 경보 단계 수, 경보 이벤트 수, 원인 분포, 방향 분포를 포함합니다. 모델이 숫자를 완전히 같은 순서로 쓰지 않더라도 “냉방 장치 관련 계량기에서 저부하 경보가 더 많고, 알려진 계량기 이슈도 포함된다”처럼 의미적으로 기준 답변과 가까우면 BERTScore가 높아질 수 있습니다. 다만 빈 답변, 평가불가 답변, hidden reasoning/thinking text는 답변 품질로 인정하지 않고 evaluated_count와 unavailable_count로 분리합니다. 즉, BERTScore F1은 문장 의미 유사도를 보되, 실제 사용자에게 노출 가능한 답변만 평가 대상으로 삼는 지표입니다.</p><span class='metric-formula'>semantic similarity F1 over eligible answers</span></div>
+<div class='card'><h3>Fallback</h3><p>모델이 평가 가능한 출력을 만들지 못한 건수입니다. Router 평가에서는 단순히 “이 질문은 이상탐지로 보입니다” 같은 자연어 설명이 아니라 <code>{"route1":"query","route2":"anomaly","final_action":"route:anomaly"}</code>처럼 허용된 key/value JSON을 내야 합니다. 모델이 JSON을 깨뜨리거나, 허용되지 않은 라벨을 쓰거나, content가 비거나, reasoning만 출력하거나, API/OOM/timeout이 발생하면 fallback으로 집계됩니다. 중요한 점은 fallback row를 rule-router 결과로 보정해서 모델 정답처럼 계산하지 않는다는 것입니다. fallback은 운영 환경에서 사용자가 질문했을 때 모델 출력 계약이 깨졌다는 뜻이므로, fallback이 많으면 accuracy가 어느 정도 높아 보여도 실제 라우터 후보로는 위험합니다. 특히 300건 전부 fallback인 모델은 판단 능력보다 출력 계약 자체를 만족하지 못한 것으로 해석해야 합니다.</p><span class='metric-formula'>contract/runtime failed rows</span></div>
+<div class='card'><h3>Route2 Acc</h3><p>Stage1에서 정상 query로 통과한 질문이 어떤 업무 agent로 가야 하는지 맞힌 비율입니다. 예를 들어 “다음 주 전력 사용량을 예측해줘”는 예측 업무이므로 route2=forecast가 맞고, “V.ZE84 계량기가 무슨 계량기야?”는 지식 조회이므로 route2=rag가 맞습니다. “지난달 C동 PowerSpike 이상 후보는 몇 건 발생했나요?”는 anomaly로 보내야 합니다. Route2 Acc는 이런 업무 분기만 따로 떼어 평가하므로, Stage1 전체 안전 게이트와는 다른 정보를 줍니다. 즉 Final Acc가 최종 운영 action의 종합 점수라면, Route2 Acc는 query로 들어온 질문이 anomaly/cms/report/forecast/rag 중 어느 전문 agent로 가야 하는지를 모델이 얼마나 잘 구분하는지 보여줍니다. 현재 LangGraph 그림의 box 이름이 아니라 Router 평가 표의 컬럼입니다.</p><span class='metric-formula'>correct route2 / route2-eligible rows</span></div>
+</div></section>
+
+
+
+<section id='decision'><div class='section-head'><h2>최종 해석</h2></div><div class='card'><div class='callout'><b>Router 단일 후보는 qwen3:8b.</b><br/>Router Final Acc 0.7033, Route1 Acc 0.8200, Route2 Acc 0.8043이며 fallback/parse error가 없습니다.</div><br/><div class='callout warn'><b>QA/BERTScore 품질 후보는 gemma4:12b.</b><br/>QA Composite 0.4542, Numeric F1 0.6134, BERTScore F1 0.8378로 13개 모델 중 QA 종합 1위입니다. 운영 후보를 하나로 고정해야 한다면 Router 성능과 QA 품질을 분리해서 판단해야 합니다.</div></div></section>
+
+
+<section id='latency-interpretation'><div class='section-head'><h2>Latency 해석 기준 · Selected trace run</h2><p class='desc'>이번 표기는 qwen3.5:9b QA300 trace run 기준입니다. Route1/Route2 분류, agent 실행, backend 저장/응답 구성, browser fetch/parse/render를 분리 계측했습니다.</p></div><div class='card'><div class='table-wrap'><table><thead><tr><th>구간</th><th>측정값</th><th>의미</th><th>주의</th></tr></thead><tbody>
+<tr><td>Frontend HTML preflight</td><td class='num'>54.58 ms</td><td>프론트 정적 HTML 응답 확인</td><td>QA 질문 처리 시간이 아님</td></tr>
+<tr><td>Backend health preflight</td><td class='num'>22.00 ms</td><td><code>/api/health</code> 상태 확인</td><td>QA 질문 처리 시간이 아님</td></tr>
+<tr><td>Full <code>/api/chat</code> E2E</td><td class='num'><b>avg 6,520.38 ms</b><br/>p50 5,021.67 ms<br/>p95 18,406.80 ms<br/>max 31,950.43 ms</td><td>질문 입력 → backend 최종 답변 JSON 반환까지의 전체 시간</td><td>backend API 기준 E2E. browser 렌더링은 별도 아래 항목.</td></tr>
+<tr><td>Route1 request type</td><td class='num'>avg 0.02 ms<br/>p95 0.04 ms</td><td>query/action/off_topic/multi_intent 등 1차 분류</td><td>이번 300건은 전부 rule path로 처리됨</td></tr>
+<tr><td>Route2 agent route</td><td class='num'>avg 1,123.50 ms<br/>p50 0.03 ms<br/>p95 4,363.42 ms</td><td>anomaly/cms/report/forecast/domain 업무 agent 분류</td><td>rule 152건, LLM fallback 99건 기준. p50이 낮은 이유는 rule path가 매우 빠르기 때문.</td></tr>
+<tr><td>LangGraph total</td><td class='num'>avg 6,374.12 ms<br/>p95 18,265.22 ms</td><td>Route1/Route2/agent/critic 포함 graph 실행 시간</td><td>backend 저장/HTTP 직렬화 일부 제외</td></tr>
+<tr><td>Agent execution</td><td>forecast 18,330.94 ms<br/>anomaly 9,182.85 ms<br/>report 6,385.24 ms<br/>domain 2,999.29 ms<br/>cms 782.22 ms</td><td>각 agent node 내부 실행 평균</td><td>route별 실제 agent와 expected route가 1:1로 항상 일치하지 않을 수 있음</td></tr>
+<tr><td>Backend save/build</td><td>save user 61.76 ms<br/>save assistant 56.91 ms<br/>response build total 6,492.82 ms</td><td>대화 저장과 응답 구성 포함 backend 처리</td><td>response build total은 LangGraph 시간을 포함</td></tr>
+<tr><td>Frontend browser render</td><td>fetch 123.70 ms<br/>JSON parse 1.34 ms<br/>DOM render 16.83 ms<br/>browser total 141.87 ms</td><td>Chromium에서 fetch 후 chat bubble DOM 삽입/레이아웃까지 측정</td><td>샘플 10건, 단문 domain 질문 기준</td></tr>
+</tbody></table></div></div></section>
+
+
+<section class='diagram' id='sequence'><h2>LangGraph Service Runtime Sequence</h2><p class='desc'>일반 사용자 runtime 질문에서 FastAPI, Stage1/Stage2 router, 선택 agent, LangGraph orchestration이 실제 PostgreSQL schema/tables 및 ontology 근거를 조회하고, backend API output을 frontend UI가 표시하는 순서를 정리했습니다. 개발 환경의 평가용 입력은 이 runtime sequence에서 제외했습니다.</p>
+<div class='diagram-tools' data-diagram='sequence' data-initial='100'><button type='button' data-zoom='out'>− 축소</button><button type='button' data-zoom='in'>+ 확대</button><button type='button' data-zoom='reset'>100% 초기화</button><div class='model-switch' aria-label='Sequence Diagram model latency selector'><label><input type='checkbox' name='latency-model-sequence' value='qwen' checked> qwen3.5</label><label><input type='checkbox' name='latency-model-sequence' value='gemma'> gemma4</label></div><span class='zoom-label'>Sequence Diagram zoom · 100%</span></div><div class='diagram-viewport'><pre class='mermaid mermaid-source' data-diagram='sequence'>%%{init: {"theme": "base", "sequence": {"showSequenceNumbers": true, "wrap": true, "mirrorActors": true, "rightAngles": true, "messageAlign": "center", "actorMargin": 120, "width": 210, "height": 72, "boxMargin": 16, "boxTextMargin": 12, "noteMargin": 12, "messageMargin": 52}, "themeVariables": {"background": "#ffffff", "mainBkg": "#ffffff", "primaryColor": "#ffffff", "primaryBorderColor": "#0f172a", "primaryTextColor": "#020617", "actorBkg": "#ffffff", "actorBorder": "#0f172a", "actorTextColor": "#020617", "actorLineColor": "#334155", "signalColor": "#0f172a", "signalTextColor": "#020617", "noteBkgColor": "#fff7ed", "noteTextColor": "#020617", "noteBorderColor": "#ea580c", "fontFamily": "Arial, sans-serif", "fontSize": "20px"}} }%%
+sequenceDiagram
+    autonumber
+
+    box rgb(239, 246, 255) Runtime router
+      participant USER as User question
+      participant API as FastAPI chat API
+      participant ST1 as Stage1 request type
+      participant ST2 as Stage2 agent route
+      participant GATE as Runtime gate
+    end
+
+    box rgb(238, 242, 255) Service agents
+      participant AGENT as Selected service agent
+      participant LG as LangGraph orchestration
+    end
+
+    box rgb(245, 243, 255) PostgreSQL schemas / tables
+      participant ONT as OntologyContext
+      participant DOCKB as OpsEnergyDoc
+      participant OPSDB as OpsWorkOrder
+      participant MART as MartFacts
+      participant REF as ReferenceSchemaTimeSeries
+      participant OPSREPORT as OpsReportSchema
+    end
+
+    box rgb(236, 253, 245) Backend API outputs
+      participant ANSWER as Chat response SSE
+      participant STATUS as Job status response
+      participant APPROVAL as Approval state
+    end
+
+    box rgb(240, 249, 255) Frontend UI
+      participant FRONT as React dashboard UI
+    end
+
+    USER-&gt;&gt;API: submit /api/chat question · backend E2E timer starts
+    API-&gt;&gt;ST1: Stage1 avg 0.02 ms
+    alt query request
+      ST1-&gt;&gt;ST2: Stage2 avg 1,123.50 ms
+      ST2-&gt;&gt;AGENT: dispatch to selected agent · dispatch overhead included in LangGraph total
+      AGENT-&gt;&gt;ONT: DB/context lookup · separate edge benchmark ~165 ms when used
+      AGENT-&gt;&gt;DOCKB: document KB lookup · separate edge benchmark ~135 ms when used
+      AGENT-&gt;&gt;REF: reference time-series lookup · route별 평균 112.52–798.95 ms
+      AGENT-&gt;&gt;MART: mart lookup · separate edge benchmark ~136-157 ms when used
+      AGENT-&gt;&gt;OPSREPORT: report table lookup · separate edge benchmark ~879 ms when used
+      AGENT--&gt;&gt;ANSWER: agent build · forecast 18,330.94 ms / report 6,385.24 ms
+      ANSWER--&gt;&gt;API: /api/chat E2E avg 6,520.38 ms
+      API--&gt;&gt;FRONT: browser fetch+parse+DOM avg 141.87 ms
+    else action approval off_topic or multi_intent
+      ST1-&gt;&gt;GATE: gate node avg ~0.01 ms · gate E2E depends on routed answer
+      GATE-&gt;&gt;LG: create service job only when runtime action needs review
+      LG-&gt;&gt;OPSDB: read or prepare ops work order state
+      LG-&gt;&gt;ONT: attach meter domain context
+      LG-&gt;&gt;REF: attach supporting numeric facts
+      LG--&gt;&gt;STATUS: expose job state and caveats
+      LG--&gt;&gt;APPROVAL: wait for human approval when required
+      STATUS--&gt;&gt;API: return status path and progress payload
+      APPROVAL--&gt;&gt;API: return pending approval state
+      API--&gt;&gt;FRONT: status/caveat DOM 16.83 ms
+      API--&gt;&gt;FRONT: approval modal DOM 16.83 ms
+    end
+
+    Note over USER,API: selected model metrics update Route1, Route2, agent, backend, frontend render latency.
+    Note over ONT,REF: Runtime grounding uses ops, mart, reference, ontology and ops.energy_doc sources.
+
+%% hover USER: 실제 서비스 사용자가 입력한 runtime 질문입니다.
+%% hover API: FastAPI /chat 또는 /chat/stream 진입점입니다. 평가 runner가 아니라 서비스 API입니다.
+%% hover ST1: Stage1은 query, action_request, approval_required, off_topic, multi_intent 같은 요청 유형을 판단합니다.
+%% hover ST2: Stage2는 query 요청만 anomaly, cms, report, forecast, domain_qa 업무 agent로 분기합니다.
+%% hover GATE: query가 아닌 요청은 clarify, reject, approval wait 같은 runtime gate로 처리합니다.
+%% hover AGENT: 선택된 서비스 agent입니다. anomaly/cms/report/forecast/domain_qa 중 하나이며 PostgreSQL schema/table/ontology 근거를 조회해 답변을 만듭니다.
+%% hover LG: LangGraph orchestration입니다. runtime action 또는 승인 필요 작업의 상태 전이, dry-run guard, 승인 대기를 조정합니다.
+%% hover ONT: ontology.meter_context, ontology.meter_measurement_context 기반 계량기·측정·도메인 맥락입니다.
+%% hover DOCKB: ops.energy_doc 문서 KB입니다. 문서 chunk와 embedding 근거를 제공합니다.
+%% hover OPSDB: ops.work_order 운영 작업지시 계층입니다.
+%% hover MART: mart.anomaly_warning_1h, mart.anomaly_feature_1h, mart.peak_feature_15min, mart.pmax_forecast_15min 등 mart schema/table 계층입니다.
+%% hover REFPG: reference.corrected_resampled_1h/15min reference schema의 정제 시계열입니다.
+%% hover OPSREPORT: ops.monthly_report, ops.daily_report, ops.weekly_report, ops.report_archive 보고서 계층입니다.
+%% hover ANSWER: backend가 생성하는 chat response 또는 SSE token stream입니다.
+%% hover STATUS: backend가 반환하는 job status response입니다. status path, progress, result state를 포함합니다.
+%% hover APPROVAL: backend가 관리하는 approval state입니다. pending, approved, rejected 상태를 포함합니다.
+%% hover FRONT: backend API output을 소비해 chat bubble, status badge, approval modal, caveat notice로 렌더링하는 frontend UI입니다.
+</pre></div></section>
+<div id='node-tooltip' class='node-tooltip'></div>
+<div class='foot'>Source: <code>reports/experiments/metrics_260623_13models_comparison.json</code> · <code>reports/experiments/frontend_chatbot_e2e_260623/frontend_chatbot_qa300_260623_qwen35_9b_trace_v2_metrics.json</code> · <code>reports/experiments/frontend_chatbot_e2e_260623/frontend_chatbot_qa300_260623_gemma4_12b_trace_metrics.json</code> · <code>reports/experiments/frontend_chatbot_e2e_260623/frontend_render_latency_qwen35_9b_260623.json</code> · <code>reports/experiments/frontend_chatbot_e2e_260623/frontend_render_latency_gemma4_12b_260623.json</code> · Generated for <code>uy/workspace</code></div>
+</main>
+
+
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({startOnLoad:false, securityLevel:'loose'});
+await mermaid.run({querySelector:'.mermaid'});
+function applyNodeTooltips(){
+  const tips={
+    'User question':'실제 서비스 사용자가 입력한 원문 질문입니다. FastAPI chat API로 들어와 Stage1/Stage2 router를 거칩니다.',
+    'Live meter event':'Kafka livestream으로 유입되는 계량기/시뮬레이터 replay 이벤트입니다. raw measurement topic에서 consumer가 읽어 runtime router로 전달합니다.',
+    'Kafka livestream':'실시간 계량 이벤트를 받는 Kafka ingest 경로입니다. /chat 또는 /chat/stream API가 아니라 raw measurement topic/consumer 기반 livestream입니다.',
+    'Stage1 request type':'Stage1은 질문의 요청 유형을 분류합니다. query, action_request, approval_required, off_topic, multi_intent 중 하나로 판단합니다.',
+    'Stage2 agent route':'Stage2는 Stage1이 query로 통과한 질문만 anomaly, cms, report, forecast, domain_qa 업무 agent 중 하나로 라우팅합니다.',
+    'Gate action':'query가 아닌 off_topic, approval_required, multi_intent 등은 즉시 agent 실행하지 않고 차단/승인대기/clarification으로 보냅니다.',
+    'Final action':'서비스 처리 방향입니다. query는 route:*로 agent에 전달되고, 비-query 요청은 gate:*로 clarify/reject/approval wait 처리됩니다.',
+    'Router Stage1/Stage2':'서비스 runtime router의 핵심 2단계입니다. Stage1은 요청 유형, Stage2는 업무 agent 경로를 판단합니다.',
+    'FastAPI job registration':'서비스 action 또는 승인 필요 요청에서 backend가 runtime job을 등록하는 단계입니다.',
+    'FastAPI job path':'FastAPI에서 review job을 생성하거나 상태를 조회하는 API 경로입니다.',
+    'FastAPI chat API':'FastAPI /chat 또는 /chat/stream 서비스 진입점입니다. 평가 runner가 아니라 실제 사용자 질문을 받는 runtime API입니다.',
+    'Realtime dashboard':'Kafka livestream 이벤트를 차트, 상태 배지, 알림으로 표시하는 frontend 화면입니다.',
+    'Frontend UI render':'backend 응답을 chat bubble/status panel로 표시하는 frontend 단계입니다. 이번 QA300 run에서는 DOM render 평균 16.83 ms로 별도 계측했습니다.',
+    'Selected service agent':'Stage2 route에 따라 선택되는 anomaly, cms, report, forecast, domain_qa agent입니다. 여기서 domain_qa는 vector RAG가 아니라 ontology/ops.energy_doc/reference 기반 도메인 답변 경로입니다.',
+    'Domain knowledge agent':'RAG라는 구현명 대신 쓰는 실제 서비스 agent 명칭입니다. ontology.meter_context, ops.energy_doc, reference.corrected_resampled 기반으로 도메인/계량기 답변을 생성합니다.',
+    'OpsWorkOrder':'ops.work_order 운영 작업지시 계층입니다.',
+    'OpsReportSchema':'ops.monthly_report, ops.daily_report, ops.weekly_report, ops.report_archive 보고서 계층입니다.',
+    'User answer':'사용자에게 반환되는 서비스 runtime 답변입니다.',
+    'Backend API outputs':'backend가 생성하는 API/SSE output contract입니다. frontend가 소비할 payload, status, approval state, caveat metadata를 포함합니다.',
+    'Backend event outputs':'Kafka livestream 처리 결과로 backend가 생성하는 event/output 묶음입니다. 계량 payload, anomaly payload, job status, approval state, caveat metadata를 frontend가 소비할 수 있게 정리합니다.',
+    'Frontend UI':'backend API output 또는 livestream event output을 사용자 화면에 표시하는 React/dashboard UI입니다.',
+    'Chat response':'backend /chat 또는 /chat/stream 응답입니다. answer payload 또는 SSE token stream을 포함합니다.',
+    'Livestream update':'Kafka livestream에서 처리된 계량/이상 이벤트 payload입니다. frontend realtime dashboard가 차트와 알림으로 표시합니다.',
+    'Chat/API output':'/api/chat 또는 관련 backend API가 반환하는 answer payload/status metadata입니다. 표시 latency는 전체 E2E이며 frontend 렌더링만의 시간이 아닙니다.',
+    'Job status response':'backend job 상태 응답입니다. status path, progress, completed/failed state를 포함합니다.',
+    'Approval state':'backend가 관리하는 승인 상태입니다. pending/approved/rejected 상태를 frontend 승인 UI로 전달합니다.',
+    'Caveat metadata':'backend가 생성하는 source limit, safety note, 데이터 범위 경고 metadata입니다.',
+    'React dashboard UI':'chat bubble, status badge, approval modal, caveat notice를 렌더링하는 frontend입니다.',
+    'Runtime gate':'query가 아닌 요청을 clarify, reject, approval wait로 처리하는 운영 gate입니다.',
+    'Async review entry':'비동기 LangGraph review로 들어오는 입력 묶음입니다. API job, 보고서 artifact, QA evidence, promotion request를 포함합니다.',
+    'Report artifact ref':'생성된 보고서 또는 평가 산출물의 참조 경로입니다. review worker가 검토할 대상입니다.',
+    'Promotion request':'검토 후 승인 또는 배포가 필요한 변경 요청 메타데이터입니다. dry-run에서는 직접 실행하지 않습니다.',
+    'State guard':'LangGraph 내부 상태 보호 단계입니다. dry-run/no canonical write 조건을 유지하고, 승인 전 운영 DB write를 막는 guard 역할입니다.',
+    'Job state':'개별 runtime job의 상태값입니다. orchestration 전체가 아니라 dry-run/no canonical write guard와 진행 상태를 담는 처리 노드입니다.',
+    'Context retrieval':'docs/specs, ontology meter/domain context, ops.energy_doc, Route2별 ops/mart/reference 근거를 조회하는 단계입니다.',
+    'Evidence check':'근거 출처, lineage, source-of-truth 경계를 확인해 무근거 응답이나 위험한 action을 차단합니다.',
+    'evidence boundary check':'근거 출처, lineage, source-of-truth 경계를 확인해 무근거 응답이나 위험한 action을 차단합니다.',
+    'Recommendation':'검토 결과를 approve, revise, reject 권고 중 하나로 정리하는 LangGraph node입니다.',
+    'recommendation node':'검토 결과를 approve, revise, reject 권고 중 하나로 정리하는 LangGraph node입니다.',
+    'LangGraph orchestration':'LangGraph가 서비스 처리 단계를 조정하는 상위 흐름입니다. 상태 guard, context retrieval, evidence boundary check, service decision을 포함합니다.',
+    'docs/specs':'활성 CMS 계약, API/데이터 명세, 평가 규칙 문서를 조회하는 근거 소스입니다.',
+    'docs specs':'활성 CMS 계약, API/데이터 명세, 평가 규칙 문서를 조회하는 근거 소스입니다.',
+    'OpsEnergyDoc':'현재 DB의 ops.energy_doc 문서 KB입니다. 문서 chunk, embedding, source, hash를 보유하며 현재 환경 기준 문서 근거로 표기합니다.',
+    'Document KB':'현재 DB의 ops.energy_doc 문서 KB입니다. ontology가 meter/domain 맥락의 중심이고, 문서 chunk 보강이 필요할 때 사용합니다.',
+    'LLM Wiki':'검증된 Obsidian/LLM Wiki 지식 노드를 조회하는 근거 소스입니다.',
+    'LLM Wiki Obsidian':'검증된 Obsidian/LLM Wiki 지식 노드를 조회하는 근거 소스입니다.',
+    'Ontology':'ontology.meter, meter_context, meter_measurement_context, triple 기반의 계량기/측정/도메인 맥락 근거입니다.',
+    'ontology / meter':'ontology.meter, meter_context, meter_measurement_context, triple 기반의 계량기/측정/도메인 맥락 근거입니다.',
+    'ontology meter metadata':'ontology.meter, meter_context, meter_measurement_context, triple 기반의 계량기/측정/도메인 맥락 근거입니다.',
+    'PostgreSQL ops schema':'운영 작업 상태 계층입니다. ops.work_order를 기준으로 작업지시 조회/생성/상태 변경을 설명합니다.',
+    'anomaly mart work order':'현재 DB schema 기준 anomaly는 mart.anomaly_warning_1h/feature_1h, 작업지시는 ops.work_order를 사용합니다.',
+    'read only DB evidence':'현재 DB schema 기준으로 ops.work_order, ops.energy_doc, mart anomaly/forecast tables, reference corrected_resampled tables, ontology context를 분리해 확인합니다.',
+    'Grounding context':'서비스 runtime이 사용하는 근거 묶음입니다. 현재 .env PostgreSQL 기준 ops, mart, reference, ontology와 ops.energy_doc 문서 KB를 분리해 설명합니다.',
+    'Review artifact':'검토 결과가 기록되는 산출물입니다. 승인/수정/반려 권고와 caveat를 포함합니다.',
+    'review artifact':'검토 결과가 기록되는 산출물입니다. 승인/수정/반려 권고와 caveat를 포함합니다.',
+    'Caveat list':'검토 과정에서 발견된 주의사항, 근거 부족, 위험 조건을 정리한 목록입니다.',
+    'Ops approval':'사람의 승인이 필요한 작업을 운영 승인 대기열로 넘기는 출력입니다.',
+    'human approval queue':'사람의 승인이 필요한 작업을 운영 승인 대기열로 넘기는 출력입니다.',
+    'FastAPI status':'사용자 또는 운영자가 review job 상태와 artifact 위치를 조회하는 출력 경로입니다.',
+    'Outputs':'LangGraph review 이후 생성되는 결과 묶음입니다. artifact, caveat, approval queue, status path가 포함됩니다.',
+    'report artifact':'생성된 보고서 또는 평가 산출물의 참조 경로입니다. review worker가 검토할 대상입니다.',
+    'promotion request':'검토 후 승인 또는 배포가 필요한 변경 요청 메타데이터입니다. dry-run에서는 직접 실행하지 않습니다.'
+  };
+  function compact(s){return (s||'').toLowerCase().replace(/[^a-z0-9가-힣]/g,'');}
+  function resolveTip(label){
+    const c=compact(label);
+    if(!c) return '';
+    const key=Object.keys(tips).find(function(k){const ck=compact(k); return c.includes(ck) || ck.includes(c);});
+    return key ? tips[key] : (label + ' 노드입니다. 이 box는 LangGraph/Router 흐름에서 해당 처리 단계를 나타냅니다.');
+  }
+  document.querySelectorAll('.diagram .mermaid svg g').forEach(function(g){
+    const label=(g.textContent||'').replace(/\s+/g,' ').trim();
+    if(!label) return;
+    const hasBox=g.querySelector('rect,polygon,path.actor,path.node,foreignObject') || g.classList.contains('node') || g.classList.contains('actor');
+    if(!hasBox && !g.querySelector('text')) return;
+    const tip=resolveTip(label);
+    if(!tip) return;
+    let title=g.querySelector(':scope > title');
+    if(!title){title=document.createElementNS('http://www.w3.org/2000/svg','title'); g.prepend(title);}
+    title.textContent=tip;
+    g.setAttribute('data-node-tooltip', tip);
+  });
+}
+
+function applySequenceMessageTooltips(){
+  const messageTips={
+    'classify route1 request type':'사용자 질문을 먼저 Stage1 요청유형으로 분류합니다. query, action_request, approval_required, off_topic, multi_intent 중 하나를 결정하는 첫 단계입니다.',
+    'query only continues to route2':'Stage1 결과가 query일 때만 Stage2 업무 라우팅으로 넘어갑니다. 실행/승인/복합/범위 밖 요청은 이 경로로 계속 진행하지 않습니다.',
+    'gate action for off topic approval or multi intent':'off_topic, approval_required, multi_intent처럼 즉시 업무 agent로 보내면 위험한 요청은 gate action으로 전환해 차단, 승인대기, clarification 처리를 합니다.',
+    'choose anomaly cms report forecast or rag':'Stage2에서 실제 처리할 전문 agent를 선택합니다. 정상 query를 anomaly, cms, report, forecast, rag 중 하나로 분기합니다.',
+    'enqueue review request with final action':'Router가 산출한 final_action을 포함해 FastAPI review job으로 등록합니다. 이후 LangGraph worker가 이 job을 검토합니다.',
+    'attach report artifact reference':'보고서 생성 결과 또는 관련 artifact 경로를 LangGraph state에 첨부해 검토 대상 산출물을 명확히 합니다.',
+    'attach QA evidence packet':'QA/BERTScore 평가와 답변 근거 확인에 필요한 질문, 기준 답변, evidence packet을 state에 연결합니다.',
+    'attach promotion request metadata':'승인 또는 배포 검토가 필요한 변경 요청의 메타데이터를 state에 첨부합니다. dry-run에서는 직접 실행하지 않습니다.',
+    'create LangGraph review job':'FastAPI 입력을 LangGraph review state로 변환하고 비동기 검토 job을 시작합니다.',
+    'normalize state no DB write capability':'LangGraph state를 표준 구조로 정규화하고, canonical DB write나 promotion 같은 side effect를 수행하지 않는 조건을 확인합니다.',
+    'retrieve active CMS contracts':'현재 활성화된 CMS 계약, API 명세, 데이터 계약 문서를 조회해 검토 기준으로 사용합니다.',
+    'retrieve verified knowledge nodes':'검증된 LLM Wiki/Obsidian 지식 노드를 조회해 답변 또는 보고서 검토의 근거로 사용합니다.',
+    'retrieve meter and measurement context':'계량기, 설비, 측정 단위, meter metadata를 조회해 질문/답변이 올바른 도메인 맥락을 갖는지 확인합니다.',
+    'read only supporting evidence':'Route2에 따라 ops, mart, reference, ontology, qa 계층에서 필요한 근거를 읽어 evidence check로 넘깁니다. review 단계에서는 canonical DB write를 수행하지 않습니다.',
+    'provide grounded context':'검색된 docs/specs, ontology, ops.energy_doc, ops/mart/reference/qa 근거를 evidence boundary check 단계로 전달합니다.',
+    'return pass warn block caveats':'근거 검증 결과를 pass, warn, block 및 caveat 형태로 정리해 recommendation node에 전달합니다.',
+    'write review note artifact':'최종 검토 내용, caveat, 권고 결과를 review artifact로 기록합니다.',
+    'recommend approve revise or reject':'검토 결과를 사람이 이해할 수 있는 approve, revise, reject 권고로 정리합니다.',
+    'expose artifact path and status':'생성된 review artifact 경로와 job 상태를 FastAPI status 경로에서 조회할 수 있게 노출합니다.'
+  };
+  function compact(s){return (s||'').toLowerCase().replace(/[^a-z0-9가-힣]/g,'');}
+  document.querySelectorAll('#sequence svg .messageText').forEach(function(textEl){
+    const label=(textEl.textContent||'').replace(/\s+/g,' ').trim();
+    const key=Object.keys(messageTips).find(function(k){return compact(label).includes(compact(k)) || compact(k).includes(compact(label));});
+    if(!key) return;
+    const tip=messageTips[key];
+    const target=textEl.closest('g') || textEl;
+    const title=target.querySelector(':scope > title');
+    if(title) title.remove();
+    target.setAttribute('data-node-tooltip', tip);
+    textEl.setAttribute('data-message-tooltip', tip);
+  });
+}
+
+function bindVisibleNodeTooltips(){
+  const tipBox=document.getElementById('node-tooltip');
+  if(!tipBox) return;
+  document.querySelectorAll('.diagram .mermaid svg').forEach(function(svg){
+    svg.addEventListener('mousemove', function(ev){
+      const g=ev.target.closest('g');
+      const messageTip=ev.target.getAttribute && ev.target.getAttribute('data-message-tooltip');
+      const groupTip=g ? g.getAttribute('data-node-tooltip') : null;
+      const title=g ? g.querySelector('title') : null;
+      const tipText=messageTip || groupTip || (title && title.textContent) || '';
+      if(tipText){
+        tipBox.textContent=tipText;
+        tipBox.style.left=(ev.clientX+14)+'px';
+        tipBox.style.top=(ev.clientY+14)+'px';
+        tipBox.classList.add('visible');
+      } else {
+        tipBox.classList.remove('visible');
+      }
+    });
+    svg.addEventListener('mouseleave', function(){tipBox.classList.remove('visible');});
+  });
+}
+
+
+
+const MODEL_LABELS={
+  qwen:{color:'#020617',name:'qwen3.5:9b',labels:{
+    'flow-route1':'Route1 0.02 ms',
+    'flow-route2':'Route2 1,123.50 ms · E2E 6,520.38 ms',
+    'flow-anomaly':'anomaly agent 9,182.85 ms',
+    'flow-cms':'cms agent 782.22 ms',
+    'flow-report':'report agent 6,385.24 ms',
+    'flow-forecast':'forecast agent 18,330.94 ms',
+    'flow-domain':'domain agent 2,999.29 ms',
+    'flow-langgraph':'LangGraph 6,374.12 ms',
+    'flow-e2e':'/api/chat E2E 6,520.38 ms',
+    'flow-dom':'DOM render 16.83 ms',
+    'flow-browser':'browser total 141.87 ms',
+    'flow-selected':'Selected trace\nE2E avg 6,520.38 ms / p95 18,406.80 ms\nRoute2 avg 1,123.50 ms\nLangGraph avg 6,374.12 ms\nDOM render 16.83 ms',
+    'seq-stage1':'Stage1 avg 0.02 ms',
+    'seq-stage2':'Stage2 avg 1,123.50 ms',
+    'seq-agent':'agent build · forecast 18,330.94 ms / report 6,385.24 ms',
+    'seq-e2e':'/api/chat E2E avg 6,520.38 ms',
+    'seq-browser':'browser fetch+parse+DOM avg 141.87 ms',
+    'seq-status':'status/caveat DOM 16.83 ms',
+    'seq-approval':'approval modal DOM 16.83 ms'
+  }},
+  gemma:{color:'#2563eb',name:'gemma4:12b',labels:{
+    'flow-route1':'Route1 0.03 ms',
+    'flow-route2':'Route2 1,152.35 ms · E2E 7,298.26 ms',
+    'flow-anomaly':'anomaly agent 8,312.22 ms',
+    'flow-cms':'cms agent 943.17 ms',
+    'flow-report':'report agent 8,079.81 ms',
+    'flow-forecast':'forecast agent 19,646.42 ms',
+    'flow-domain':'domain agent 4,293.95 ms',
+    'flow-langgraph':'LangGraph 7,146.72 ms',
+    'flow-e2e':'/api/chat E2E 7,298.26 ms',
+    'flow-dom':'DOM render 18.95 ms',
+    'flow-browser':'browser total 148.57 ms',
+    'flow-selected':'Selected trace\nE2E avg 7,298.26 ms / p95 20,469.51 ms\nRoute2 avg 1,152.35 ms\nLangGraph avg 7,146.72 ms\nDOM render 18.95 ms',
+    'seq-stage1':'Stage1 avg 0.03 ms',
+    'seq-stage2':'Stage2 avg 1,152.35 ms',
+    'seq-agent':'agent build · forecast 19,646.42 ms / report 8,079.81 ms',
+    'seq-e2e':'/api/chat E2E avg 7,298.26 ms',
+    'seq-browser':'browser fetch+parse+DOM avg 148.57 ms',
+    'seq-status':'status/caveat DOM 18.95 ms',
+    'seq-approval':'approval modal DOM 18.95 ms'
+  }}
+};
+const MODEL_LABEL_ALIASES={};
+Object.values(MODEL_LABELS).forEach(function(model){Object.entries(model.labels).forEach(function(entry){MODEL_LABEL_ALIASES[entry[1]]=entry[0];});});
+MODEL_LABEL_ALIASES['Selected traceE2E avg 6,520.38 ms / p95 18,406.80 msRoute2 avg 1,123.50 msLangGraph avg 6,374.12 msDOM render 16.83 ms']='flow-selected';
+MODEL_LABEL_ALIASES['Selected traceE2E avg 7,298.26 ms / p95 20,469.51 msRoute2 avg 1,152.35 msLangGraph avg 7,146.72 msDOM render 18.95 ms']='flow-selected';
+MODEL_LABEL_ALIASES['Selected trace']='flow-selected-title';
+MODEL_LABEL_ALIASES['Selected trace']='flow-selected-title';
+MODEL_LABEL_ALIASES['E2E avg 6,520.38 ms / p95 18,406.80 ms']='flow-selected-e2e';
+MODEL_LABEL_ALIASES['E2E avg 7,298.26 ms / p95 20,469.51 ms']='flow-selected-e2e';
+MODEL_LABEL_ALIASES['Route2 avg 1,123.50 ms']='flow-selected-route2';
+MODEL_LABEL_ALIASES['Route2 avg 1,152.35 ms']='flow-selected-route2';
+MODEL_LABEL_ALIASES['LangGraph avg 6,374.12 ms']='flow-selected-lg';
+MODEL_LABEL_ALIASES['LangGraph avg 7,146.72 ms']='flow-selected-lg';
+MODEL_LABEL_ALIASES['DOM render 16.83 ms']='flow-selected-dom';
+MODEL_LABEL_ALIASES['DOM render 18.95 ms']='flow-selected-dom';
+MODEL_LABELS.qwen.labels['flow-selected-title']='Selected trace';
+MODEL_LABELS.gemma.labels['flow-selected-title']='Selected trace';
+MODEL_LABELS.qwen.labels['flow-selected-e2e']='E2E avg 6,520.38 ms / p95 18,406.80 ms';
+MODEL_LABELS.gemma.labels['flow-selected-e2e']='E2E avg 7,298.26 ms / p95 20,469.51 ms';
+MODEL_LABELS.qwen.labels['flow-selected-route2']='Route2 avg 1,123.50 ms';
+MODEL_LABELS.gemma.labels['flow-selected-route2']='Route2 avg 1,152.35 ms';
+MODEL_LABELS.qwen.labels['flow-selected-lg']='LangGraph avg 6,374.12 ms';
+MODEL_LABELS.gemma.labels['flow-selected-lg']='LangGraph avg 7,146.72 ms';
+MODEL_LABELS.qwen.labels['flow-selected-dom']='DOM render 16.83 ms';
+MODEL_LABELS.gemma.labels['flow-selected-dom']='DOM render 18.95 ms';
+
+MODEL_LABELS.qwen.labels['flow-agent-main']='forecast 18,330.94 ms / report 6,385.24 ms';
+MODEL_LABELS.gemma.labels['flow-agent-main']='forecast 19,646.42 ms / report 8,079.81 ms';
+MODEL_LABELS.qwen.labels['flow-agent-sub']='anomaly 9,182.85 ms / cms 782.22 ms / domain 2,999.29 ms';
+MODEL_LABELS.gemma.labels['flow-agent-sub']='anomaly 8,312.22 ms / cms 943.17 ms / domain 4,293.95 ms';
+
+Object.entries({
+  'Route1 0.02 ms':'flow-route1','Route1 0.03 ms':'flow-route1',
+  'forecast 18,330.94 ms / report 6,385.24 ms':'flow-agent-main','forecast 19,646.42 ms / report 8,079.81 ms':'flow-agent-main',
+  'anomaly 9,182.85 ms / cms 782.22 ms / domain 2,999.29 ms':'flow-agent-sub','anomaly 8,312.22 ms / cms 943.17 ms / domain 4,293.95 ms':'flow-agent-sub',
+  'Route2 1,123.50 ms · E2E 6,520.38 ms':'flow-route2','Route2 1,152.35 ms · E2E 7,298.26 ms':'flow-route2',
+  'anomaly agent 9,182.85 ms':'flow-anomaly','anomaly agent 8,312.22 ms':'flow-anomaly',
+  'cms agent 782.22 ms':'flow-cms','cms agent 943.17 ms':'flow-cms',
+  'report agent 6,385.24 ms':'flow-report','report agent 8,079.81 ms':'flow-report',
+  'forecast agent 18,330.94 ms':'flow-forecast','forecast agent 19,646.42 ms':'flow-forecast',
+  'domain agent 2,999.29 ms':'flow-domain','domain agent 4,293.95 ms':'flow-domain',
+  'LangGraph 6,374.12 ms':'flow-langgraph','LangGraph 7,146.72 ms':'flow-langgraph',
+  '/api/chat E2E 6,520.38 ms':'flow-e2e','/api/chat E2E 7,298.26 ms':'flow-e2e',
+  'DOM render 16.83 ms':'flow-dom','DOM render 18.95 ms':'flow-dom',
+  'browser total 141.87 ms':'flow-browser','browser total 148.57 ms':'flow-browser',
+  'Selected trace':'flow-selected-title',
+  'Stage1 avg 0.02 ms':'seq-stage1','Stage1 avg 0.03 ms':'seq-stage1',
+  'Stage2 avg 1,123.50 ms':'seq-stage2','Stage2 avg 1,152.35 ms':'seq-stage2',
+  'agent build · forecast 18,330.94 ms / report 6,385.24 ms':'seq-agent','agent build · forecast 19,646.42 ms / report 8,079.81 ms':'seq-agent',
+  '/api/chat E2E avg 6,520.38 ms':'seq-e2e','/api/chat E2E avg 7,298.26 ms':'seq-e2e',
+  'browser fetch+parse+DOM avg 141.87 ms':'seq-browser','browser fetch+parse+DOM avg 148.57 ms':'seq-browser',
+  'status/caveat DOM 16.83 ms':'seq-status','status/caveat DOM 18.95 ms':'seq-status',
+  'approval modal DOM 16.83 ms':'seq-approval','approval modal DOM 18.95 ms':'seq-approval'
+}).forEach(function(entry){MODEL_LABEL_ALIASES[entry[0]]=entry[1];});
+function selectedModel(){return document.querySelector('.model-switch input:checked')?.value || 'qwen';}
+function applyModelLatency(modelKey){
+  const model=MODEL_LABELS[modelKey] || MODEL_LABELS.qwen;
+  document.querySelectorAll('.diagram .mermaid svg text, .diagram .mermaid svg foreignObject *, .diagram .mermaid svg .nodeLabel').forEach(function(el){
+    const txt=(el.textContent||'').trim();
+    const token=el.dataset.latencyToken || MODEL_LABEL_ALIASES[txt];
+    if(token){
+      el.dataset.latencyToken=token;
+      const val=model.labels[token];
+      if(val && el.textContent!==val) el.textContent=val;
+    }
+    const now=(el.textContent||'');
+    if(token || now.includes('qwen3.5:9b') || now.includes('gemma4:12b')){
+      el.style.setProperty('fill',model.color,'important');
+      el.style.setProperty('color',model.color,'important');
+      el.style.setProperty('font-weight','700','important');
+      if(el.querySelectorAll){
+        el.querySelectorAll('text,tspan,span,div,p,foreignObject *').forEach(function(child){
+          child.style.setProperty('fill',model.color,'important');
+          child.style.setProperty('color',model.color,'important');
+          child.style.setProperty('font-weight','700','important');
+        });
+      }
+    }
+  });
+  document.querySelectorAll('[data-latency-badge]').forEach(function(el){
+    const token=el.dataset.latencyBadge;
+    const val=model.labels[token];
+    if(val) el.textContent=val;
+    el.style.setProperty('color',model.color,'important');
+    el.style.setProperty('font-weight','850','important');
+  });
+  const panel=document.getElementById('flow-latency-panel');
+  if(panel) panel.dataset.model=modelKey;
+  document.querySelectorAll('.model-switch input').forEach(function(inp){inp.checked=(inp.value===modelKey);});
+  document.querySelectorAll('.diagram').forEach(function(sec){sec.dataset.selectedModel=modelKey;});
+}
+function bindModelSwitches(){
+  document.querySelectorAll('.model-switch input').forEach(function(inp){
+    inp.addEventListener('click', function(e){
+      const currently=selectedModel();
+      if(inp.checked && inp.value===currently){ return; }
+    });
+    inp.addEventListener('change', function(e){
+      if(!inp.checked){
+        inp.checked=true; // 반드시 하나는 체크 유지
+        return;
+      }
+      applyModelLatency(inp.value);
+    });
+  });
+}
+
+function colorModelMetrics(){
+  applyModelLatency(selectedModel());
+}
+
+function hardenMermaidReadability(){
+  document.querySelectorAll('.diagram .mermaid svg').forEach(function(svg){
+    svg.querySelectorAll('text,tspan').forEach(function(el){el.style.fill='#020617'; el.style.stroke='none'; el.style.fontWeight='500'; el.style.fontSize='26px'; el.style.textShadow='none';});
+    svg.querySelectorAll('foreignObject, foreignObject div, foreignObject span, foreignObject p').forEach(function(el){el.style.color='#020617'; el.style.fontWeight='500'; el.style.fontSize='26px'; el.style.textShadow='none';});
+    svg.querySelectorAll('rect.actor,.actor').forEach(function(el){ if(el.tagName && el.tagName.toLowerCase()==='rect'){el.style.fill='#ffffff'; el.style.stroke='#0f172a'; el.style.strokeWidth='2px';} });
+    svg.querySelectorAll('.node rect,.node polygon,.node path').forEach(function(el){el.style.fill='#ffffff'; el.style.stroke='#0f172a'; el.style.strokeWidth='2px';});
+  });
+}
+hardenMermaidReadability();
+colorModelMetrics();
+bindModelSwitches();
+applyNodeTooltips();
+applySequenceMessageTooltips();
+bindVisibleNodeTooltips();
+(function(){
+  const defaults={flow:100, sequence:100};
+  document.querySelectorAll('.diagram-tools').forEach(function(tools){
+    const id=tools.dataset.diagram;
+    const section=document.getElementById(id);
+    const label=tools.querySelector('.zoom-label');
+    const viewport=section ? section.querySelector('.diagram-viewport') : null;
+    let zoom=Number(tools.dataset.initial || defaults[id] || 100);
+    let baseWidth=0;
+    function target(){return section ? section.querySelector('svg') : null;}
+    function initBase(svg){
+      if(baseWidth) return;
+      const rect=svg.getBoundingClientRect();
+      baseWidth=Math.max(900, rect.width || 1200);
+      svg.dataset.baseWidth=String(baseWidth);
+      svg.style.setProperty('max-width','none','important');
+      svg.style.setProperty('height','auto','important');
+      svg.style.setProperty('transform-origin','0 0');
+      svg.style.setProperty('display','block');
+    }
+    function apply(){
+      const svg=target();
+      if(!svg) return;
+      initBase(svg);
+      const px=Math.round(baseWidth * zoom / 100);
+      svg.style.setProperty('width', px+'px', 'important');
+      svg.style.setProperty('min-width', px+'px', 'important');
+      svg.style.setProperty('max-width','none','important');
+      if(viewport && zoom===100){ viewport.scrollLeft=0; }
+      if(label) label.textContent=(id==='flow'?'Flow Chart':'Sequence Diagram')+' zoom · '+Math.round(zoom)+'%';
+    }
+    tools.addEventListener('click', function(e){
+      const action=e.target && e.target.dataset ? e.target.dataset.zoom : null;
+      if(!action) return;
+      if(action==='in') zoom=Math.min(400, zoom+25);
+      if(action==='out') zoom=Math.max(50, zoom-25);
+      if(action==='reset') zoom=100;
+      apply();
+    });
+    requestAnimationFrame(apply);
+  });
+})();
+</script>
+</body></html>

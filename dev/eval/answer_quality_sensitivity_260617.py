@@ -88,6 +88,7 @@ def call_ollama(model: str, base_url: str, message: str, evidence: Any, timeout:
         "evidence(JSON):\n" + json.dumps(evidence, ensure_ascii=False, sort_keys=True) + "\n\n"
         "답변만 작성해."
     )
+    think_payload = False if str(think).lower() in ("off", "false", "0", "no", "none") else think
     payload = {
         "model": model,
         "messages": [
@@ -97,7 +98,8 @@ def call_ollama(model: str, base_url: str, message: str, evidence: Any, timeout:
         "stream": False,
         # Qwen thinking models may otherwise place all text in `reasoning` and
         # leave the user-facing OpenAI-compatible `content` field empty.
-        "think": think,
+        # Ollama 0.30+ expects boolean false; string "off" returns HTTP 400.
+        "think": think_payload,
         "options": {"temperature": 0, "num_predict": 384},
     }
     req = request.Request(endpoint, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"})

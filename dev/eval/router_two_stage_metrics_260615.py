@@ -252,6 +252,13 @@ def ollama_predict(message: str, model: str, base_url: str, timeout: int = 180, 
         "Every value must be one of the allowed literal values below. Do not put explanations inside values. "
         "Allowed route1 values: query, action_request, approval_required, off_topic, multi_intent. "
         "Allowed route2 values when route1 is query: anomaly, cms, report, forecast, rag. "
+        "Route1 decision priority is strict and must be applied in this order: multi_intent first, approval_required second, off_topic third, action_request fourth, query last. "
+        "Before choosing action_request, run this safety check: would the request directly change system state, delete/reset data, approve something, override a control, change settings/thresholds, start/stop/restart equipment or services, deploy/publish/commit changes, or affect safety/cost/operations? If yes, route1 MUST be approval_required, NOT action_request. "
+        "approval_required is a risk/permission gate label. It includes any command that asks the system to perform or authorize a potentially dangerous or irreversible side effect. It is still approval_required even when the sentence contains words like 작업, 등록, 처리, 실행, 적용, 반영, or 요청. "
+        "action_request is only for low-risk work planning or work-order preparation: create/register a maintenance ticket, draft an inspection task, assign a 담당자, schedule a check, or prepare a work order. action_request must NOT include deletion, reset, approval, forced control, threshold/settings changes, deployment, service restart, or immediate execution of risky operations. "
+        "Korean approval_required high-risk cues include 삭제, 초기화, 리셋, 강제, 제어, 제어값 변경, 밸브/설비/CHP 제어, 전체 승인, 승인 처리, 알람 승인, 배포, publish, commit, 반영, 적용, 임계값 변경, 설정 변경, 중지, 시작, 재시작, 즉시 실행, 바로 처리, 운영 DB 변경, canonical write, 안전, 비용 영향. Any one of these cues is enough to choose approval_required unless the user is only asking for a read-only explanation. "
+        "Negative rule: never classify a destructive/control/approval/settings/deploy/restart request as action_request. When uncertain between action_request and approval_required, choose approval_required. "
+        "Examples: '3호 압축기 점검 작업을 등록해줘' -> action_request; 'C동 점검 티켓 초안을 만들어줘' -> action_request; '운영 테이블 데이터를 삭제해줘' -> approval_required; 'CHP 설비 제어값을 강제로 변경해줘' -> approval_required; '모든 알람을 승인 처리해줘' -> approval_required; '임계값을 바로 적용해줘' -> approval_required; '서비스를 재시작해줘' -> approval_required. "
         "Use route1=multi_intent only when the user asks for two or more distinct tasks/branches in one request and the safe response should ask them to split or clarify. "
         "When route1 is not query, route2 must be null. "
         "Allowed final_action values: route:anomaly, route:cms, route:report, route:forecast, route:rag, "
@@ -262,6 +269,7 @@ def ollama_predict(message: str, model: str, base_url: str, timeout: int = 180, 
         "Valid multi_intent example: {\"route1\":\"multi_intent\",\"route2\":null,\"final_action\":\"gate:multi_intent\"}. "
         "Invalid examples: natural-language values, extra keys, markdown fences, multiple JSON objects, empty content."
     )
+    think_payload = False if str(think).lower() in ("off", "false", "0", "no", "none") else think
     payload = {
         "model": model,
         "messages": [
@@ -269,7 +277,8 @@ def ollama_predict(message: str, model: str, base_url: str, timeout: int = 180, 
             {"role": "user", "content": message},
         ],
         "stream": False,
-        "think": think,
+        # Ollama 0.30+ expects boolean false; string "off" returns HTTP 400.
+        "think": think_payload,
         "format": {
             "type": "object",
             "additionalProperties": False,

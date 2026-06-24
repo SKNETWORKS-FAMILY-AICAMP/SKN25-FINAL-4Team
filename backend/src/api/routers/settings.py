@@ -19,6 +19,7 @@ _config: dict = {
     "llm": {
         "provider":   os.getenv("LLM_PROVIDER", "openai"),
         "model":      os.getenv("LLM_MODEL", "gpt-4o"),
+        "model_fast": os.getenv("LLM_MODEL_FAST", os.getenv("LLM_MODEL", "gpt-4o")),
         "ollama_url": os.getenv("OLLAMA_URL", "http://localhost:11434/v1"),
     },
     "profile": {
@@ -104,7 +105,7 @@ def test_llm(body: TestLlmRequest = TestLlmRequest()):
                 json={"model": model, "stream": False, "think": False,
                       "messages": [{"role": "user", "content": "ping"}],
                       "options": {"num_predict": 8}},
-                timeout=30,
+                timeout=180,
             )
             r.raise_for_status()
             return {"ok": True, "latency_ms": round((time.time() - t0) * 1000),
@@ -121,7 +122,22 @@ def test_llm(body: TestLlmRequest = TestLlmRequest()):
                 "response": (resp.choices[0].message.content or "")[:50]}
 
     except Exception as e:
-        return {"ok": False, "error": safe_err(e)}
+        # Keep secrets/internal paths out, but return enough non-secret diagnostics
+        # for the evaluation pipeline to classify endpoint/model failures.
+        import httpx
+        status_code = None
+        if isinstance(e, httpx.HTTPStatusError):
+            status_code = e.response.status_code
+        safe_message = safe_err(e)
+        return {
+            "ok": False,
+            "error": safe_message,
+            "error_type": type(e).__name__,
+            "status_code": status_code,
+            "provider": provider,
+            "model": model,
+            "ollama_url": ollama_url if provider == "ollama" else None,
+        }
 
 
 @router.post("")
@@ -129,17 +145,23 @@ def update_settings(body: dict):
     # ── LLM ─────────────────────────────────────
     if "llm" in body:
         llm = body["llm"]
-        for key, env_key in [("provider", "LLM_PROVIDER"), ("model", "LLM_MODEL"), ("ollama_url", "OLLAMA_URL")]:
+        for key, env_key in [("provider", "LLM_PROVIDER"), ("model", "LLM_MODEL"), ("model_fast", "LLM_MODEL_FAST"), ("ollama_url", "OLLAMA_URL")]:
             if key in llm:
                 _config["llm"][key] = llm[key]
                 os.environ[env_key] = llm[key]
+        if "model" in llm and "model_fast" not in llm:
+            _config["llm"]["model_fast"] = llm["model"]
+            os.environ["LLM_MODEL_FAST"] = llm["model"]
         # API 키 — 비어있지 않은 값만 환경변수에 주입 (저장값은 _config에 남기지 않음)
         for provider, val in (llm.get("api_keys") or {}).items():
             if provider in _KEY_ENV and val and val.strip():
                 os.environ[_KEY_ENV[provider]] = val.strip()
         try:
-            from agents.llm_client import reload as llm_reload
-            llm_reload()
+            import sys
+            for mod_name in ("agents.llm_client", "llm_client"):
+                mod = sys.modules.get(mod_name)
+                if mod is not None and hasattr(mod, "reload"):
+                    mod.reload()
         except Exception:
             pass
 

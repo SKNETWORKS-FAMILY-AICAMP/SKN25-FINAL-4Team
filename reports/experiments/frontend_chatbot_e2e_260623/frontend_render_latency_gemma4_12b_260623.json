@@ -1,0 +1,451 @@
+{
+  "schema_version": "frontend-render-latency.v1",
+  "generated_at": "2026-06-23T14:32:48.344780+00:00",
+  "base_url": "http://121.134.46.24:18000",
+  "samples": 10,
+  "question": "PF1은 무엇을 측정하는 값이야?",
+  "summary": {
+    "api_fetch_ms": {
+      "count": 10,
+      "avg_ms": 128.34,
+      "p50_ms": 121.3,
+      "p95_ms": 185.6,
+      "max_ms": 185.6
+    },
+    "json_parse_ms": {
+      "count": 10,
+      "avg_ms": 1.28,
+      "p50_ms": 0.9,
+      "p95_ms": 2.7,
+      "max_ms": 2.7
+    },
+    "dom_render_ms": {
+      "count": 10,
+      "avg_ms": 18.95,
+      "p50_ms": 17.9,
+      "p95_ms": 30.9,
+      "max_ms": 30.9
+    },
+    "browser_total_ms": {
+      "count": 10,
+      "avg_ms": 148.57,
+      "p50_ms": 147.7,
+      "p95_ms": 204.3,
+      "max_ms": 204.3
+    },
+    "ok_count": 10,
+    "row_count": 10
+  },
+  "details": [
+    {
+      "idx": 1,
+      "status": 200,
+      "ok": true,
+      "answer_chars": 114,
+      "api_fetch_ms": 185.6,
+      "json_parse_ms": 0.8,
+      "dom_render_ms": 17.9,
+      "browser_total_ms": 204.3,
+      "forced_height": 67,
+      "timing_trace": {
+        "stage1_request_type": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "query"
+        },
+        "stage2_route": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "domain"
+        },
+        "agent_domain": {
+          "latency_ms": 0.02
+        },
+        "critic": {
+          "latency_ms": 0.01
+        },
+        "backend_save_user": {
+          "latency_ms": 114.17
+        },
+        "langgraph_total": {
+          "latency_ms": 3.67
+        },
+        "backend_save_assistant": {
+          "latency_ms": 51.65
+        },
+        "backend_total_until_response_build": {
+          "latency_ms": 169.52
+        }
+      }
+    },
+    {
+      "idx": 2,
+      "status": 200,
+      "ok": true,
+      "answer_chars": 114,
+      "api_fetch_ms": 128.3,
+      "json_parse_ms": 0.7,
+      "dom_render_ms": 5.5,
+      "browser_total_ms": 134.5,
+      "forced_height": 67,
+      "timing_trace": {
+        "stage1_request_type": {
+          "latency_ms": 0.03,
+          "method": "rule",
+          "label": "query"
+        },
+        "stage2_route": {
+          "latency_ms": 0.03,
+          "method": "rule",
+          "label": "domain"
+        },
+        "agent_domain": {
+          "latency_ms": 0.02
+        },
+        "critic": {
+          "latency_ms": 0.01
+        },
+        "backend_save_user": {
+          "latency_ms": 64.64
+        },
+        "langgraph_total": {
+          "latency_ms": 3.16
+        },
+        "backend_save_assistant": {
+          "latency_ms": 49.47
+        },
+        "backend_total_until_response_build": {
+          "latency_ms": 117.3
+        }
+      }
+    },
+    {
+      "idx": 3,
+      "status": 200,
+      "ok": true,
+      "answer_chars": 114,
+      "api_fetch_ms": 122.2,
+      "json_parse_ms": 2.7,
+      "dom_render_ms": 22.8,
+      "browser_total_ms": 147.7,
+      "forced_height": 67,
+      "timing_trace": {
+        "stage1_request_type": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "query"
+        },
+        "stage2_route": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "domain"
+        },
+        "agent_domain": {
+          "latency_ms": 0.02
+        },
+        "critic": {
+          "latency_ms": 0.01
+        },
+        "backend_save_user": {
+          "latency_ms": 58.26
+        },
+        "langgraph_total": {
+          "latency_ms": 3.12
+        },
+        "backend_save_assistant": {
+          "latency_ms": 49.86
+        },
+        "backend_total_until_response_build": {
+          "latency_ms": 111.26
+        }
+      }
+    },
+    {
+      "idx": 4,
+      "status": 200,
+      "ok": true,
+      "answer_chars": 114,
+      "api_fetch_ms": 119.3,
+      "json_parse_ms": 1.1,
+      "dom_render_ms": 30.9,
+      "browser_total_ms": 151.3,
+      "forced_height": 67,
+      "timing_trace": {
+        "stage1_request_type": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "query"
+        },
+        "stage2_route": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "domain"
+        },
+        "agent_domain": {
+          "latency_ms": 0.02
+        },
+        "critic": {
+          "latency_ms": 0.01
+        },
+        "backend_save_user": {
+          "latency_ms": 51.22
+        },
+        "langgraph_total": {
+          "latency_ms": 3.09
+        },
+        "backend_save_assistant": {
+          "latency_ms": 51.98
+        },
+        "backend_total_until_response_build": {
+          "latency_ms": 106.31
+        }
+      }
+    },
+    {
+      "idx": 5,
+      "status": 200,
+      "ok": true,
+      "answer_chars": 114,
+      "api_fetch_ms": 119.6,
+      "json_parse_ms": 2.6,
+      "dom_render_ms": 14.8,
+      "browser_total_ms": 137,
+      "forced_height": 67,
+      "timing_trace": {
+        "stage1_request_type": {
+          "latency_ms": 0.03,
+          "method": "rule",
+          "label": "query"
+        },
+        "stage2_route": {
+          "latency_ms": 0.03,
+          "method": "rule",
+          "label": "domain"
+        },
+        "agent_domain": {
+          "latency_ms": 0.02
+        },
+        "critic": {
+          "latency_ms": 0.01
+        },
+        "backend_save_user": {
+          "latency_ms": 56.71
+        },
+        "langgraph_total": {
+          "latency_ms": 3.8
+        },
+        "backend_save_assistant": {
+          "latency_ms": 48.19
+        },
+        "backend_total_until_response_build": {
+          "latency_ms": 108.74
+        }
+      }
+    },
+    {
+      "idx": 6,
+      "status": 200,
+      "ok": true,
+      "answer_chars": 114,
+      "api_fetch_ms": 122.1,
+      "json_parse_ms": 1.4,
+      "dom_render_ms": 25.2,
+      "browser_total_ms": 148.7,
+      "forced_height": 67,
+      "timing_trace": {
+        "stage1_request_type": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "query"
+        },
+        "stage2_route": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "domain"
+        },
+        "agent_domain": {
+          "latency_ms": 0.03
+        },
+        "critic": {
+          "latency_ms": 0.01
+        },
+        "backend_save_user": {
+          "latency_ms": 57.01
+        },
+        "langgraph_total": {
+          "latency_ms": 3.52
+        },
+        "backend_save_assistant": {
+          "latency_ms": 50.21
+        },
+        "backend_total_until_response_build": {
+          "latency_ms": 110.78
+        }
+      }
+    },
+    {
+      "idx": 7,
+      "status": 200,
+      "ok": true,
+      "answer_chars": 114,
+      "api_fetch_ms": 126.7,
+      "json_parse_ms": 0.9,
+      "dom_render_ms": 4.8,
+      "browser_total_ms": 132.4,
+      "forced_height": 67,
+      "timing_trace": {
+        "stage1_request_type": {
+          "latency_ms": 0.08,
+          "method": "rule",
+          "label": "query"
+        },
+        "stage2_route": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "domain"
+        },
+        "agent_domain": {
+          "latency_ms": 0.02
+        },
+        "critic": {
+          "latency_ms": 0.01
+        },
+        "backend_save_user": {
+          "latency_ms": 65.43
+        },
+        "langgraph_total": {
+          "latency_ms": 3.33
+        },
+        "backend_save_assistant": {
+          "latency_ms": 45.53
+        },
+        "backend_total_until_response_build": {
+          "latency_ms": 114.32
+        }
+      }
+    },
+    {
+      "idx": 8,
+      "status": 200,
+      "ok": true,
+      "answer_chars": 114,
+      "api_fetch_ms": 121.3,
+      "json_parse_ms": 0.9,
+      "dom_render_ms": 11,
+      "browser_total_ms": 133.2,
+      "forced_height": 67,
+      "timing_trace": {
+        "stage1_request_type": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "query"
+        },
+        "stage2_route": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "domain"
+        },
+        "agent_domain": {
+          "latency_ms": 0.02
+        },
+        "critic": {
+          "latency_ms": 0.01
+        },
+        "backend_save_user": {
+          "latency_ms": 55.38
+        },
+        "langgraph_total": {
+          "latency_ms": 3.18
+        },
+        "backend_save_assistant": {
+          "latency_ms": 48.63
+        },
+        "backend_total_until_response_build": {
+          "latency_ms": 107.21
+        }
+      }
+    },
+    {
+      "idx": 9,
+      "status": 200,
+      "ok": true,
+      "answer_chars": 114,
+      "api_fetch_ms": 120.5,
+      "json_parse_ms": 0.7,
+      "dom_render_ms": 26.9,
+      "browser_total_ms": 148.1,
+      "forced_height": 67,
+      "timing_trace": {
+        "stage1_request_type": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "query"
+        },
+        "stage2_route": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "domain"
+        },
+        "agent_domain": {
+          "latency_ms": 0.02
+        },
+        "critic": {
+          "latency_ms": 0.02
+        },
+        "backend_save_user": {
+          "latency_ms": 54.14
+        },
+        "langgraph_total": {
+          "latency_ms": 3.89
+        },
+        "backend_save_assistant": {
+          "latency_ms": 47.97
+        },
+        "backend_total_until_response_build": {
+          "latency_ms": 106.03
+        }
+      }
+    },
+    {
+      "idx": 10,
+      "status": 200,
+      "ok": true,
+      "answer_chars": 114,
+      "api_fetch_ms": 117.8,
+      "json_parse_ms": 1,
+      "dom_render_ms": 29.7,
+      "browser_total_ms": 148.5,
+      "forced_height": 67,
+      "timing_trace": {
+        "stage1_request_type": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "query"
+        },
+        "stage2_route": {
+          "latency_ms": 0.02,
+          "method": "rule",
+          "label": "domain"
+        },
+        "agent_domain": {
+          "latency_ms": 0.03
+        },
+        "critic": {
+          "latency_ms": 0.02
+        },
+        "backend_save_user": {
+          "latency_ms": 54.15
+        },
+        "langgraph_total": {
+          "latency_ms": 4.21
+        },
+        "backend_save_assistant": {
+          "latency_ms": 47.07
+        },
+        "backend_total_until_response_build": {
+          "latency_ms": 105.47
+        }
+      }
+    }
+  ]
+}
