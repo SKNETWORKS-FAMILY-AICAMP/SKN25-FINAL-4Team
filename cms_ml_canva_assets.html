@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CMS ML Canva Assets</title>
+  <style>
+    :root {
+      --navy:#0b335f; --navy2:#174a7a; --teal:#0e6f8f; --green:#0d6b4f;
+      --amber:#a65f00; --red:#a13d3d; --ink:#17212f; --muted:#65758a;
+      --line:#d8e2ed; --soft:#eef5fb; --soft2:#f8fbfe; --bg:#edf2f7;
+      --blue:#2e6be6; --cyan:#0f9fb4; --violet:#7251d6;
+    }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo",Arial,sans-serif}.deck{width:1680px;max-width:calc(100vw - 48px);margin:32px auto 64px}.guide{margin:0 0 24px;padding:18px 22px;background:#fff;border:1px solid var(--line);color:var(--muted);font-size:18px;line-height:1.45}.slide{position:relative;width:1600px;height:900px;margin:0 0 42px;overflow:hidden;background:#fff;border:1px solid var(--line);box-shadow:0 20px 50px rgba(13,37,68,.12)}.slide:before{content:"";position:absolute;left:0;top:0;width:18px;height:100%;background:linear-gradient(180deg,var(--navy),var(--teal))}.content{position:absolute;inset:48px 64px 44px 86px}.num{position:absolute;right:54px;bottom:34px;color:#93a2b5;font-size:19px;font-weight:800}.kicker{margin:0 0 10px;color:var(--teal);font-size:21px;font-weight:850;text-transform:uppercase;letter-spacing:.02em}h1{margin:0;color:var(--navy);font-size:54px;line-height:1.1;letter-spacing:0;font-weight:850}h3{margin:0 0 14px;color:var(--navy);font-size:28px;line-height:1.18}.subtitle{margin:15px 0 0;color:var(--muted);font-size:24px;line-height:1.42;max-width:1320px}.diagram-wrap{margin-top:18px;width:100%;height:690px;border:1px solid var(--line);background:#f8fbff;display:flex;align-items:center;justify-content:center;overflow:hidden}.diagram-wrap svg{width:98%;height:96%;display:block}.diagram-wrap.anomaly svg{width:94%;height:90%}.diagram-wrap.pmax svg{width:100%;height:94%}.source{position:absolute;left:88px;bottom:34px;color:#8b98a8;font-size:15px;max-width:1080px}.two{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}.card{padding:25px 27px;background:var(--soft2);border:1px solid var(--line);border-top:7px solid var(--teal);min-height:560px}.metric{padding:18px;background:#fff;border:1px solid var(--line);border-top:7px solid var(--navy);min-height:145px}.metric .label{color:var(--muted);font-size:18px;font-weight:760;margin-bottom:12px}.metric .value{color:var(--navy);font-size:40px;font-weight:880;line-height:1.05}.metric .note{margin-top:10px;color:var(--muted);font-size:16px;line-height:1.3}table{width:100%;border-collapse:collapse;table-layout:fixed;margin-top:18px;font-size:16px;line-height:1.35}th{padding:12px 13px;background:var(--navy);color:#fff;text-align:left;font-weight:830;border-right:1px solid rgba(255,255,255,.18)}td{padding:12px 13px;border:1px solid var(--line);vertical-align:top;background:#fff}tbody tr:nth-child(even) td{background:#f8fbfe}.ink{color:var(--navy);font-weight:850}.note-text{margin-top:14px;color:var(--muted);font-size:18px;line-height:1.35}.pipeline-slide .content{inset:36px 64px 28px 86px}.pipeline-slide h1{font-size:48px}.pipeline-slide .subtitle{font-size:20px;line-height:1.32;margin-top:10px}.pipeline-slide .diagram-wrap{margin-top:12px;height:705px}
+    @media print{body{background:#fff}.deck{width:1600px;max-width:none;margin:0}.guide{display:none}.slide{margin:0;border:0;box-shadow:none;page-break-after:always}}
+  </style>
+</head>
+<body>
+<main class="deck">
+  <div class="guide">Canva 캡처용 ML 장표 3개만 모은 전달용 HTML입니다. 1~2장은 기존 MODEL_PIPELINE_OVERVIEW.html의 SVG 파이프라인을 그대로 가져왔고, 3장은 최종 성능 요약만 분리했습니다.</div>
+
+  <section class="slide pipeline-slide"><div class="content"><p class="kicker">Anomaly Pipeline</p><h1>Anomaly Detection 모델 고도화 흐름</h1><p class="subtitle">기존 파이프라인 SVG를 그대로 사용했습니다. 후보 모델, 앙상블, gate, routing, threshold comparison, warning output 흐름을 한 장에 보여줍니다.</p><div class="diagram-wrap anomaly"><svg viewBox="0 0 1180 735" role="img">
+          <defs>
+            <marker id="anomalyArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#647084"></path>
+            </marker>
+            <filter id="anomalyShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#152747" flood-opacity="0.12"></feDropShadow>
+            </filter>
+          </defs>
+
+          <rect x="0" y="0" width="1180" height="660" fill="#f8fbff"></rect>
+          <text x="36" y="42" fill="#172033" font-size="24" font-weight="800">Anomaly Detection 모델 고도화 흐름</text>
+          <text x="36" y="68" fill="#647084" font-size="14">기본 시계열 후보에서 시작해 top-k 앙상블, gate, routing, bias correction을 단계적으로 추가해 최종 모델을 선택한다.</text>
+
+          <!-- Input -->
+          <rect x="36" y="132" width="170" height="82" rx="10" fill="#152747" filter="url(#anomalyShadow)"></rect>
+          <text x="121" y="164" text-anchor="middle" fill="#fff" font-size="15" font-weight="900">Input Preparation</text>
+          <text x="121" y="188" text-anchor="middle" fill="#d9e4ff" font-size="12">feature / window</text>
+          <text x="121" y="204" text-anchor="middle" fill="#d9e4ff" font-size="12">lag / rolling</text>
+
+          <!-- Base candidates -->
+          <rect x="255" y="88" width="160" height="48" rx="9" fill="#2e6be6" filter="url(#anomalyShadow)"></rect>
+          <text x="335" y="117" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">LSTM 기본형</text>
+
+          <rect x="255" y="154" width="160" height="48" rx="9" fill="#2e6be6" filter="url(#anomalyShadow)"></rect>
+          <text x="335" y="183" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">LSTM + 시간정보</text>
+
+          <rect x="255" y="220" width="160" height="48" rx="9" fill="#2e6be6" filter="url(#anomalyShadow)"></rect>
+          <text x="335" y="249" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">장기 Window LSTM</text>
+
+          <rect x="255" y="286" width="160" height="48" rx="9" fill="#2e6be6" filter="url(#anomalyShadow)"></rect>
+          <text x="335" y="315" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">GRU 후보</text>
+
+          <rect x="255" y="352" width="160" height="48" rx="9" fill="#2e6be6" filter="url(#anomalyShadow)"></rect>
+          <text x="335" y="381" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">Dropout LSTM</text>
+
+          <rect x="255" y="418" width="160" height="48" rx="9" fill="#2e6be6" filter="url(#anomalyShadow)"></rect>
+          <text x="335" y="447" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">SmoothL1 LSTM</text>
+
+          <path d="M206 173 C225 173 226 112 255 112" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M206 173 C225 173 226 178 255 178" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M206 173 C225 173 226 244 255 244" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M206 173 C225 173 226 310 255 310" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M206 173 C225 173 226 376 255 376" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M206 173 C225 173 226 442 255 442" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+
+          <!-- LSTM ensembles -->
+          <rect x="475" y="112" width="170" height="62" rx="10" fill="#0f9fb4" filter="url(#anomalyShadow)"></rect>
+          <text x="560" y="137" text-anchor="middle" fill="#fff" font-size="14" font-weight="900">Top-2 Weighted</text>
+          <text x="560" y="157" text-anchor="middle" fill="#e7fbff" font-size="12">상위 후보 가중 평균</text>
+
+          <rect x="475" y="224" width="170" height="62" rx="10" fill="#0f9fb4" filter="url(#anomalyShadow)"></rect>
+          <text x="560" y="249" text-anchor="middle" fill="#fff" font-size="14" font-weight="900">Stepwise Top-2</text>
+          <text x="560" y="269" text-anchor="middle" fill="#e7fbff" font-size="12">step별 상위 후보</text>
+
+          <rect x="475" y="336" width="170" height="62" rx="10" fill="#0f9fb4" filter="url(#anomalyShadow)"></rect>
+          <text x="560" y="361" text-anchor="middle" fill="#fff" font-size="14" font-weight="900">Stepwise Top-3</text>
+          <text x="560" y="381" text-anchor="middle" fill="#e7fbff" font-size="12">step별 후보 확장</text>
+
+          <circle cx="438" cy="255" r="5" fill="#647084"></circle>
+          <path d="M415 112 C426 112 428 255 438 255" fill="none" stroke="#647084" stroke-width="1.7"></path>
+          <path d="M415 178 C426 178 428 255 438 255" fill="none" stroke="#647084" stroke-width="1.7"></path>
+          <path d="M415 310 C426 310 428 255 438 255" fill="none" stroke="#647084" stroke-width="1.7"></path>
+          <path d="M415 376 C426 376 428 255 438 255" fill="none" stroke="#647084" stroke-width="1.7"></path>
+          <path d="M415 442 C426 442 428 255 438 255" fill="none" stroke="#647084" stroke-width="1.7"></path>
+          <path d="M415 244 C430 244 430 330 456 330" fill="none" stroke="#b0bacb" stroke-width="1.5" stroke-dasharray="5 5"></path>
+          <path d="M438 255 C452 255 454 143 475 143" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M438 255 L475 255" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M438 255 C452 255 454 367 475 367" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+
+          <!-- Group selection -->
+          <rect x="700" y="198" width="180" height="88" rx="12" fill="#2d936c" filter="url(#anomalyShadow)"></rect>
+          <text x="790" y="230" text-anchor="middle" fill="#fff" font-size="15" font-weight="900">Group Selection</text>
+          <text x="790" y="253" text-anchor="middle" fill="#e9fff4" font-size="12">Top ensemble 비교</text>
+          <text x="790" y="271" text-anchor="middle" fill="#e9fff4" font-size="12">그룹별 MAE 최소</text>
+
+          <path d="M645 143 C676 143 674 242 700 242" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M645 255 L700 242" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M645 367 C676 367 674 242 700 242" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+
+          <!-- Gate chain -->
+          <rect x="935" y="72" width="190" height="58" rx="10" fill="#b97918" filter="url(#anomalyShadow)"></rect>
+          <text x="1030" y="96" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">Convex Weight Search</text>
+          <text x="1030" y="115" text-anchor="middle" fill="#fff7e8" font-size="11">후보 조합 탐색</text>
+
+          <rect x="935" y="152" width="190" height="58" rx="10" fill="#b97918" filter="url(#anomalyShadow)"></rect>
+          <text x="1030" y="176" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">Improvement Gate</text>
+          <text x="1030" y="195" text-anchor="middle" fill="#fff7e8" font-size="11">개선 시에만 채택</text>
+
+          <rect x="935" y="232" width="190" height="58" rx="10" fill="#b97918" filter="url(#anomalyShadow)"></rect>
+          <text x="1030" y="256" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">Bias Candidate</text>
+          <text x="1030" y="275" text-anchor="middle" fill="#fff7e8" font-size="11">잔차 보정 후보</text>
+
+          <rect x="935" y="312" width="190" height="58" rx="10" fill="#b97918" filter="url(#anomalyShadow)"></rect>
+          <text x="1030" y="336" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">Broad Gate</text>
+          <text x="1030" y="355" text-anchor="middle" fill="#fff7e8" font-size="11">더 나은 source만 채택</text>
+
+          <path d="M880 242 C908 242 903 101 935 101" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M1030 130 L1030 152" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M1030 210 L1030 232" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M1030 290 L1030 312" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+
+          <!-- Boosting and routing -->
+          <rect x="410" y="500" width="170" height="58" rx="10" fill="#7251d6" filter="url(#anomalyShadow)"></rect>
+          <text x="495" y="523" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">CatBoost Candidate</text>
+          <text x="495" y="542" text-anchor="middle" fill="#f0ecff" font-size="11">계량기별 후보</text>
+
+          <rect x="650" y="500" width="180" height="58" rx="10" fill="#7251d6" filter="url(#anomalyShadow)"></rect>
+          <text x="740" y="523" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">Meter Routing</text>
+          <text x="740" y="542" text-anchor="middle" fill="#f0ecff" font-size="11">계량기별 최적 후보</text>
+
+          <rect x="890" y="500" width="180" height="58" rx="10" fill="#7251d6" filter="url(#anomalyShadow)"></rect>
+          <text x="980" y="523" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">LightGBM / Group Routing</text>
+          <text x="980" y="542" text-anchor="middle" fill="#f0ecff" font-size="11">그룹 평균 MAE 비교</text>
+
+          <path d="M1030 370 C1030 450 850 452 740 500" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M580 529 L650 529" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M830 529 L890 529" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+
+          <!-- Final prediction and warning decision -->
+          <rect x="300" y="588" width="135" height="38" rx="8" fill="#eff4fb" stroke="#d8deea"></rect>
+          <text x="367" y="612" text-anchor="middle" fill="#172033" font-size="12" font-weight="900">Ridge Candidate</text>
+
+          <rect x="458" y="588" width="145" height="38" rx="8" fill="#eff4fb" stroke="#d8deea"></rect>
+          <text x="530" y="612" text-anchor="middle" fill="#172033" font-size="12" font-weight="900">Seasonal Baseline</text>
+
+          <rect x="635" y="578" width="165" height="58" rx="11" fill="#effaf4" stroke="#b9e3ce" stroke-width="1.5"></rect>
+          <text x="717" y="602" text-anchor="middle" fill="#174c35" font-size="13" font-weight="900">Final Ensemble</text>
+          <text x="717" y="620" text-anchor="middle" fill="#2d936c" font-size="11">median + hour bias</text>
+
+          <rect x="830" y="568" width="180" height="76" rx="12" fill="#b97918" filter="url(#anomalyShadow)"></rect>
+          <text x="920" y="590" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">Threshold Comparison</text>
+          <text x="920" y="610" text-anchor="middle" fill="#fff7e8" font-size="10.5">actual P vs threshold band</text>
+          <text x="920" y="626" text-anchor="middle" fill="#fff7e8" font-size="10.5">val actual P percentile 기준</text>
+          <text x="920" y="640" text-anchor="middle" fill="#fff7e8" font-size="10.5">HIGH / LOW 판정</text>
+
+          <rect x="1038" y="582" width="112" height="50" rx="11" fill="#152747" filter="url(#anomalyShadow)"></rect>
+          <text x="1094" y="602" text-anchor="middle" fill="#fff" font-size="13" font-weight="900">Output</text>
+          <text x="1094" y="620" text-anchor="middle" fill="#d9e4ff" font-size="11">warning</text>
+
+          <path d="M367 588 C448 556 580 558 635 607" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M530 588 C596 564 612 570 635 607" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M980 558 C980 563 900 563 812 563 C804 563 800 570 800 588" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M800 607 L830 607" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+          <path d="M1010 607 L1038 607" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#anomalyArrow)"></path>
+        </svg></div></div><span class="num">01</span></section>
+
+  <section class="slide"><div class="content"><p class="kicker">P-Max Pipeline</p><h1>P-Max 예측 모델 선택 흐름</h1><p class="subtitle">기존 파이프라인 SVG를 그대로 사용했습니다. 입력 준비, 후보 모델, validation, final ensemble, output 구조를 보여줍니다.</p><div class="diagram-wrap pmax"><svg viewBox="0 0 1180 560" role="img">
+          <defs>
+            <marker id="pmaxArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#647084"></path>
+            </marker>
+            <filter id="pmaxShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#152747" flood-opacity="0.12"></feDropShadow>
+            </filter>
+          </defs>
+
+          <rect x="0" y="0" width="1180" height="560" fill="#f8fbff"></rect>
+          <text x="36" y="42" fill="#172033" font-size="24" font-weight="800">P-Max 예측 모델 선택 흐름</text>
+          <text x="36" y="68" fill="#647084" font-size="14">P-Max도 입력 준비 이후 후보 모델을 비교하지만, 최종 단계는 라우팅보다 RMSE 기반 가중 앙상블에 가깝다.</text>
+
+          <!-- 1. Input preparation -->
+          <rect x="34" y="108" width="245" height="144" rx="14" fill="#152747" filter="url(#pmaxShadow)"></rect>
+          <text x="156" y="138" text-anchor="middle" fill="#fff" font-size="15" font-weight="900">Input Preparation</text>
+          <rect x="58" y="158" width="198" height="24" rx="6" fill="#253a62"></rect>
+          <text x="157" y="175" text-anchor="middle" fill="#d9e4ff" font-size="11">15min peak feature table</text>
+          <rect x="58" y="189" width="198" height="24" rx="6" fill="#253a62"></rect>
+          <text x="157" y="206" text-anchor="middle" fill="#d9e4ff" font-size="11">최근 24시간 window</text>
+          <rect x="58" y="220" width="198" height="24" rx="6" fill="#253a62"></rect>
+          <text x="157" y="237" text-anchor="middle" fill="#d9e4ff" font-size="11">lag / rolling / diff / time feature</text>
+
+          <!-- 2. Candidate models -->
+          <rect x="344" y="74" width="220" height="210" rx="14" fill="#f4f0ff" stroke="#cfc4f4" stroke-width="1.5"></rect>
+          <text x="454" y="102" text-anchor="middle" fill="#3f2b85" font-size="15" font-weight="900">Candidate Models</text>
+          <rect x="370" y="125" width="168" height="38" rx="8" fill="#7251d6" filter="url(#pmaxShadow)"></rect>
+          <text x="454" y="149" text-anchor="middle" fill="#fff" font-size="12" font-weight="900">LightGBM</text>
+          <rect x="370" y="174" width="168" height="38" rx="8" fill="#7251d6" filter="url(#pmaxShadow)"></rect>
+          <text x="454" y="198" text-anchor="middle" fill="#fff" font-size="12" font-weight="900">XGBoost</text>
+          <rect x="370" y="223" width="168" height="38" rx="8" fill="#7251d6" filter="url(#pmaxShadow)"></rect>
+          <text x="454" y="247" text-anchor="middle" fill="#fff" font-size="12" font-weight="900">CatBoost</text>
+
+          <!-- 3. Validation -->
+          <rect x="635" y="104" width="230" height="150" rx="14" fill="#b97918" filter="url(#pmaxShadow)"></rect>
+          <text x="750" y="135" text-anchor="middle" fill="#fff" font-size="15" font-weight="900">Validation</text>
+          <text x="750" y="163" text-anchor="middle" fill="#fff7e8" font-size="12">validation RMSE 기준 비교</text>
+          <text x="750" y="185" text-anchor="middle" fill="#fff7e8" font-size="12">피크 예측은 큰 오차에 민감</text>
+          <text x="750" y="207" text-anchor="middle" fill="#fff7e8" font-size="12">후보별 예측 성능 확인</text>
+
+          <!-- 4. Final ensemble -->
+          <rect x="926" y="104" width="210" height="150" rx="14" fill="#152747" filter="url(#pmaxShadow)"></rect>
+          <text x="1031" y="135" text-anchor="middle" fill="#fff" font-size="15" font-weight="900">Final Ensemble</text>
+          <text x="1031" y="163" text-anchor="middle" fill="#d9e4ff" font-size="12">RMSE 기반 가중 결합</text>
+          <text x="1031" y="185" text-anchor="middle" fill="#d9e4ff" font-size="12">후보별 예측값 ensemble</text>
+          <text x="1031" y="207" text-anchor="middle" fill="#d9e4ff" font-size="12">다음 60분 피크 예측 안정화</text>
+
+          <!-- 5. Output -->
+          <rect x="926" y="345" width="210" height="92" rx="14" fill="#2d936c" filter="url(#pmaxShadow)"></rect>
+          <text x="1031" y="376" text-anchor="middle" fill="#fff" font-size="15" font-weight="900">Output</text>
+          <text x="1031" y="401" text-anchor="middle" fill="#e9fff4" font-size="12">15/30/45/60분</text>
+          <text x="1031" y="421" text-anchor="middle" fill="#e9fff4" font-size="12">P_max 예측</text>
+
+          <!-- Side output detail -->
+          <rect x="635" y="345" width="230" height="92" rx="14" fill="#effaf4" stroke="#b9e3ce" stroke-width="1.5"></rect>
+          <text x="750" y="375" text-anchor="middle" fill="#174c35" font-size="14" font-weight="900">Serving Context</text>
+          <text x="750" y="400" text-anchor="middle" fill="#2d936c" font-size="12">artifact manifest / weights</text>
+          <text x="750" y="420" text-anchor="middle" fill="#2d936c" font-size="12">피크 시점과 피크 크기 보조 평가</text>
+
+          <!-- Arrows -->
+          <path d="M279 180 L344 180" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#pmaxArrow)"></path>
+          <path d="M564 180 L635 180" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#pmaxArrow)"></path>
+          <path d="M865 180 L926 180" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#pmaxArrow)"></path>
+          <path d="M1031 254 L1031 345" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#pmaxArrow)"></path>
+          <path d="M926 391 L865 391" fill="none" stroke="#647084" stroke-width="2" marker-end="url(#pmaxArrow)"></path>
+
+          <rect x="34" y="472" width="1102" height="50" rx="12" fill="#fff" stroke="#d8deea"></rect>
+          <text x="56" y="494" fill="#172033" font-size="13" font-weight="800">발표 포인트</text>
+          <text x="56" y="514" fill="#647084" font-size="12">P-Max는 계량기별 복잡한 라우팅보다, 피크 예측 오차가 작은 후보 모델들의 예측을 안정적으로 결합하는 데 초점을 둔다.</text>
+        </svg></div></div><span class="num">02</span></section>
+
+  <section class="slide"><div class="content"><p class="kicker">Final Model Performance</p><h1>최종 모델 성능 요약</h1><p class="subtitle">Base 대비 개선률보다, 운영자가 확인해야 할 최종 모델의 실제 예측 오차와 피크 포착 품질을 중심으로 정리했습니다.</p><div class="two" style="gap:28px;margin-top:28px"><div class="card" style="border-top-color:var(--navy);min-height:560px"><h3>P-Max: 60분 피크 예측</h3><div class="three" style="grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px"><div class="metric" style="min-height:145px;padding:18px"><div class="label" style="font-size:18px">Test RMSE</div><div class="value" style="font-size:40px">17,311W</div><div class="note" style="font-size:16px">4개 대상 평균</div></div><div class="metric" style="min-height:145px;padding:18px"><div class="label" style="font-size:18px">Test MAE</div><div class="value" style="font-size:40px">11,105W</div><div class="note" style="font-size:16px">4개 대상 평균</div></div><div class="metric" style="min-height:145px;padding:18px"><div class="label" style="font-size:18px">Top 5% Peak F1</div><div class="value" style="font-size:40px">0.700</div><div class="note" style="font-size:16px">상위 피크 포착 품질</div></div></div><table class="compact" style="font-size:16px;margin-top:18px"><thead><tr><th>대상</th><th>RMSE</th><th>MAE</th><th>Peak F1</th><th>Peak Recall</th></tr></thead><tbody><tr><td class="ink">H2.Z35x</td><td>11,643</td><td>7,242</td><td>0.723</td><td>0.722</td></tr><tr><td class="ink">H2.Z36x</td><td>11,444</td><td>7,107</td><td>0.722</td><td>0.722</td></tr><tr><td class="ink">V.Z81</td><td>21,929</td><td>14,044</td><td>0.678</td><td>0.678</td></tr><tr><td class="ink">V.Z82</td><td>24,228</td><td>16,027</td><td>0.676</td><td>0.676</td></tr></tbody></table><p style="margin-top:14px;color:var(--muted);font-size:18px;line-height:1.35">Peak F1은 회귀 예측값을 실제/예측 상위 5% 피크 구간으로 변환해 계산한 보조 지표입니다.</p></div><div class="card" style="border-top-color:var(--teal);min-height:560px"><h3>Anomaly: 3시간 이상탐지</h3><div class="three" style="grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px"><div class="metric" style="min-height:145px;padding:18px"><div class="label" style="font-size:18px">Test MAE</div><div class="value" style="font-size:40px">3,070W</div><div class="note" style="font-size:16px">운영 3h 산출물 평균</div></div><div class="metric" style="min-height:145px;padding:18px"><div class="label" style="font-size:18px">Test RMSE</div><div class="value" style="font-size:40px">5,968W</div><div class="note" style="font-size:16px">큰 잔차 오차 확인</div></div><div class="metric" style="min-height:145px;padding:18px"><div class="label" style="font-size:18px">Scaled MAE</div><div class="value" style="font-size:40px">0.121</div><div class="note" style="font-size:16px">validation routing 기준</div></div></div><table class="compact" style="font-size:17px;margin-top:18px"><thead><tr><th style="width:28%">항목</th><th style="width:32%">성능/범위</th><th style="width:40%">해석</th></tr></thead><tbody><tr><td class="ink">예측 범위</td><td>t+1 ~ t+3</td><td>운영 대응 가능한 단기 이상 경보</td></tr><tr><td class="ink">추론 대상</td><td>63개 계량기</td><td>대표·단독·전이 라우팅으로 전체 계량기 처리</td></tr><tr><td class="ink">학습 대상</td><td>51개 계량기</td><td>모든 계량기를 개별 학습하지 않고 운영 복잡도 절감</td></tr><tr><td class="ink">판정 방식</td><td>actual P vs threshold</td><td>예측 기대범위 이탈 여부로 HIGH/LOW warning 생성</td></tr></tbody></table><p style="margin-top:14px;color:var(--muted);font-size:18px;line-height:1.35">Anomaly는 확정 anomaly label이 없어 F1/Recall 대신 MAE/RMSE, threshold 이탈, 입력 품질을 함께 봅니다.</p></div></div></div><span class="num">03</span></section>
+</main>
+</body>
+</html>
