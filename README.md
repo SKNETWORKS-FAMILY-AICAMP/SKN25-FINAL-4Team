@@ -4,7 +4,7 @@ CMS(에너지 운영 지원 시스템)는 건물 및 설비에서 발생하는 �
 
 본 저장소는 CMS의 핵심 소스 코드와 팀 내 아키텍처 공유를 위한 기술 문서를 통합 관리하기 위해 구성되었습니다.
 
-![CMS 개요 아키텍처](docs/diagrams/stack/overview.svg)
+<img width="4160" height="1584" alt="overview" src="https://github.com/user-attachments/assets/96d6fcfc-efb9-4e9f-a8dc-41fa35a6a2e1" />
 
 ## 프로젝트 소개
 
